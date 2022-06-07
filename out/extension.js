@@ -19,8 +19,73 @@ function activate(context) {
         vscode.window.showInformationMessage("Bonjour, je m'appelle ProBro.");
     });
     context.subscriptions.push(disposable);
+    context.subscriptions.push(vscode.commands.registerCommand('vsc-extension-for-browsing-progress-db.connect', () => {
+        // Create and show panel
+        const panel = vscode.window.createWebviewPanel('connect', 'Connect', vscode.ViewColumn.One, {});
+        // And set its HTML content
+        panel.webview.html = getWebviewContent(panel.webview, context);
+    }));
 }
 exports.activate = activate;
+function getWebviewContent(webview, context) {
+    let html = ``;
+    const myStyle = webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'src', 'connectionScreen.css'));
+    html += `<!DOCTYPE html>
+	<html>
+	  <head>
+		<meta charset="UTF-8">
+	    <link href="${myStyle}" rel="stylesheet" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	  </head>
+	<body>
+	  <div class="container">
+		<div class="title">Connect to server</div>
+		<div class="content">
+		  <form action="#">
+			<div class="connection-details">
+			  <div class="input-box">
+				<input type="text" placeholder="Connection name">
+			  </div>
+			</div>
+			<div class="connection-details">
+			  <div class="input-box-wide">
+				<input type="text" placeholder="Description">
+			  </div>
+			</div>
+			<div class="connection-details">
+			  <div class="input-box">
+				<input type="text" placeholder="Host name">
+			  </div>
+			  <div class="input-box">
+				<input type="text" placeholder="Port">
+			  </div>
+			  <div class="input-box">
+				<input type="text" placeholder="User ID">
+			  </div>
+			  <div class="input-box">
+				<input type="text" placeholder="Password">
+			  </div>
+			  <div class="input-box">
+				<input type="text" placeholder="Aliases">
+			  </div>
+			  <div class="input-box">
+				<input type="text" placeholder="Group">
+			  </div>
+			  <div class="input-box-wide">
+				<input type="text" placeholder="Other parameters">
+			  </div>
+			</div>
+			<div class="button">
+			  <input type="submit" value="Connect">
+			</div>
+		  </form>
+		</div>
+	  </div>
+	
+	</body>
+	</html>`;
+    return html;
+}
 // this method is called when your extension is deactivated
 function deactivate() { }
 exports.deactivate = deactivate;
