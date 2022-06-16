@@ -1,0 +1,133 @@
+{
+    "name": "vsc-extension-for-browsing-progress-db",
+    "displayName": "ProBro",
+    "description": "VSC extension for browsing Progress DB",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.67.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:vsc-extension-for-browsing-progress-db.proBroBonjour",
+        "onCommand:vsc-extension-for-browsing-progress-db.connect",
+        "onView:vsc-extension-for-browsing-progress-db-databases",
+        "onView:vsc-extension-for-browsing-progress-db-details"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "vsc-extension-for-browsing-progress-db",
+                    "title": "OpenEdge Explorer",
+                    "icon": "resources/redshift.svg"
+                }
+            ]
+        },
+        "views": {
+            "vsc-extension-for-browsing-progress-db": [
+                {
+                    "id": "vsc-extension-for-browsing-progress-db-databases",
+                    "name": "DataBases",
+                    "contextualTitle": "OpenEdge Explorer"
+                },
+                {
+                    "id": "vsc-extension-for-browsing-progress-db-tables",
+                    "name": "Tables",
+                    "contextualTitle": "Tables"
+                },
+                {
+                    "id": "vsc-extension-for-browsing-progress-db-details",
+                    "name": "Details",
+                    "contextualTitle": "Details"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "vsc-extension-for-browsing-progress-db.proBroBonjour",
+                "title": "ProBro.bonjour",
+                "category": "ProBro"
+            },
+            {
+                "command": "vsc-extension-for-browsing-progress-db.refreshList",
+                "title": "Refresh"
+            },
+            {
+                "command": "vsc-extension-for-browsing-progress-db.addEntry",
+                "title": "Add"
+            },
+            {
+                "command": "vsc-extension-for-browsing-progress-db.editEntry",
+                "title": "Edit"
+            },
+            {
+                "command": "vsc-extension-for-browsing-progress-db.deleteEntry",
+                "title": "Delete"
+            }
+        ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "vsc-extension-for-browsing-progress-db.refreshList",
+                    "when": "view == vsc-extension-for-browsing-progress-db-databases",
+                    "group": "navigation"
+                },
+                {
+                    "command": "vsc-extension-for-browsing-progress-db.addEntry",
+                    "when": "view == vsc-extension-for-browsing-progress-db-databases",
+                    "group": "navigation"
+                },
+                {
+                    "command": "vsc-extension-for-browsing-progress-db.editEntry",
+                    "when": "view == vsc-extension-for-browsing-progress-db",
+                    "group": "navigation"
+                },
+                {
+                    "command": "vsc-extension-for-browsing-progress-db.deleteEntry",
+                    "when": "view == vsc-extension-for-browsing-progress-db",
+                    "group": "navigation"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "npm-run-all compile:*",
+        "watch": "npm-run-all -p watch:*",
+        "compile:extension": "tsc -p ./",
+        "compile:views": "webpack --mode development",
+        "watch:extension": "tsc -watch -p ./",
+        "watch:views": "webpack --watch --mode development",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/glob": "^7.2.0",
+        "@types/mocha": "^9.1.1",
+        "@types/node": "14.x",
+        "@types/react": "^18.0.12",
+        "@types/react-dom": "^18.0.5",
+        "@types/uuid": "^8.3.4",
+        "@types/vscode": "^1.67.0",
+        "@typescript-eslint/eslint-plugin": "^5.21.0",
+        "@typescript-eslint/parser": "^5.21.0",
+        "@vscode/test-electron": "^2.1.3",
+        "css-loader": "^6.7.1",
+        "eslint": "^8.14.0",
+        "glob": "^8.0.1",
+        "mocha": "^9.2.2",
+        "npm-run-all": "^4.1.5",
+        "style-loader": "^3.3.1",
+        "ts-loader": "^9.3.0",
+        "typescript": "^4.6.4",
+        "uuid": "^8.3.2",
+        "webpack": "^5.73.0",
+        "webpack-cli": "^4.9.2"
+    },
+    "dependencies": {
+        "react": "^18.1.0",
+        "react-dom": "^18.1.0"
+    }
+}
