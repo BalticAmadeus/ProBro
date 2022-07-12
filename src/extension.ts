@@ -9,8 +9,9 @@ import { TablesListProvider } from './tree/TablesListProvider';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	// const FieldsProvider = new FieldsViewProvider();
-	// vscode.window.registerWebviewViewProvider(`${Constants.globalExtensionKey}-details`, FieldsProvider);
+	const fieldsProvider = new FieldsViewProvider(context);
+	const fields = vscode.window.registerWebviewViewProvider(`${Constants.globalExtensionKey}-panel`, fieldsProvider, {});
+	context.subscriptions.push(fields);
 
 	const detailListProvider = new DetailListProvider(context);
 	const details = vscode.window.createTreeView(`${Constants.globalExtensionKey}-details`, { treeDataProvider: detailListProvider });
@@ -30,6 +31,9 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(`${Constants.globalExtensionKey}.proBroBonjour`, () => {
 		vscode.window.showInformationMessage("Bonjour, je m'appelle ProBro.");
 	}));
+
+
+
 
 }
 

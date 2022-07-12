@@ -6,7 +6,7 @@ import { v1 as uuidv1, v1 } from "uuid";
 import { Constants } from "./constants";
 import { DatabaseProcessor } from "../db/databaseProcessor";
 
-export class ConnectionEditor {
+export class FieldsPanel {
     private readonly panel: vscode.WebviewPanel | undefined;
     private readonly extensionPath: string;
     private disposables: vscode.Disposable[] = [];
@@ -30,25 +30,6 @@ export class ConnectionEditor {
 
         this.panel.webview.onDidReceiveMessage(
             (command: ICommand) => {
-                switch (command.action) {
-                    case CommandAction.Save:
-                        let connections = this.context.globalState.get<{ [id: string]: IConfig }>(`${Constants.globalExtensionKey}.dbconfig`);
-                        if (!connections) {
-                            connections = {};
-                        }
-                        connections[command.content.id] = command.content;
-                        this.context.globalState.update(`${Constants.globalExtensionKey}.dbconfig`, connections);
-                        this.panel?.webview.postMessage({ command: 'ok' });
-                        this.panel?.dispose();
-                        vscode.commands.executeCommand(`${Constants.globalExtensionKey}.refreshList`);
-                        return;
-                    case CommandAction.Test:
-                        new DatabaseProcessor(context).getDBVersion(command.content).then((oe) => {
-                            console.log(`Requested version of DB: ${oe.dbversion}`);
-                            this.panel?.webview.postMessage({ id: command.id, command: 'ok' });
-                        });
-                        return;
-                }
             },
             undefined,
             context.subscriptions

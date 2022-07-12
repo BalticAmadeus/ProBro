@@ -13,6 +13,8 @@
         "onCommand:vsc-extension-for-browsing-progress-db.proBroBonjour",
         "onCommand:vsc-extension-for-browsing-progress-db.connect",
         "onView:vsc-extension-for-browsing-progress-db-databases",
+        "onView:vsc-extension-for-browsing-progress-db-tables",
+        "onView:vsc-extension-for-browsing-progress-db-panel",
         "onView:vsc-extension-for-browsing-progress-db-details"
     ],
     "main": "./out/extension.js",
@@ -24,24 +26,43 @@
                     "title": "OpenEdge Explorer",
                     "icon": "resources/redshift.svg"
                 }
+            ],
+            "panel": [
+                {
+                    "id": "vsc-extension-for-browsing-progress-db-panel",
+                    "title": "Fields Explorer",
+                    "icon": "resources/redshift.svg"
+                }
             ]
         },
         "views": {
+            "vsc-extension-for-browsing-progress-db-panel": [
+                {
+                    "type": "webview",
+                    "id": "vsc-extension-for-browsing-progress-db-panel",
+                    "name": "",
+                    "contextualTitle": "Fields Explorer",
+                    "title": "Fields Explorer"
+                }
+            ],
             "vsc-extension-for-browsing-progress-db": [
                 {
                     "id": "vsc-extension-for-browsing-progress-db-databases",
                     "name": "DataBases",
-                    "contextualTitle": "OpenEdge Explorer"
+                    "contextualTitle": "OpenEdge Explorer",
+                    "title": "OpenEdge Explorer"
                 },
                 {
                     "id": "vsc-extension-for-browsing-progress-db-tables",
                     "name": "Tables",
-                    "contextualTitle": "Tables"
+                    "contextualTitle": "Tables",
+                    "title": "Tables"
                 },
                 {
                     "id": "vsc-extension-for-browsing-progress-db-details",
-                    "name": "Details",
-                    "contextualTitle": "Details"
+                    "name": "Fields",
+                    "contextualTitle": "Fields",
+                    "title": "Fields/Indexes"
                 }
             ]
         },
