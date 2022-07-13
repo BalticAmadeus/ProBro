@@ -9,7 +9,7 @@ import { DetailNode } from './detailNode';
 import { TableNode } from './tableNode';
 
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
-	onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>, detailListProvider: vscode.TreeDataProvider<INode>): any {
+	onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>, detailListProvider?: vscode.TreeDataProvider<INode>): any {
 		// console.log('TablesList event', e);
 		if (e.selection.length) {
 			if (e.selection[0] instanceof TableNode && detailListProvider instanceof DetailListProvider) {

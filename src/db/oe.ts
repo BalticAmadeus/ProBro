@@ -6,3 +6,8 @@ export interface IOEVersion {
 export interface IOETablesList {
     tables: string[];
 }
+
+export interface IOEParams {
+    connectionString: string;
+    command: string;
+}

@@ -59,7 +59,7 @@
                     "title": "Tables"
                 },
                 {
-                    "id": "vsc-extension-for-browsing-progress-db-details",
+                    "id": "REMOVED-vsc-extension-for-browsing-progress-db-details",
                     "name": "Fields",
                     "contextualTitle": "Fields",
                     "title": "Fields/Indexes"
@@ -67,11 +67,6 @@
             ]
         },
         "commands": [
-            {
-                "command": "vsc-extension-for-browsing-progress-db.proBroBonjour",
-                "title": "ProBro.bonjour",
-                "category": "ProBro"
-            },
             {
                 "command": "vsc-extension-for-browsing-progress-db.refreshList",
                 "title": "Refresh"

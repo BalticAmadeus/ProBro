@@ -13,13 +13,13 @@ export function activate(context: vscode.ExtensionContext) {
 	const fields = vscode.window.registerWebviewViewProvider(`${Constants.globalExtensionKey}-panel`, fieldsProvider, {});
 	context.subscriptions.push(fields);
 
-	const detailListProvider = new DetailListProvider(context);
-	const details = vscode.window.createTreeView(`${Constants.globalExtensionKey}-details`, { treeDataProvider: detailListProvider });
-	details.onDidChangeSelection(e => detailListProvider.onDidChangeSelection(e));
+	// const detailListProvider = new DetailListProvider(context);
+	// const details = vscode.window.createTreeView(`${Constants.globalExtensionKey}-details`, { treeDataProvider: detailListProvider });
+	// details.onDidChangeSelection(e => detailListProvider.onDidChangeSelection(e));
 
 	const tablesListProvider = new TablesListProvider(context);
 	const tables = vscode.window.createTreeView(`${Constants.globalExtensionKey}-tables`, { treeDataProvider: tablesListProvider });
-	tables.onDidChangeSelection(e => tablesListProvider.onDidChangeSelection(e, detailListProvider));
+	tables.onDidChangeSelection(e => tablesListProvider.onDidChangeSelection(e, undefined));
 
 	const groupListProvider = new GroupListProvider(context, tables);
 	const groups = vscode.window.createTreeView(`${Constants.globalExtensionKey}-databases`, { treeDataProvider: groupListProvider });
@@ -27,10 +27,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand(`${Constants.globalExtensionKey}.addEntry`, () => { new ConnectionEditor(context, 'Add New Connection'); }));
 	context.subscriptions.push(vscode.commands.registerCommand(`${Constants.globalExtensionKey}.refreshList`, () => { groupListProvider.refresh(); }));
-
-	context.subscriptions.push(vscode.commands.registerCommand(`${Constants.globalExtensionKey}.proBroBonjour`, () => {
-		vscode.window.showInformationMessage("Bonjour, je m'appelle ProBro.");
-	}));
 
 
 

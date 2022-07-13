@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { IConfig } from "../view/app/model";
 import { IProcessor } from "./IProcessor";
 import * as cp from "child_process";
-import { IOETablesList, IOEVersion } from "./oe";
+import { IOEParams, IOETablesList, IOEVersion } from "./oe";
 
 export class DatabaseProcessor implements IProcessor {
 
@@ -21,16 +21,27 @@ export class DatabaseProcessor implements IProcessor {
     constructor(private context: vscode.ExtensionContext) {
     }
 
+    private getConnectionString(config: IConfig) {
+        var connectionString = `-db ${config.name} ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''}`;
+        return connectionString;
+    }
+
     public getDBVersion(config: IConfig): Promise<IOEVersion> {
-        console.log(config);
-        const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -1 -b -RO -db ${config.name} -p "${this.context.extensionPath}/resources/oe/getversion.p"`;
-        console.log(cmd);
+        var params: IOEParams = {
+            connectionString: this.getConnectionString(config),
+            command: "get_version"
+        }
+        console.log(params.connectionString)
+        const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
         return this.execShell(cmd);
     }
 
     public getTablesList(config: IConfig): Promise<IOETablesList> {
-        const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -1 -b -RO -db ${config.name} -p "${this.context.extensionPath}/resources/oe/gettables.p"`;
-        console.log(cmd);
+        var params: IOEParams = {
+            connectionString: this.getConnectionString(config),
+            command: "get_tables"
+        }
+        const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
         return this.execShell(cmd);
     }
 }
