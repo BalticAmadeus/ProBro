@@ -23,3 +23,26 @@ export enum CommandAction {
     Save,
     Test
 }
+
+export interface FieldRow {
+    order: number;
+    name: string;
+    type: string;
+    format: string;
+    label: string;
+    initial: string;
+}
+
+export interface IndexRow {
+    order: number;
+    name: string;
+    type: string;
+    format: string;
+    label: string;
+    initial: string;
+}
+
+export interface TableDetails {
+    fields: FieldRow[],
+    indexes: IndexRow[]
+}

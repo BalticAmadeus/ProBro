@@ -14,8 +14,7 @@
         "onCommand:vsc-extension-for-browsing-progress-db.connect",
         "onView:vsc-extension-for-browsing-progress-db-databases",
         "onView:vsc-extension-for-browsing-progress-db-tables",
-        "onView:vsc-extension-for-browsing-progress-db-panel",
-        "onView:vsc-extension-for-browsing-progress-db-details"
+        "onView:vsc-extension-for-browsing-progress-db-panel"
     ],
     "main": "./out/extension.js",
     "contributes": {
@@ -57,12 +56,6 @@
                     "name": "Tables",
                     "contextualTitle": "Tables",
                     "title": "Tables"
-                },
-                {
-                    "id": "REMOVED-vsc-extension-for-browsing-progress-db-details",
-                    "name": "Fields",
-                    "contextualTitle": "Fields",
-                    "title": "Fields/Indexes"
                 }
             ]
         },

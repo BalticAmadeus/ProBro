@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const tablesListProvider = new TablesListProvider(context);
 	const tables = vscode.window.createTreeView(`${Constants.globalExtensionKey}-tables`, { treeDataProvider: tablesListProvider });
-	tables.onDidChangeSelection(e => tablesListProvider.onDidChangeSelection(e, undefined));
+	tables.onDidChangeSelection(e => tablesListProvider.onDidChangeSelection(e, fieldsProvider));
 
 	const groupListProvider = new GroupListProvider(context, tables);
 	const groups = vscode.window.createTreeView(`${Constants.globalExtensionKey}-databases`, { treeDataProvider: groupListProvider });

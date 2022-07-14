@@ -4,25 +4,27 @@ import { INode } from './INode';
 import * as tableNode from './tableNode';
 import { IConfig } from '../view/app/model';
 import { DatabaseProcessor } from '../db/databaseProcessor';
-import { DetailListProvider } from './DetailListProvider';
 import { DetailNode } from './detailNode';
 import { TableNode } from './tableNode';
+import { FieldsViewProvider } from './FieldsViewProvider';
+
 
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
-	onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>, detailListProvider?: vscode.TreeDataProvider<INode>): any {
+	private config: IConfig | undefined;
+
+	onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>, fieldsProvider?: vscode.WebviewViewProvider): any {
 		// console.log('TablesList event', e);
-		if (e.selection.length) {
-			if (e.selection[0] instanceof TableNode && detailListProvider instanceof DetailListProvider) {
+		if (e.selection.length && this.config) {
+			if (e.selection[0] instanceof TableNode && fieldsProvider instanceof FieldsViewProvider) {
 				const node = e.selection[0] as TableNode;
 				console.log('TablesList', node.tableName);
-				(detailListProvider as DetailListProvider).refresh(node.tableName);
+				(fieldsProvider as FieldsViewProvider).refresh(this.config, node.tableName);
 				return;
 			}
 		}
-		(detailListProvider as DetailListProvider).refresh(undefined);
+		(fieldsProvider as FieldsViewProvider).refresh(this.config, undefined);
 	}
 
-	private config: IConfig | undefined;
 	private _onDidChangeTreeData: vscode.EventEmitter<INode | undefined | void> = new vscode.EventEmitter<INode | undefined | void>();
 	readonly onDidChangeTreeData: vscode.Event<INode | undefined | void> = this._onDidChangeTreeData.event;
 

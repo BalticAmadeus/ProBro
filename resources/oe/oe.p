@@ -21,6 +21,9 @@ CASE inputObject:GetCharacter("command"):
 	WHEN "get_tables" THEN DO:
 		RUN LOCAL_GET_TABLES.
 	END.
+	WHEN "get_table_details" THEN DO:
+		RUN LOCAL_GET_TABLE_DETAILS.
+	END.
 	OTHERWISE DO:
 		UNDO, THROW NEW Progress.Lang.AppError("Unknown command", 501).
 	END.
@@ -81,6 +84,57 @@ PROCEDURE LOCAL_GET_TABLES:
 
 	qh:QUERY-CLOSE().
 	DELETE OBJECT qh.
+	DELETE OBJECT bh.
 
 	jsonObject:Add("tables", jsonTables).
+END PROCEDURE.
+
+PROCEDURE LOCAL_GET_TABLE_DETAILS:
+	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject.
+	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray.
+	DEFINE VARIABLE jsonIndexes AS Progress.Json.ObjectModel.JsonArray.
+	DEFINE VARIABLE qh AS WIDGET-HANDLE.
+	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
+	DEFINE VARIABLE fqh AS WIDGET-HANDLE.
+	DEFINE VARIABLE fbh AS HANDLE  NO-UNDO.
+	jsonFields = new Progress.Json.ObjectModel.JsonArray().
+	jsonIndexes = new Progress.Json.ObjectModel.JsonArray().
+
+	CREATE BUFFER bh FOR TABLE "_file".
+	CREATE QUERY qh.
+	qh:SET-BUFFERS(bh).
+	qh:QUERY-PREPARE(SUBSTITUTE("for each _file where _file._file-name = '&1'", inputObject:GetCharacter("params"))).
+	qh:QUERY-OPEN.
+
+	DO WHILE qh:GET-NEXT():
+//		qh:GET-BUFFER-HANDLE(1)::_file-name.
+
+		CREATE BUFFER fbh FOR TABLE "_field".
+		CREATE QUERY fqh.
+		fqh:SET-BUFFERS(fbh).
+		fqh:QUERY-PREPARE(SUBSTITUTE("for each _field where _field._file-recid = &1", qh:GET-BUFFER-HANDLE(1):RECID)).
+		fqh:QUERY-OPEN.
+
+		DO WHILE fqh:GET-NEXT():
+			jsonField = new Progress.Json.ObjectModel.JsonObject().
+			jsonField:Add("order", fqh:GET-BUFFER-HANDLE(1)::_order).
+			jsonField:Add("name", fqh:GET-BUFFER-HANDLE(1)::_field-name).
+			jsonField:Add("type", fqh:GET-BUFFER-HANDLE(1)::_data-type).
+			jsonField:Add("format", fqh:GET-BUFFER-HANDLE(1)::_format).
+			jsonField:Add("label", fqh:GET-BUFFER-HANDLE(1)::_label).
+			jsonField:Add("initial", fqh:GET-BUFFER-HANDLE(1)::_initial).
+			jsonFields:Add(jsonField).
+		END.
+
+		fqh:QUERY-CLOSE().
+		DELETE OBJECT fqh.
+		DELETE OBJECT fbh.
+	END.
+
+	qh:QUERY-CLOSE().
+	DELETE OBJECT qh.
+	DELETE OBJECT bh.
+
+	jsonObject:Add("fields", jsonFields).
+	jsonObject:Add("indexes", jsonIndexes).
 END PROCEDURE.

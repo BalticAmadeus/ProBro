@@ -1,24 +1,38 @@
+import { AnyARecord } from 'dns';
 import path = require('path');
 import { v1 } from 'uuid';
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
 import { Constants } from '../common/constants';
-import { IConfig } from '../view/app/model';
+import { DatabaseProcessor } from '../db/databaseProcessor';
+import { IConfig, TableDetails } from '../view/app/model';
 
 export class FieldsViewProvider implements vscode.WebviewViewProvider {
 
     public static readonly viewType = `${Constants.globalExtensionKey}-panel`;
-    //private _view: vscode.WebviewView = null;
-
     private _view?: vscode.WebviewView;
 
     constructor(
-        private context: vscode.ExtensionContext,
-    ) {
-        this._view = undefined;
+        private context: vscode.ExtensionContext) {
     }
 
-    resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
+    public refresh(config: IConfig | undefined, tableName?: string) {
+        return new DatabaseProcessor(this.context).getTableDetails(config, tableName).then((oeTableDetails) => {
+            if (this._view) {
+                this._view.webview.html = this.getWebviewContent(oeTableDetails);
+            }
+            // const tableNodes: tableNode.TableNode[] = [];
+            // console.log(`Requested tables list of DB: ${this.config?.name}`);
+            // oeTables.tables.forEach((table) => {
+            //     tableNodes.push(new tableNode.TableNode(this.context, table));
+            // });
+            // return tableNodes;
+        });
+
+        //            this._view.webview.html = this.getWebviewContent();
+    }
+
+    public resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
         this._view = webviewView;
         webviewView.webview.options = {
             enableScripts: true,
@@ -26,14 +40,14 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
                 vscode.Uri.file(path.join(this.context.asAbsolutePath(''), "out"))
             ]
         };
-        this._view.webview.html = this.getWebviewContent();
+        this._view.webview.html = this.getWebviewContent({ fields: [], indexes: [] });
     }
 
     public revive(panel: vscode.WebviewView) {
         this._view = panel;
     }
 
-    private getWebviewContent(): string {
+    private getWebviewContent(data: TableDetails): string {
         // Local path to main script run in the webview
         const reactAppPathOnDisk = vscode.Uri.file(
             path.join(vscode.Uri.file(this.context.asAbsolutePath(path.join("out/view/app", "fields.js"))).fsPath)
@@ -54,7 +68,7 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
 
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
-          window.initialData = ${JSON.stringify('')};
+          window.initialData = ${JSON.stringify(data)};
         </script>
     </head>
     <body>

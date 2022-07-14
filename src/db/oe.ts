@@ -10,4 +10,5 @@ export interface IOETablesList {
 export interface IOEParams {
     connectionString: string;
     command: string;
+    params?: string
 }
