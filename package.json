@@ -14,7 +14,8 @@
         "onCommand:vsc-extension-for-browsing-progress-db.connect",
         "onView:vsc-extension-for-browsing-progress-db-databases",
         "onView:vsc-extension-for-browsing-progress-db-tables",
-        "onView:vsc-extension-for-browsing-progress-db-panel"
+        "onView:vsc-extension-for-browsing-progress-db-fields",
+        "onView:vsc-extension-for-browsing-progress-db-indexes"
     ],
     "main": "./out/extension.js",
     "contributes": {
@@ -28,20 +29,34 @@
             ],
             "panel": [
                 {
-                    "id": "vsc-extension-for-browsing-progress-db-panel",
+                    "id": "vsc-extension-for-browsing-progress-db-fields",
                     "title": "Fields Explorer",
+                    "icon": "resources/redshift.svg"
+                },
+                {
+                    "id": "vsc-extension-for-browsing-progress-db-indexes",
+                    "title": "Indexes Explorer",
                     "icon": "resources/redshift.svg"
                 }
             ]
         },
         "views": {
-            "vsc-extension-for-browsing-progress-db-panel": [
+            "vsc-extension-for-browsing-progress-db-fields": [
                 {
                     "type": "webview",
-                    "id": "vsc-extension-for-browsing-progress-db-panel",
+                    "id": "vsc-extension-for-browsing-progress-db-fields",
                     "name": "",
                     "contextualTitle": "Fields Explorer",
                     "title": "Fields Explorer"
+                }
+            ],
+            "vsc-extension-for-browsing-progress-db-indexes": [
+                {
+                    "type": "webview",
+                    "id": "vsc-extension-for-browsing-progress-db-indexes",
+                    "name": "",
+                    "contextualTitle": "Indexes Explorer",
+                    "title": "Indexes Explorer"
                 }
             ],
             "vsc-extension-for-browsing-progress-db": [
@@ -75,6 +90,10 @@
             {
                 "command": "vsc-extension-for-browsing-progress-db.deleteEntry",
                 "title": "Delete"
+            },
+            {
+                "command": "vsc-extension-for-browsing-progress-db.query",
+                "title": "Query"
             }
         ],
         "menus": {
@@ -97,6 +116,11 @@
                 {
                     "command": "vsc-extension-for-browsing-progress-db.deleteEntry",
                     "when": "view == vsc-extension-for-browsing-progress-db",
+                    "group": "navigation"
+                },
+                {
+                    "command": "vsc-extension-for-browsing-progress-db.query",
+                    "when": "view == vsc-extension-for-browsing-progress-db-tables",
                     "group": "navigation"
                 }
             ]

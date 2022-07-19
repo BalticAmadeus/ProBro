@@ -12,17 +12,19 @@ import { FieldsViewProvider } from './FieldsViewProvider';
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	private config: IConfig | undefined;
 
-	onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>, fieldsProvider?: vscode.WebviewViewProvider): any {
+	onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>, fieldsProvider?: vscode.WebviewViewProvider, indexesProvider?: vscode.WebviewViewProvider): any {
 		// console.log('TablesList event', e);
 		if (e.selection.length && this.config) {
 			if (e.selection[0] instanceof TableNode && fieldsProvider instanceof FieldsViewProvider) {
 				const node = e.selection[0] as TableNode;
 				console.log('TablesList', node.tableName);
 				(fieldsProvider as FieldsViewProvider).refresh(this.config, node.tableName);
+				(indexesProvider as FieldsViewProvider).refresh(this.config, node.tableName);
 				return;
 			}
 		}
 		(fieldsProvider as FieldsViewProvider).refresh(this.config, undefined);
+		(indexesProvider as FieldsViewProvider).refresh(this.config, undefined);
 	}
 
 	private _onDidChangeTreeData: vscode.EventEmitter<INode | undefined | void> = new vscode.EventEmitter<INode | undefined | void>();

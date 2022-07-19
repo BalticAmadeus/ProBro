@@ -13,7 +13,7 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
 
     constructor(
-        private context: vscode.ExtensionContext) {
+        private context: vscode.ExtensionContext, private _type: string) {
     }
 
     public refresh(config: IConfig | undefined, tableName?: string) {
@@ -21,15 +21,7 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
             if (this._view) {
                 this._view.webview.html = this.getWebviewContent(oeTableDetails);
             }
-            // const tableNodes: tableNode.TableNode[] = [];
-            // console.log(`Requested tables list of DB: ${this.config?.name}`);
-            // oeTables.tables.forEach((table) => {
-            //     tableNodes.push(new tableNode.TableNode(this.context, table));
-            // });
-            // return tableNodes;
         });
-
-        //            this._view.webview.html = this.getWebviewContent();
     }
 
     public resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
@@ -50,9 +42,10 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
     private getWebviewContent(data: TableDetails): string {
         // Local path to main script run in the webview
         const reactAppPathOnDisk = vscode.Uri.file(
-            path.join(vscode.Uri.file(this.context.asAbsolutePath(path.join("out/view/app", "fields.js"))).fsPath)
+            path.join(vscode.Uri.file(this.context.asAbsolutePath(path.join("out/view/app", this._type = "fields" ? "fields.js" : "indexses.js"))).fsPath)
         );
         const reactAppUri = reactAppPathOnDisk.with({ scheme: "vscode-resource" });
+        const displayType = this._type;
 
         return `<!DOCTYPE html>
     <html lang="en">

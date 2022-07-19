@@ -3,7 +3,9 @@ const path = require("path");
 module.exports = {
   entry: {
     connection: "./src/view/app/connection.tsx",
-    fields: "./src/view/app/fields.tsx"
+    fields: "./src/view/app/fields.tsx",
+    indexes: "./src/view/app/indexes.tsx",
+    query: "./src/view/app/query.tsx"
   },
   output: {
     path: path.resolve(__dirname, "out/view/app"),
