@@ -123,6 +123,15 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 			jsonField:Add("format", fqh:GET-BUFFER-HANDLE(1)::_format).
 			jsonField:Add("label", fqh:GET-BUFFER-HANDLE(1)::_label).
 			jsonField:Add("initial", fqh:GET-BUFFER-HANDLE(1)::_initial).
+			jsonField:Add("column_label", fqh:GET-BUFFER-HANDLE(1)::_col-label).
+			jsonField:Add("mandatory", fqh:GET-BUFFER-HANDLE(1)::_mandatory).
+			jsonField:Add("decimals", fqh:GET-BUFFER-HANDLE(1)::_decimals).
+			jsonField:Add("field-rpos", fqh:GET-BUFFER-HANDLE(1)::_field-rpos).
+			jsonField:Add("valExp", fqh:GET-BUFFER-HANDLE(1)::_valexp).
+			jsonField:Add("valMessage", fqh:GET-BUFFER-HANDLE(1)::_valmsg).
+			jsonField:Add("help_msg", fqh:GET-BUFFER-HANDLE(1)::_help).
+			jsonField:Add("description", fqh:GET-BUFFER-HANDLE(1)::_desc).
+			jsonField:Add("view-as", fqh:GET-BUFFER-HANDLE(1)::_view-As).
 			jsonFields:Add(jsonField).
 		END.
 

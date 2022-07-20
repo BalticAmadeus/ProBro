@@ -6,6 +6,8 @@ import { IConfig, FieldRow } from "./model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 
+import * as columnName from "./column.json";
+
 declare global {
     interface Window {
         acquireVsCodeApi(): any;
@@ -17,37 +19,7 @@ const defaultColumnProperties = {
     sortable: true,
 };
 
-const columns = [
-    {
-        key: "order",
-        name: "Order",
-        width: 100,
-    },
-    {
-        key: "name",
-        name: "Name",
-        width: 100,
-    },
-    {
-        key: "type",
-        name: "Type",
-        width: 100,
-    },
-    {
-        key: "format",
-        name: "Format",
-        width: 100,
-    },
-    {
-        key: "label",
-        name: "Label",
-        width: 100,
-    },
-    {
-        key: "initial",
-        name: "Initial",
-    },
-].map((c) => ({ ...c, ...defaultColumnProperties }));
+const columns = columnName.columns.map((c) => ({ ...c, ...defaultColumnProperties }));
 
 const vscode = window.acquireVsCodeApi();
 
