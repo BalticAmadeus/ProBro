@@ -21,7 +21,8 @@ export interface ICommand {
 
 export enum CommandAction {
     Save,
-    Test
+    Test,
+    Query
 }
 
 export interface FieldRow {

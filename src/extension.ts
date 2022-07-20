@@ -33,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand(`${Constants.globalExtensionKey}.addEntry`, () => { new ConnectionEditor(context, 'Add New Connection'); }));
 	context.subscriptions.push(vscode.commands.registerCommand(`${Constants.globalExtensionKey}.refreshList`, () => { groupListProvider.refresh(); }));
 
-	context.subscriptions.push(vscode.commands.registerCommand(`${Constants.globalExtensionKey}.query`, () => { new QueryEditor(context, 'Query'); }));
+	context.subscriptions.push(vscode.commands.registerCommand(`${Constants.globalExtensionKey}.query`, () => { tablesListProvider.node && tablesListProvider.config ? new QueryEditor(context, tablesListProvider.config, tablesListProvider.node.tableName) : ""; }));
 
 
 

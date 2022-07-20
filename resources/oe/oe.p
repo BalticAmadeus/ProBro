@@ -1,4 +1,4 @@
-ROUTINE-LEVEL ON ERROR UNDO,THROW.
+//ROUTINE-LEVEL ON ERROR UNDO,THROW.
 
 DEFINE VARIABLE inputMem AS MEMPTR NO-UNDO.
 DEFINE VARIABLE inputParser AS Progress.Json.ObjectModel.ObjectModelParser NO-UNDO.
@@ -10,7 +10,7 @@ DEFINE VARIABLE tmpJson AS LONGCHAR NO-UNDO.
 DEFINE VARIABLE tmpInt AS INTEGER NO-UNDO.
 DEFINE VARIABLE jsonObject AS Progress.Json.ObjectModel.JsonObject.
 
-&GLOBAL-DEFINE bulkLimit 32000
+&GLOBAL-DEFINE bulkLimit 30000
 
 RUN LOCAL_CONNECT.
 
@@ -20,6 +20,9 @@ CASE inputObject:GetCharacter("command"):
 	END.
 	WHEN "get_tables" THEN DO:
 		RUN LOCAL_GET_TABLES.
+	END.
+	WHEN "get_table_data" THEN DO:
+		RUN LOCAL_GET_TABLE_DATA.
 	END.
 	WHEN "get_table_details" THEN DO:
 		RUN LOCAL_GET_TABLE_DETAILS.
@@ -107,7 +110,6 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 	qh:QUERY-OPEN.
 
 	DO WHILE qh:GET-NEXT():
-//		qh:GET-BUFFER-HANDLE(1)::_file-name.
 
 		CREATE BUFFER fbh FOR TABLE "_field".
 		CREATE QUERY fqh.
@@ -137,4 +139,69 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 
 	jsonObject:Add("fields", jsonFields).
 	jsonObject:Add("indexes", jsonIndexes).
+END PROCEDURE.
+
+PROCEDURE LOCAL_GET_TABLE_DATA:
+	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject.
+	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray.
+	DEFINE VARIABLE jsonData AS Progress.Json.ObjectModel.JsonArray.
+	DEFINE VARIABLE jsonRow AS Progress.Json.ObjectModel.JsonObject.
+	DEFINE VARIABLE qh AS WIDGET-HANDLE.
+	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
+	DEFINE VARIABLE fqh AS WIDGET-HANDLE.
+	DEFINE VARIABLE fbh AS HANDLE  NO-UNDO.
+	DEFINE VARIABLE i AS INTEGER NO-UNDO.
+	jsonFields = new Progress.Json.ObjectModel.JsonArray().
+	jsonData = new Progress.Json.ObjectModel.JsonArray().
+
+	CREATE BUFFER bh FOR TABLE "_file".
+	CREATE QUERY qh.
+	qh:SET-BUFFERS(bh).
+	qh:QUERY-PREPARE(SUBSTITUTE("for each _file where _file._file-name = '&1'", inputObject:GetCharacter("params"))).
+	qh:QUERY-OPEN.
+
+	DO WHILE qh:GET-NEXT():
+
+		CREATE BUFFER fbh FOR TABLE "_field".
+		CREATE QUERY fqh.
+		fqh:SET-BUFFERS(fbh).
+		fqh:QUERY-PREPARE(SUBSTITUTE("for each _field where _field._file-recid = &1", qh:GET-BUFFER-HANDLE(1):RECID)).
+		fqh:QUERY-OPEN.
+
+		DO WHILE fqh:GET-NEXT():
+			jsonField = new Progress.Json.ObjectModel.JsonObject().
+			jsonField:Add("name", fqh:GET-BUFFER-HANDLE(1)::_field-name).
+			jsonField:Add("key", fqh:GET-BUFFER-HANDLE(1)::_field-name).
+			jsonFields:Add(jsonField).
+		END.
+
+		fqh:QUERY-CLOSE().
+		DELETE OBJECT fqh.
+		DELETE OBJECT fbh.
+	END.
+
+	qh:QUERY-CLOSE().
+	DELETE OBJECT qh.
+	DELETE OBJECT bh.
+
+	CREATE BUFFER bh FOR TABLE inputObject:GetCharacter("params").
+	CREATE QUERY qh.
+	qh:SET-BUFFERS(bh).
+	qh:QUERY-PREPARE(SUBSTITUTE("for each &1", inputObject:GetCharacter("params"))).
+	qh:QUERY-OPEN.
+
+	DO WHILE qh:GET-NEXT():
+		jsonRow = new Progress.Json.ObjectModel.JsonObject().
+		DO i = 1 to bh:NUM-FIELDS:
+			jsonRow:Add(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
+		END.
+		jsonData:Add(jsonRow).
+	END.
+
+	qh:QUERY-CLOSE().
+	DELETE OBJECT qh.
+	DELETE OBJECT bh.
+
+	jsonObject:Add("columns", jsonFields).
+	jsonObject:Add("data", jsonData).
 END PROCEDURE.
