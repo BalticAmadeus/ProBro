@@ -19,7 +19,7 @@ const defaultColumnProperties = {
     sortable: true,
 };
 
-const columns = columnName.columns.map((c) => ({ ...c, ...defaultColumnProperties }));
+columnName.columns.map((c) => ({ ...c, ...defaultColumnProperties }));
 
 const vscode = window.acquireVsCodeApi();
 
@@ -27,8 +27,12 @@ const root = createRoot(document.getElementById("root"));
 
 type Comparator = (a: FieldRow, b: FieldRow) => number;
 function getComparator(sortColumn: string): Comparator {
+
     switch (sortColumn) {
         case "order":
+        case "extent":
+        case "decimals":
+        case "rpos":        
             return (a, b) => {
                 return a[sortColumn] - b[sortColumn];
             };
@@ -37,6 +41,13 @@ function getComparator(sortColumn: string): Comparator {
         case "format":
         case "label":
         case "initial":
+        case "columnLabel":
+        case "mandatory":
+        case "valexp":
+        case "valMessage":
+        case "helpMsg":
+        case "description":
+        case "viewAs":
             return (a, b) => {
                 return a[sortColumn].localeCompare(b[sortColumn]);
             };
@@ -75,7 +86,7 @@ function Fields({ initialData, vscode }) {
 
     return (
         <DataGrid
-            columns={columns}
+            columns={columnName.columns}
             rows={sortedRows}
             defaultColumnOptions={{
                 sortable: true,
