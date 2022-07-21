@@ -95,10 +95,7 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
                                 <input
                                     type="text"
                                     placeholder="Connection name"
-                                    value={name}
-                                    onChange={(event) => {
-                                        setName(event.target.value);
-                                    }}
+                                    // Needs Dima magic
                                 />
                             </div>
                             <div className="input-box">
@@ -115,6 +112,9 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
                                 <input
                                     type="text"
                                     placeholder="Physical name"
+                                    onChange={(event) => {
+                                        setName(event.target.value);
+                                    }}
                                 />
                             </div>
                         </div>
