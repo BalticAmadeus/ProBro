@@ -70,7 +70,6 @@ export class QueryEditor {
         //     port: "",
         //     user: "",
         //     password: "",
-        //     alias: "",
         //     group: "",
         //     params: ""
         // };
