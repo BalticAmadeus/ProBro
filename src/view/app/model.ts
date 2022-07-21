@@ -32,6 +32,16 @@ export interface FieldRow {
     format: string;
     label: string;
     initial: string;
+    columnLabel: string;
+    mandatory: string;
+    extent: number;
+    decimals: number;
+    rpos: number;
+    valexp: string;
+    valMessage: string;
+    helpMsg: string;
+    description: string;
+    viewAs: string;
 }
 
 export interface IndexRow {

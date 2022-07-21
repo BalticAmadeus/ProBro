@@ -1,0 +1,84 @@
+{
+    "columns": [
+        {
+            "key": "order",
+            "name": "Order",
+            "width": 100
+        },
+        {
+            "key": "name",
+            "name": "Name",
+            "width": 100
+        },
+        {
+            "key": "type",
+            "name": "Type",
+            "width": 100
+        },
+        {
+            "key": "format",
+            "name": "Format",
+            "width": 100
+        },
+        {
+            "key": "label",
+            "name": "Label",
+            "width": 100
+        },
+        {
+            "key": "initial",
+            "name": "Initial",
+            "width": 100
+        },
+        {
+            "key": "columnLabel",
+            "name": "Column Label",
+            "width": 130
+        },
+        {
+            "key": "mandatory",
+            "name": "Mandatory",
+            "width": 100
+        },
+        {
+            "key": "extent",
+            "name": "Extent",
+            "width": 100
+        },
+        {
+            "key": "decimals",
+            "name": "Decimals",
+            "width": 100
+        },
+        {
+            "key": "rpos",
+            "name": "R-pos",
+            "width": 100
+        },
+        {
+            "key": "valexp",
+            "name": "Val Expr",
+            "width": 100
+        },
+        {
+            "key": "valMessage",
+            "name": "Val Message",
+            "width": 100
+        },
+        {
+            "key": "helpMsg",
+            "name": "Help message",
+            "width": 130
+        },
+        {
+            "key": "description",
+            "name": "Description",
+            "width": 100
+        },
+        {
+            "key": "viewAs",
+            "name": "ViewAs",
+            "width": 100
+        }
+    ]
+}
