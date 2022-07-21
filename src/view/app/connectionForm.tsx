@@ -25,7 +25,6 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
     const [port, setPort] = React.useState(vsState.config.port);
     const [user, setUser] = React.useState(vsState.config.user);
     const [password, setPassword] = React.useState(vsState.config.password);
-    const [alias, setAlias] = React.useState(vsState.config.alias);
     const [group, setGroup] = React.useState(vsState.config.group);
     const [params, setParams] = React.useState(vsState.config.params);
 
@@ -51,7 +50,6 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
             port: port,
             user: user,
             password: password,
-            alias: alias,
             group: group,
             params: params,
         };
@@ -75,7 +73,6 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
             port: port,
             user: user,
             password: password,
-            alias: alias,
             group: group,
             params: params,
         };
@@ -102,6 +99,22 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
                                     onChange={(event) => {
                                         setName(event.target.value);
                                     }}
+                                />
+                            </div>
+                            <div className="input-box">
+                                <input
+                                    type="text"
+                                    placeholder="Group"
+                                    value={group}
+                                    onChange={(event) => {
+                                        setGroup(event.target.value);
+                                    }}
+                                />
+                            </div>
+                            <div className="input-box-wide">
+                                <input
+                                    type="text"
+                                    placeholder="Physical name"
                                 />
                             </div>
                         </div>
@@ -158,26 +171,6 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
                                     }}
                                 />
                             </div>
-                            <div className="input-box">
-                                <input
-                                    type="text"
-                                    placeholder="Aliases"
-                                    value={alias}
-                                    onChange={(event) => {
-                                        setAlias(event.target.value);
-                                    }}
-                                />
-                            </div>
-                            <div className="input-box">
-                                <input
-                                    type="text"
-                                    placeholder="Group"
-                                    value={group}
-                                    onChange={(event) => {
-                                        setGroup(event.target.value);
-                                    }}
-                                />
-                            </div>
                             <div className="input-box-wide">
                                 <input
                                     type="text"
@@ -205,9 +198,6 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
                                     onClick={onSaveClick}
                                     disabled={buttonState}
                                 />
-                            </div>
-                            <div className="button-wide">
-                                <input type="submit" value="Connect" />
                             </div>
                         </div>
                     </form>

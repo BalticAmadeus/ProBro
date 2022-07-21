@@ -27,7 +27,6 @@ const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     //     port: port,
     //     user: user,
     //     password: password,
-    //     alias: alias,
     //     group: group,
     //     params: params,
     // };

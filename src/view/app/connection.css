@@ -105,28 +105,6 @@ form .buttons .button-narrow{
    /* transform: scale(0.99); */
    background: #406aff;
 }
-form .buttons .button-wide{
-  margin-bottom: 15px;
-  height: 45px;
-  width: 100%;
-}
-.buttons .button-wide input{
-  height: 100%;
-  width: 100%;
-  border-radius: 5px;
-  border: none;
-  color: #fff;
-  font-size: 18px;
-  font-weight: 500;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: #002ac1;
-}
-.buttons .button-wide input:hover{
-   /* transform: scale(0.99); */
-   background: #406aff;
-}
  @media(max-width: 584px){
  .container{
   max-width: 100%;

@@ -8,7 +8,6 @@ export interface IConfig {
     port: string;
     user: string;
     password: string;
-    alias: string;
     group: string;
     params: string;
 }

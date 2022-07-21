@@ -59,7 +59,6 @@ export class FieldsPanel {
             port: "",
             user: "",
             password: "",
-            alias: "",
             group: "",
             params: ""
         };

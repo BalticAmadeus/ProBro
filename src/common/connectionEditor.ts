@@ -78,7 +78,6 @@ export class ConnectionEditor {
             port: "",
             user: "",
             password: "",
-            alias: "",
             group: "",
             params: ""
         };
