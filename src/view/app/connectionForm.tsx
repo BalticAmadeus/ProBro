@@ -26,6 +26,7 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
     const [user, setUser] = React.useState(vsState.config.user);
     const [password, setPassword] = React.useState(vsState.config.password);
     const [group, setGroup] = React.useState(vsState.config.group);
+    const [label, setLabel] = React.useState(vsState.config.label);
     const [params, setParams] = React.useState(vsState.config.params);
 
     React.useEffect(() => {
@@ -44,6 +45,7 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
         const id: string = v1();
         const config: IConfig = {
             id: vsState.config.id,
+            label: label,
             name: name,
             description: description,
             host: host,
@@ -67,6 +69,7 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
         const id: string = v1();
         const config: IConfig = {
             id: vsState.config.id,
+            label: label,
             name: name,
             description: description,
             host: host,
@@ -95,7 +98,10 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
                                 <input
                                     type="text"
                                     placeholder="Connection name"
-                                    // Needs Dima magic
+                                    value={label}
+                                    onChange={(event) => {
+                                        setLabel(event.target.value);
+                                    }}
                                 />
                             </div>
                             <div className="input-box">
