@@ -2,9 +2,11 @@ import * as React from "react";
 import { useState, useMemo } from "react";
 import { createRoot } from "react-dom/client";
 
-import { IConfig, FieldRow } from "./model";
+import { IConfig, IndexRow } from "./model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
+
+import * as columnName from "./indexesColumn.json";
 
 declare global {
     interface Window {
@@ -17,54 +19,18 @@ const defaultColumnProperties = {
     sortable: true,
 };
 
-const columns = [
-    {
-        key: "order",
-        name: "Order",
-        width: 100,
-    },
-    {
-        key: "name",
-        name: "Name",
-        width: 100,
-    },
-    {
-        key: "type",
-        name: "Type",
-        width: 100,
-    },
-    {
-        key: "format",
-        name: "Format",
-        width: 100,
-    },
-    {
-        key: "label",
-        name: "Label",
-        width: 100,
-    },
-    {
-        key: "initial",
-        name: "Initial",
-    },
-].map((c) => ({ ...c, ...defaultColumnProperties }));
+columnName.columns.map((c) => ({ ...c, ...defaultColumnProperties }));
 
 const vscode = window.acquireVsCodeApi();
 
 const root = createRoot(document.getElementById("root"));
 
-type Comparator = (a: FieldRow, b: FieldRow) => number;
+type Comparator = (a: IndexRow, b: IndexRow) => number;
 function getComparator(sortColumn: string): Comparator {
     switch (sortColumn) {
-        case "order":
-            return (a, b) => {
-                return a[sortColumn] - b[sortColumn];
-            };
-        case "name":
-        case "type":
-        case "format":
-        case "label":
-        case "initial":
+        case "cName":
+        case "cFlags":
+        case "cFields":
             return (a, b) => {
                 return a[sortColumn].localeCompare(b[sortColumn]);
             };
@@ -73,18 +39,22 @@ function getComparator(sortColumn: string): Comparator {
     }
 }
 
-function rowKeyGetter(row: FieldRow) {
-    return row.order;
+function rowKeyGetter(row: IndexRow) {
+    return row.cName;
 }
 
-function Fields({ initialData, vscode }) {
-    const [rows, setRows] = useState(initialData.fields as FieldRow[]);
+function Indexes({ initialData, vscode }) {
+    const [rows, setRows] = useState(initialData.indexes as IndexRow[]);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
-    const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>(
+    const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
         () => new Set()
     );
 
-    const sortedRows = useMemo((): readonly FieldRow[] => {
+    console.log("rows: ", rows);
+    console.log("sortColumns: ", sortColumns);
+    console.log("selectedRows: ", selectedRows);
+
+    const sortedRows = useMemo((): readonly IndexRow[] => {
         if (sortColumns.length === 0) {
             return rows;
         }
@@ -101,9 +71,11 @@ function Fields({ initialData, vscode }) {
         });
     }, [rows, sortColumns]);
 
+    console.log("rows data: ", sortedRows);
+
     return (
         <DataGrid
-            columns={columns}
+            columns={columnName.columns}
             rows={sortedRows}
             defaultColumnOptions={{
                 sortable: true,
@@ -119,4 +91,4 @@ function Fields({ initialData, vscode }) {
     );
 }
 
-root.render(<Fields initialData={window.initialData} vscode={vscode} />);
+root.render(<Indexes initialData={window.initialData} vscode={vscode} />);

@@ -6,7 +6,7 @@ import { IConfig, FieldRow } from "./model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 
-import * as columnName from "./column.json";
+import * as columnName from "./fieldsColumn.json";
 
 declare global {
     interface Window {
