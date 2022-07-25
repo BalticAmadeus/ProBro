@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
   const indexesProvider = new FieldsViewProvider(context, "indexes");
   const indexes = vscode.window.registerWebviewViewProvider(
     `${Constants.globalExtensionKey}-indexes`,
-    fieldsProvider,
+    indexesProvider,
     {}
   );
   context.subscriptions.push(indexes);
