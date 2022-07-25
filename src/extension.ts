@@ -26,10 +26,6 @@ export function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(indexes);
 
-	const indexesProvider = new FieldsViewProvider(context, "indexes");
-	const indexes = vscode.window.registerWebviewViewProvider(`${Constants.globalExtensionKey}-indexes`, indexesProvider, {});
-	context.subscriptions.push(indexes);
-
   const tablesListProvider = new TablesListProvider(context);
   const tables = vscode.window.createTreeView(
     `${Constants.globalExtensionKey}-tables`,
