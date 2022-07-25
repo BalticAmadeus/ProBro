@@ -15,12 +15,7 @@ export interface IConfig {
 export interface ICommand {
     id: string;
     action: CommandAction;
-    content?: IConfig;
-    params?: any;
-}
-
-export interface IQueryParams {
-    tableName: string;
+    content: IConfig;
 }
 
 export enum CommandAction {
