@@ -4,7 +4,7 @@ import { INode } from './INode';
 import * as detailNode from './detailNode';
 import { IConfig } from '../view/app/model';
 import { TablesListProvider } from './TablesListProvider';
-import { ConnectionNode } from './connectionNode';
+import { DbConnectionNode } from './dbConnectionNode';
 
 export class DetailListProvider implements vscode.TreeDataProvider<INode> {
 	onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>): any {

@@ -53,6 +53,7 @@ export class FieldsPanel {
 
         const config: IConfig = {
             id: v1(),
+            label: "",
             name: "",
             description: "",
             host: "",
