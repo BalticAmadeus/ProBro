@@ -42,7 +42,7 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
     private getWebviewContent(data: TableDetails): string {
         // Local path to main script run in the webview
         const reactAppPathOnDisk = vscode.Uri.file(
-            path.join(vscode.Uri.file(this.context.asAbsolutePath(path.join("out/view/app", this._type = "fields" ? "fields.js" : "indexses.js"))).fsPath)
+            path.join(vscode.Uri.file(this.context.asAbsolutePath(path.join("out/view/app", this._type == "fields" ? "fields.js" : "indexses.js"))).fsPath)
         );
         const reactAppUri = reactAppPathOnDisk.with({ scheme: "vscode-resource" });
         const displayType = this._type;
