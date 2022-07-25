@@ -47,12 +47,12 @@ export class DatabaseProcessor implements IProcessor {
         return this.execShell(cmd);
     }
 
-    public getTableData(config: IConfig, tableName: string | undefined): Promise<IOETableData> {
+    public getTableData(config: IConfig, tableName: string | undefined, wherePhrase: string): Promise<IOETableData> {
         if (config && tableName) {
             var params: IOEParams = {
                 connectionString: this.getConnectionString(config),
                 command: "get_table_data",
-                params: tableName
+                params: { tableName: tableName, wherePhrase: wherePhrase }
             }
             const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
             return this.execShell(cmd);
