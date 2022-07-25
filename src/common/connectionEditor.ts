@@ -36,14 +36,14 @@ export class ConnectionEditor {
                         if (!connections) {
                             connections = {};
                         }
-                        connections[command.content.id] = command.content;
+                        connections[command.content!.id] = command.content!;
                         this.context.globalState.update(`${Constants.globalExtensionKey}.dbconfig`, connections);
                         this.panel?.webview.postMessage({ command: 'ok' });
                         this.panel?.dispose();
                         vscode.commands.executeCommand(`${Constants.globalExtensionKey}.refreshList`);
                         return;
                     case CommandAction.Test:
-                        new DatabaseProcessor(context).getDBVersion(command.content).then((oe) => {
+                        new DatabaseProcessor(context).getDBVersion(command.content!).then((oe) => {
                             console.log(`Requested version of DB: ${oe.dbversion}`);
                             this.panel?.webview.postMessage({ id: command.id, command: 'ok' });
                         });
@@ -72,13 +72,13 @@ export class ConnectionEditor {
 
         const config: IConfig = {
             id: v1(),
+            label: "",
             name: "",
             description: "",
             host: "",
             port: "",
             user: "",
             password: "",
-            alias: "",
             group: "",
             params: ""
         };

@@ -10,16 +10,17 @@ import { FieldsViewProvider } from './FieldsViewProvider';
 
 
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
-	private config: IConfig | undefined;
+	public config: IConfig | undefined;
+	public node: TableNode | undefined;
 
 	onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>, fieldsProvider?: vscode.WebviewViewProvider, indexesProvider?: vscode.WebviewViewProvider): any {
 		// console.log('TablesList event', e);
 		if (e.selection.length && this.config) {
 			if (e.selection[0] instanceof TableNode && fieldsProvider instanceof FieldsViewProvider) {
-				const node = e.selection[0] as TableNode;
-				console.log('TablesList', node.tableName);
-				(fieldsProvider as FieldsViewProvider).refresh(this.config, node.tableName);
-				(indexesProvider as FieldsViewProvider).refresh(this.config, node.tableName);
+				this.node = e.selection[0] as TableNode;
+				console.log('TablesList', this.node.tableName);
+				(fieldsProvider as FieldsViewProvider).refresh(this.config, this.node.tableName);
+				(indexesProvider as FieldsViewProvider).refresh(this.config, this.node.tableName);
 				return;
 			}
 		}

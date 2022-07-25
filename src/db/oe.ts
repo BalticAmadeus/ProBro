@@ -1,3 +1,5 @@
+import { Column } from "react-data-grid";
+
 export interface IOEVersion {
     dbversion: string;
     proversion: string;
@@ -10,5 +12,10 @@ export interface IOETablesList {
 export interface IOEParams {
     connectionString: string;
     command: string;
-    params?: string
+    params?: any
+}
+
+export interface IOETableData {
+    columns: Column<string, unknown>[],
+    data: string[]
 }

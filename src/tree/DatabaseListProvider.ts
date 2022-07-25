@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Constants } from '../common/constants';
 import { IConfig } from '../view/app/model';
 import { INode } from './INode';
-import * as connectionNode from './connectionNode';
+import * as connectionNode from './dbConnectionNode';
 
 export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
 
@@ -28,15 +28,15 @@ export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
 
 		return element.getChildren();
 	}
-	private async getConnectionNodes(): Promise<connectionNode.ConnectionNode[]> {
+	private async getConnectionNodes(): Promise<connectionNode.DbConnectionNode[]> {
 		const connections = this.context.globalState.get<{ [key: string]: IConfig }>(`${Constants.globalExtensionKey}.dbconfig`);
 		const connectionNodes = [];
 		if (connections) {
 			for (const id of Object.keys(connections)) {
 				let group = connections[id].group.toUpperCase();
 				if (!group) { group = "<EMPTY>"; }
-				if (group == this.groupName) {
-					let node = new connectionNode.ConnectionNode(id, connections[id]);
+				if (group === this.groupName) {
+					let node = new connectionNode.DbConnectionNode(id, connections[id], this.context);
 					connectionNodes.push(node);
 				}
 			}
