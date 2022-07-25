@@ -45,12 +45,9 @@ export interface FieldRow {
 }
 
 export interface IndexRow {
-    order: number;
-    name: string;
-    type: string;
-    format: string;
-    label: string;
-    initial: string;
+    cName: string;
+    cFlags: string;
+    cFields: string;
 }
 
 export interface TableDetails {
