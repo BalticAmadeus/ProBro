@@ -60,6 +60,7 @@ PROCEDURE LOCAL_CONNECT:
 	inputMem = BASE64-DECODE(SESSION:PARAMETER).
 	inputParser = NEW Progress.Json.ObjectModel.ObjectModelParser().
 	inputObject = CAST(inputParser:Parse(GET-STRING(inputMem, 1)), Progress.Json.ObjectModel.JsonObject).
+
 	jsonObject = NEW Progress.Json.ObjectModel.JsonObject().
 
 	CONNECT VALUE(inputObject:GetCharacter("connectionString") + " -ld dictdb").
@@ -233,14 +234,13 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE fqh AS WIDGET-HANDLE.
 	DEFINE VARIABLE fbh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE i AS INTEGER NO-UNDO.
-	DEFINE VARIABLE cWherePhrase AS CHARACTER NO-UNDO.
 	jsonFields = new Progress.Json.ObjectModel.JsonArray().
 	jsonData = new Progress.Json.ObjectModel.JsonArray().
 
 	CREATE BUFFER bh FOR TABLE "_file".
 	CREATE QUERY qh.
 	qh:SET-BUFFERS(bh).
-	qh:QUERY-PREPARE(SUBSTITUTE("for each _file where _file._file-name = '&1'", inputObject:GetJsonObject("params"):GetCharacter("tableName"))).
+	qh:QUERY-PREPARE(SUBSTITUTE("for each _file where _file._file-name = '&1'", inputObject:GetCharacter("params"))).
 	qh:QUERY-OPEN.
 
 	DO WHILE qh:GET-NEXT():
@@ -267,14 +267,10 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DELETE OBJECT qh.
 	DELETE OBJECT bh.
 
-	IF inputObject:GetJsonObject("params"):Has("wherePhrase") THEN DO:
-		cWherePhrase = SUBSTITUTE(" where &1", inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")).
-	END.
-
-	CREATE BUFFER bh FOR TABLE inputObject:GetJsonObject("params"):GetCharacter("tableName").
+	CREATE BUFFER bh FOR TABLE inputObject:GetCharacter("params").
 	CREATE QUERY qh.
 	qh:SET-BUFFERS(bh).
-	qh:QUERY-PREPARE(SUBSTITUTE("for each &1 &2", inputObject:GetJsonObject("params"):GetCharacter("tableName"), cWherePhrase)).
+	qh:QUERY-PREPARE(SUBSTITUTE("for each &1", inputObject:GetCharacter("params"))).
 	qh:QUERY-OPEN.
 
 	DO WHILE qh:GET-NEXT():
