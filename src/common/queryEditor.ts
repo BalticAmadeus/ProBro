@@ -12,12 +12,12 @@ export class QueryEditor {
     private readonly extensionPath: string;
     private disposables: vscode.Disposable[] = [];
 
-    constructor(private context: vscode.ExtensionContext, private config: IConfig, private table: string | undefined) {
+    constructor(private context: vscode.ExtensionContext, private config: IConfig, private tableName: string | undefined) {
         this.extensionPath = context.asAbsolutePath('');
 
         this.panel = vscode.window.createWebviewPanel(
             "queryOETable", // Identifies the type of the webview. Used internally
-            `Query of ${this.table}`, // Title of the panel displayed to the user
+            `Query of ${this.tableName}`, // Title of the panel displayed to the user
             vscode.ViewColumn.One, // Editor column to show the new webview panel in.
             {
                 enableScripts: true,
@@ -27,18 +27,28 @@ export class QueryEditor {
                 ]
             }
         );
-        new DatabaseProcessor(context).getTableData(config, table).then((oe) => {
-            if (this.panel) { this.panel.webview.html = this.getWebviewContent(oe); };
-        });
+        //        new DatabaseProcessor(context).getTableData(config, tableName).then((oe) => {
+        //            if (this.panel) { this.panel.webview.html = this.getWebviewContent(oe); };
+        //        });
+        if (this.panel) {
+            this.panel.webview.html = this.getWebviewContent({ columns: [], data: [] });
+        };
 
         this.panel.webview.onDidReceiveMessage(
             (command: ICommand) => {
                 switch (command.action) {
-                    case CommandAction.Test:
-                        new DatabaseProcessor(context).getDBVersion(command.content).then((oe) => {
-                            console.log(`Requested version of DB: ${oe.dbversion}`);
-                            this.panel?.webview.postMessage({ id: command.id, command: 'ok' });
+                    case CommandAction.Query:
+                        new DatabaseProcessor(context).getTableData(config, tableName, command.params.where).then((oe) => {
+                            if (this.panel) {
+                                console.log(`Requested data: ${tableName}`);
+                                this.panel?.webview.postMessage({ id: command.id, command: 'data', data: oe });
+                            };
                         });
+
+                        // new DatabaseProcessor(context).getDBVersion(command.content).then((oe) => {
+                        //     console.log(`Requested version of DB: ${oe.dbversion}`);
+                        //     this.panel?.webview.postMessage({ id: command.id, command: 'ok' });
+                        // });
                         return;
                 }
             },
@@ -61,18 +71,6 @@ export class QueryEditor {
             path.join(vscode.Uri.file(this.context.asAbsolutePath(path.join("out/view/app", "query.js"))).fsPath)
         );
         const reactAppUri = reactAppPathOnDisk.with({ scheme: "vscode-resource" });
-
-        // const config: IConfig = {
-        //     id: v1(),
-        //     name: "",
-        //     description: "",
-        //     host: "",
-        //     port: "",
-        //     user: "",
-        //     password: "",
-        //     group: "",
-        //     params: ""
-        // };
 
         return `<!DOCTYPE html>
     <html lang="en">

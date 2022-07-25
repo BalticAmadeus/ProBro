@@ -12,7 +12,7 @@ export interface IOETablesList {
 export interface IOEParams {
     connectionString: string;
     command: string;
-    params?: string
+    params?: any
 }
 
 export interface IOETableData {
