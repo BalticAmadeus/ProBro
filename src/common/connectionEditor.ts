@@ -72,7 +72,6 @@ export class ConnectionEditor {
 
         const config: IConfig = {
             id: v1(),
-            label: "",
             name: "",
             description: "",
             host: "",

@@ -2,7 +2,6 @@ import { v1 as uuidv1, v1 } from "uuid";
 
 export interface IConfig {
     id: string;
-    label: string;
     name: string;
     description: string;
     host: string;
