@@ -13,15 +13,15 @@ export class QueryEditor {
     private readonly panel: vscode.WebviewPanel | undefined;
     private readonly extensionPath: string;
     private disposables: vscode.Disposable[] = [];
-    private tableNode?: TableNode;
+    //private tableNode?: TableNode;
 
-    constructor(private context: vscode.ExtensionContext, private tableListProvider: TablesListProvider) {
+    constructor(private context: vscode.ExtensionContext, private tableNode: TableNode, private tableListProvider: TablesListProvider) {
         this.extensionPath = context.asAbsolutePath('');
-        this.tableNode = this.tableListProvider.node;
+        //        this.tableNode = this.tableListProvider.node;
 
         this.panel = vscode.window.createWebviewPanel(
             "queryOETable", // Identifies the type of the webview. Used internally
-            `Query of ${this.tableListProvider.node?.tableName}`, // Title of the panel displayed to the user
+            `Query of ${this.tableNode.tableName}`, // Title of the panel displayed to the user
             vscode.ViewColumn.One, // Editor column to show the new webview panel in.
             {
                 enableScripts: true,
@@ -39,7 +39,7 @@ export class QueryEditor {
             e => {
                 const panel = e.webviewPanel;
                 if (panel.active && panel.visible && this.tableNode) {
-                    //this.tableListProvider.displayData(this.tableNode);
+                    this.tableListProvider.displayData(this.tableNode);
                 }
             },
             null,
@@ -51,9 +51,9 @@ export class QueryEditor {
                 switch (command.action) {
                     case CommandAction.Query:
                         if (this.tableListProvider.config) {
-                            new DatabaseProcessor(context).getTableData(this.tableListProvider.config, this.tableListProvider.node?.tableName, command.params.where).then((oe) => {
+                            new DatabaseProcessor(context).getTableData(this.tableListProvider.config, this.tableNode.tableName, command.params.where).then((oe) => {
                                 if (this.panel) {
-                                    console.log(`Requested data: ${this.tableListProvider.node?.tableName}`);
+                                    console.log(`Requested data: ${this.tableNode.tableName}`);
                                     this.panel?.webview.postMessage({ id: command.id, command: 'data', data: oe });
                                 };
                             });
