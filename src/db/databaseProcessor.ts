@@ -9,14 +9,14 @@ export class DatabaseProcessor implements IProcessor {
         console.log(cmd);
         return new Promise<string>((resolve, reject) => {
             cp.exec(cmd, (err, out) => {
-                console.log("error123: ", out, err);
                 if (err) {
+                    console.log("STDERR: ", err);
                     return reject(err);
                 }
                 return resolve(out);
             });
         }).then((data) => {
-            console.log("output data: ", data)
+            //console.log("output data: ", data)
             return JSON.parse(data);
         });
     }
@@ -48,12 +48,12 @@ export class DatabaseProcessor implements IProcessor {
         return this.execShell(cmd);
     }
 
-    public getTableData(config: IConfig, tableName: string | undefined, wherePhrase: string): Promise<IOETableData> {
+    public getTableData(config: IConfig, tableName: string | undefined, wherePhrase: string, start: number, page: number): Promise<IOETableData> {
         if (config && tableName) {
             var params: IOEParams = {
                 connectionString: this.getConnectionString(config),
                 command: "get_table_data",
-                params: { tableName: tableName, wherePhrase: wherePhrase }
+                params: { tableName: tableName, wherePhrase: wherePhrase, start: start, page: page }
             }
             const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
             return this.execShell(cmd);
