@@ -38,7 +38,6 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
             switch (message.command) {
                 case "data":
                     setVsState({ tableData: message.data });
-                    console.log(message);
             }
         });
     });

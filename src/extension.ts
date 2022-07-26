@@ -26,14 +26,16 @@ export function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(indexes);
 
-  const tablesListProvider = new TablesListProvider(context);
+  const tablesListProvider = new TablesListProvider(context, fieldsProvider, indexesProvider);
   const tables = vscode.window.createTreeView(
     `${Constants.globalExtensionKey}-tables`,
     { treeDataProvider: tablesListProvider }
   );
   tables.onDidChangeSelection((e) =>
-    tablesListProvider.onDidChangeSelection(e, fieldsProvider, indexesProvider)
+    tablesListProvider.onDidChangeSelection(e)
   );
+  fieldsProvider.tableListProvider = tablesListProvider;
+  indexesProvider.tableListProvider = tablesListProvider;
 
   const groupListProvider = new GroupListProvider(context, tables);
   const groups = vscode.window.createTreeView(
@@ -67,10 +69,9 @@ export function activate(context: vscode.ExtensionContext) {
       () => {
         tablesListProvider.node && tablesListProvider.config
           ? new QueryEditor(
-              context,
-              tablesListProvider.config,
-              tablesListProvider.node.tableName
-            )
+            context,
+            tablesListProvider
+          )
           : "";
       }
     )

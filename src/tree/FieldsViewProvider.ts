@@ -1,27 +1,24 @@
 import { AnyARecord } from 'dns';
 import path = require('path');
+import { config } from 'process';
 import { v1 } from 'uuid';
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
 import { Constants } from '../common/constants';
 import { DatabaseProcessor } from '../db/databaseProcessor';
-import { IConfig, TableDetails } from '../view/app/model';
+import { CommandAction, ICommand, IConfig, TableDetails } from '../view/app/model';
+import { TableNode } from './tableNode';
+import { TablesListProvider } from './TablesListProvider';
 
 export class FieldsViewProvider implements vscode.WebviewViewProvider {
 
     public static readonly viewType = `${Constants.globalExtensionKey}-panel`;
-    private _view?: vscode.WebviewView;
+    public _view?: vscode.WebviewView;
+    public tableNode?: TableNode;
+    public tableListProvider?: TablesListProvider;
 
     constructor(
         private context: vscode.ExtensionContext, private _type: string) {
-    }
-
-    public refresh(config: IConfig | undefined, tableName?: string) {
-        return new DatabaseProcessor(this.context).getTableDetails(config, tableName).then((oeTableDetails) => {
-            if (this._view) {
-                this._view.webview.html = this.getWebviewContent(oeTableDetails);
-            }
-        });
     }
 
     public resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
@@ -33,10 +30,26 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
             ]
         };
         this._view.webview.html = this.getWebviewContent({ fields: [], indexes: [] });
-    }
 
-    public revive(panel: vscode.WebviewView) {
-        this._view = panel;
+        this._view.onDidChangeVisibility(ev => {
+            if (this._view?.visible) {
+                if (this.tableNode) {
+                    this.tableListProvider?.displayData(this.tableNode);
+                }
+            }
+        })
+
+        this._view.webview.onDidReceiveMessage(
+            (command: ICommand) => {
+                switch (command.action) {
+                    case CommandAction.FieldsRefresh:
+                        if (this.tableNode) {
+                            this.tableListProvider?.displayData(this.tableNode);
+                        }
+                        return;
+                }
+            }
+        );
     }
 
     private getWebviewContent(data: TableDetails): string {

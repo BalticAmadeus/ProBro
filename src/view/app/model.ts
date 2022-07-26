@@ -24,10 +24,12 @@ export interface IQueryParams {
     tableName: string;
 }
 
+
 export enum CommandAction {
     Save,
     Test,
-    Query
+    Query,
+    FieldsRefresh
 }
 
 export interface FieldRow {

@@ -2,11 +2,12 @@ import * as React from "react";
 import { useState, useMemo } from "react";
 import { createRoot } from "react-dom/client";
 
-import { IConfig, FieldRow } from "./model";
+import { IConfig, FieldRow, CommandAction, ICommand } from "./model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 
 import * as columnName from "./fieldsColumn.json";
+import { v1 } from "uuid";
 
 declare global {
     interface Window {
@@ -27,12 +28,11 @@ const root = createRoot(document.getElementById("root"));
 
 type Comparator = (a: FieldRow, b: FieldRow) => number;
 function getComparator(sortColumn: string): Comparator {
-
     switch (sortColumn) {
         case "order":
         case "extent":
         case "decimals":
-        case "rpos":        
+        case "rpos":
             return (a, b) => {
                 return a[sortColumn] - b[sortColumn];
             };
@@ -84,22 +84,42 @@ function Fields({ initialData, vscode }) {
         });
     }, [rows, sortColumns]);
 
+    React.useEffect(() => {
+        // const command: ICommand = {
+        //     id: v1(),
+        //     action: CommandAction.FieldsRefresh,
+        // };
+        // vscode.postMessage(command);
+
+        window.addEventListener("message", (event) => {
+            const message = event.data;
+            switch (message.command) {
+                case "data":
+                    console.log("GOT FIELDS MESSAGE");
+                    setRows(message.data.fields);
+            }
+        });
+    });
+
     return (
-        <DataGrid
-            columns={columnName.columns}
-            rows={sortedRows}
-            defaultColumnOptions={{
-                sortable: true,
-                resizable: true,
-            }}
-            selectedRows={selectedRows}
-            onSelectedRowsChange={setSelectedRows}
-            rowKeyGetter={rowKeyGetter}
-            onRowsChange={setRows}
-            sortColumns={sortColumns}
-            onSortColumnsChange={setSortColumns}
-            style={{blockSize:"auto"}}
-        />
+        <div>
+            {rows.length > 0 ? (
+                <DataGrid
+                    columns={columnName.columns}
+                    rows={sortedRows}
+                    defaultColumnOptions={{
+                        sortable: true,
+                        resizable: true,
+                    }}
+                    selectedRows={selectedRows}
+                    onSelectedRowsChange={setSelectedRows}
+                    rowKeyGetter={rowKeyGetter}
+                    onRowsChange={setRows}
+                    sortColumns={sortColumns}
+                    onSortColumnsChange={setSortColumns}
+                />
+            ) : null}
+        </div>
     );
 }
 
