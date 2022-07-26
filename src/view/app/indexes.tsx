@@ -2,11 +2,12 @@ import * as React from "react";
 import { useState, useMemo } from "react";
 import { createRoot } from "react-dom/client";
 
-import { IConfig, IndexRow } from "./model";
+import { CommandAction, ICommand, IConfig, IndexRow } from "./model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 
 import * as columnName from "./indexesColumn.json";
+import { v1 } from "uuid";
 
 declare global {
     interface Window {
@@ -71,23 +72,42 @@ function Indexes({ initialData, vscode }) {
         });
     }, [rows, sortColumns]);
 
-    console.log("rows data: ", sortedRows);
+    React.useEffect(() => {
+        // const command: ICommand = {
+        //     id: v1(),
+        //     action: CommandAction.FieldsRefresh,
+        // };
+        // vscode.postMessage(command);
+
+        window.addEventListener("message", (event) => {
+            const message = event.data;
+            switch (message.command) {
+                case "data":
+                    console.log("GOT INDEXES MESSAGE");
+                    setRows(message.data.indexes);
+            }
+        });
+    });
 
     return (
-        <DataGrid
-            columns={columnName.columns}
-            rows={sortedRows}
-            defaultColumnOptions={{
-                sortable: true,
-                resizable: true,
-            }}
-            selectedRows={selectedRows}
-            onSelectedRowsChange={setSelectedRows}
-            rowKeyGetter={rowKeyGetter}
-            onRowsChange={setRows}
-            sortColumns={sortColumns}
-            onSortColumnsChange={setSortColumns}
-        />
+        <div>
+            {rows.length > 0 ? (
+                <DataGrid
+                    columns={columnName.columns}
+                    rows={sortedRows}
+                    defaultColumnOptions={{
+                        sortable: true,
+                        resizable: true,
+                    }}
+                    selectedRows={selectedRows}
+                    onSelectedRowsChange={setSelectedRows}
+                    rowKeyGetter={rowKeyGetter}
+                    onRowsChange={setRows}
+                    sortColumns={sortColumns}
+                    onSortColumnsChange={setSortColumns}
+                />
+            ) : null}
+        </div>
     );
 }
 

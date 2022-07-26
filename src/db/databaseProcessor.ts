@@ -9,15 +9,16 @@ export class DatabaseProcessor implements IProcessor {
         console.log(cmd);
         return new Promise<string>((resolve, reject) => {
             cp.exec(cmd, (err, out) => {
-                console.log("error123: ",out, err);
+                console.log("error123: ", out, err);
                 if (err) {
                     return reject(err);
                 }
                 return resolve(out);
             });
-        }).then((data) => { 
-            console.log("output data: ",data)
-            return JSON.parse(data); });
+        }).then((data) => {
+            console.log("output data: ", data)
+            return JSON.parse(data);
+        });
     }
 
     constructor(private context: vscode.ExtensionContext) {
