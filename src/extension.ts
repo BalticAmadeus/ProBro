@@ -7,6 +7,7 @@ import { DbConnectionNode } from "./tree/dbConnectionNode";
 import { DetailListProvider } from "./tree/DetailListProvider";
 import { FieldsViewProvider } from "./tree/FieldsViewProvider";
 import { GroupListProvider } from "./tree/GroupListProvider";
+import { TableNode } from "./tree/tableNode";
 import { TablesListProvider } from "./tree/TablesListProvider";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -66,13 +67,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.query`,
-      () => {
-        tablesListProvider.node && tablesListProvider.config
-          ? new QueryEditor(
-            context,
-            tablesListProvider
-          )
-          : "";
+      (node: TableNode) => {
+        new QueryEditor(
+          context,
+          node,
+          tablesListProvider
+        )
       }
     )
   );
