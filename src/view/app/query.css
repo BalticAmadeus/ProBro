@@ -1,0 +1,31 @@
+.r104f42s700-beta13 {
+    --rdg-background-color:initial;
+    --rdg-header-background-color:initial; 
+    color:inherit;
+    block-size:inherit;
+
+
+
+}
+
+body.vscode-light {
+    color: black;
+  }
+  
+  body.vscode-dark .r104f42s700-beta13{
+    --rdg-row-hover-background-color:#2a2d2e;
+    --rdg-row-selected-background-color:#37373d;
+    --row-selected-hover-background-color:#37373d;
+    --rdg-checkbox-color:inherit;
+    --rdg-checkbox-focus-color:inherit;
+    --rdg-font-size:inherit;
+    
+    color: white;
+  }
+  body.vscode-dark .rdg-row-even {
+    --rdg-background-color:#2c2c31;
+  }
+  
+  body.vscode-high-contrast {
+    color: red;
+  }

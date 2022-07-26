@@ -79,11 +79,10 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                     </form>
                 </div>
             </div>
-            <DataGrid
-                columns={vsState.tableData.columns}
-                rows={vsState.tableData.data}
-                style={{blockSize:"auto"}}
-            ></DataGrid>
+                <DataGrid
+                    columns={vsState.tableData.columns}
+                    rows={vsState.tableData.data}
+                ></DataGrid>
         </React.Fragment>
     );
 }
