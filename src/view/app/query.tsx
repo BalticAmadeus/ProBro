@@ -7,6 +7,7 @@ import { IOETableData } from "../../db/oe";
 import DataGrid from "react-data-grid";
 import { CommandAction, ICommand, IConfig } from "./model";
 import { v1 } from "uuid";
+import { domainToUnicode } from "url";
 
 declare global {
     interface Window {
@@ -83,6 +84,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
             <DataGrid
                 columns={vsState.tableData.columns}
                 rows={vsState.tableData.data}
+                style={{blockSize:"auto"}}
             ></DataGrid>
         </React.Fragment>
     );

@@ -87,6 +87,7 @@ function Indexes({ initialData, vscode }) {
             onRowsChange={setRows}
             sortColumns={sortColumns}
             onSortColumnsChange={setSortColumns}
+            style={{blockSize:"auto"}}
         />
     );
 }
