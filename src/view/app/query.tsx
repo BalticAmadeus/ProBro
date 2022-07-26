@@ -7,7 +7,6 @@ import { IOETableData } from "../../db/oe";
 import DataGrid from "react-data-grid";
 import { CommandAction, ICommand, IConfig } from "./model";
 import { v1 } from "uuid";
-import { domainToUnicode } from "url";
 
 declare global {
     interface Window {
