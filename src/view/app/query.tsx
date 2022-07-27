@@ -36,6 +36,19 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     const [rows, setRows] = React.useState(() => tableData.data);
     const [columns, setColumns] = React.useState(() => tableData.columns);
     const [loaded, setLoaded] = React.useState(() => 0);
+    const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
+
+    const windowRezise = () => {
+        setWindowHeight(window.innerHeight);
+    };
+
+    React.useEffect(() => {
+        window.addEventListener('resize', windowRezise);
+
+        return () => {
+            window.removeEventListener('resize', windowRezise);
+        }
+    }, []);
 
     React.useEffect(() => {
         window.addEventListener("message", (event) => {
@@ -121,7 +134,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                 columns={columns}
                 rows={rows}
                 onScroll={handleScroll}
-                style={{ height: window.innerHeight - 100 }}
+                style={{ height: windowHeight - 75 }}
             ></DataGrid>
             {isLoading && <div>Loading more rows...</div>}
         </React.Fragment>

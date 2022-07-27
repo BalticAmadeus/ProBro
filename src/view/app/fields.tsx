@@ -67,6 +67,19 @@ function Fields({ initialData, vscode }) {
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>(
         () => new Set()
     );
+    const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
+
+    const windowRezise = () => {
+        setWindowHeight(window.innerHeight);
+    };
+
+    React.useEffect(() => {
+        window.addEventListener('resize', windowRezise);
+
+        return () => {
+            window.removeEventListener('resize', windowRezise);
+        }
+    }, []);
 
     const sortedRows = useMemo((): readonly FieldRow[] => {
         if (sortColumns.length === 0) {
@@ -118,6 +131,7 @@ function Fields({ initialData, vscode }) {
                     onRowsChange={setRows}
                     sortColumns={sortColumns}
                     onSortColumnsChange={setSortColumns}
+                    style={{ height: windowHeight}}
                 />
             ) : null}
         </div>

@@ -51,10 +51,19 @@ function Indexes({ initialData, vscode }) {
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
         () => new Set()
     );
+    const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
 
-    console.log("rows: ", rows);
-    console.log("sortColumns: ", sortColumns);
-    console.log("selectedRows: ", selectedRows);
+    const windowRezise = () => {
+        setWindowHeight(window.innerHeight);
+    };
+
+    React.useEffect(() => {
+        window.addEventListener('resize', windowRezise);
+
+        return () => {
+            window.removeEventListener('resize', windowRezise);
+        }
+    }, []);
 
     const sortedRows = useMemo((): readonly IndexRow[] => {
         if (sortColumns.length === 0) {
@@ -106,6 +115,7 @@ function Indexes({ initialData, vscode }) {
                     onRowsChange={setRows}
                     sortColumns={sortColumns}
                     onSortColumnsChange={setSortColumns}
+                    style={{ height: windowHeight}}
                 />
             ) : null}
         </div>
