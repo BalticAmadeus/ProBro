@@ -29,28 +29,66 @@ const vscode = window.acquireVsCodeApi();
 function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     const oldState = vscode.getState();
     const initState = oldState ? oldState : { tableData: tableData };
-    const [vsState, setVsState] = React.useState(initState as IConfigState);
+    //    const [vsState, setVsState] = React.useState(initState as IConfigState);
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    const [rows, setRows] = React.useState(() => tableData.data);
+    const [columns, setColumns] = React.useState(() => tableData.columns);
+    const [loaded, setLoaded] = React.useState(() => 0);
 
     React.useEffect(() => {
         window.addEventListener("message", (event) => {
             const message = event.data;
             switch (message.command) {
                 case "data":
-                    setVsState({ tableData: message.data });
+                    if (message.data.columns.length != columns.length) {
+                        setColumns(message.data.columns);
+                    }
+                    setRows([...rows, ...message.data.data]);
+                    setLoaded(loaded + message.data.data.length);
             }
+            setIsLoading(false);
         });
     });
 
     const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
+        if (isLoading) return;
+        setLoaded(0);
         const command: ICommand = {
             id: v1(),
             action: CommandAction.Query,
-            params: { where: wherePhrase },
+            params: { where: wherePhrase, start: loaded, pageLength: 1000 },
         };
+        setIsLoading(true);
+        // remove all data from grid
+        setRows([]);
         vscode.postMessage(command);
     };
+
+    function isAtBottom({
+        currentTarget,
+    }: React.UIEvent<HTMLDivElement>): boolean {
+        return (
+            currentTarget.scrollTop + 10 >=
+            currentTarget.scrollHeight - currentTarget.clientHeight
+        );
+    }
+
+    async function handleScroll(event: React.UIEvent<HTMLDivElement>) {
+        if (isLoading || !isAtBottom(event)) return;
+        setIsLoading(true);
+
+        const command: ICommand = {
+            id: v1(),
+            action: CommandAction.Query,
+            params: { where: wherePhrase, start: loaded, pageLength: 100 },
+        };
+        setIsLoading(true);
+        // remove all data from grid
+        vscode.postMessage(command);
+    }
 
     return (
         <React.Fragment>
@@ -80,10 +118,12 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                 </div>
             </div>
             <DataGrid
-                columns={vsState.tableData.columns}
-                rows={vsState.tableData.data}
-                style={{blockSize:"auto"}}
+                columns={columns}
+                rows={rows}
+                onScroll={handleScroll}
+                style={{ height: window.innerHeight - 100 }}
             ></DataGrid>
+            {isLoading && <div>Loading more rows...</div>}
         </React.Fragment>
     );
 }

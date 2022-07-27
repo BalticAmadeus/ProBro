@@ -14,9 +14,12 @@ DEFINE VARIABLE command AS CHARACTER NO-UNDO.
 DEFINE VARIABLE tmpVar AS CHARACTER NO-UNDO.
 DEFINE VARIABLE tmpJson AS LONGCHAR NO-UNDO.
 DEFINE VARIABLE tmpInt AS INTEGER NO-UNDO.
+DEFINE VARIABLE tmpDate AS DATETIME-TZ NO-UNDO.
 DEFINE VARIABLE jsonObject AS Progress.Json.ObjectModel.JsonObject.
 
 &GLOBAL-DEFINE bulkLimit 30000
+
+tmpDate = NOW.
 
 RUN LOCAL_CONNECT.
 
@@ -37,7 +40,6 @@ CASE inputObject:GetCharacter("command"):
 		UNDO, THROW NEW Progress.Lang.AppError("Unknown command", 501).
 	END.
 END CASE.
-
 CATCH err AS Progress.Lang.Error:
 	DELETE OBJECT jsonObject NO-ERROR.
 	jsonObject = new Progress.Json.ObjectModel.JsonObject().
@@ -46,6 +48,7 @@ CATCH err AS Progress.Lang.Error:
 END CATCH.
 
 FINALLY:
+	RUN LOCAL_GET_DEBUG.
 	tmpJson = jsonObject:GetJsonText().
 	REPEAT tmpInt = 1 to LENGTH(tmpJson) by {&bulkLimit}:
 		tmpVar = substring(tmpJson, tmpInt, {&bulkLimit}).
@@ -67,6 +70,15 @@ PROCEDURE LOCAL_CONNECT:
 	IF NUM-DBS = 0 THEN DO:
 		UNDO, THROW NEW Progress.Lang.AppError("No database connected", 500).
 	END.
+END PROCEDURE.
+
+PROCEDURE LOCAL_GET_DEBUG:
+	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject.
+	jsonDebug = new Progress.Json.ObjectModel.JsonObject().
+	jsonDebug:Add("start", tmpDate).
+	jsonDebug:Add("end", NOW).
+	jsonDebug:Add("time", NOW - tmpDate).
+	jsonObject:Add("debug", jsonDebug).
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_VERSION:
@@ -233,6 +245,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE fqh AS WIDGET-HANDLE.
 	DEFINE VARIABLE fbh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE i AS INTEGER NO-UNDO.
+	DEFINE VARIABLE j AS INTEGER NO-UNDO.
+	DEFINE VARIABLE iPageLength AS INTEGER NO-UNDO.
 	DEFINE VARIABLE cWherePhrase AS CHARACTER NO-UNDO.
 	jsonFields = new Progress.Json.ObjectModel.JsonArray().
 	jsonData = new Progress.Json.ObjectModel.JsonArray().
@@ -276,6 +290,9 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	qh:SET-BUFFERS(bh).
 	qh:QUERY-PREPARE(SUBSTITUTE("for each &1 &2", inputObject:GetJsonObject("params"):GetCharacter("tableName"), cWherePhrase)).
 	qh:QUERY-OPEN.
+	qh:REPOSITION-TO-ROW(inputObject:GetJsonObject("params"):GetInt64("start") + 1).
+
+	iPageLength = inputObject:GetJsonObject("params"):GetInt64("pageLength").
 
 	DO WHILE qh:GET-NEXT():
 		jsonRow = new Progress.Json.ObjectModel.JsonObject().
@@ -283,6 +300,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 			jsonRow:Add(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
 		END.
 		jsonData:Add(jsonRow).
+		iPageLength = iPageLength - 1.
+		IF iPageLength = 0 THEN LEAVE. 
 	END.
 
 	qh:QUERY-CLOSE().
