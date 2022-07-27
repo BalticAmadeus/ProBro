@@ -18,13 +18,16 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	}
 
 	public displayData(node: TableNode) {
+		this.fieldsProvider.tableNode = node;
+		this.indexesProvider.tableNode = node;
+		console.log("displayData", node.tableName, node.cache)
 		if (node.cache) {
 			this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: node.cache });
 			this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: node.cache });
 			return;
 		} else {
 			return new DatabaseProcessor(this.context).getTableDetails(this.config, node.tableName).then((oeTableDetails) => {
-				if (this.node) { this.node.cache = oeTableDetails; }
+				node.cache = oeTableDetails;
 				this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: oeTableDetails });
 				this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: oeTableDetails });
 			}).catch((err) => {
@@ -40,8 +43,6 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 		if (e.selection.length && this.config) {
 			if (e.selection[0] instanceof TableNode) {
 				this.node = e.selection[0] as TableNode;
-				this.fieldsProvider.tableNode = this.node;
-				this.indexesProvider.tableNode = this.node;
 				console.log('FieldsList', this.node.tableName);
 				this.displayData(this.node);
 			}
