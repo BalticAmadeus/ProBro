@@ -292,7 +292,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	qh:QUERY-OPEN.
 	qh:REPOSITION-TO-ROW(inputObject:GetJsonObject("params"):GetInt64("start") + 1).
 
-	iPageLength = inputObject:GetJsonObject("params"):GetInt64("page").
+	iPageLength = inputObject:GetJsonObject("params"):GetInt64("pageLength").
 
 	DO WHILE qh:GET-NEXT():
 		jsonRow = new Progress.Json.ObjectModel.JsonObject().

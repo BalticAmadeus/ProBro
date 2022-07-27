@@ -51,7 +51,7 @@ export class QueryEditor {
                 switch (command.action) {
                     case CommandAction.Query:
                         if (this.tableListProvider.config) {
-                            new DatabaseProcessor(context).getTableData(this.tableListProvider.config, this.tableNode.tableName, command.params.where, command.params.start, command.params.page).then((oe) => {
+                            new DatabaseProcessor(context).getTableData(this.tableListProvider.config, this.tableNode.tableName, command.params.where, command.params.start, command.params.pageLength).then((oe) => {
                                 if (this.panel) {
                                     console.log(`Requested data: ${this.tableNode.tableName}`);
                                     this.panel?.webview.postMessage({ id: command.id, command: 'data', data: oe });

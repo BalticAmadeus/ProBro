@@ -59,7 +59,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
         const command: ICommand = {
             id: v1(),
             action: CommandAction.Query,
-            params: { where: wherePhrase, start: loaded, page: 1000 },
+            params: { where: wherePhrase, start: loaded, pageLength: 1000 },
         };
         setIsLoading(true);
         // remove all data from grid
@@ -83,7 +83,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
         const command: ICommand = {
             id: v1(),
             action: CommandAction.Query,
-            params: { where: wherePhrase, start: loaded, page: 100 },
+            params: { where: wherePhrase, start: loaded, pageLength: 100 },
         };
         setIsLoading(true);
         // remove all data from grid
@@ -121,6 +121,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                 columns={columns}
                 rows={rows}
                 onScroll={handleScroll}
+                style={{ height: window.innerHeight - 100 }}
             ></DataGrid>
             {isLoading && <div>Loading more rows...</div>}
         </React.Fragment>
