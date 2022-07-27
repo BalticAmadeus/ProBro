@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState, useMemo } from "react";
 import { createRoot } from "react-dom/client";
+import "./indexes.css";
 
 import { CommandAction, ICommand, IConfig, IndexRow } from "./model";
 import DataGrid from "react-data-grid";
