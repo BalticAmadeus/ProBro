@@ -7,6 +7,7 @@ import { IOETableData } from "../../db/oe";
 import DataGrid from "react-data-grid";
 import { CommandAction, ICommand, IConfig } from "./model";
 import { v1 } from "uuid";
+import ExportData from "./export";
 
 declare global {
     interface Window {
@@ -127,14 +128,18 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                                 ></input>
                             </div>
                         </div>
-                    </form>
+                    </form>                    
+                    <ExportData 
+                        wherePhrase={wherePhrase}
+                        vscode={vscode}
+                        /> 
                 </div>
             </div>
             <DataGrid
                 columns={columns}
                 rows={rows}
                 onScroll={handleScroll}
-                style={{ height: windowHeight - 75 }}
+                style={{ height: windowHeight - 100 }}
             ></DataGrid>
             {isLoading && <div>Loading more rows...</div>}
         </React.Fragment>

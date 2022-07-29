@@ -16,7 +16,7 @@ export class DatabaseProcessor implements IProcessor {
                 return resolve(out);
             });
         }).then((data) => {
-            //console.log("output data: ", data)
+            console.log("output data: ", data)
             return JSON.parse(data);
         });
     }
