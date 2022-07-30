@@ -56,10 +56,11 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
             switch (message.command) {
                 case "data":
                     if (message.data.columns.length != columns.length) {
-                        setColumns(message.data.columns);
+                        setColumns(message.data.columns.sort((a, b) => a.order - b.order));
+                        
                     }
                     setRows([...rows, ...message.data.data]);
-                    setLoaded(loaded + message.data.data.length);
+                    setLoaded(loaded + message.data.data.length)
             }
             setIsLoading(false);
         });
