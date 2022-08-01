@@ -26,7 +26,7 @@ class OEClient {
             });
             // The client can also receive data from the server by reading from its socket.
             this.client.on('data', (chunk) => {
-                console.log(`Data received from the server: ${chunk.toString()}.`);
+                console.log(`Data received from the server`);
                 this.data += chunk.toString();
                 if (this.data.endsWith(`\n`)) {
                     this.dataFinish(this.data);
@@ -44,8 +44,6 @@ class OEClient {
         return new Promise((resolve) => {
 
             const cmd = `${Constants.context.extensionPath}\\resources\\oe\\oe.bat -b -p "${Constants.context.extensionPath}\\resources\\oe\\oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}"`;
-
-            console.log(cmd);
 
             this.proc = cp.spawn('cmd.exe', ['/c',
                 `${Constants.context.extensionPath}\\resources\\oe\\oe.bat`,
@@ -84,7 +82,6 @@ class OEClient {
 
     public sendCommand(cmd: string): Promise<string> {
         this.data = "";
-        console.log("SEND COMMAND:", cmd);
         return new Promise((resolve) => {
             this.client.write(`${cmd}\n`);
             this.dataFinish = resolve
@@ -95,16 +92,11 @@ class OEClient {
 var client: OEClient;
 
 function getOEClient(): Promise<any> {
-    console.log("GET CLIENT");
     if (!client) {
-        console.log("NEW CLIENT");
         client = new OEClient();
-        console.log("NEW CLIENT INIT");
         return client.init();
-        //        console.log("NEW CLIENT DONE");
     }
     return new Promise((resolve) => {
-        console.log("OLD CLIENT");
         resolve(client);
     });
 }

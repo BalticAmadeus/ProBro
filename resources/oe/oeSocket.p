@@ -30,7 +30,7 @@ DEFINE VARIABLE iDataSize AS INTEGER NO-UNDO.
 SESSION:ERROR-STACK-TRACE = TRUE.
 //LOG-MANAGER:LOG-ENTRY-TYPES = "4GLTrace:3".
 
-        inputParser = NEW Progress.Json.ObjectModel.ObjectModelParser().
+inputParser = NEW Progress.Json.ObjectModel.ObjectModelParser().
 
 CREATE SERVER-SOCKET hServer.
 
@@ -45,7 +45,7 @@ IF lRC = FALSE OR ERROR-STATUS:GET-MESSAGE(1) <> '' THEN
 lRC = hServer:ENABLE-CONNECTIONS('-S 23456') NO-ERROR.
 IF lRC = FALSE OR ERROR-STATUS:GET-MESSAGE(1) <> '' THEN
     DO:
-        MESSAGE 'Unable To Establish Listener'.
+        MESSAGE "SERVER FAILED".
         RETURN.
     END.
 
@@ -81,7 +81,6 @@ PROCEDURE ProcessClientConnect:
 	hClient = hSocket.
 END PROCEDURE.
 
-
 PROCEDURE SocketIO:
     DEFINE VARIABLE cTemp        AS CHARACTER NO-UNDO.
     DEFINE VARIABLE iMessageSize AS INTEGER   NO-UNDO.
@@ -107,32 +106,30 @@ PROCEDURE SocketIO:
         SET-SIZE(inputMem)= 0.
 
         tmpDate = NOW.
-	DELETE OBJECT jsonObject NO-ERROR.
+    	DELETE OBJECT jsonObject NO-ERROR.
         jsonObject = NEW Progress.Json.ObjectModel.JsonObject().
         jsonObject:Add("debug", NEW Progress.Json.ObjectModel.JsonObject()).
 
         RUN LOCAL_PROCESS.
 
-	DELETE OBJECT inputObject NO-ERROR.
+        DELETE OBJECT inputObject NO-ERROR.
 
-CATCH err AS Progress.Lang.Error:
-	DELETE OBJECT jsonObject NO-ERROR.
-	jsonObject = new Progress.Json.ObjectModel.JsonObject().
-	jsonObject:Add("error", err:GetMessageNum(1)).
-	jsonObject:Add("description", err:GetMessage(1)).
-END CATCH.
-
-FINALLY:
-	RUN LOCAL_GET_DEBUG.
-	tmpJson = jsonObject:GetJsonText() + chr(10).
-SET-SIZE(mData) = 0.
-SET-SIZE(mData) = LENGTH(tmpJson) + 100.
-PUT-STRING(mData,1) = tmpJson.
-    lRC = SELF:WRITE(mData,1,LENGTH(tmpJson)) NO-ERROR.
-    iDataSize = 0.    
-SET-SIZE(mData) = 0.
-END FINALLY.
-
+        CATCH err AS Progress.Lang.Error:
+            DELETE OBJECT jsonObject NO-ERROR.
+            jsonObject = new Progress.Json.ObjectModel.JsonObject().
+            jsonObject:Add("error", err:GetMessageNum(1)).
+            jsonObject:Add("description", err:GetMessage(1)).
+        END CATCH.
+        FINALLY:
+            RUN LOCAL_GET_DEBUG.
+            tmpJson = jsonObject:GetJsonText() + chr(10).
+            SET-SIZE(mData) = 0.
+            SET-SIZE(mData) = LENGTH(tmpJson) + 100.
+            PUT-STRING(mData,1) = tmpJson.
+            lRC = SELF:WRITE(mData,1,LENGTH(tmpJson)) NO-ERROR.
+            iDataSize = 0.    
+            SET-SIZE(mData) = 0.
+        END FINALLY.
     END.
     ELSE RETURN.
 
