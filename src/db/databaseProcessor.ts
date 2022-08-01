@@ -3,22 +3,43 @@ import { IConfig, TableDetails } from "../view/app/model";
 import { IProcessor } from "./IProcessor";
 import * as cp from "child_process";
 import { IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
+import getOEClient from "../common/oeClient"
 
 export class DatabaseProcessor implements IProcessor {
+
     public execShell(cmd: string) {
         console.log(cmd);
-        return new Promise<string>((resolve, reject) => {
-            cp.exec(cmd, (err, out) => {
-                if (err) {
-                    console.log("STDERR: ", err);
-                    return reject(err);
-                }
-                return resolve(out);
+        var timeInMs = Date.now();
+
+        return getOEClient()
+            .then((client) => {
+                return client.sendCommand(cmd);
+            })
+            .then((data) => {
+                //console.log("output data: ", data)
+                var json = JSON.parse(data);
+                console.log(`Process time: ${Date.now() - timeInMs}, OE time: ${json.debug.time}, Connect time: ${json.debug.timeConnect}`);
+                return json;
             });
-        }).then((data) => {
-            //console.log("output data: ", data)
-            return JSON.parse(data);
-        });
+
+        /*
+                return new Promise<string>((resolve, reject) => {
+            const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
+                    cp.exec(cmd, (err, out) => {
+                        if (err) {
+                            console.log("STDERR: ", err);
+                            return reject(err);
+                        }
+                        return resolve(out);
+                    });
+                }).then((data) => {
+                    //console.log("output data: ", data)
+                    var json = JSON.parse(data);
+                    console.log(`Process time: ${Date.now() - timeInMs}, OE time: ${json.debug.time}, Connect time: ${json.debug.timeConnect}`);
+                    return json;
+                });
+        */
+
     }
 
     constructor(private context: vscode.ExtensionContext) {
@@ -35,7 +56,8 @@ export class DatabaseProcessor implements IProcessor {
             command: "get_version"
         }
         console.log(params.connectionString)
-        const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
+        // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
+        const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
         return this.execShell(cmd);
     }
 
@@ -44,7 +66,8 @@ export class DatabaseProcessor implements IProcessor {
             connectionString: this.getConnectionString(config),
             command: "get_tables"
         }
-        const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
+        // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
+        const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
         return this.execShell(cmd);
     }
 
@@ -55,7 +78,8 @@ export class DatabaseProcessor implements IProcessor {
                 command: "get_table_data",
                 params: { tableName: tableName, wherePhrase: wherePhrase, start: start, pageLength: pageLength }
             }
-            const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
+            // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
+            const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
             return this.execShell(cmd);
         } else {
             return new Promise(resolve => { return { columns: [], data: [] } });
@@ -70,7 +94,8 @@ export class DatabaseProcessor implements IProcessor {
                 command: "get_table_details",
                 params: tableName
             }
-            const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
+            // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
+            const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
             return this.execShell(cmd);
         } else {
             return new Promise(resolve => { return { fields: [], indexes: [] } });

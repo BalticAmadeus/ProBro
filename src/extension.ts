@@ -11,6 +11,9 @@ import { TableNode } from "./tree/tableNode";
 import { TablesListProvider } from "./tree/TablesListProvider";
 
 export function activate(context: vscode.ExtensionContext) {
+
+  Constants.context = context;
+
   const fieldsProvider = new FieldsViewProvider(context, "fields");
   const fields = vscode.window.registerWebviewViewProvider(
     `${Constants.globalExtensionKey}-fields`,
