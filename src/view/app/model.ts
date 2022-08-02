@@ -29,7 +29,8 @@ export enum CommandAction {
     Save,
     Test,
     Query,
-    FieldsRefresh
+    FieldsRefresh,
+    Export
 }
 
 export interface FieldRow {

@@ -21,7 +21,6 @@ body.vscode-dark .rdg-row-even {
   --rdg-background-color: rgba(0, 0, 0, 0.4);
 }
 
-
 input[type=text] {
 background-color: var(--vscode-input-background);
 color: var(--vscode-input-foreground);

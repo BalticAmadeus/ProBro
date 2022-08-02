@@ -7,6 +7,7 @@ import { IOETableData } from "../../db/oe";
 import DataGrid, { SortColumn } from "react-data-grid";
 import { CommandAction, ICommand, IConfig } from "./model";
 import { v1 } from "uuid";
+import ExportData from "./export";
 
 declare global {
     interface Window {
@@ -140,7 +141,11 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                                 ></input>
                             </div>
                         </div>
-                    </form>
+                    </form>                    
+                    <ExportData 
+                        wherePhrase={wherePhrase}
+                        vscode={vscode}
+                        /> 
                 </div>
             </div>
             <DataGrid
