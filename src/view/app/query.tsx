@@ -55,11 +55,15 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
             const message = event.data;
             switch (message.command) {
                 case "data":
+                    
                     if (message.data.columns.length != columns.length) {
                         setColumns(message.data.columns);
                     }
                     setRows([...rows, ...message.data.data]);
                     setLoaded(loaded + message.data.data.length);
+                    break;
+                case "boolean":
+                    console.log("got bool message. ", message.data);
             }
             setIsLoading(false);
         });

@@ -111,6 +111,13 @@ function Fields({ initialData, vscode }) {
                 case "data":
                     console.log("GOT FIELDS MESSAGE");
                     setRows(message.data.fields);
+                    const boolField = message.data.fields.filter(
+                        (field) => field.type === "logical");
+                    if (boolField) {
+                        console.log("bolField: ",boolField);
+                        window.postMessage({command: "boolean", data: boolField});
+                    }
+                    
             }
         });
     });
