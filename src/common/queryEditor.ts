@@ -72,7 +72,8 @@ export class QueryEditor {
                   this.tableNode.tableName,
                   command.params.where,
                   command.params.start,
-                  command.params.pageLength
+                  command.params.pageLength, 
+                  command.params.sortColumns
                 )
                 .then((oe) => {
                   if (this.panel) {
@@ -94,7 +95,9 @@ export class QueryEditor {
                   this.tableNode.tableName,
                   command.params.where,
                   command.params.start,
-                  command.params.pageLength
+                  command.params.pageLength, 
+                  command.params.sortColumns
+
                 )
                 .then((oe) => {
                   if (this.panel) {
