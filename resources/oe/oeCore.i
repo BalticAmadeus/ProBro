@@ -239,6 +239,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 
 		DO WHILE fqh:GET-NEXT():
 			jsonField = new Progress.Json.ObjectModel.JsonObject().
+			jsonField:Add("order", fqh:GET-BUFFER-HANDLE(1)::_order).
 			jsonField:Add("name", fqh:GET-BUFFER-HANDLE(1)::_field-name).
 			jsonField:Add("key", fqh:GET-BUFFER-HANDLE(1)::_field-name).
 			jsonFields:Add(jsonField).
