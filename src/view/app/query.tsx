@@ -34,7 +34,9 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState(false);
 
-    const [rows, setRows] = React.useState(() => tableData.data);
+    const [isFormatted, setIsFormatted] = React.useState(false);
+    const [originalRows, setOriginalRows] = React.useState(() => tableData.data);
+    const [formattedRows, setFormattedRows] = React.useState(() => tableData.data);
     const [columns, setColumns] = React.useState(() => tableData.columns);
     const [loaded, setLoaded] = React.useState(() => 0);
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
@@ -42,6 +44,10 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
         []
     );
+    
+    const getDataFormat = () => {
+        setIsFormatted(!isFormatted);
+    };
 
     const windowRezise = () => {
         setWindowHeight(window.innerHeight);
@@ -60,12 +66,16 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
             const message = event.data;
             switch (message.command) {
                 case "data":
-                    if (message.data.columns.length != columns.length) {
+                    if (message.data.columns.length !== columns.length) {
                         setColumns(message.data.columns.sort((a, b) => a.order - b.order));
-                        
                     }
-                    setRows([...rows, ...message.data.data]);
-                    setLoaded(loaded + message.data.data.length)
+                    setOriginalRows([...originalRows, ...message.data.originalData]);
+                    setLoaded(loaded + message.data.originalData.length);
+                    setFormattedRows([...formattedRows, ...message.data.formattedData]);
+                    setLoaded(loaded + message.data.formattedData.length);
+
+                    console.log("original data: ", originalRows);
+                    console.log("formatted data: ", formattedRows);
             }
             setIsLoading(false);
         });
@@ -73,10 +83,11 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
 
     const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        if (isLoading) return;
+        if (isLoading) {return;};
         setIsLoading(true);
         setLoaded(0);
-        setRows([]);
+        setOriginalRows([]);
+        setFormattedRows([]);
         makeQuery(0, 1000, sortColumns);
     };
 
@@ -104,16 +115,17 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     }
 
     async function handleScroll(event: React.UIEvent<HTMLDivElement>) {
-        if (isLoading || !isAtBottom(event)) return;
+        if (isLoading || !isAtBottom(event)) {return;};
         setIsLoading(true);
         makeQuery(loaded, 100, sortColumns);
     }
 
     function onSortClick(inputSortColumns: SortColumn[]) {
-        if (isLoading) return;
+        if (isLoading) {return;};
         setSortColumns(inputSortColumns);
         setLoaded(0);
-        setRows([]);
+        setOriginalRows([]);
+        setFormattedRows([]);
         makeQuery(0, loaded, inputSortColumns);
     }
 
@@ -141,16 +153,24 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                                 ></input>
                             </div>
                         </div>
-                    </form>                    
-                    <ExportData 
+                    </form>  
+                    <div className="query-options">
+                        <ExportData 
                         wherePhrase={wherePhrase}
                         vscode={vscode}
                         /> 
+                        <input
+                            type="button"
+                            value="Format data"
+                            onClick={getDataFormat}
+                        ></input>
+                    </div>                  
+
                 </div>
             </div>
             <DataGrid
                 columns={columns}
-                rows={rows}
+                rows={isFormatted ? formattedRows : originalRows}
                 onScroll={handleScroll}
                 defaultColumnOptions={{
                     sortable: true,

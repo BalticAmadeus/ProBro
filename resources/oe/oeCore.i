@@ -208,7 +208,8 @@ END PROCEDURE.
 PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject.
 	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonData AS Progress.Json.ObjectModel.JsonArray.
+	DEFINE VARIABLE jsonOrigin AS Progress.Json.ObjectModel.JsonArray.
+	DEFINE VARIABLE jsonFormatted AS Progress.Json.ObjectModel.JsonArray.
 	DEFINE VARIABLE jsonSort AS Progress.Json.ObjectModel.JsonArray.
 	DEFINE VARIABLE jsonRow AS Progress.Json.ObjectModel.JsonObject.
 	DEFINE VARIABLE qh AS WIDGET-HANDLE.
@@ -221,7 +222,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE cWherePhrase AS CHARACTER NO-UNDO.
 	DEFINE VARIABLE cOrderPhrase AS CHARACTER NO-UNDO.
 	jsonFields = new Progress.Json.ObjectModel.JsonArray().
-	jsonData = new Progress.Json.ObjectModel.JsonArray().
+	jsonOrigin = new Progress.Json.ObjectModel.JsonArray().
+	jsonFormatted = new Progress.Json.ObjectModel.JsonArray().
 
 	CREATE BUFFER bh FOR TABLE "_file".
 	CREATE QUERY qh.
@@ -286,7 +288,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		DO i = 1 to bh:NUM-FIELDS:
 			jsonRow:Add(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
 		END.
-		jsonData:Add(jsonRow).
+		jsonOrigin:Add(jsonRow).
 		iPageLength = iPageLength - 1.
 		IF iPageLength = 0 THEN LEAVE. 
 	END.
@@ -296,5 +298,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DELETE OBJECT bh.
 
 	jsonObject:Add("columns", jsonFields).
-	jsonObject:Add("data", jsonData).
+	jsonObject:Add("originalData", jsonOrigin).
+	jsonObject:Add("formattedData", jsonFormatted).
+
 END PROCEDURE.
