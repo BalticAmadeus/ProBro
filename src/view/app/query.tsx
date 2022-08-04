@@ -64,10 +64,19 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     React.useEffect(() => {
         window.addEventListener("message", (event) => {
             const message = event.data;
+            console.log("query.message: ", message);
             switch (message.command) {
                 case "data":
                     if (message.data.columns.length !== columns.length) {
                         setColumns(message.data.columns.sort((a, b) => a.order - b.order));
+                    }
+                    const boolField = message.data.columns.filter((field) => field.type === "logical");
+                    if(boolField) {
+                        message.data.data.forEach(row => {
+                            boolField.forEach(field => {
+                                row[field.name] = row[field.name].toString();
+                            });
+                        });
                     }
                     setOriginalRows([...originalRows, ...message.data.originalData]);
                     setLoaded(loaded + message.data.originalData.length);
@@ -76,6 +85,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
 
                     console.log("original data: ", originalRows);
                     console.log("formatted data: ", formattedRows);
+                    break;
             }
             setIsLoading(false);
         });

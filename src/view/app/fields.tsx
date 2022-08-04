@@ -110,7 +110,7 @@ function Fields({ initialData, vscode }) {
             switch (message.command) {
                 case "data":
                     console.log("GOT FIELDS MESSAGE");
-                    setRows(message.data.fields);
+                    setRows(message.data.fields);                    
             }
         });
     });
