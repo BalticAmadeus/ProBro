@@ -242,6 +242,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 			jsonField:Add("order", fqh:GET-BUFFER-HANDLE(1)::_order).
 			jsonField:Add("name", fqh:GET-BUFFER-HANDLE(1)::_field-name).
 			jsonField:Add("key", fqh:GET-BUFFER-HANDLE(1)::_field-name).
+			jsonField:Add("type", fqh:GET-BUFFER-HANDLE(1)::_data-type).
+			jsonField:Add("format", fqh:GET-BUFFER-HANDLE(1)::_format).
 			jsonFields:Add(jsonField).
 		END.
 

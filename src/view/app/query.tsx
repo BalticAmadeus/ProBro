@@ -58,14 +58,24 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     React.useEffect(() => {
         window.addEventListener("message", (event) => {
             const message = event.data;
+            console.log("query.message: ", message);
             switch (message.command) {
                 case "data":
                     if (message.data.columns.length != columns.length) {
                         setColumns(message.data.columns.sort((a, b) => a.order - b.order));
                         
                     }
-                    setRows([...rows, ...message.data.data]);
-                    setLoaded(loaded + message.data.data.length)
+                    const boolField = message.data.columns.filter((field) => field.type === "logical");
+                    if(boolField) {
+                        message.data.data.forEach(row => {
+                            boolField.forEach(field => {
+                                row[field.name] = row[field.name].toString();
+                            });
+                        });
+                    }
+                    setRows([...rows, ...message.data.data]); 
+                    setLoaded(loaded + message.data.data.length);
+                    break;
             }
             setIsLoading(false);
         });
