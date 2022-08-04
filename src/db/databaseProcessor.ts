@@ -4,6 +4,7 @@ import { IProcessor } from "./IProcessor";
 import * as cp from "child_process";
 import { IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
 import getOEClient from "../common/oeClient"
+import { SortColumn } from "react-data-grid";
 
 export class DatabaseProcessor implements IProcessor {
 
@@ -71,12 +72,12 @@ export class DatabaseProcessor implements IProcessor {
         return this.execShell(cmd);
     }
 
-    public getTableData(config: IConfig, tableName: string | undefined, wherePhrase: string, start: number, pageLength: number): Promise<IOETableData> {
+    public getTableData(config: IConfig, tableName: string | undefined, wherePhrase: string, start: number, pageLength: number, sortColumns: SortColumn[]): Promise<IOETableData> {
         if (config && tableName) {
             var params: IOEParams = {
                 connectionString: this.getConnectionString(config),
                 command: "get_table_data",
-                params: { tableName: tableName, wherePhrase: wherePhrase, start: start, pageLength: pageLength }
+                params: { tableName: tableName, wherePhrase: wherePhrase, start: start, pageLength: pageLength, sortColumns: sortColumns }
             }
             // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
             const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;

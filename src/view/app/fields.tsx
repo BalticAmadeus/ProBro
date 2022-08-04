@@ -74,11 +74,11 @@ function Fields({ initialData, vscode }) {
     };
 
     React.useEffect(() => {
-        window.addEventListener('resize', windowRezise);
+        window.addEventListener("resize", windowRezise);
 
         return () => {
-            window.removeEventListener('resize', windowRezise);
-        }
+            window.removeEventListener("resize", windowRezise);
+        };
     }, []);
 
     const sortedRows = useMemo((): readonly FieldRow[] => {
@@ -131,7 +131,7 @@ function Fields({ initialData, vscode }) {
                     onRowsChange={setRows}
                     sortColumns={sortColumns}
                     onSortColumnsChange={setSortColumns}
-                    style={{ height: windowHeight}}
+                    style={{ height: windowHeight }}
                 />
             ) : null}
         </div>

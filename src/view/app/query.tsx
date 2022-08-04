@@ -4,9 +4,10 @@ import { createRoot } from "react-dom/client";
 import "./query.css";
 import { IOETableData } from "../../db/oe";
 
-import DataGrid from "react-data-grid";
+import DataGrid, { SortColumn } from "react-data-grid";
 import { CommandAction, ICommand, IConfig } from "./model";
 import { v1 } from "uuid";
+import ExportData from "./export";
 
 declare global {
     interface Window {
@@ -38,16 +39,20 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     const [loaded, setLoaded] = React.useState(() => 0);
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
 
+    const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
+        []
+    );
+
     const windowRezise = () => {
         setWindowHeight(window.innerHeight);
     };
 
     React.useEffect(() => {
-        window.addEventListener('resize', windowRezise);
+        window.addEventListener("resize", windowRezise);
 
         return () => {
-            window.removeEventListener('resize', windowRezise);
-        }
+            window.removeEventListener("resize", windowRezise);
+        };
     }, []);
 
     React.useEffect(() => {
@@ -57,7 +62,8 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
             switch (message.command) {
                 case "data":
                     if (message.data.columns.length != columns.length) {
-                        setColumns(message.data.columns);
+                        setColumns(message.data.columns.sort((a, b) => a.order - b.order));
+                        
                     }
                     const boolField = message.data.columns.filter((field) => field.type === "logical");
                     if(boolField) {
@@ -78,17 +84,25 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         if (isLoading) return;
+        setIsLoading(true);
         setLoaded(0);
+        setRows([]);
+        makeQuery(0, 1000, sortColumns);
+    };
+
+    function makeQuery(loaded, pageLength, sortColumns) {
         const command: ICommand = {
             id: v1(),
             action: CommandAction.Query,
-            params: { where: wherePhrase, start: loaded, pageLength: 1000 },
+            params: {
+                where: wherePhrase,
+                start: loaded,
+                pageLength: pageLength,
+                sortColumns: sortColumns,
+            },
         };
-        setIsLoading(true);
-        // remove all data from grid
-        setRows([]);
         vscode.postMessage(command);
-    };
+    }
 
     function isAtBottom({
         currentTarget,
@@ -102,15 +116,15 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     async function handleScroll(event: React.UIEvent<HTMLDivElement>) {
         if (isLoading || !isAtBottom(event)) return;
         setIsLoading(true);
+        makeQuery(loaded, 100, sortColumns);
+    }
 
-        const command: ICommand = {
-            id: v1(),
-            action: CommandAction.Query,
-            params: { where: wherePhrase, start: loaded, pageLength: 100 },
-        };
-        setIsLoading(true);
-        // remove all data from grid
-        vscode.postMessage(command);
+    function onSortClick(inputSortColumns: SortColumn[]) {
+        if (isLoading) return;
+        setSortColumns(inputSortColumns);
+        setLoaded(0);
+        setRows([]);
+        makeQuery(0, loaded, inputSortColumns);
     }
 
     return (
@@ -137,13 +151,23 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                                 ></input>
                             </div>
                         </div>
-                    </form>
+                    </form>                    
+                    <ExportData 
+                        wherePhrase={wherePhrase}
+                        vscode={vscode}
+                        /> 
                 </div>
             </div>
             <DataGrid
                 columns={columns}
                 rows={rows}
                 onScroll={handleScroll}
+                defaultColumnOptions={{
+                    sortable: true,
+                    resizable: true,
+                }}
+                sortColumns={sortColumns}
+                onSortColumnsChange={onSortClick}
                 style={{ height: windowHeight - 75 }}
             ></DataGrid>
             {isLoading && <div>Loading more rows...</div>}

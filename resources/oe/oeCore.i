@@ -209,6 +209,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject.
 	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray.
 	DEFINE VARIABLE jsonData AS Progress.Json.ObjectModel.JsonArray.
+	DEFINE VARIABLE jsonSort AS Progress.Json.ObjectModel.JsonArray.
 	DEFINE VARIABLE jsonRow AS Progress.Json.ObjectModel.JsonObject.
 	DEFINE VARIABLE qh AS WIDGET-HANDLE.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
@@ -218,6 +219,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE j AS INTEGER NO-UNDO.
 	DEFINE VARIABLE iPageLength AS INTEGER NO-UNDO.
 	DEFINE VARIABLE cWherePhrase AS CHARACTER NO-UNDO.
+	DEFINE VARIABLE cOrderPhrase AS CHARACTER NO-UNDO.
 	jsonFields = new Progress.Json.ObjectModel.JsonArray().
 	jsonData = new Progress.Json.ObjectModel.JsonArray().
 
@@ -232,11 +234,12 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		CREATE BUFFER fbh FOR TABLE "_field".
 		CREATE QUERY fqh.
 		fqh:SET-BUFFERS(fbh).
-		fqh:QUERY-PREPARE(SUBSTITUTE("for each _field where _field._file-recid = &1", qh:GET-BUFFER-HANDLE(1):RECID)).
+		fqh:QUERY-PREPARE(SUBSTITUTE("for each _field where _field._file-recid = &1 by _field._order", qh:GET-BUFFER-HANDLE(1):RECID)).
 		fqh:QUERY-OPEN.
 
 		DO WHILE fqh:GET-NEXT():
 			jsonField = new Progress.Json.ObjectModel.JsonObject().
+			jsonField:Add("order", fqh:GET-BUFFER-HANDLE(1)::_order).
 			jsonField:Add("name", fqh:GET-BUFFER-HANDLE(1)::_field-name).
 			jsonField:Add("key", fqh:GET-BUFFER-HANDLE(1)::_field-name).
 			jsonField:Add("type", fqh:GET-BUFFER-HANDLE(1)::_data-type).
@@ -254,13 +257,27 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DELETE OBJECT bh.
 
 	IF inputObject:GetJsonObject("params"):Has("wherePhrase") THEN DO:
-		cWherePhrase = SUBSTITUTE(" where &1", inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")).
+		IF TRIM(inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")) > "" THEN DO:
+			cWherePhrase = SUBSTITUTE(" where &1", inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")).
+		END.
 	END.
+
+	IF inputObject:GetJsonObject("params"):Has("sortColumns") THEN DO:
+		jsonSort = inputObject:GetJsonObject("params"):GetJsonArray("sortColumns").
+		DO i = 1 TO jsonSort:LENGTH:
+			cOrderPhrase = SUBSTITUTE("&1 BY &2.&3 &4", 
+						cOrderPhrase, 
+						inputObject:GetJsonObject("params"):GetCharacter("tableName"),
+						jsonSort:GetJsonObject(i):GetCharacter("columnKey"),
+						IF jsonSort:GetJsonObject(i):GetCharacter("direction") = "ASC" THEN "" ELSE "DESCENDING").
+		END.
+	END.
+
 
 	CREATE BUFFER bh FOR TABLE inputObject:GetJsonObject("params"):GetCharacter("tableName").
 	CREATE QUERY qh.
 	qh:SET-BUFFERS(bh).
-	qh:QUERY-PREPARE(SUBSTITUTE("for each &1 &2", inputObject:GetJsonObject("params"):GetCharacter("tableName"), cWherePhrase)).
+	qh:QUERY-PREPARE(SUBSTITUTE("for each &1 no-lock &2 &3", inputObject:GetJsonObject("params"):GetCharacter("tableName"), cWherePhrase, cOrderPhrase)).
 	qh:QUERY-OPEN.
 	qh:REPOSITION-TO-ROW(inputObject:GetJsonObject("params"):GetInt64("start") + 1).
 
