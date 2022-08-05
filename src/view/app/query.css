@@ -25,3 +25,11 @@ input[type=text] {
 background-color: var(--vscode-input-background);
 color: var(--vscode-input-foreground);
 }
+
+.rdg-cell {
+  white-space: pre-wrap;
+}
+
+.rightAlign {
+  text-align: right;
+}

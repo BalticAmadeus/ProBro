@@ -8,6 +8,7 @@ import DataGrid, { SortColumn } from "react-data-grid";
 import { CommandAction, ICommand, IConfig } from "./model";
 import { v1 } from "uuid";
 import ExportData from "./export";
+import { prependListener } from "cluster";
 
 declare global {
     interface Window {
@@ -35,7 +36,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     const [isLoading, setIsLoading] = React.useState(false);
 
     const [isFormatted, setIsFormatted] = React.useState(false);
-    const [originalRows, setOriginalRows] = React.useState(() => tableData.data);
+    const [rawRows, setRawRows] = React.useState(() => tableData.data);
     const [formattedRows, setFormattedRows] = React.useState(() => tableData.data);
     const [columns, setColumns] = React.useState(() => tableData.columns);
     const [loaded, setLoaded] = React.useState(() => 0);
@@ -64,27 +65,37 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     React.useEffect(() => {
         window.addEventListener("message", (event) => {
             const message = event.data;
-            console.log("query.message: ", message);
             switch (message.command) {
                 case "data":
                     if (message.data.columns.length !== columns.length) {
-                        setColumns(message.data.columns.sort((a, b) => a.order - b.order));
+                        setColumns([]);
+                        message.data.columns.forEach((column) => {
+                            switch (column.type) {
+                                case "integer":
+                                case "decimal":
+                                case "int64":
+                                    column.cellClass = "rightAlign";
+                                    column.headerCellClass = "rightAlign";
+                                    break;
+                                default:
+                                    break;   
+                            } 
+                            setColumns(message.data.columns);
+                        });
                     }
                     const boolField = message.data.columns.filter((field) => field.type === "logical");
-                    if(boolField) {
-                        message.data.data.forEach(row => {
+                    if(boolField.length !== 0) {
+                        message.data.rawData.forEach(row => {
                             boolField.forEach(field => {
                                 row[field.name] = row[field.name].toString();
                             });
                         });
                     }
-                    setOriginalRows([...originalRows, ...message.data.originalData]);
-                    setLoaded(loaded + message.data.originalData.length);
+                    setRawRows([...rawRows, ...message.data.rawData]);
+                    setLoaded(loaded + message.data.rawData.length);
                     setFormattedRows([...formattedRows, ...message.data.formattedData]);
                     setLoaded(loaded + message.data.formattedData.length);
 
-                    console.log("original data: ", originalRows);
-                    console.log("formatted data: ", formattedRows);
                     break;
             }
             setIsLoading(false);
@@ -96,7 +107,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
         if (isLoading) {return;};
         setIsLoading(true);
         setLoaded(0);
-        setOriginalRows([]);
+        setRawRows([]);
         setFormattedRows([]);
         makeQuery(0, 1000, sortColumns);
     };
@@ -134,7 +145,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
         if (isLoading) {return;};
         setSortColumns(inputSortColumns);
         setLoaded(0);
-        setOriginalRows([]);
+        setRawRows([]);
         setFormattedRows([]);
         makeQuery(0, loaded, inputSortColumns);
     }
@@ -171,7 +182,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                         /> 
                         <input
                             type="button"
-                            value="Format data"
+                            value={isFormatted.toString()}
                             onClick={getDataFormat}
                         ></input>
                     </div>                  
@@ -180,7 +191,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
             </div>
             <DataGrid
                 columns={columns}
-                rows={isFormatted ? formattedRows : originalRows}
+                rows={isFormatted ? formattedRows : rawRows}
                 onScroll={handleScroll}
                 defaultColumnOptions={{
                     sortable: true,
@@ -188,7 +199,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                 }}
                 sortColumns={sortColumns}
                 onSortColumnsChange={onSortClick}
-                style={{ height: windowHeight - 75 }}
+                style={{ height: windowHeight - 75, whiteSpace: "pre"}}
             ></DataGrid>
             {isLoading && <div>Loading more rows...</div>}
         </React.Fragment>

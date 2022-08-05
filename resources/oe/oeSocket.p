@@ -1,9 +1,16 @@
 //ROUTINE-LEVEL ON ERROR UNDO,THROW.
 
-define temp-table ttIndex no-undo
-field cName as character
-field cFlags as character
-field cFields as character
+DEFINE TEMP-TABLE ttIndex NO-UNDO
+FIELD cName AS CHARACTER
+FIELD cFlags AS CHARACTER
+FIELD cFIELDs AS CHARACTER
+.
+
+DEFINE TEMP-TABLE ttColumn NO-UNDO
+FIELD cName AS CHARACTER serialize-name "name"
+FIELD cKey AS CHARACTER serialize-name "key"
+FIELD cType AS CHARACTER serialize-name "type"
+FIELD cFormat AS CHARACTER serialize-name "format"
 .
 
 DEFINE VARIABLE inputMem AS MEMPTR NO-UNDO.
@@ -25,7 +32,7 @@ DEFINE VARIABLE hClient AS HANDLE NO-UNDO.
 DEFINE VARIABLE hServer   AS HANDLE  NO-UNDO.
 DEFINE VARIABLE lRC       AS LOGICAL NO-UNDO.
 DEFINE VARIABLE mData     AS MEMPTR  NO-UNDO.
-DEFINE VARIABLE iDataSize AS INTEGER NO-UNDO.
+DEFINE VARIABLE iDatASize AS INTEGER NO-UNDO.
 
 SESSION:ERROR-STACK-TRACE = TRUE.
 //LOG-MANAGER:LOG-ENTRY-TYPES = "4GLTrace:3".
@@ -77,7 +84,7 @@ PROCEDURE ProcessClientConnect:
             RETURN.
         END.
 	MESSAGE "CONNECTED".
-	iDataSize = 0.
+	iDatASize = 0.
 	hClient = hSocket.
 END PROCEDURE.
 
@@ -89,8 +96,8 @@ PROCEDURE SocketIO:
         RETURN.
 
     iMessageSize = SELF:GET-BYTES-AVAILABLE().
-    SET-SIZE(mData) = iDataSize + iMessageSize.
-    lRC = SELF:READ(mData, iDataSize + 1, iMessageSize, READ-EXACT-NUM) NO-ERROR.
+    SET-SIZE(mData) = iDatASize + iMessageSize.
+    lRC = SELF:READ(mData, iDatASize + 1, iMessageSize, READ-EXACT-NUM) NO-ERROR.
     IF lRC = FALSE OR ERROR-STATUS:GET-MESSAGE(1) <> '' THEN
         DO:
             MESSAGE 'Unable To Read Detail Bytes' ERROR-STATUS:GET-MESSAGE(1).
@@ -127,7 +134,7 @@ PROCEDURE SocketIO:
             SET-SIZE(mData) = LENGTH(tmpJson) + 100.
             PUT-STRING(mData,1) = tmpJson.
             lRC = SELF:WRITE(mData,1,LENGTH(tmpJson)) NO-ERROR.
-            iDataSize = 0.    
+            iDatASize = 0.    
             SET-SIZE(mData) = 0.
         END FINALLY.
     END.
