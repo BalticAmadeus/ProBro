@@ -3,14 +3,14 @@
 DEFINE TEMP-TABLE ttIndex NO-UNDO
 FIELD cName AS CHARACTER
 FIELD cFlags AS CHARACTER
-FIELD cFIELDs AS CHARACTER
+FIELD cFields AS CHARACTER
 .
 
 DEFINE TEMP-TABLE ttColumn NO-UNDO
-FIELD cName AS CHARACTER serialize-name "name"
-FIELD cKey AS CHARACTER serialize-name "key"
-FIELD cType AS CHARACTER serialize-name "type"
-FIELD cFormat AS CHARACTER serialize-name "format"
+FIELD cName AS CHARACTER SERIALIZE-NAME "name"
+FIELD cKey AS CHARACTER SERIALIZE-NAME "key"
+FIELD cType AS CHARACTER SERIALIZE-NAME "type"
+FIELD cFormat AS CHARACTER SERIALIZE-NAME "format"
 .
 
 DEFINE VARIABLE inputMem AS MEMPTR NO-UNDO.
@@ -32,7 +32,7 @@ DEFINE VARIABLE hClient AS HANDLE NO-UNDO.
 DEFINE VARIABLE hServer   AS HANDLE  NO-UNDO.
 DEFINE VARIABLE lRC       AS LOGICAL NO-UNDO.
 DEFINE VARIABLE mData     AS MEMPTR  NO-UNDO.
-DEFINE VARIABLE iDatASize AS INTEGER NO-UNDO.
+DEFINE VARIABLE iDataSize AS INTEGER NO-UNDO.
 
 SESSION:ERROR-STACK-TRACE = TRUE.
 //LOG-MANAGER:LOG-ENTRY-TYPES = "4GLTrace:3".
@@ -63,7 +63,7 @@ WAIT-FOR CONNECT OF hServer.
 MESSAGE "VS CONNECTED".
 
 REPEAT ON STOP UNDO, LEAVE ON QUIT UNDO, LEAVE:
-	WAIT-FOR "U10"OF THIS-PROCEDURE PAUSE 1.
+	WAIT-FOR "U10" OF THIS-PROCEDURE PAUSE 1.
 	IF NOT VALID-OBJECT(hClient) OR NOT hClient:CONNECTED() THEN DO:
 		MESSAGE "VS DISCONNECTED".
 		LEAVE.
@@ -84,7 +84,7 @@ PROCEDURE ProcessClientConnect:
             RETURN.
         END.
 	MESSAGE "CONNECTED".
-	iDatASize = 0.
+	iDataSize = 0.
 	hClient = hSocket.
 END PROCEDURE.
 
@@ -96,8 +96,8 @@ PROCEDURE SocketIO:
         RETURN.
 
     iMessageSize = SELF:GET-BYTES-AVAILABLE().
-    SET-SIZE(mData) = iDatASize + iMessageSize.
-    lRC = SELF:READ(mData, iDatASize + 1, iMessageSize, READ-EXACT-NUM) NO-ERROR.
+    SET-SIZE(mData) = iDataSize + iMessageSize.
+    lRC = SELF:READ(mData, iDataSize + 1, iMessageSize, READ-EXACT-NUM) NO-ERROR.
     IF lRC = FALSE OR ERROR-STATUS:GET-MESSAGE(1) <> '' THEN
         DO:
             MESSAGE 'Unable To Read Detail Bytes' ERROR-STATUS:GET-MESSAGE(1).
@@ -123,7 +123,7 @@ PROCEDURE SocketIO:
 
         CATCH err AS Progress.Lang.Error:
             DELETE OBJECT jsonObject NO-ERROR.
-            jsonObject = new Progress.Json.ObjectModel.JsonObject().
+            jsonObject = NEW Progress.Json.ObjectModel.JsonObject().
             jsonObject:Add("error", err:GetMessageNum(1)).
             jsonObject:Add("description", err:GetMessage(1)).
         END CATCH.
