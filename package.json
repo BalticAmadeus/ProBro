@@ -24,19 +24,19 @@
                 {
                     "id": "pro-bro",
                     "title": "OpenEdge Explorer",
-                    "icon": "resources/redshift.svg"
+                    "icon": "resources/pB.svg"
                 }
             ],
             "panel": [
                 {
                     "id": "pro-bro-fields",
                     "title": "Fields Explorer",
-                    "icon": "resources/redshift.svg"
+                    "icon": "resources/pB.svg"
                 },
                 {
                     "id": "pro-bro-indexes",
                     "title": "Indexes Explorer",
-                    "icon": "resources/redshift.svg"
+                    "icon": "resources/pB.svg"
                 }
             ]
         },
