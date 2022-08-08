@@ -32,9 +32,9 @@ PROCEDURE LOCAL_CONNECT:
 	CONNECT VALUE(inputObject:GetCharacter("connectionString") + " -ld dictdb").
 
 	jsonDebug = jsonObject:GetJsonObject("debug").
-	jsonDebug:Add("startConnect", tmpDate).
-	jsonDebug:Add("endConnect", NOW).
-	jsonDebug:Add("timeConnect", NOW - tmpDate).
+	jsonDebug:add("startConnect", tmpDate).
+	jsonDebug:add("endConnect", NOW).
+	jsonDebug:add("timeConnect", NOW - tmpDate).
 	jsonObject:Set("debug", jsonDebug).
 
 	IF NUM-DBS = 0 THEN DO:
@@ -45,38 +45,38 @@ END PROCEDURE.
 PROCEDURE LOCAL_GET_DEBUG:
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject.
 	jsonDebug = jsonObject:GetJsonObject("debug").
-	jsonDebug:Add("start", tmpDate).
-	jsonDebug:Add("end", NOW).
-	jsonDebug:Add("time", NOW - tmpDate).
+	jsonDebug:add("start", tmpDate).
+	jsonDebug:add("end", NOW).
+	jsonDebug:add("time", NOW - tmpDate).
 	jsonObject:Set("debug", jsonDebug).
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_VERSION:
-	jsonObject:Add("dbversion", DBVERSION(1)).
-	jsonObject:Add("proversion", PROVERSION(1)).
+	jsonObject:add("dbversion", DBVERSION(1)).
+	jsonObject:add("proversion", PROVERSION(1)).
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLES:
 	DEFINE VARIABLE jsonTables AS Progress.Json.ObjectModel.JsonArray.
 	DEFINE VARIABLE qh AS WIDGET-HANDLE.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
-	jsonTables = new Progress.Json.ObjectModel.JsonArray().
+	jsonTables = NEW Progress.Json.ObjectModel.JsonArray().
 
 	CREATE BUFFER bh FOR TABLE "_file".
 	CREATE QUERY qh.
 	qh:SET-BUFFERS(bh).
-	qh:QUERY-PREPARE("for each _file where _file._tbl-type = 'T' no-lock by _file._file-name").
+	qh:QUERY-PREPARE("FOR EACH _file WHERE _file._tbl-type = 'T' NO-LOCK BY _file._file-name").
 	qh:QUERY-OPEN.
 
 	DO WHILE qh:GET-NEXT():
-		jsonTables:Add(qh:GET-BUFFER-HANDLE(1)::_file-name).
+		jsonTables:add(qh:GET-BUFFER-HANDLE(1)::_file-name).
 	END.
 
 	qh:QUERY-CLOSE().
 	DELETE OBJECT qh.
 	DELETE OBJECT bh.
 
-	jsonObject:Add("tables", jsonTables).
+	jsonObject:add("tables", jsonTables).
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLE_DETAILS:
@@ -84,27 +84,27 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray.
 	DEFINE VARIABLE jsonIndexes AS Progress.Json.ObjectModel.JsonArray.	
 
-	define variable bhFile as handle no-undo.
-	define variable bhIndex as handle no-undo.
-	define variable bhIndexField as handle no-undo.
-	define variable bhField as handle no-undo.
+	DEFINE VARIABLE bhFile AS HANDLE NO-UNDO.
+	DEFINE VARIABLE bhIndex AS HANDLE NO-UNDO.
+	DEFINE VARIABLE bhIndexField AS HANDLE NO-UNDO.
+	DEFINE VARIABLE bhField AS HANDLE NO-UNDO.
 	DEFINE VARIABLE qhIndex AS WIDGET-HANDLE.
 	DEFINE VARIABLE qhField AS WIDGET-HANDLE.
 
-	define variable cFieldQuery as character no-undo.
-	define variable cIndexQuery as character no-undo.
+	DEFINE VARIABLE cFieldQuery AS CHARACTER NO-UNDO.
+	DEFINE VARIABLE cIndexQuery AS CHARACTER NO-UNDO.
 
 
-	jsonFields = new Progress.Json.ObjectModel.JsonArray().
-	jsonIndexes = new Progress.Json.ObjectModel.JsonArray().
+	jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
+	jsonIndexes = NEW Progress.Json.ObjectModel.JsonArray().
 
 	// get fields table details
 
 	CREATE BUFFER bhFile FOR TABLE "_file".
 	CREATE BUFFER bhField FOR TABLE "_field".
 
-	cFieldQuery = SUBSTITUTE("for each _file where _file._file-name = '&1'" + 
-							" , each _field of _file no-lock",
+	cFieldQuery = SUBSTITUTE("FOR EACH _file WHERE _file._file-name = '&1'" + 
+							" , EACH _field OF _file NO-LOCK",
 							inputObject:GetCharacter("params")).
 
 	CREATE QUERY qhField.
@@ -113,23 +113,23 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 	qhField:QUERY-OPEN.
 
 	DO WHILE qhField:GET-NEXT():
-		jsonField = new Progress.Json.ObjectModel.JsonObject().
-		jsonField:Add("order", bhField::_order).
-		jsonField:Add("name", bhField::_field-name).
-		jsonField:Add("type", bhField::_data-type).
-		jsonField:Add("format", bhField::_format).
-		jsonField:Add("label", bhField::_label).
-		jsonField:Add("initial", bhField::_initial).
-		jsonField:Add("columnLabel", bhField::_col-label).
-		jsonField:Add("mandatory", bhField::_mandatory).
-		jsonField:Add("decimals", bhField::_decimals).
-		jsonField:Add("rpos", bhField::_field-rpos).
-		jsonField:Add("valExp", bhField::_valexp).
-		jsonField:Add("valMessage", bhField::_valmsg).
-		jsonField:Add("helpMsg", bhField::_help).
-		jsonField:Add("description", bhField::_desc).
-		jsonField:Add("viewAs", bhField::_view-As).
-		jsonFields:Add(jsonField).
+		jsonField = NEW Progress.Json.ObjectModel.JsonObject().
+		jsonField:add("order", bhField::_order).
+		jsonField:add("name", bhField::_field-name).
+		jsonField:add("type", bhField::_data-type).
+		jsonField:add("format", bhField::_format).
+		jsonField:add("label", bhField::_label).
+		jsonField:add("initial", bhField::_initial).
+		jsonField:add("columnLabel", bhField::_col-label).
+		jsonField:add("mandatory", bhField::_mandatory).
+		jsonField:add("decimals", bhField::_decimals).
+		jsonField:add("rpos", bhField::_field-rpos).
+		jsonField:add("valExp", bhField::_valexp).
+		jsonField:add("valMessage", bhField::_valmsg).
+		jsonField:add("helpMsg", bhField::_help).
+		jsonField:add("description", bhField::_desc).
+		jsonField:add("viewAs", bhField::_view-as).
+		jsonFields:add(jsonField).
 	END.		
 
 	qhField:QUERY-CLOSE().
@@ -144,14 +144,14 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 	CREATE BUFFER bhIndexField FOR TABLE "_Index-Field".
 	CREATE BUFFER bhField FOR TABLE "_Field".
 
-	define buffer bttIndex for ttIndex.
+	DEFINE BUFFER bttIndex FOR ttIndex.
 
-	empty temp-table bttIndex.
+	EMPTY TEMP-TABLE bttIndex.
 
-	cIndexQuery = substitute("FOR EACH _file where _file._file-name = '&1'" +
+	cIndexQuery = SUBSTITUTE("FOR EACH _file WHERE _file._file-name = '&1'" +
 						" , EACH _Index OF _file NO-LOCK" + 
 						" , EACH _Index-field OF _Index NO-LOCK" + 
-						" , EACH _Field of _Index-field NO-LOCK", 
+						" , EACH _Field OF _Index-field NO-LOCK", 
 						inputObject:GetCharacter('params')).
 
 	CREATE QUERY qhIndex.
@@ -160,12 +160,12 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 	qhIndex:QUERY-OPEN.	
 
 	DO WHILE qhIndex:GET-NEXT():
-		define variable cFlags as character no-undo.
-		define variable cFields as character no-undo.
+		DEFINE VARIABLE cFlags AS CHARACTER NO-UNDO.
+		DEFINE VARIABLE cFields AS CHARACTER NO-UNDO.
 
-		find bttIndex where bttIndex.cName = bhIndex::_Index-name no-error.
-		if not available bttIndex then do:
-			create bttIndex.
+		FIND bttIndex WHERE bttIndex.cName = bhIndex::_Index-name NO-ERROR.
+		IF NOT AVAILABLE bttIndex THEN DO:
+			CREATE bttIndex.
 
 			//index name
 			bttIndex.cName = bhIndex::_Index-name.
@@ -178,14 +178,13 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 										).
 			cFlags = TRIM(cFLags).
 			bttIndex.cFlags = cFlags.
-		end.
+		END.
 
 		//index field
-
 		cFields = SUBSTITUTE("&1 &2&3",
 							bttIndex.cFields,
 							bhField::_Field-name,
-							STRING(bhIndexField::_Ascending, '+/-')
+							STRING(bhIndexField::_ascending, '+/-')
 							).
 		
 
@@ -199,18 +198,20 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 	DELETE OBJECT bhIndexField.
 	DELETE OBJECT bhField.
 
-	jsonIndexes:read(temp-table bttIndex:handle).
+	jsonIndexes:read(TEMP-TABLE bttIndex:HANDLE).
 
-	jsonObject:Add("fields", jsonFields).
-	jsonObject:Add("indexes", jsonIndexes).
+	jsonObject:add("fields", jsonFields).
+	jsonObject:add("indexes", jsonIndexes).
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject.
 	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonData AS Progress.Json.ObjectModel.JsonArray.
+	DEFINE VARIABLE jsonRaw AS Progress.Json.ObjectModel.JsonArray.
+	DEFINE VARIABLE jsonFormatted AS Progress.Json.ObjectModel.JsonArray.
 	DEFINE VARIABLE jsonSort AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonRow AS Progress.Json.ObjectModel.JsonObject.
+	DEFINE VARIABLE jsonRawRow AS Progress.Json.ObjectModel.JsonObject.
+	DEFINE VARIABLE jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject.
 	DEFINE VARIABLE qh AS WIDGET-HANDLE.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE fqh AS WIDGET-HANDLE.
@@ -220,13 +221,16 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE iPageLength AS INTEGER NO-UNDO.
 	DEFINE VARIABLE cWherePhrase AS CHARACTER NO-UNDO.
 	DEFINE VARIABLE cOrderPhrase AS CHARACTER NO-UNDO.
-	jsonFields = new Progress.Json.ObjectModel.JsonArray().
-	jsonData = new Progress.Json.ObjectModel.JsonArray().
+	DEFINE VARIABLE cCellValue AS CHARACTER NO-UNDO.
+	DEFINE BUFFER bttColumn FOR ttColumn.
+	jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
+	jsonRaw = NEW Progress.Json.ObjectModel.JsonArray().
+	jsonFormatted = NEW Progress.Json.ObjectModel.JsonArray().
 
 	CREATE BUFFER bh FOR TABLE "_file".
 	CREATE QUERY qh.
 	qh:SET-BUFFERS(bh).
-	qh:QUERY-PREPARE(SUBSTITUTE("for each _file where _file._file-name = '&1'", inputObject:GetJsonObject("params"):GetCharacter("tableName"))).
+	qh:QUERY-PREPARE(SUBSTITUTE("FOR EACH _file WHERE _file._file-name = '&1'", inputObject:GetJsonObject("params"):GetCharacter("tableName"))).
 	qh:QUERY-OPEN.
 
 	DO WHILE qh:GET-NEXT():
@@ -234,18 +238,18 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		CREATE BUFFER fbh FOR TABLE "_field".
 		CREATE QUERY fqh.
 		fqh:SET-BUFFERS(fbh).
-		fqh:QUERY-PREPARE(SUBSTITUTE("for each _field where _field._file-recid = &1 by _field._order", qh:GET-BUFFER-HANDLE(1):RECID)).
+		fqh:QUERY-PREPARE(SUBSTITUTE("FOR each _field where _field._file-recid = &1 BY _field._order", qh:GET-BUFFER-HANDLE(1):RECID)).
 		fqh:QUERY-OPEN.
 
+		EMPTY TEMP-TABLE bttColumn.
 		DO WHILE fqh:GET-NEXT():
-			jsonField = new Progress.Json.ObjectModel.JsonObject().
-			jsonField:Add("order", fqh:GET-BUFFER-HANDLE(1)::_order).
-			jsonField:Add("name", fqh:GET-BUFFER-HANDLE(1)::_field-name).
-			jsonField:Add("key", fqh:GET-BUFFER-HANDLE(1)::_field-name).
-			jsonField:Add("type", fqh:GET-BUFFER-HANDLE(1)::_data-type).
-			jsonField:Add("format", fqh:GET-BUFFER-HANDLE(1)::_format).
-			jsonFields:Add(jsonField).
+			create bttColumn.
+			bttColumn.cName = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+			bttColumn.cKey = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+			bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
+			bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
 		END.
+		jsonFields:read(TEMP-TABLE bttColumn:HANDLE).
 
 		fqh:QUERY-CLOSE().
 		DELETE OBJECT fqh.
@@ -256,13 +260,13 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DELETE OBJECT qh.
 	DELETE OBJECT bh.
 
-	IF inputObject:GetJsonObject("params"):Has("wherePhrase") THEN DO:
+	IF inputObject:GetJsonObject("params"):has("wherePhrase") THEN DO:
 		IF TRIM(inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")) > "" THEN DO:
 			cWherePhrase = SUBSTITUTE(" where &1", inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")).
 		END.
 	END.
 
-	IF inputObject:GetJsonObject("params"):Has("sortColumns") THEN DO:
+	IF inputObject:GetJsonObject("params"):has("sortColumns") THEN DO:
 		jsonSort = inputObject:GetJsonObject("params"):GetJsonArray("sortColumns").
 		DO i = 1 TO jsonSort:LENGTH:
 			cOrderPhrase = SUBSTITUTE("&1 BY &2.&3 &4", 
@@ -277,18 +281,25 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	CREATE BUFFER bh FOR TABLE inputObject:GetJsonObject("params"):GetCharacter("tableName").
 	CREATE QUERY qh.
 	qh:SET-BUFFERS(bh).
-	qh:QUERY-PREPARE(SUBSTITUTE("for each &1 no-lock &2 &3", inputObject:GetJsonObject("params"):GetCharacter("tableName"), cWherePhrase, cOrderPhrase)).
+	qh:QUERY-PREPARE(SUBSTITUTE("FOR EACH &1 NO-LOCK &2 &3", inputObject:GetJsonObject("params"):GetCharacter("tableName"), cWherePhrase, cOrderPhrase)).
 	qh:QUERY-OPEN.
 	qh:REPOSITION-TO-ROW(inputObject:GetJsonObject("params"):GetInt64("start") + 1).
 
 	iPageLength = inputObject:GetJsonObject("params"):GetInt64("pageLength").
 
 	DO WHILE qh:GET-NEXT():
-		jsonRow = new Progress.Json.ObjectModel.JsonObject().
+		jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
+		jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
 		DO i = 1 to bh:NUM-FIELDS:
-			jsonRow:Add(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
+			jsonRawRow:ADD(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
+
+			FIND bttColumn where bttColumn.cName = bh:BUFFER-FIELD(i):NAME.
+			cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat).
+			jsonFormattedRow:ADD(bh:BUFFER-FIELD(i):NAME, cCellValue).
+
 		END.
-		jsonData:Add(jsonRow).
+		jsonRaw:ADD(jsonRawRow).
+		jsonFormatted:ADD(jsonFormattedRow).
 		iPageLength = iPageLength - 1.
 		IF iPageLength = 0 THEN LEAVE. 
 	END.
@@ -297,6 +308,9 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DELETE OBJECT qh.
 	DELETE OBJECT bh.
 
-	jsonObject:Add("columns", jsonFields).
-	jsonObject:Add("data", jsonData).
+	
+	jsonObject:ADD("columns", jsonFields).
+	jsonObject:ADD("rawData", jsonRaw).
+	jsonObject:ADD("FormattedData", jsonFormatted).
+
 END PROCEDURE.

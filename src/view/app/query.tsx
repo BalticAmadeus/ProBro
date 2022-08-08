@@ -8,6 +8,7 @@ import DataGrid, { SortColumn } from "react-data-grid";
 import { CommandAction, ICommand, IConfig } from "./model";
 import { v1 } from "uuid";
 import ExportData from "./export";
+import { prependListener } from "cluster";
 
 declare global {
     interface Window {
@@ -34,7 +35,9 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState(false);
 
-    const [rows, setRows] = React.useState(() => tableData.data);
+    const [isFormatted, setIsFormatted] = React.useState(false);
+    const [rawRows, setRawRows] = React.useState(() => tableData.data);
+    const [formattedRows, setFormattedRows] = React.useState(() => tableData.data);
     const [columns, setColumns] = React.useState(() => tableData.columns);
     const [loaded, setLoaded] = React.useState(() => 0);
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
@@ -42,6 +45,10 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
         []
     );
+    
+    const getDataFormat = () => {
+        setIsFormatted(!isFormatted);
+    };
 
     const windowRezise = () => {
         setWindowHeight(window.innerHeight);
@@ -58,23 +65,37 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     React.useEffect(() => {
         window.addEventListener("message", (event) => {
             const message = event.data;
-            console.log("query.message: ", message);
             switch (message.command) {
                 case "data":
-                    if (message.data.columns.length != columns.length) {
-                        setColumns(message.data.columns.sort((a, b) => a.order - b.order));
-                        
+                    if (message.data.columns.length !== columns.length) {
+                        setColumns([]);
+                        message.data.columns.forEach((column) => {
+                            switch (column.type) {
+                                case "integer":
+                                case "decimal":
+                                case "int64":
+                                    column.cellClass = "rightAlign";
+                                    column.headerCellClass = "rightAlign";
+                                    break;
+                                default:
+                                    break;   
+                            } 
+                            setColumns(message.data.columns);
+                        });
                     }
                     const boolField = message.data.columns.filter((field) => field.type === "logical");
-                    if(boolField) {
-                        message.data.data.forEach(row => {
+                    if(boolField.length !== 0) {
+                        message.data.rawData.forEach(row => {
                             boolField.forEach(field => {
                                 row[field.name] = row[field.name].toString();
                             });
                         });
                     }
-                    setRows([...rows, ...message.data.data]); 
-                    setLoaded(loaded + message.data.data.length);
+                    setRawRows([...rawRows, ...message.data.rawData]);
+                    setLoaded(loaded + message.data.rawData.length);
+                    setFormattedRows([...formattedRows, ...message.data.formattedData]);
+                    setLoaded(loaded + message.data.formattedData.length);
+
                     break;
             }
             setIsLoading(false);
@@ -83,10 +104,11 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
 
     const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        if (isLoading) return;
+        if (isLoading) {return;};
         setIsLoading(true);
         setLoaded(0);
-        setRows([]);
+        setRawRows([]);
+        setFormattedRows([]);
         makeQuery(0, 1000, sortColumns);
     };
 
@@ -114,16 +136,17 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     }
 
     async function handleScroll(event: React.UIEvent<HTMLDivElement>) {
-        if (isLoading || !isAtBottom(event)) return;
+        if (isLoading || !isAtBottom(event)) {return;};
         setIsLoading(true);
         makeQuery(loaded, 100, sortColumns);
     }
 
     function onSortClick(inputSortColumns: SortColumn[]) {
-        if (isLoading) return;
+        if (isLoading) {return;};
         setSortColumns(inputSortColumns);
         setLoaded(0);
-        setRows([]);
+        setRawRows([]);
+        setFormattedRows([]);
         makeQuery(0, loaded, inputSortColumns);
     }
 
@@ -151,16 +174,24 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                                 ></input>
                             </div>
                         </div>
-                    </form>                    
-                    <ExportData 
+                    </form>  
+                    <div className="query-options">
+                        <ExportData 
                         wherePhrase={wherePhrase}
                         vscode={vscode}
                         /> 
+                        <input
+                            type="button"
+                            value={isFormatted.toString()}
+                            onClick={getDataFormat}
+                        ></input>
+                    </div>                  
+
                 </div>
             </div>
             <DataGrid
                 columns={columns}
-                rows={rows}
+                rows={isFormatted ? formattedRows : rawRows}
                 onScroll={handleScroll}
                 defaultColumnOptions={{
                     sortable: true,
@@ -168,7 +199,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                 }}
                 sortColumns={sortColumns}
                 onSortColumnsChange={onSortClick}
-                style={{ height: windowHeight - 75 }}
+                style={{ height: windowHeight - 75, whiteSpace: "pre"}}
             ></DataGrid>
             {isLoading && <div>Loading more rows...</div>}
         </React.Fragment>

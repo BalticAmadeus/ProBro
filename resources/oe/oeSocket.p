@@ -1,9 +1,16 @@
 //ROUTINE-LEVEL ON ERROR UNDO,THROW.
 
-define temp-table ttIndex no-undo
-field cName as character
-field cFlags as character
-field cFields as character
+DEFINE TEMP-TABLE ttIndex NO-UNDO
+FIELD cName AS CHARACTER
+FIELD cFlags AS CHARACTER
+FIELD cFields AS CHARACTER
+.
+
+DEFINE TEMP-TABLE ttColumn NO-UNDO
+FIELD cName AS CHARACTER SERIALIZE-NAME "name"
+FIELD cKey AS CHARACTER SERIALIZE-NAME "key"
+FIELD cType AS CHARACTER SERIALIZE-NAME "type"
+FIELD cFormat AS CHARACTER SERIALIZE-NAME "format"
 .
 
 DEFINE VARIABLE inputMem AS MEMPTR NO-UNDO.
@@ -56,7 +63,7 @@ WAIT-FOR CONNECT OF hServer.
 MESSAGE "VS CONNECTED".
 
 REPEAT ON STOP UNDO, LEAVE ON QUIT UNDO, LEAVE:
-	WAIT-FOR "U10"OF THIS-PROCEDURE PAUSE 1.
+	WAIT-FOR "U10" OF THIS-PROCEDURE PAUSE 1.
 	IF NOT VALID-OBJECT(hClient) OR NOT hClient:CONNECTED() THEN DO:
 		MESSAGE "VS DISCONNECTED".
 		LEAVE.
@@ -116,7 +123,7 @@ PROCEDURE SocketIO:
 
         CATCH err AS Progress.Lang.Error:
             DELETE OBJECT jsonObject NO-ERROR.
-            jsonObject = new Progress.Json.ObjectModel.JsonObject().
+            jsonObject = NEW Progress.Json.ObjectModel.JsonObject().
             jsonObject:Add("error", err:GetMessageNum(1)).
             jsonObject:Add("description", err:GetMessage(1)).
         END CATCH.
@@ -127,7 +134,7 @@ PROCEDURE SocketIO:
             SET-SIZE(mData) = LENGTH(tmpJson) + 100.
             PUT-STRING(mData,1) = tmpJson.
             lRC = SELF:WRITE(mData,1,LENGTH(tmpJson)) NO-ERROR.
-            iDataSize = 0.    
+            iDatASize = 0.    
             SET-SIZE(mData) = 0.
         END FINALLY.
     END.

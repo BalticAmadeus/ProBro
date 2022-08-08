@@ -17,12 +17,6 @@ declare global {
     }
 }
 
-const defaultColumnProperties = {
-    sortable: true,
-};
-
-columnName.columns.map((c) => ({ ...c, ...defaultColumnProperties }));
-
 const vscode = window.acquireVsCodeApi();
 
 const root = createRoot(document.getElementById("root"));
