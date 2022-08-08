@@ -65,6 +65,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     React.useEffect(() => {
         window.addEventListener("message", (event) => {
             const message = event.data;
+            console.log("message query: ", message.data);
             switch (message.command) {
                 case "data":
                     if (message.data.columns.length !== columns.length) {
@@ -155,7 +156,9 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
             <div className="container">
                 <div className="title">Query</div>
                 <div className="content">
-                    <form action="#">
+                    <form 
+                        className="form"
+                        action="#">
                         <div className="connection-details">
                             <div className="input-box">
                                 <input
@@ -168,6 +171,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                                     }}
                                 />
                                 <input
+                                    className="btn"
                                     type="submit"
                                     value="Query"
                                     onClick={onQueryClick}
@@ -181,12 +185,12 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                         vscode={vscode}
                         /> 
                         <input
+                            className="btn"
                             type="button"
                             value={isFormatted.toString()}
                             onClick={getDataFormat}
                         ></input>
                     </div>                  
-
                 </div>
             </div>
             <DataGrid

@@ -316,6 +316,6 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	
 	jsonObject:ADD("columns", jsonFields).
 	jsonObject:ADD("rawData", jsonRaw).
-	jsonObject:ADD("FormattedData", jsonFormatted).
+	jsonObject:ADD("formattedData", jsonFormatted).
 
 END PROCEDURE.

@@ -50,7 +50,7 @@ export default function ExportPopup({ wherePhrase, vscode}) {
 
   return (
     <Popup
-      trigger={<button className="button"> Export Data </button>}
+      trigger={<button className="btn"> Export Data </button>}
       modal
       contentStyle={contentStyle}
     >
