@@ -17,12 +17,6 @@ declare global {
     }
 }
 
-const defaultColumnProperties = {
-    sortable: true,
-};
-
-columnName.columns.map((c) => ({ ...c, ...defaultColumnProperties }));
-
 const vscode = window.acquireVsCodeApi();
 
 const root = createRoot(document.getElementById("root"));
@@ -110,7 +104,7 @@ function Fields({ initialData, vscode }) {
             switch (message.command) {
                 case "data":
                     console.log("GOT FIELDS MESSAGE");
-                    setRows(message.data.fields);
+                    setRows(message.data.fields);                    
             }
         });
     });

@@ -38,3 +38,28 @@ color: var(--vscode-input-foreground);
 .filter-cell > div:first-child {
     border-block-end: 1px solid var(--rdg-border-color);
 }
+
+.rdg-cell {
+  white-space: pre-wrap;
+}
+
+.rightAlign {
+  text-align: right;
+}
+
+.content {
+  display: inline-flex;
+}
+
+.query-options {
+  position:relative;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: 10px;
+
+}
+
+.form {
+  width: fit-content;
+  margin-right: 10px;
+}
