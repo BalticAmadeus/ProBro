@@ -56,7 +56,6 @@ export class DatabaseProcessor implements IProcessor {
             connectionString: this.getConnectionString(config),
             command: "get_version"
         }
-        console.log(params.connectionString)
         // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
         const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
         return this.execShell(cmd);
@@ -74,7 +73,6 @@ export class DatabaseProcessor implements IProcessor {
 
     public getTableData(config: IConfig, tableName: string | undefined, wherePhrase: string, start: number, pageLength: number, sortColumns: SortColumn[], filters: any): Promise<IOETableData> {
         if (config && tableName) {
-            console.log("filters", filters);
             var params: IOEParams = {
                 connectionString: this.getConnectionString(config),
                 command: "get_table_data",

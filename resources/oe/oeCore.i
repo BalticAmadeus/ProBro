@@ -3,6 +3,8 @@ PROCEDURE LOCAL_PROCESS:
 
 	MESSAGE "RECEIVED COMMAND: " inputObject:GetCharacter("command").
 
+	LOG-MANAGER:WRITE-MESSAGE("RECEIVED COMMAND: " + inputObject:GetCharacter("command")).
+
 	CASE inputObject:GetCharacter("command"):
 		WHEN "get_version" THEN DO:
 			RUN LOCAL_GET_VERSION.
@@ -226,7 +228,6 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE cFilterNames AS CHARACTER EXTENT NO-UNDO.
 	DEFINE VARIABLE cFilterValues AS CHARACTER EXTENT NO-UNDO.
 	jsonFields = new Progress.Json.ObjectModel.JsonArray().
-	jsonData = new Progress.Json.ObjectModel.JsonArray().
 	DEFINE VARIABLE cCellValue AS CHARACTER NO-UNDO.
 	DEFINE BUFFER bttColumn FOR ttColumn.
 	jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
