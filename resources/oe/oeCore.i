@@ -242,12 +242,15 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		fqh:QUERY-OPEN.
 
 		EMPTY TEMP-TABLE bttColumn.
-		DO WHILE fqh:GET-NEXT():
-			create bttColumn.
-			bttColumn.cName = fqh:GET-BUFFER-HANDLE(1)::_field-name.
-			bttColumn.cKey = fqh:GET-BUFFER-HANDLE(1)::_field-name.
-			bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
-			bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
+		DO WHILE fqh:GET-NEXT():	
+			IF fqh:GET-BUFFER-HANDLE(1)::_data-type <> "blob" AND fqh:GET-BUFFER-HANDLE(1)::_data-type <> "clob"
+			THEN DO: 
+				create bttColumn.
+				bttColumn.cName = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+				bttColumn.cKey = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+				bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
+				bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
+			END.
 		END.
 		jsonFields:read(TEMP-TABLE bttColumn:HANDLE).
 
@@ -291,9 +294,11 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
 		jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
 		DO i = 1 to bh:NUM-FIELDS:
-			jsonRawRow:ADD(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
+			FIND bttColumn  WHERE bttColumn.cName = bh:BUFFER-FIELD(i):NAME NO-ERROR.
+			IF NOT AVAILABLE bttColumn THEN NEXT.
 
-			FIND bttColumn where bttColumn.cName = bh:BUFFER-FIELD(i):NAME.
+			jsonRawRow:ADD(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
+			
 			cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat).
 			jsonFormattedRow:ADD(bh:BUFFER-FIELD(i):NAME, cCellValue).
 
