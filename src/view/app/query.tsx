@@ -92,6 +92,9 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                 case "date":
                   column.width = column.format.length * (fontSize - 3);
                   break;
+				case "logical":
+					column.width = 100;
+					break;
                 default:
                   break;
               }
