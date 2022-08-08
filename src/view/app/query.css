@@ -25,3 +25,16 @@ input[type=text] {
 background-color: var(--vscode-input-background);
 color: var(--vscode-input-foreground);
 }
+
+.filter-cell{
+    line-height: 35px;
+    padding: 0;
+}
+.filter-cell > div {
+    padding-block: 0;
+    padding-inline: 8px;
+}
+
+.filter-cell > div:first-child {
+    border-block-end: 1px solid var(--rdg-border-color);
+}

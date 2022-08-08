@@ -210,6 +210,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray.
 	DEFINE VARIABLE jsonData AS Progress.Json.ObjectModel.JsonArray.
 	DEFINE VARIABLE jsonSort AS Progress.Json.ObjectModel.JsonArray.
+	DEFINE VARIABLE jsonFilter AS Progress.Json.ObjectModel.JsonObject.
 	DEFINE VARIABLE jsonRow AS Progress.Json.ObjectModel.JsonObject.
 	DEFINE VARIABLE qh AS WIDGET-HANDLE.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
@@ -220,6 +221,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE iPageLength AS INTEGER NO-UNDO.
 	DEFINE VARIABLE cWherePhrase AS CHARACTER NO-UNDO.
 	DEFINE VARIABLE cOrderPhrase AS CHARACTER NO-UNDO.
+	DEFINE VARIABLE cFilterNames AS CHARACTER EXTENT NO-UNDO.
+	DEFINE VARIABLE cFilterValues AS CHARACTER EXTENT NO-UNDO.
 	jsonFields = new Progress.Json.ObjectModel.JsonArray().
 	jsonData = new Progress.Json.ObjectModel.JsonArray().
 
@@ -256,7 +259,22 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 
 	IF inputObject:GetJsonObject("params"):Has("wherePhrase") THEN DO:
 		IF TRIM(inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")) > "" THEN DO:
-			cWherePhrase = SUBSTITUTE(" where &1", inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")).
+			cWherePhrase = SUBSTITUTE("WHERE (&1) ", inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")).
+		END.
+	END.
+
+	IF inputObject:GetJsonObject("params"):Has("filters") AND 
+           inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetLogical("enabled") = true THEN DO:
+		jsonFilter = inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetJsonObject("columns").
+		cFilterNames = jsonFilter:GetNames().
+		IF EXTENT(cFilterNames) > 0 THEN DO:
+			EXTENT(cFilterValues) = EXTENT(cFilterNames).
+			cFilterValues = ?.
+			DO i = 1 TO EXTENT(cFilterNames):
+				IF jsonFilter:GetCharacter(cFilterNames[i]) > "" THEN DO:
+					cFilterValues[i] = SUBSTITUTE("*&1*", jsonFilter:GetCharacter(cFilterNames[i])).
+				END.
+			END.
 		END.
 	END.
 
@@ -281,7 +299,17 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 
 	iPageLength = inputObject:GetJsonObject("params"):GetInt64("pageLength").
 
+	TABLE_LOOP:
 	DO WHILE qh:GET-NEXT():
+		// make filtering here
+		DO i = 1 TO EXTENT(cFilterNames):
+			IF cFilterValues[i] > "" THEN DO:
+				IF NOT STRING(bh:BUFFER-FIELD(cFilterNames[i]):BUFFER-VALUE) MATCHES cFilterValues[i] THEN DO:
+					NEXT TABLE_LOOP.
+				END.
+			END.
+		END.
+
 		jsonRow = new Progress.Json.ObjectModel.JsonObject().
 		DO i = 1 to bh:NUM-FIELDS:
 			jsonRow:Add(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
