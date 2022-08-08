@@ -33,3 +33,27 @@ color: var(--vscode-input-foreground);
 .rightAlign {
   text-align: right;
 }
+/* 
+.btn {
+  display: inline;
+  float: left;
+  background-color: red;
+} */
+
+.content {
+  display: inline-flex;
+  /* float:left; */
+
+}
+.query-options {
+  position:relative;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: 10px;
+
+}
+
+.form {
+  width: fit-content;
+  margin-right: 10px;
+}
