@@ -10,20 +10,12 @@ const contentStyle = {
   width: "90%",
 };
 
-const json = [
-  {
-    name: "Justinas",
-    surname: "Kniuksta",
-  },
-];
-
-export default function ExportPopup({ wherePhrase, vscode}) {
-
+export default function ExportPopup({ wherePhrase, vscode }) {
   const [exportFormat, setExportFormat] = React.useState("");
 
   const exportList = Object.keys(exportFromJSON.types).filter((key) =>
-  isNaN(Number(key))
-);
+    isNaN(Number(key))
+  );
 
   const getData = () => {
     const command: ICommand = {
@@ -34,19 +26,25 @@ export default function ExportPopup({ wherePhrase, vscode}) {
     vscode.postMessage(command);
   };
 
-    React.useEffect(() => {
-      window.addEventListener("message", (event) => {
-        const message = event.data;
-        switch (message.command) {
-          case "export":
-            exportFromJSON({
-              data: message.data.data,
-              fileName: "test123",
-              exportType: exportFromJSON.types[exportFormat],
-            });
-        }
-      });
-    });
+  const handleMessage = (event) => {
+    const message = event.data;
+    switch (message.command) {
+      case "export":
+        exportFromJSON({
+          data: message.data.data,
+          fileName: "test123",
+          exportType: exportFromJSON.types[exportFormat],
+        });
+    }
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      return window.removeEventListener("message", handleMessage);
+    };
+  }, []);
 
   return (
     <Popup
@@ -58,8 +56,8 @@ export default function ExportPopup({ wherePhrase, vscode}) {
         <div className="modal">
           <div className="header"> Export Data </div>
           <div className="content">
-            Select export format: 
-            <br /> 
+            Select export format:
+            <br />
             <br />
             <select
               id="dropdown"
@@ -72,28 +70,26 @@ export default function ExportPopup({ wherePhrase, vscode}) {
             <br />
           </div>
           <div className="btn-container">
-              <button
-                className="button"
-                onClick={() => {
-                  getData();
-                  close();
-                }}
-              >
-                Export
-              </button>
-              <button
-                className="button"
-                onClick={() => {
-                  close();
-                }}
-              >
-                Cancel
-              </button>
-            </div>
+            <button
+              className="button"
+              onClick={() => {
+                getData();
+                close();
+              }}
+            >
+              Export
+            </button>
+            <button
+              className="button"
+              onClick={() => {
+                close();
+              }}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
     </Popup>
   );
 }
-
-// { exportList.map((option) => (<div>{option}</div>)) }
