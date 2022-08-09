@@ -42,24 +42,6 @@ export class QueryEditor {
         data: [],
       });
     }
-    
-        this.panel.webview.onDidReceiveMessage(
-            (command: ICommand) => {
-                switch (command.action) {
-                    case CommandAction.Query:
-                        if (this.tableListProvider.config) {
-                            new DatabaseProcessor(context).getTableData(this.tableListProvider.config, this.tableNode.tableName, command.params.where, command.params.start, command.params.pageLength, command.params.sortColumns).then((oe) => {
-                                if (this.panel) {
-                                    console.log(`Requested data: ${this.tableNode.tableName}`);
-                                    this.panel?.webview.postMessage({ id: command.id, command: 'data', data: oe });
-                                };
-                            });
-                        }
-                }
-            },
-            undefined,
-            context.subscriptions
-        );
 
     this.panel.webview.onDidReceiveMessage(
       (command: ICommand) => {
@@ -72,8 +54,9 @@ export class QueryEditor {
                   this.tableNode.tableName,
                   command.params.where,
                   command.params.start,
-                  command.params.pageLength, 
-                  command.params.sortColumns
+                  command.params.pageLength,
+                  command.params.sortColumns,
+                  command.params.filters
                 )
                 .then((oe) => {
                   if (this.panel) {
@@ -84,7 +67,7 @@ export class QueryEditor {
                     });
                   }
                 });
-                break;
+              break;
             }
           case CommandAction.Export:
             console.log("config: ", this.tableListProvider.config);
@@ -95,9 +78,9 @@ export class QueryEditor {
                   this.tableNode.tableName,
                   command.params.where,
                   command.params.start,
-                  command.params.pageLength, 
-                  command.params.sortColumns
-
+                  command.params.pageLength,
+                  command.params.sortColumns,
+                  command.params.filters
                 )
                 .then((oe) => {
                   if (this.panel) {
