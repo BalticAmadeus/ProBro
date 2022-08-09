@@ -6,9 +6,12 @@
     "engines": {
         "vscode": "^1.67.0"
     },
-    "categories": [
-        "Other"
-    ],
+    "categories": ["Other"],
+    "icon": "resources/pB_logo.png",
+    "galleryBanner": {
+      "color": "#248bfa",
+      "theme": "dark"
+    },
     "activationEvents": [
         "onCommand:pro-bro.proBroBonjour",
         "onCommand:pro-bro.connect",
