@@ -104,7 +104,7 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 	CREATE BUFFER bhField FOR TABLE "_field".
 
 	cFieldQuery = SUBSTITUTE("FOR EACH _file WHERE _file._file-name = '&1'" + 
-							" , EACH _field OF _file NO-LOCK",
+							" , EACH _field OF _file BY _field._order",
 							inputObject:GetCharacter("params")).
 
 	CREATE QUERY qhField.
