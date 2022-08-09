@@ -3,37 +3,37 @@
         {
             "key": "order",
             "name": "Order",
-            "width": 100
+            "width": 80
         },
         {
             "key": "name",
             "name": "Name",
-            "width": 100
+            "width": 150
         },
         {
             "key": "type",
             "name": "Type",
-            "width": 100
+            "width": 80
         },
         {
             "key": "format",
             "name": "Format",
-            "width": 100
+            "width": 150
         },
         {
             "key": "label",
             "name": "Label",
-            "width": 100
+            "width": 200
         },
         {
             "key": "initial",
             "name": "Initial",
-            "width": 100
+            "width": 80
         },
         {
             "key": "columnLabel",
             "name": "Column Label",
-            "width": 130
+            "width": 100
         },
         {
             "key": "mandatory",
@@ -43,42 +43,42 @@
         {
             "key": "extent",
             "name": "Extent",
-            "width": 100
+            "width": 80
         },
         {
             "key": "decimals",
             "name": "Decimals",
-            "width": 100
+            "width": 80
         },
         {
             "key": "rpos",
             "name": "R-pos",
-            "width": 100
+            "width": 80
         },
         {
             "key": "valexp",
             "name": "Val Expr",
-            "width": 100
+            "width": 80
         },
         {
             "key": "valMessage",
             "name": "Val Message",
-            "width": 100
+            "width": 150
         },
         {
             "key": "helpMsg",
             "name": "Help message",
-            "width": 130
+            "width": 250
         },
         {
             "key": "description",
             "name": "Description",
-            "width": 100
+            "width": 250
         },
         {
             "key": "viewAs",
             "name": "ViewAs",
-            "width": 100
+            "width": 250
         }
     ]
 }
