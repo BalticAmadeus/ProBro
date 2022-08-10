@@ -69,6 +69,16 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
         setWindowHeight(window.innerHeight);
     };
 
+
+    React.useEffect(() => {
+    window.addEventListener("load", () => {
+        makeQuery(0, 1000, sortColumns, filters);
+        console.log("window loaded");
+    });
+});
+  
+
+
     React.useEffect(() => {
         window.addEventListener("resize", windowRezise);
 
