@@ -222,7 +222,9 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE fbh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE i AS INTEGER NO-UNDO.
 	DEFINE VARIABLE j AS INTEGER NO-UNDO.
+	DEFINE VARIABLE dt AS DATETIME-TZ NO-UNDO.
 	DEFINE VARIABLE iPageLength AS INTEGER NO-UNDO.
+	DEFINE VARIABLE iTimeOut AS INTEGER NO-UNDO.
 	DEFINE VARIABLE cWherePhrase AS CHARACTER NO-UNDO.
 	DEFINE VARIABLE cOrderPhrase AS CHARACTER NO-UNDO.
 	DEFINE VARIABLE cFilterNames AS CHARACTER EXTENT NO-UNDO.
@@ -249,6 +251,13 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		fqh:QUERY-OPEN.
 
 		EMPTY TEMP-TABLE bttColumn.
+
+		create bttColumn.
+		bttColumn.cName = "ROWID".
+		bttColumn.cKey = "ROWID".
+		bttColumn.cType = "ROWID".
+		bttColumn.cFormat = ?.
+
 		DO WHILE fqh:GET-NEXT():	
 			IF fqh:GET-BUFFER-HANDLE(1)::_data-type <> "blob" AND fqh:GET-BUFFER-HANDLE(1)::_data-type <> "clob"
 			THEN DO: 
@@ -308,12 +317,17 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	qh:SET-BUFFERS(bh).
 	qh:QUERY-PREPARE(SUBSTITUTE("FOR EACH &1 NO-LOCK &2 &3", inputObject:GetJsonObject("params"):GetCharacter("tableName"), cWherePhrase, cOrderPhrase)).
 	qh:QUERY-OPEN.
-	qh:REPOSITION-TO-ROW(inputObject:GetJsonObject("params"):GetInt64("start") + 1).
+	IF inputObject:GetJsonObject("params"):GetCharacter("lastRowID") > "" AND
+	   qh:REPOSITION-TO-ROWID(TO-ROWID(inputObject:GetJsonObject("params"):GetCharacter("lastRowID"))) THEN DO:
+		qh:GET-NEXT().
+	END.
 
-	iPageLength = inputObject:GetJsonObject("params"):GetInt64("pageLength").
+	iPageLength = inputObject:GetJsonObject("params"):GetInteger("pageLength").
+	iTimeOut = inputObject:GetJsonObject("params"):GetInteger("timeOut").
+	dt = now.
 
 	TABLE_LOOP:
-	DO WHILE qh:GET-NEXT():
+	DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
 		// make filtering here
 		DO i = 1 TO EXTENT(cFilterNames):
 			IF cFilterValues[i] > "" THEN DO:
@@ -326,6 +340,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		jsonRow = new Progress.Json.ObjectModel.JsonObject().
 		jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
 		jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
+		jsonRawRow:ADD("ROWID", STRING(bh:ROWID)).
+		jsonFormattedRow:ADD("ROWID", STRING(bh:ROWID)).
 
 		DO i = 1 to bh:NUM-FIELDS:
 			FIND bttColumn  WHERE bttColumn.cName = bh:BUFFER-FIELD(i):NAME NO-ERROR.
@@ -341,6 +357,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		jsonFormatted:ADD(jsonFormattedRow).
 		iPageLength = iPageLength - 1.
 		IF iPageLength = 0 THEN LEAVE. 
+		IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
 	END.
 
 	qh:QUERY-CLOSE().

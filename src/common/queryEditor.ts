@@ -55,8 +55,10 @@ export class QueryEditor {
                   command.params.where,
                   command.params.start,
                   command.params.pageLength,
+                  command.params.lastRowID,
                   command.params.sortColumns,
-                  command.params.filters
+                  command.params.filters,
+                  command.params.timeOut
                 )
                 .then((oe) => {
                   if (this.panel) {
@@ -79,8 +81,10 @@ export class QueryEditor {
                   command.params.where,
                   command.params.start,
                   command.params.pageLength,
+                  command.params.lastRowID,
                   command.params.sortColumns,
-                  command.params.filters
+                  command.params.filters,
+                  command.params.timeOut
                 )
                 .then((oe) => {
                   if (this.panel) {
