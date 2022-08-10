@@ -22,7 +22,6 @@ export default function ExportPopup({ wherePhrase, vscode }) {
     .reverse();
 
   const getData = () => {
-    console.log("format0: ", exportFormat);
     const command: ICommand = {
       id: v1(),
       action: CommandAction.Export,
@@ -40,7 +39,6 @@ export default function ExportPopup({ wherePhrase, vscode }) {
     const message = event.data;
     switch (message.command) {
       case "export":
-        console.log("format: ", message.format);
         exportFromJSON({
           data: message.data.rawData,
           fileName: message.data.params.tableName,
