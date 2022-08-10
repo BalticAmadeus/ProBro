@@ -2,7 +2,7 @@ import * as React from "react";
 import Popup from "reactjs-popup";
 import exportFromJSON from "export-from-json";
 import "./export.css";
-import { CommandAction, ICommand } from "./model";
+import { CommandAction, ICommand } from "../model";
 import { v1 } from "uuid";
 
 const contentStyle = {
@@ -10,12 +10,6 @@ const contentStyle = {
   width: "90%",
 };
 
-const json = [
-  {
-    name: "Justinas",
-    surname: "Kniuksta",
-  },
-];
 
 export default function ExportPopup({ wherePhrase, vscode}) {
 

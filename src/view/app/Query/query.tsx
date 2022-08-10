@@ -1,14 +1,10 @@
 import * as React from "react";
-import { createRoot } from "react-dom/client";
-
-import "./query.css";
-import { IOETableData } from "../../db/oe";
-
+import { IOETableData } from "../../../db/oe";
 import DataGrid, { SortColumn } from "react-data-grid";
 
-import { CommandAction, ICommand } from "./model";
+import { CommandAction, ICommand } from "../model";
 import { v1 } from "uuid";
-import ExportData from "./export";
+import ExportData from "../Export";
 
 const filterCSS: React.CSSProperties = {
     inlineSize: "100%",
@@ -16,19 +12,10 @@ const filterCSS: React.CSSProperties = {
     fontSize: "14px",
 };
 
-declare global {
-    interface Window {
-        acquireVsCodeApi(): any;
-        tableData: IOETableData;
-    }
-}
-
 interface IConfigProps {
     vscode: any;
     tableData: IOETableData;
-}
-
-const vscode = window.acquireVsCodeApi();
+};
 
 function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     //const oldState = vscode.getState();
@@ -362,7 +349,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
             {isLoading && <div>Loading more rows...</div>}
         </React.Fragment>
     );
-}
+};
 
-const root = createRoot(document.getElementById("root"));
-root.render(<QueryForm vscode={vscode} tableData={window.tableData} />);
+export default QueryForm;
+
