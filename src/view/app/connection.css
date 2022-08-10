@@ -99,11 +99,11 @@ form .buttons .button-narrow{
   letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: #002ac1;
+  background: #248bfa;
 }
 .buttons .button-narrow input:hover{
    /* transform: scale(0.99); */
-   background: #406aff;
+   background: #5cabff;
 }
  @media(max-width: 584px){
  .container{
