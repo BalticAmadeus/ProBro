@@ -94,9 +94,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                             .match(/\d+[.]?\d+/);
                         //setColumns([]);
                         message.data.columns.forEach((column) => {
-                            if (column.key == "ROWID") {
-                                column.sortable = false;
-                            } else {
+                            if (column.key !== "ROWID") {
                                 column.headerRenderer = function ({
                                     column,
                                     sortDirection,
@@ -377,7 +375,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                 </div>
             </div>
             <DataGrid
-                columns={columns}
+                columns={columns.filter((column) => column.key !== "ROWID")}
                 rows={isFormatted ? formattedRows : rawRows}
                 onScroll={handleScroll}
                 defaultColumnOptions={{
