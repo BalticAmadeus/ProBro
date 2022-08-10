@@ -13,15 +13,25 @@ const contentStyle = {
 export default function ExportPopup({ wherePhrase, vscode }) {
   const [exportFormat, setExportFormat] = React.useState("");
 
-  const exportList = Object.keys(exportFromJSON.types).filter((key) =>
-    isNaN(Number(key))
-  );
+  const exportTypes = ["json", "csv", "xls"];
+
+  const exportList = Object.keys(exportFromJSON.types)
+    .filter((key) => isNaN(Number(key)))
+    .filter((key) => exportTypes.includes(key))
+    .concat("") //add empty option for default value
+    .reverse();
 
   const getData = () => {
+    console.log("format0: ", exportFormat);
     const command: ICommand = {
       id: v1(),
       action: CommandAction.Export,
-      params: { where: wherePhrase, start: 0, pageLength: 100000 },
+      params: {
+        where: wherePhrase,
+        start: 0,
+        pageLength: 100000,
+        exportType: exportFormat,
+      },
     };
     vscode.postMessage(command);
   };
@@ -30,10 +40,11 @@ export default function ExportPopup({ wherePhrase, vscode }) {
     const message = event.data;
     switch (message.command) {
       case "export":
+        console.log("format: ", message.format);
         exportFromJSON({
-          data: message.data.data,
-          fileName: "test123",
-          exportType: exportFromJSON.types[exportFormat],
+          data: message.data.rawData,
+          fileName: message.data.params.tableName,
+          exportType: exportFromJSON.types[message.format],
         });
     }
   };
@@ -54,7 +65,7 @@ export default function ExportPopup({ wherePhrase, vscode }) {
     >
       {(close) => (
         <div className="modal">
-          <div className="header"> Export Data </div>
+          <div className="header"> Export to {exportFormat} </div>
           <div className="content">
             Select export format:
             <br />
