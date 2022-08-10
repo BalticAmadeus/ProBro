@@ -26,10 +26,16 @@ background-color: var(--vscode-input-background);
 color: var(--vscode-input-foreground);
 }
 
+.rowid-cell{
+  width: 0px;
+  padding: 0;
+}
+
 .filter-cell{
     line-height: 35px;
     padding: 0;
 }
+
 .filter-cell > div {
     padding-block: 0;
     padding-inline: 8px;
