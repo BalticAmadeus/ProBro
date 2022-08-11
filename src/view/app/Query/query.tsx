@@ -33,6 +33,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     const [columns, setColumns] = React.useState(() => tableData.columns);
     const [loaded, setLoaded] = React.useState(() => 0);
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
+    const [rowID, setRowID] = React.useState("");
 
     const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
         []
@@ -78,116 +79,121 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                             )
                             .getPropertyValue("font-size")
                             .match(/\d+[.]?\d+/);
-                        setColumns([]);
+                        //setColumns([]);
                         message.data.columns.forEach((column) => {
-                            column.headerRenderer = function ({
-                                column,
-                                sortDirection,
-                                priority,
-                                onSort,
-                                isCellSelected,
-                            }) {
-                                function handleKeyDown(event) {
-                                    if (
-                                        event.key === " " ||
-                                        event.key === "Enter"
-                                    ) {
-                                        event.preventDefault();
+                            if (column.key !== "ROWID") {
+                                column.headerRenderer = function ({
+                                    column,
+                                    sortDirection,
+                                    priority,
+                                    onSort,
+                                    isCellSelected,
+                                }) {
+                                    function handleKeyDown(event) {
+                                        if (
+                                            event.key === " " ||
+                                            event.key === "Enter"
+                                        ) {
+                                            event.preventDefault();
+                                            onSort(
+                                                event.ctrlKey || event.metaKey
+                                            );
+                                        }
+                                    }
+
+                                    function handleClick(event) {
                                         onSort(event.ctrlKey || event.metaKey);
                                     }
-                                }
 
-                                function handleClick(event) {
-                                    onSort(event.ctrlKey || event.metaKey);
-                                }
+                                    var timer;
+                                    function handleKeyInputTimeout() {
+                                        clearTimeout(timer);
+                                        timer = setTimeout(reloadData, 500);
+                                    }
 
-                                var timer;
-                                function handleKeyInputTimeout() {
-                                    clearTimeout(timer);
-                                    timer = setTimeout(reloadData, 500);
-                                }
+                                    function handleInputKeyDown(event) {
+                                        var tempFilters = filters;
+                                        tempFilters.columns[column.key] =
+                                            event.target.value;
+                                        setFilters(tempFilters);
+                                        handleKeyInputTimeout();
+                                    }
 
-                                function handleInputKeyDown(event) {
-                                    var tempFilters = filters;
-                                    tempFilters.columns[column.key] =
-                                        event.target.value;
-                                    setFilters(tempFilters);
-                                    handleKeyInputTimeout();
-                                }
-
-                                return (
-                                    <React.Fragment>
-                                        <div
-                                            className={
-                                                filters.enabled
-                                                    ? "filter-cell"
-                                                    : undefined
-                                            }
-                                        >
-                                            <span
-                                                tabIndex={-1}
-                                                style={{
-                                                    cursor: "pointer",
-                                                    display: "flex",
-                                                }}
-                                                className="rdg-header-sort-cell"
-                                                onClick={handleClick}
-                                                onKeyDown={handleKeyDown}
+                                    return (
+                                        <React.Fragment>
+                                            <div
+                                                className={
+                                                    filters.enabled
+                                                        ? "filter-cell"
+                                                        : undefined
+                                                }
                                             >
                                                 <span
-                                                    className="rdg-header-sort-name"
+                                                    tabIndex={-1}
                                                     style={{
-                                                        flexGrow: "1",
-                                                        overflow: "clip",
-                                                        textOverflow:
-                                                            "ellipsis",
+                                                        cursor: "pointer",
+                                                        display: "flex",
                                                     }}
+                                                    className="rdg-header-sort-cell"
+                                                    onClick={handleClick}
+                                                    onKeyDown={handleKeyDown}
                                                 >
-                                                    {column.name}
-                                                </span>
-                                                <span>
-                                                    <svg
-                                                        viewBox="0 0 12 8"
-                                                        width="12"
-                                                        height="8"
-                                                        className="rdg-sort-arrow"
+                                                    <span
+                                                        className="rdg-header-sort-name"
                                                         style={{
-                                                            fill: "currentcolor",
+                                                            flexGrow: "1",
+                                                            overflow: "clip",
+                                                            textOverflow:
+                                                                "ellipsis",
                                                         }}
                                                     >
-                                                        {sortDirection ==
-                                                            "ASC" && (
-                                                            <path d="M0 8 6 0 12 8"></path>
-                                                        )}
-                                                        {sortDirection ==
-                                                            "DESC" && (
-                                                            <path d="M0 0 6 8 12 0"></path>
-                                                        )}
-                                                    </svg>
-                                                    {priority}
+                                                        {column.name}
+                                                    </span>
+                                                    <span>
+                                                        <svg
+                                                            viewBox="0 0 12 8"
+                                                            width="12"
+                                                            height="8"
+                                                            className="rdg-sort-arrow"
+                                                            style={{
+                                                                fill: "currentcolor",
+                                                            }}
+                                                        >
+                                                            {sortDirection ==
+                                                                "ASC" && (
+                                                                <path d="M0 8 6 0 12 8"></path>
+                                                            )}
+                                                            {sortDirection ==
+                                                                "DESC" && (
+                                                                <path d="M0 0 6 8 12 0"></path>
+                                                            )}
+                                                        </svg>
+                                                        {priority}
+                                                    </span>
                                                 </span>
-                                            </span>
-                                        </div>
-                                        {filters.enabled && (
-                                            <div className={"filter-cell"}>
-                                                <input
-                                                    autoFocus={isCellSelected}
-                                                    style={filterCSS}
-                                                    defaultValue={
-                                                        filters.columns[
-                                                            column.key
-                                                        ]
-                                                    }
-                                                    onChange={
-                                                        handleInputKeyDown
-                                                    }
-                                                />
                                             </div>
-                                        )}
-                                    </React.Fragment>
-                                );
-                            };
-
+                                            {filters.enabled && (
+                                                <div className={"filter-cell"}>
+                                                    <input
+                                                        autoFocus={
+                                                            isCellSelected
+                                                        }
+                                                        style={filterCSS}
+                                                        defaultValue={
+                                                            filters.columns[
+                                                                column.key
+                                                            ]
+                                                        }
+                                                        onChange={
+                                                            handleInputKeyDown
+                                                        }
+                                                    />
+                                                </div>
+                                            )}
+                                        </React.Fragment>
+                                    );
+                                };
+                            }
                             column.minWidth =
                                 column.name.length * (fontSize - 3);
                             switch (column.type) {
@@ -210,8 +216,8 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                                 default:
                                     break;
                             }
-                            setColumns(message.data.columns);
                         });
+                        setColumns(message.data.columns);
                     }
                     const boolField = message.data.columns.filter(
                         (field) => field.type === "logical"
@@ -224,6 +230,13 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                         });
                     }
                     setRawRows([...rawRows, ...message.data.rawData]);
+                    setRowID(
+                        message.data.rawData.length > 0
+                            ? message.data.rawData[
+                                  message.data.rawData.length - 1
+                              ].ROWID
+                            : rowID
+                    );
                     setLoaded(loaded + message.data.rawData.length);
                     setFormattedRows([
                         ...formattedRows,
@@ -244,17 +257,31 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
-        makeQuery(0, 1000, sortColumns, filters);
+        makeQuery(
+            0,
+            100 /*number of records for first load*/,
+            "",
+            sortColumns,
+            filters,
+            100 /*ms for data retrival*/
+        );
     };
 
     function reloadData() {
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
-        makeQuery(0, loaded, sortColumns, filters);
+        makeQuery(0, loaded, "", sortColumns, filters, 0);
     }
 
-    function makeQuery(loaded, pageLength, sortColumns, inputFilters) {
+    function makeQuery(
+        loaded,
+        pageLength,
+        lastRowID,
+        sortColumns,
+        inputFilters,
+        timeOut
+    ) {
         const command: ICommand = {
             id: v1(),
             action: CommandAction.Query,
@@ -262,8 +289,10 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                 where: wherePhrase,
                 start: loaded,
                 pageLength: pageLength,
+                lastRowID: lastRowID,
                 sortColumns: sortColumns,
                 filters: inputFilters,
+                timeOut: timeOut,
             },
         };
         vscode.postMessage(command);
@@ -281,7 +310,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     async function handleScroll(event: React.UIEvent<HTMLDivElement>) {
         if (isLoading || !isAtBottom(event)) return;
         setIsLoading(true);
-        makeQuery(loaded, 100, sortColumns, filters);
+        makeQuery(loaded, 100, rowID, sortColumns, filters, 100);
     }
 
     function onSortClick(inputSortColumns: SortColumn[]) {
@@ -292,7 +321,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
-        makeQuery(0, loaded, inputSortColumns, filters);
+        makeQuery(0, loaded, "", inputSortColumns, filters, 0);
     }
 
     return (
@@ -333,7 +362,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                 </div>
             </div>
             <DataGrid
-                columns={columns}
+                columns={columns.filter((column) => column.key !== "ROWID")}
                 rows={isFormatted ? formattedRows : rawRows}
                 onScroll={handleScroll}
                 defaultColumnOptions={{
