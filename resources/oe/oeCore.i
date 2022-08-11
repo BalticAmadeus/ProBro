@@ -363,7 +363,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	qh:QUERY-CLOSE().
 	DELETE OBJECT qh.
 	DELETE OBJECT bh.
-	
+
+	jsonObject:Add("params", inputObject:GetJsonObject("params")).
 	jsonObject:ADD("columns", jsonFields).
 	jsonObject:ADD("rawData", jsonRaw).
 	jsonObject:ADD("formattedData", jsonFormatted).

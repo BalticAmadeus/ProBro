@@ -93,6 +93,7 @@ export class QueryEditor {
                       id: command.id,
                       command: "export",
                       data: oe,
+                      format: command.params.exportType
                     });
                   }
                 });
