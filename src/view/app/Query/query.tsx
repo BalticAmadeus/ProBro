@@ -4,7 +4,7 @@ import DataGrid, { SortColumn } from "react-data-grid";
 
 import { CommandAction, ICommand } from "../model";
 import { v1 } from "uuid";
-import ExportData from "../Export";
+import ExportData from "./Export";
 
 const filterCSS: React.CSSProperties = {
     inlineSize: "100%",
