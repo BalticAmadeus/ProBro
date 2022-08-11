@@ -59,9 +59,11 @@ PROCEDURE LOCAL_GET_VERSION:
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLES:
+	DEFINE VARIABLE jsonTableRow AS Progress.Json.ObjectModel.JsonObject.
 	DEFINE VARIABLE jsonTables AS Progress.Json.ObjectModel.JsonArray.
 	DEFINE VARIABLE qh AS WIDGET-HANDLE.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
+	jsonTableRow = NEW Progress.Json.ObjectModel.JsonObject().
 	jsonTables = NEW Progress.Json.ObjectModel.JsonArray().
 
 	CREATE BUFFER bh FOR TABLE "_file".
@@ -71,14 +73,30 @@ PROCEDURE LOCAL_GET_TABLES:
 	qh:QUERY-OPEN.
 
 	DO WHILE qh:GET-NEXT():
-		jsonTables:add(qh:GET-BUFFER-HANDLE(1)::_file-name).
+		jsonTableRow = NEW Progress.Json.ObjectModel.JsonObject().
+		jsonTableRow:Add("name", qh:GET-BUFFER-HANDLE(1)::_file-name).
+
+		IF qh:GET-BUFFER-HANDLE(1)::_file-name BEGINS "_sys"
+			THEN DO:
+				jsonTableRow:Add("tableType", "SQLCatalog").
+				qh:GET-NEXT().
+			END.
+
+		IF qh:GET-BUFFER-HANDLE(1)::_file-number > 0 AND qh:GET-BUFFER-HANDLE(1)::_file-number < 32000
+			THEN jsonTableRow:Add("tableType", "UserTable").
+			ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number > -80 AND qh:GET-BUFFER-HANDLE(1)::_file-number < 0
+				THEN jsonTableRow:Add("tableType", "schemaTable").
+			ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number < -16384 
+				THEN jsonTableRow:Add("tableType", "virtualSystem").
+	
+		jsonTables:Add(jsonTableRow).
 	END.
 
 	qh:QUERY-CLOSE().
 	DELETE OBJECT qh.
 	DELETE OBJECT bh.
 
-	jsonObject:add("tables", jsonTables).
+	jsonObject:Add("tables", jsonTables).
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLE_DETAILS:

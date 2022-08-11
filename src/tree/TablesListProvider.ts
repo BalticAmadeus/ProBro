@@ -76,7 +76,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 				const tableNodes: tableNode.TableNode[] = [];
 				console.log(`Requested tables list of DB: ${this.config?.name}`);
 				oeTables.tables.forEach((table) => {
-					tableNodes.push(new tableNode.TableNode(this.context, table));
+					tableNodes.push(new tableNode.TableNode(this.context, table.name, table.tableType));
 				});
 				return tableNodes;
 			});

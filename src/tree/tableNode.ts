@@ -9,10 +9,12 @@ import { TablesListProvider } from "./TablesListProvider";
 
 export class TableNode implements INode {
     public tableName: string;
+    public tableType: string;
     public cache: TableDetails | undefined;
 
-    constructor(private context: vscode.ExtensionContext, tableName: string) {
+    constructor(private context: vscode.ExtensionContext, tableName: string, tableType: string) {
         this.tableName = tableName;
+        this.tableType = tableType;
     }
 
     public getTreeItem(): vscode.TreeItem {
