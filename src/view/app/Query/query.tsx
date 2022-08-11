@@ -351,7 +351,7 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                         </div>
                     </form>
                     <div className="query-options">
-                        <ExportData wherePhrase={wherePhrase} vscode={vscode} />
+                        <ExportData wherePhrase={wherePhrase} vscode={vscode} sortColumns={sortColumns} filters={filters} />
                         <input
                             className="btn"
                             type="button"

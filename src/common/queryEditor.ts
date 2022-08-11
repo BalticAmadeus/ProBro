@@ -92,6 +92,7 @@ export class QueryEditor {
                     this.panel?.webview.postMessage({
                       id: command.id,
                       command: "export",
+                      tableName: this.tableNode.tableName,
                       data: oe,
                       format: command.params.exportType
                     });
