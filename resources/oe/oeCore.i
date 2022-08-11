@@ -364,7 +364,6 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DELETE OBJECT qh.
 	DELETE OBJECT bh.
 
-	jsonObject:Add("params", inputObject:GetJsonObject("params")).
 	jsonObject:ADD("columns", jsonFields).
 	jsonObject:ADD("rawData", jsonRaw).
 	jsonObject:ADD("formattedData", jsonFormatted).
