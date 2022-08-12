@@ -26,7 +26,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 			this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: node.cache });
 			return;
 		} else {
-			return new DatabaseProcessor(this.context).getTableDetails(this.config, node.tableName).then((oeTableDetails) => {
+			return DatabaseProcessor.getInstance().getTableDetails(this.config, node.tableName).then((oeTableDetails) => {
 				node.cache = oeTableDetails;
 				this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: oeTableDetails });
 				this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: oeTableDetails });
@@ -72,7 +72,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 
 	private async getGroupNodes(): Promise<tableNode.TableNode[]> {
 		if (this.config) {
-			return new DatabaseProcessor(this.context).getTablesList(this.config).then((oeTables) => {
+			return DatabaseProcessor.getInstance().getTablesList(this.config).then((oeTables) => {
 				const tableNodes: tableNode.TableNode[] = [];
 				console.log(`Requested tables list of DB: ${this.config?.name}`);
 				oeTables.tables.forEach((table) => {

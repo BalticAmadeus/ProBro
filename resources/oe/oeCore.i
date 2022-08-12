@@ -28,7 +28,7 @@ END PROCEDURE.
 
 PROCEDURE LOCAL_CONNECT:
 	DEFINE VARIABLE tmpDate AS DATETIME-TZ NO-UNDO.
-	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject.
+	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 
 	tmpDate = NOW.
 	CONNECT VALUE(inputObject:GetCharacter("connectionString") + " -ld dictdb").
@@ -45,7 +45,7 @@ PROCEDURE LOCAL_CONNECT:
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_DEBUG:
-	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject.
+	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	jsonDebug = jsonObject:GetJsonObject("debug").
 	jsonDebug:add("start", tmpDate).
 	jsonDebug:add("end", NOW).
@@ -59,8 +59,8 @@ PROCEDURE LOCAL_GET_VERSION:
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLES:
-	DEFINE VARIABLE jsonTables AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE qh AS WIDGET-HANDLE.
+	DEFINE VARIABLE jsonTables AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE qh AS WIDGET-HANDLE NO-UNDO.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
 	jsonTables = NEW Progress.Json.ObjectModel.JsonArray().
 
@@ -82,16 +82,16 @@ PROCEDURE LOCAL_GET_TABLES:
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLE_DETAILS:
-	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonIndexes AS Progress.Json.ObjectModel.JsonArray.	
+	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE jsonIndexes AS Progress.Json.ObjectModel.JsonArray NO-UNDO.	
 
 	DEFINE VARIABLE bhFile AS HANDLE NO-UNDO.
 	DEFINE VARIABLE bhIndex AS HANDLE NO-UNDO.
 	DEFINE VARIABLE bhIndexField AS HANDLE NO-UNDO.
 	DEFINE VARIABLE bhField AS HANDLE NO-UNDO.
-	DEFINE VARIABLE qhIndex AS WIDGET-HANDLE.
-	DEFINE VARIABLE qhField AS WIDGET-HANDLE.
+	DEFINE VARIABLE qhIndex AS WIDGET-HANDLE NO-UNDO.
+	DEFINE VARIABLE qhField AS WIDGET-HANDLE NO-UNDO.
 
 	DEFINE VARIABLE cFieldQuery AS CHARACTER NO-UNDO.
 	DEFINE VARIABLE cIndexQuery AS CHARACTER NO-UNDO.
@@ -207,18 +207,18 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLE_DATA:
-	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonRaw AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonFormatted AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonSort AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonFilter AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE jsonRow AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE jsonRawRow AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE qh AS WIDGET-HANDLE.
+	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE jsonRaw AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE jsonFormatted AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE jsonSort AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE jsonFilter AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonRawRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE qh AS WIDGET-HANDLE NO-UNDO.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
-	DEFINE VARIABLE fqh AS WIDGET-HANDLE.
+	DEFINE VARIABLE fqh AS WIDGET-HANDLE NO-UNDO.
 	DEFINE VARIABLE fbh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE i AS INTEGER NO-UNDO.
 	DEFINE VARIABLE j AS INTEGER NO-UNDO.
@@ -349,7 +349,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 
 			jsonRawRow:ADD(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
 			
-			cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat).
+			cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat) NO-ERROR.
 			jsonFormattedRow:ADD(bh:BUFFER-FIELD(i):NAME, cCellValue).
 
 		END.

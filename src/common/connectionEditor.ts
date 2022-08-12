@@ -43,7 +43,7 @@ export class ConnectionEditor {
                         vscode.commands.executeCommand(`${Constants.globalExtensionKey}.refreshList`);
                         return;
                     case CommandAction.Test:
-                        new DatabaseProcessor(context).getDBVersion(command.content!).then((oe) => {
+                        DatabaseProcessor.getInstance().getDBVersion(command.content!).then((oe) => {
                             console.log(`Requested version of DB: ${oe.dbversion}`);
                             this.panel?.webview.postMessage({ id: command.id, command: 'ok' });
                         });
