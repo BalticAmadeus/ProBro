@@ -5,10 +5,31 @@ import * as cp from "child_process";
 import { IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
 import getOEClient from "../common/oeClient"
 import { SortColumn } from "react-data-grid";
+import { resolve } from "path";
 
 export class DatabaseProcessor implements IProcessor {
 
+    private static instance: DatabaseProcessor;
+    private static isProcessRunning: boolean = false;
+
+    private constructor() { }
+
+    public static getInstance(): DatabaseProcessor {
+        if (!DatabaseProcessor.instance) {
+            DatabaseProcessor.instance = new DatabaseProcessor();
+        }
+
+        return DatabaseProcessor.instance;
+    }
+
     public execShell(cmd: string) {
+        if (DatabaseProcessor.isProcessRunning) {
+            console.log("Processor is busy");
+            return new Promise<any>(_ => { return { columns: [], data: [] }; });
+        }
+
+        DatabaseProcessor.isProcessRunning = true;
+
         console.log(cmd);
         var timeInMs = Date.now();
 
@@ -21,6 +42,7 @@ export class DatabaseProcessor implements IProcessor {
                 var json = JSON.parse(data);
                 console.log(`Process time: ${Date.now() - timeInMs}, OE time: ${json.debug.time}, Connect time: ${json.debug.timeConnect}`);
                 console.log(JSON.stringify(json.debug))
+                DatabaseProcessor.isProcessRunning = false;
                 return json;
             });
 
@@ -42,9 +64,6 @@ export class DatabaseProcessor implements IProcessor {
                 });
         */
 
-    }
-
-    constructor(private context: vscode.ExtensionContext) {
     }
 
     private getConnectionString(config: IConfig) {

@@ -48,7 +48,7 @@ export class QueryEditor {
         switch (command.action) {
           case CommandAction.Query:
             if (this.tableListProvider.config) {
-              new DatabaseProcessor(context)
+              DatabaseProcessor.getInstance()
                 .getTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,
@@ -74,7 +74,7 @@ export class QueryEditor {
           case CommandAction.Export:
             console.log("config: ", this.tableListProvider.config);
             if (this.tableListProvider.config) {
-              new DatabaseProcessor(context)
+              DatabaseProcessor.getInstance()
                 .getTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,
