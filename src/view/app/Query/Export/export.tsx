@@ -2,7 +2,7 @@ import * as React from "react";
 import Popup from "reactjs-popup";
 import exportFromJSON from "export-from-json";
 import "./export.css";
-import { CommandAction, ICommand } from "./model";
+import { CommandAction, ICommand } from "../../model";
 import { v1 } from "uuid";
 
 const contentStyle = {
@@ -10,7 +10,7 @@ const contentStyle = {
   width: "90%",
 };
 
-export default function ExportPopup({ wherePhrase, vscode }) {
+export default function ExportPopup({ wherePhrase, vscode, sortColumns, filters }) {
   const [exportFormat, setExportFormat] = React.useState("");
 
   const exportTypes = ["json", "csv", "xls"];
@@ -29,7 +29,11 @@ export default function ExportPopup({ wherePhrase, vscode }) {
         where: wherePhrase,
         start: 0,
         pageLength: 100000,
+        lastRowID: "",
+        sortColumns: sortColumns,
+        filters: filters, 
         exportType: exportFormat,
+        timeOut: 0,
       },
     };
     vscode.postMessage(command);
@@ -39,9 +43,12 @@ export default function ExportPopup({ wherePhrase, vscode }) {
     const message = event.data;
     switch (message.command) {
       case "export":
+        const exportData = message.data.rawData.map(({ROWID, ...rest}) => {
+          return rest;
+        } );
         exportFromJSON({
-          data: message.data.rawData,
-          fileName: message.data.params.tableName,
+          data: exportData,
+          fileName: message.tableName,
           exportType: exportFromJSON.types[message.format],
         });
     }

@@ -1,28 +1,16 @@
 import * as React from "react";
-import { createRoot } from "react-dom/client";
-
-import "./query.css";
-import { IOETableData } from "../../db/oe";
-
+import { IOETableData } from "../../../db/oe";
 import DataGrid, { SortColumn } from "react-data-grid";
 
-import { CommandAction, ICommand } from "./model";
+import { CommandAction, ICommand } from "../model";
 import { v1 } from "uuid";
-import ExportData from "./export";
-import { stringify } from "querystring";
+import ExportData from "./Export";
 
 const filterCSS: React.CSSProperties = {
     inlineSize: "100%",
     padding: "4px",
     fontSize: "14px",
 };
-
-declare global {
-    interface Window {
-        acquireVsCodeApi(): any;
-        tableData: IOETableData;
-    }
-}
 
 interface IConfigProps {
     vscode: any;
@@ -432,7 +420,7 @@ Recent retrival time: ${statisticsObject.recordsRetrivalTime}`}</pre>
                         </div>
                     </form>
                     <div className="query-options">
-                        <ExportData wherePhrase={wherePhrase} vscode={vscode} />
+                        <ExportData wherePhrase={wherePhrase} vscode={vscode} sortColumns={sortColumns} filters={filters} />
                         <input
                             className="btn"
                             type="button"
@@ -460,7 +448,7 @@ Recent retrival time: ${statisticsObject.recordsRetrivalTime}`}</pre>
             {getFooterTag()}
         </React.Fragment>
     );
-}
+};
 
-const root = createRoot(document.getElementById("root"));
-root.render(<QueryForm vscode={vscode} tableData={window.tableData} />);
+export default QueryForm;
+

@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 
 import "./connection.css";
 import ConnectionForm from "./connectionForm";
-import { IConfig } from "./model";
+import { IConfig } from "../model";
 
 declare global {
     interface Window {
