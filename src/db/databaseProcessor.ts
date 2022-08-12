@@ -20,6 +20,7 @@ export class DatabaseProcessor implements IProcessor {
                 //console.log("output data: ", data)
                 var json = JSON.parse(data);
                 console.log(`Process time: ${Date.now() - timeInMs}, OE time: ${json.debug.time}, Connect time: ${json.debug.timeConnect}`);
+                console.log(JSON.stringify(json.debug))
                 return json;
             });
 

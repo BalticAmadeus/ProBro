@@ -1,4 +1,4 @@
-//ROUTINE-LEVEL ON ERROR UNDO,THROW.
+ROUTINE-LEVEL ON ERROR UNDO,THROW.
 
 DEFINE TEMP-TABLE ttIndex NO-UNDO
 FIELD cName AS CHARACTER
@@ -22,7 +22,7 @@ DEFINE VARIABLE tmpVar AS CHARACTER NO-UNDO.
 DEFINE VARIABLE tmpJson AS LONGCHAR NO-UNDO.
 DEFINE VARIABLE tmpInt AS INTEGER NO-UNDO.
 DEFINE VARIABLE tmpDate AS DATETIME-TZ NO-UNDO.
-DEFINE VARIABLE jsonObject AS Progress.Json.ObjectModel.JsonObject.
+DEFINE VARIABLE jsonObject AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 
 DEFINE VARIABLE hClient AS HANDLE NO-UNDO.
 
@@ -126,6 +126,9 @@ PROCEDURE SocketIO:
             jsonObject = NEW Progress.Json.ObjectModel.JsonObject().
             jsonObject:Add("error", err:GetMessageNum(1)).
             jsonObject:Add("description", err:GetMessage(1)).
+	    IF SESSION:ERROR-STACK-TRACE = TRUE THEN DO:
+	    	jsonObject:Add("trace", err:CallStack).
+	    END.
         END CATCH.
         FINALLY:
             RUN LOCAL_GET_DEBUG.
