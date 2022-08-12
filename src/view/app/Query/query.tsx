@@ -28,8 +28,6 @@ interface IStatisticsObject {
     connectTime: number;
 }
 
-const vscode = window.acquireVsCodeApi();
-
 function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
     //const oldState = vscode.getState();
     //const initState = oldState ? oldState : { tableData: tableData };
@@ -420,7 +418,12 @@ Recent retrival time: ${statisticsObject.recordsRetrivalTime}`}</pre>
                         </div>
                     </form>
                     <div className="query-options">
-                        <ExportData wherePhrase={wherePhrase} vscode={vscode} sortColumns={sortColumns} filters={filters} />
+                        <ExportData
+                            wherePhrase={wherePhrase}
+                            vscode={vscode}
+                            sortColumns={sortColumns}
+                            filters={filters}
+                        />
                         <input
                             className="btn"
                             type="button"
@@ -448,7 +451,6 @@ Recent retrival time: ${statisticsObject.recordsRetrivalTime}`}</pre>
             {getFooterTag()}
         </React.Fragment>
     );
-};
+}
 
 export default QueryForm;
-
