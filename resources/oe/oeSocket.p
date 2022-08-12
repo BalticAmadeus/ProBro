@@ -1,4 +1,4 @@
-//ROUTINE-LEVEL ON ERROR UNDO,THROW.
+ROUTINE-LEVEL ON ERROR UNDO,THROW.
 
 DEFINE TEMP-TABLE ttIndex NO-UNDO
 FIELD cName AS CHARACTER
@@ -126,6 +126,9 @@ PROCEDURE SocketIO:
             jsonObject = NEW Progress.Json.ObjectModel.JsonObject().
             jsonObject:Add("error", err:GetMessageNum(1)).
             jsonObject:Add("description", err:GetMessage(1)).
+	    IF SESSION:ERROR-STACK-TRACE = TRUE THEN DO:
+	    	jsonObject:Add("trace", err:CallStack).
+	    END.
         END CATCH.
         FINALLY:
             RUN LOCAL_GET_DEBUG.

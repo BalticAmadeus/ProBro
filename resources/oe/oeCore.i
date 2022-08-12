@@ -31,7 +31,7 @@ PROCEDURE LOCAL_CONNECT:
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 
 	tmpDate = NOW.
-	CONNECT VALUE(inputObject:GetCharacter("connectionString") + " -ld dictdb").
+	CONNECT VALUE(inputObject:GetCharacter("connectionString") + " -ld dictdb") NO-ERROR.
 
 	jsonDebug = jsonObject:GetJsonObject("debug").
 	jsonDebug:add("startConnect", tmpDate).
@@ -46,7 +46,11 @@ END PROCEDURE.
 
 PROCEDURE LOCAL_GET_DEBUG:
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
-	jsonDebug = jsonObject:GetJsonObject("debug").
+	IF NOT jsonObject:Has("debug") THEN DO:
+		jsonObject:Add("debug", NEW Progress.Json.ObjectModel.JsonObject()).
+	END.
+
+jsonDebug = jsonObject:GetJsonObject("debug").
 	jsonDebug:add("start", tmpDate).
 	jsonDebug:add("end", NOW).
 	jsonDebug:add("time", NOW - tmpDate).
@@ -216,13 +220,15 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE jsonRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonRawRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE qh AS WIDGET-HANDLE NO-UNDO.
-	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
+  DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE fqh AS WIDGET-HANDLE NO-UNDO.
 	DEFINE VARIABLE fbh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE i AS INTEGER NO-UNDO.
 	DEFINE VARIABLE j AS INTEGER NO-UNDO.
 	DEFINE VARIABLE dt AS DATETIME-TZ NO-UNDO.
+	DEFINE VARIABLE dtl AS DATETIME-TZ NO-UNDO.
 	DEFINE VARIABLE iPageLength AS INTEGER NO-UNDO.
 	DEFINE VARIABLE iTimeOut AS INTEGER NO-UNDO.
 	DEFINE VARIABLE cWherePhrase AS CHARACTER NO-UNDO.
@@ -235,6 +241,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
 	jsonRaw = NEW Progress.Json.ObjectModel.JsonArray().
 	jsonFormatted = NEW Progress.Json.ObjectModel.JsonArray().
+	jsonDebug = jsonObject:GetJsonObject("debug").
 
 	CREATE BUFFER bh FOR TABLE "_file".
 	CREATE QUERY qh.
@@ -355,10 +362,12 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		END.
 		jsonRaw:ADD(jsonRawRow).
 		jsonFormatted:ADD(jsonFormattedRow).
+
 		iPageLength = iPageLength - 1.
 		IF iPageLength = 0 THEN LEAVE. 
 		IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
 	END.
+	dtl = NOW.
 
 	qh:QUERY-CLOSE().
 	DELETE OBJECT qh.
@@ -367,5 +376,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	jsonObject:ADD("columns", jsonFields).
 	jsonObject:ADD("rawData", jsonRaw).
 	jsonObject:ADD("formattedData", jsonFormatted).
+
+	jsonDebug:add("recordsRetrieved", jsonRaw:Length).
+	jsonDebug:add("recordsRetrievalTime", dtl - dt).
 
 END PROCEDURE.
