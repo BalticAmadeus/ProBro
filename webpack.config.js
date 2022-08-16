@@ -2,10 +2,10 @@ const path = require("path");
 
 module.exports = {
   entry: {
-    connection: "./src/view/app/connection.tsx",
-    fields: "./src/view/app/fields.tsx",
-    indexes: "./src/view/app/indexes.tsx",
-    query: "./src/view/app/query.tsx"
+    connection: "./src/view/app/Connection/",
+    fields: "./src/view/app/Fields",
+    indexes: "./src/view/app/Indexes",
+    query: "./src/view/app/Query"
   },
   output: {
     path: path.resolve(__dirname, "out/view/app"),

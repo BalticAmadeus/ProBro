@@ -1,0 +1,22 @@
+.r104f42s700-beta13 {
+  --rdg-background-color: initial;
+  --rdg-header-background-color: var(--vscode-editorWidget-background);
+  --rdg-row-hover-background-color: rgba(0, 0, 0, 0.2);
+  --rdg-row-selected-background-color: var(
+    --vscode-list-inactiveSelectionBackground
+  );
+  --rdg-checkbox-color: inherit;
+  --rdg-checkbox-focus-color: inherit;
+  --rdg-font-size: inherit;
+  color: inherit;
+  --rdg-selection-color: var(--vscode-focusBorder);
+  --rdg-border-color: var(--vscode-menu-border);
+}
+
+.rdg-row-even {
+  --rdg-background-color: rgba(0, 0, 0, 0.1);
+}
+
+body.vscode-dark .rdg-row-even {
+  --rdg-background-color: rgba(0, 0, 0, 0.4);
+}

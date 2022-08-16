@@ -1,6 +1,6 @@
 import * as React from "react";
 import { v1 } from "uuid";
-import { CommandAction, ICommand, IConfig } from "./model";
+import { CommandAction, ICommand, IConfig } from "../model";
 
 interface IConfigProps {
     vscode: any;

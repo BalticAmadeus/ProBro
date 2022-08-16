@@ -7,9 +7,13 @@ import { DbConnectionNode } from "./tree/dbConnectionNode";
 import { DetailListProvider } from "./tree/DetailListProvider";
 import { FieldsViewProvider } from "./tree/FieldsViewProvider";
 import { GroupListProvider } from "./tree/GroupListProvider";
+import { TableNode } from "./tree/tableNode";
 import { TablesListProvider } from "./tree/TablesListProvider";
 
 export function activate(context: vscode.ExtensionContext) {
+
+  Constants.context = context;
+
   const fieldsProvider = new FieldsViewProvider(context, "fields");
   const fields = vscode.window.registerWebviewViewProvider(
     `${Constants.globalExtensionKey}-fields`,
@@ -26,14 +30,16 @@ export function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(indexes);
 
-  const tablesListProvider = new TablesListProvider(context);
+  const tablesListProvider = new TablesListProvider(context, fieldsProvider, indexesProvider);
   const tables = vscode.window.createTreeView(
     `${Constants.globalExtensionKey}-tables`,
     { treeDataProvider: tablesListProvider }
   );
   tables.onDidChangeSelection((e) =>
-    tablesListProvider.onDidChangeSelection(e, fieldsProvider, indexesProvider)
+    tablesListProvider.onDidChangeSelection(e)
   );
+  fieldsProvider.tableListProvider = tablesListProvider;
+  indexesProvider.tableListProvider = tablesListProvider;
 
   const groupListProvider = new GroupListProvider(context, tables);
   const groups = vscode.window.createTreeView(
@@ -64,14 +70,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.query`,
-      () => {
-        tablesListProvider.node && tablesListProvider.config
-          ? new QueryEditor(
-              context,
-              tablesListProvider.config,
-              tablesListProvider.node.tableName
-            )
-          : "";
+      (node: TableNode) => {
+        new QueryEditor(
+          context,
+          node,
+          tablesListProvider
+        )
       }
     )
   );

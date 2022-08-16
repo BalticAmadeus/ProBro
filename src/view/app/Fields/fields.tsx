@@ -1,38 +1,20 @@
 import * as React from "react";
 import { useState, useMemo } from "react";
-import { createRoot } from "react-dom/client";
 
-import { IConfig, FieldRow } from "./model";
+import { FieldRow, CommandAction, ICommand } from "../model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 
-import * as columnName from "./fieldsColumn.json";
-
-declare global {
-    interface Window {
-        acquireVsCodeApi(): any;
-        initialData: IConfig;
-    }
-}
-
-const defaultColumnProperties = {
-    sortable: true,
-};
-
-columnName.columns.map((c) => ({ ...c, ...defaultColumnProperties }));
-
-const vscode = window.acquireVsCodeApi();
-
-const root = createRoot(document.getElementById("root"));
+import * as columnName from "./column.json";
+import { v1 } from "uuid";
 
 type Comparator = (a: FieldRow, b: FieldRow) => number;
 function getComparator(sortColumn: string): Comparator {
-
     switch (sortColumn) {
         case "order":
         case "extent":
         case "decimals":
-        case "rpos":        
+        case "rpos":
             return (a, b) => {
                 return a[sortColumn] - b[sortColumn];
             };
@@ -66,6 +48,19 @@ function Fields({ initialData, vscode }) {
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>(
         () => new Set()
     );
+    const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
+
+    const windowRezise = () => {
+        setWindowHeight(window.innerHeight);
+    };
+
+    React.useEffect(() => {
+        window.addEventListener("resize", windowRezise);
+
+        return () => {
+            window.removeEventListener("resize", windowRezise);
+        };
+    }, []);
 
     const sortedRows = useMemo((): readonly FieldRow[] => {
         if (sortColumns.length === 0) {
@@ -84,22 +79,46 @@ function Fields({ initialData, vscode }) {
         });
     }, [rows, sortColumns]);
 
-    return (
-        <DataGrid
-            columns={columnName.columns}
-            rows={sortedRows}
-            defaultColumnOptions={{
-                sortable: true,
-                resizable: true,
-            }}
-            selectedRows={selectedRows}
-            onSelectedRowsChange={setSelectedRows}
-            rowKeyGetter={rowKeyGetter}
-            onRowsChange={setRows}
-            sortColumns={sortColumns}
-            onSortColumnsChange={setSortColumns}
-        />
-    );
-}
+    React.useEffect(() => {
+        // const command: ICommand = {
+        //     id: v1(),
+        //     action: CommandAction.FieldsRefresh,
+        // };
+        // vscode.postMessage(command);
 
-root.render(<Fields initialData={window.initialData} vscode={vscode} />);
+        window.addEventListener("message", (event) => {
+            const message = event.data;
+            switch (message.command) {
+                case "data":
+                    console.log("GOT FIELDS MESSAGE");
+                    setRows(message.data.fields);                    
+            }
+        });
+    });
+
+    return (
+        <div>
+            {rows.length > 0 ? (
+                <DataGrid
+                    columns={columnName.columns}
+                    rows={sortedRows}
+                    defaultColumnOptions={{
+                        sortable: true,
+                        resizable: true,
+                    }}
+                    selectedRows={selectedRows}
+                    onSelectedRowsChange={setSelectedRows}
+                    rowKeyGetter={rowKeyGetter}
+                    onRowsChange={setRows}
+                    sortColumns={sortColumns}
+                    onSortColumnsChange={setSortColumns}
+                    style={{ height: windowHeight }}
+                />
+            ) : null}
+        </div>
+    );
+};
+
+export default Fields;
+
+

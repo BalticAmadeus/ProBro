@@ -6,9 +6,12 @@
     "engines": {
         "vscode": "^1.67.0"
     },
-    "categories": [
-        "Other"
-    ],
+    "categories": ["Other"],
+    "icon": "resources/pB_logo.png",
+    "galleryBanner": {
+      "color": "#248bfa",
+      "theme": "dark"
+    },
     "activationEvents": [
         "onCommand:pro-bro.proBroBonjour",
         "onCommand:pro-bro.connect",
@@ -24,19 +27,19 @@
                 {
                     "id": "pro-bro",
                     "title": "OpenEdge Explorer",
-                    "icon": "resources/redshift.svg"
+                    "icon": "resources/pB.svg"
                 }
             ],
             "panel": [
                 {
                     "id": "pro-bro-fields",
                     "title": "Fields Explorer",
-                    "icon": "resources/redshift.svg"
+                    "icon": "resources/pB.svg"
                 },
                 {
                     "id": "pro-bro-indexes",
                     "title": "Indexes Explorer",
-                    "icon": "resources/redshift.svg"
+                    "icon": "resources/pB.svg"
                 }
             ]
         },
@@ -157,10 +160,13 @@
         "webpack-cli": "^4.9.2"
     },
     "dependencies": {
+        "bootstrap": "^5.2.0",
+        "export-from-json": "^1.6.0",
         "faker": "^5.5.3",
         "react": "^18.1.0",
         "react-data-grid": "^7.0.0-beta.13",
         "react-dom": "^18.1.0",
-        "react-table": "^7.8.0"
+        "react-table": "^7.8.0",
+        "reactjs-popup": "^2.0.5"
     }
 }
