@@ -182,7 +182,8 @@ function QueryForm({ vscode, tableData, ...props }: IConfigProps) {
                         </div>
                         {filters.enabled && (
                           <div className={"filter-cell"}>
-                            <input
+                            <input 
+                              className="textInput"
                               autoFocus={isCellSelected}
                               style={filterCSS}
                               defaultValue={filters.columns[column.key]}
@@ -355,7 +356,8 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
           <form className="form" action="#">
             <div className="connection-details">
               <div className="input-box">
-                <input
+                <input 
+                  className="textInput"
                   type="text"
                   placeholder="WHERE ..."
                   value={wherePhrase}
