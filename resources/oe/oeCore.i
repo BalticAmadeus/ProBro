@@ -69,7 +69,7 @@ PROCEDURE LOCAL_GET_TABLES:
 	CREATE BUFFER bh FOR TABLE "_file".
 	CREATE QUERY qh.
 	qh:SET-BUFFERS(bh).
-	qh:QUERY-PREPARE("FOR EACH _file WHERE _file._tbl-type = 'T' NO-LOCK BY _file._file-name").
+	qh:QUERY-PREPARE("FOR EACH _file NO-LOCK BY _file._file-name").
 	qh:QUERY-OPEN.
 
 	DO WHILE qh:GET-NEXT():
@@ -85,9 +85,9 @@ PROCEDURE LOCAL_GET_TABLES:
 		IF qh:GET-BUFFER-HANDLE(1)::_file-number > 0 AND qh:GET-BUFFER-HANDLE(1)::_file-number < 32000
 			THEN jsonTableRow:Add("tableType", "UserTable").
 			ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number > -80 AND qh:GET-BUFFER-HANDLE(1)::_file-number < 0
-				THEN jsonTableRow:Add("tableType", "schemaTable").
+				THEN jsonTableRow:Add("tableType", "SchemaTable").
 			ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number < -16384 
-				THEN jsonTableRow:Add("tableType", "virtualSystem").
+				THEN jsonTableRow:Add("tableType", "VirtualSystem").
 	
 		jsonTables:Add(jsonTableRow).
 	END.

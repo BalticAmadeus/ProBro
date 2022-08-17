@@ -88,4 +88,22 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
+
+  enum TableTypes {
+    "UserTable",
+    "SchemaTable",
+    "VirtualSystem",
+    "SQLCatalog"
+  };
+
+  vscode.commands.registerCommand( `${Constants.globalExtensionKey}.list-filter`, async () => {
+    const enumVal = Object.keys(TableTypes).filter((val) => isNaN(Number(val)));
+		const value = await vscode.window.showQuickPick(
+      [...enumVal],
+      {
+        canPickMany: true, 
+        placeHolder: 'Select table types to view.',
+      });
+    tablesListProvider.refreshList(value);
+	});
 }
