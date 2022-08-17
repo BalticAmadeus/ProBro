@@ -79,7 +79,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 
 	private async getGroupNodes() {
 		if (this.config) {
-			return new DatabaseProcessor(this.context).getTablesList(this.config).then((oeTables) => {
+			return DatabaseProcessor.getInstance().getTablesList(this.config).then((oeTables) => {
 				this.tableNodes = [];
 				console.log(`Requested tables list of DB: ${this.config?.name}`);
 				 return oeTables.tables.forEach((table) => {
