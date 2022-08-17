@@ -128,6 +128,7 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 		jsonField:add("initial", bhField::_initial).
 		jsonField:add("columnLabel", bhField::_col-label).
 		jsonField:add("mandatory", bhField::_mandatory).
+		jsonField:add("extent", bhField::_extent).
 		jsonField:add("decimals", bhField::_decimals).
 		jsonField:add("rpos", bhField::_field-rpos).
 		jsonField:add("valExp", bhField::_valexp).
@@ -266,13 +267,28 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		bttColumn.cFormat = ?.
 
 		DO WHILE fqh:GET-NEXT():	
-			IF fqh:GET-BUFFER-HANDLE(1)::_data-type <> "blob" AND fqh:GET-BUFFER-HANDLE(1)::_data-type <> "clob"
-			THEN DO: 
-				create bttColumn.
-				bttColumn.cName = fqh:GET-BUFFER-HANDLE(1)::_field-name.
-				bttColumn.cKey = fqh:GET-BUFFER-HANDLE(1)::_field-name.
-				bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
-				bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
+			IF LOOKUP(fqh:GET-BUFFER-HANDLE(1)::_data-type, 'clob,blob,raw') = 0 
+			THEN DO:
+				IF fqh:GET-BUFFER-HANDLE(1)::_extent = 0
+				THEN DO: 
+					create bttColumn.
+					bttColumn.cName = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+					bttColumn.cKey = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+					bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
+					bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
+					bttColumn.iExtent = fqh:GET-BUFFER-HANDLE(1)::_extent.
+				END.
+				ELSE DO:
+					DO i = 1 to fqh:GET-BUFFER-HANDLE(1)::_extent:
+						create bttColumn.
+						bttColumn.cName = substitute("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
+						bttColumn.cKey = substitute("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
+						bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
+						bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
+						bttColumn.iExtent = fqh:GET-BUFFER-HANDLE(1)::_extent.
+					END.
+				END.
+
 			END.
 		END.
 		jsonFields:read(TEMP-TABLE bttColumn:HANDLE).
@@ -347,21 +363,32 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		jsonRow = new Progress.Json.ObjectModel.JsonObject().
 		jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
 		jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
-		jsonRawRow:ADD("ROWID", STRING(bh:ROWID)).
-		jsonFormattedRow:ADD("ROWID", STRING(bh:ROWID)).
+		jsonRawRow:add("ROWID", STRING(bh:ROWID)).
+		jsonFormattedRow:add("ROWID", STRING(bh:ROWID)).
 
 		DO i = 1 to bh:NUM-FIELDS:
-			FIND bttColumn  WHERE bttColumn.cName = bh:BUFFER-FIELD(i):NAME NO-ERROR.
-			IF NOT AVAILABLE bttColumn THEN NEXT.
-
-			jsonRawRow:ADD(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
+			FIND bttColumn  WHERE bttColumn.cName = bh:BUFFER-FIELD(i):NAME NO-ERROR .
+			IF AVAILABLE bttColumn
+			THEN DO:
+				jsonRawRow:add(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
 			
-			cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat) NO-ERROR.
-			jsonFormattedRow:ADD(bh:BUFFER-FIELD(i):NAME, cCellValue).
+				cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat) NO-ERROR.
+				jsonFormattedRow:add(bh:BUFFER-FIELD(i):NAME, cCellValue).
+			END.
+			ELSE DO:
+				j = 0.
+				FOR EACH bttColumn WHERE INDEX(bttColumn.cName, SUBSTITUTE("&1[", bh:BUFFER-FIELD(i):NAME)) = 1 NO-LOCK:
+					j = j + 1.
+					jsonRawRow:add(bttColumn.cName, bh:BUFFER-FIELD(i):BUFFER-VALUE(j)).
+			
+					cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE(j), bttColumn.cFormat) NO-ERROR.
+					jsonFormattedRow:add(bttColumn.cName, cCellValue).
+				END.
+			END.
 
 		END.
-		jsonRaw:ADD(jsonRawRow).
-		jsonFormatted:ADD(jsonFormattedRow).
+		jsonRaw:add(jsonRawRow).
+		jsonFormatted:add(jsonFormattedRow).
 
 		iPageLength = iPageLength - 1.
 		IF iPageLength = 0 THEN LEAVE. 
@@ -373,9 +400,9 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DELETE OBJECT qh.
 	DELETE OBJECT bh.
 
-	jsonObject:ADD("columns", jsonFields).
-	jsonObject:ADD("rawData", jsonRaw).
-	jsonObject:ADD("formattedData", jsonFormatted).
+	jsonObject:add("columns", jsonFields).
+	jsonObject:add("rawData", jsonRaw).
+	jsonObject:add("formattedData", jsonFormatted).
 
 	jsonDebug:add("recordsRetrieved", jsonRaw:Length).
 	jsonDebug:add("recordsRetrievalTime", dtl - dt).
