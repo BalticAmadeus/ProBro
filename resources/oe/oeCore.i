@@ -28,10 +28,10 @@ END PROCEDURE.
 
 PROCEDURE LOCAL_CONNECT:
 	DEFINE VARIABLE tmpDate AS DATETIME-TZ NO-UNDO.
-	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject.
+	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 
 	tmpDate = NOW.
-	CONNECT VALUE(inputObject:GetCharacter("connectionString") + " -ld dictdb").
+	CONNECT VALUE(inputObject:GetCharacter("connectionString") + " -ld dictdb") NO-ERROR.
 
 	jsonDebug = jsonObject:GetJsonObject("debug").
 	jsonDebug:add("startConnect", tmpDate).
@@ -45,8 +45,12 @@ PROCEDURE LOCAL_CONNECT:
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_DEBUG:
-	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject.
-	jsonDebug = jsonObject:GetJsonObject("debug").
+	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	IF NOT jsonObject:Has("debug") THEN DO:
+		jsonObject:Add("debug", NEW Progress.Json.ObjectModel.JsonObject()).
+	END.
+
+jsonDebug = jsonObject:GetJsonObject("debug").
 	jsonDebug:add("start", tmpDate).
 	jsonDebug:add("end", NOW).
 	jsonDebug:add("time", NOW - tmpDate).
@@ -59,10 +63,12 @@ PROCEDURE LOCAL_GET_VERSION:
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLES:
+
 	DEFINE VARIABLE jsonTableRow AS Progress.Json.ObjectModel.JsonObject.
 	DEFINE VARIABLE jsonTables AS Progress.Json.ObjectModel.JsonArray.
 	DEFINE VARIABLE qh AS WIDGET-HANDLE.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
+  
 	jsonTableRow = NEW Progress.Json.ObjectModel.JsonObject().
 	jsonTables = NEW Progress.Json.ObjectModel.JsonArray().
 
@@ -100,16 +106,16 @@ PROCEDURE LOCAL_GET_TABLES:
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLE_DETAILS:
-	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonIndexes AS Progress.Json.ObjectModel.JsonArray.	
+	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE jsonIndexes AS Progress.Json.ObjectModel.JsonArray NO-UNDO.	
 
 	DEFINE VARIABLE bhFile AS HANDLE NO-UNDO.
 	DEFINE VARIABLE bhIndex AS HANDLE NO-UNDO.
 	DEFINE VARIABLE bhIndexField AS HANDLE NO-UNDO.
 	DEFINE VARIABLE bhField AS HANDLE NO-UNDO.
-	DEFINE VARIABLE qhIndex AS WIDGET-HANDLE.
-	DEFINE VARIABLE qhField AS WIDGET-HANDLE.
+	DEFINE VARIABLE qhIndex AS WIDGET-HANDLE NO-UNDO.
+	DEFINE VARIABLE qhField AS WIDGET-HANDLE NO-UNDO.
 
 	DEFINE VARIABLE cFieldQuery AS CHARACTER NO-UNDO.
 	DEFINE VARIABLE cIndexQuery AS CHARACTER NO-UNDO.
@@ -225,22 +231,24 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLE_DATA:
-	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonRaw AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonFormatted AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonSort AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE jsonFilter AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE jsonRow AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE jsonRawRow AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE qh AS WIDGET-HANDLE.
-	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
-	DEFINE VARIABLE fqh AS WIDGET-HANDLE.
+	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE jsonRaw AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE jsonFormatted AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE jsonSort AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE jsonFilter AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonRawRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE qh AS WIDGET-HANDLE NO-UNDO.
+  DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
+	DEFINE VARIABLE fqh AS WIDGET-HANDLE NO-UNDO.
 	DEFINE VARIABLE fbh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE i AS INTEGER NO-UNDO.
 	DEFINE VARIABLE j AS INTEGER NO-UNDO.
 	DEFINE VARIABLE dt AS DATETIME-TZ NO-UNDO.
+	DEFINE VARIABLE dtl AS DATETIME-TZ NO-UNDO.
 	DEFINE VARIABLE iPageLength AS INTEGER NO-UNDO.
 	DEFINE VARIABLE iTimeOut AS INTEGER NO-UNDO.
 	DEFINE VARIABLE cWherePhrase AS CHARACTER NO-UNDO.
@@ -253,6 +261,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
 	jsonRaw = NEW Progress.Json.ObjectModel.JsonArray().
 	jsonFormatted = NEW Progress.Json.ObjectModel.JsonArray().
+	jsonDebug = jsonObject:GetJsonObject("debug").
 
 	CREATE BUFFER bh FOR TABLE "_file".
 	CREATE QUERY qh.
@@ -367,16 +376,18 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 
 			jsonRawRow:ADD(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
 			
-			cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat).
+			cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat) NO-ERROR.
 			jsonFormattedRow:ADD(bh:BUFFER-FIELD(i):NAME, cCellValue).
 
 		END.
 		jsonRaw:ADD(jsonRawRow).
 		jsonFormatted:ADD(jsonFormattedRow).
+
 		iPageLength = iPageLength - 1.
 		IF iPageLength = 0 THEN LEAVE. 
 		IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
 	END.
+	dtl = NOW.
 
 	qh:QUERY-CLOSE().
 	DELETE OBJECT qh.
@@ -385,5 +396,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	jsonObject:ADD("columns", jsonFields).
 	jsonObject:ADD("rawData", jsonRaw).
 	jsonObject:ADD("formattedData", jsonFormatted).
+
+	jsonDebug:add("recordsRetrieved", jsonRaw:Length).
+	jsonDebug:add("recordsRetrievalTime", dtl - dt).
 
 END PROCEDURE.
