@@ -348,6 +348,13 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
     }
   }
 
+  let inputQuery: HTMLInputElement = undefined;
+  React.useEffect(() => {
+    if (inputQuery) {
+      inputQuery.click();
+    }
+  }, []);
+
   return (
     <React.Fragment>
       <div className="container">
@@ -367,6 +374,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                   }}
                 />
                 <input
+                  ref={(input) => (inputQuery = input)}
                   className="btn"
                   type="submit"
                   value="Query"
