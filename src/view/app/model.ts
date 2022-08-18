@@ -1,3 +1,4 @@
+import { SortColumn } from "react-data-grid";
 import { v1 as uuidv1, v1 } from "uuid";
 
 export interface IConfig {
@@ -17,7 +18,7 @@ export interface ICommand {
     id: string;
     action: CommandAction;
     content?: IConfig;
-    params?: any;
+    params?: ITableData;
 }
 
 export interface IQueryParams {
@@ -30,7 +31,9 @@ export enum CommandAction {
     Test,
     Query,
     FieldsRefresh,
-    Export
+    Export,
+    CRUD,
+    Submit
 }
 
 export interface FieldRow {
@@ -61,4 +64,25 @@ export interface IndexRow {
 export interface TableDetails {
     fields: FieldRow[],
     indexes: IndexRow[]
+}
+
+export enum ProcessAction {
+    Insert,
+    Update,
+    Delete,
+    Submit
+}
+
+export interface ITableData {
+    wherePhrase?: string,
+    start: number,
+    pageLength: number,
+    lastRowID: string,
+    sortColumns?: SortColumn[],
+    filters?: any,
+    timeOut: number,
+    crud?: string[],
+    data?: { key: string; value: string; defaultValue: string }[],
+    mode?: string,
+    exportType?: string
 }

@@ -15,6 +15,9 @@ PROCEDURE LOCAL_PROCESS:
 		WHEN "get_table_data" THEN DO:
 			RUN LOCAL_GET_TABLE_DATA.
 		END.
+		WHEN "submit_table_data" THEN DO:
+			RUN LOCAL_SUBMIT_TABLE_DATA.
+		END.
 		WHEN "get_table_details" THEN DO:
 			RUN LOCAL_GET_TABLE_DETAILS.
 		END.
@@ -222,7 +225,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE qh AS WIDGET-HANDLE NO-UNDO.
-  DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
+	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE fqh AS WIDGET-HANDLE NO-UNDO.
 	DEFINE VARIABLE fbh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE i AS INTEGER NO-UNDO.
@@ -235,6 +238,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE cOrderPhrase AS CHARACTER NO-UNDO.
 	DEFINE VARIABLE cFilterNames AS CHARACTER EXTENT NO-UNDO.
 	DEFINE VARIABLE cFilterValues AS CHARACTER EXTENT NO-UNDO.
+	DEFINE VARIABLE cMode AS CHARACTER NO-UNDO.
+
 	jsonFields = new Progress.Json.ObjectModel.JsonArray().
 	DEFINE VARIABLE cCellValue AS CHARACTER NO-UNDO.
 	DEFINE BUFFER bttColumn FOR ttColumn.
@@ -286,98 +291,225 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DELETE OBJECT qh.
 	DELETE OBJECT bh.
 
-	IF inputObject:GetJsonObject("params"):has("wherePhrase") THEN DO:
-		IF TRIM(inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")) > "" THEN DO:
-			cWherePhrase = SUBSTITUTE("WHERE (&1) ", inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")).
-		END.
+	jsonObject:ADD("columns", jsonFields).
+
+	IF inputObject:GetJsonObject("params"):has("mode") THEN DO:
+		cMode = inputObject:GetJsonObject("params"):GetCharacter("mode").
+	END.
+	ELSE DO:
+		cMode = "DATA".
 	END.
 
-	IF inputObject:GetJsonObject("params"):Has("filters") AND 
-           inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetLogical("enabled") = true THEN DO:
-		jsonFilter = inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetJsonObject("columns").
-		cFilterNames = jsonFilter:GetNames().
-		IF EXTENT(cFilterNames) > 0 THEN DO:
-			EXTENT(cFilterValues) = EXTENT(cFilterNames).
-			cFilterValues = ?.
-			DO i = 1 TO EXTENT(cFilterNames):
-				IF jsonFilter:GetCharacter(cFilterNames[i]) > "" THEN DO:
-					cFilterValues[i] = SUBSTITUTE("*&1*", jsonFilter:GetCharacter(cFilterNames[i])).
+	IF cMode = "UPDATE" THEN DO:
+	END.
+	ELSE IF cMode = "DATA" THEN DO:
+		IF inputObject:GetJsonObject("params"):has("wherePhrase") THEN DO:
+			IF TRIM(inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")) > "" THEN DO:
+				cWherePhrase = SUBSTITUTE("WHERE (&1) ", inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")).
+			END.
+		END.
+
+		IF inputObject:GetJsonObject("params"):Has("filters") AND 
+			inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetLogical("enabled") = true THEN DO:
+			jsonFilter = inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetJsonObject("columns").
+			cFilterNames = jsonFilter:GetNames().
+			IF EXTENT(cFilterNames) > 0 THEN DO:
+				EXTENT(cFilterValues) = EXTENT(cFilterNames).
+				cFilterValues = ?.
+				DO i = 1 TO EXTENT(cFilterNames):
+					IF jsonFilter:GetCharacter(cFilterNames[i]) > "" THEN DO:
+						cFilterValues[i] = SUBSTITUTE("*&1*", jsonFilter:GetCharacter(cFilterNames[i])).
+					END.
 				END.
+			END.
+		END.
+
+		IF inputObject:GetJsonObject("params"):has("sortColumns") THEN DO:
+			jsonSort = inputObject:GetJsonObject("params"):GetJsonArray("sortColumns").
+			DO i = 1 TO jsonSort:LENGTH:
+				cOrderPhrase = SUBSTITUTE("&1 BY &2.&3 &4", 
+							cOrderPhrase, 
+							inputObject:GetJsonObject("params"):GetCharacter("tableName"),
+							jsonSort:GetJsonObject(i):GetCharacter("columnKey"),
+							IF jsonSort:GetJsonObject(i):GetCharacter("direction") = "ASC" THEN "" ELSE "DESCENDING").
 			END.
 		END.
 	END.
 
-	IF inputObject:GetJsonObject("params"):has("sortColumns") THEN DO:
-		jsonSort = inputObject:GetJsonObject("params"):GetJsonArray("sortColumns").
-		DO i = 1 TO jsonSort:LENGTH:
-			cOrderPhrase = SUBSTITUTE("&1 BY &2.&3 &4", 
-						cOrderPhrase, 
-						inputObject:GetJsonObject("params"):GetCharacter("tableName"),
-						jsonSort:GetJsonObject(i):GetCharacter("columnKey"),
-						IF jsonSort:GetJsonObject(i):GetCharacter("direction") = "ASC" THEN "" ELSE "DESCENDING").
-		END.
-	END.
+	IF CAN-DO("UPDATE,DATA", cMode) THEN DO:
 
+		CREATE BUFFER bh FOR TABLE inputObject:GetJsonObject("params"):GetCharacter("tableName").
+		CREATE QUERY qh.
+		qh:SET-BUFFERS(bh).
+		qh:QUERY-PREPARE(SUBSTITUTE("FOR EACH &1 NO-LOCK &2 &3", inputObject:GetJsonObject("params"):GetCharacter("tableName"), cWherePhrase, cOrderPhrase)).
+		qh:QUERY-OPEN.
+		IF inputObject:GetJsonObject("params"):GetCharacter("lastRowID") > "" AND
+			qh:REPOSITION-TO-ROWID(TO-ROWID(inputObject:GetJsonObject("params"):GetCharacter("lastRowID"))) AND 
+			cMode <> "UPDATE" THEN DO:
+			qh:GET-NEXT().
+		END.
+
+		iPageLength = inputObject:GetJsonObject("params"):GetInteger("pageLength").
+		iTimeOut = inputObject:GetJsonObject("params"):GetInteger("timeOut").
+		dt = now.
+
+		TABLE_LOOP:
+		DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
+			// make filtering here
+			DO i = 1 TO EXTENT(cFilterNames):
+				IF cFilterValues[i] > "" THEN DO:
+					IF NOT STRING(bh:BUFFER-FIELD(cFilterNames[i]):BUFFER-VALUE) MATCHES cFilterValues[i] THEN DO:
+						NEXT TABLE_LOOP.
+					END.
+				END.
+			END.
+
+			jsonRow = new Progress.Json.ObjectModel.JsonObject().
+			jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
+			jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
+			jsonRawRow:ADD("ROWID", STRING(bh:ROWID)).
+			jsonFormattedRow:ADD("ROWID", STRING(bh:ROWID)).
+
+			DO i = 1 to bh:NUM-FIELDS:
+				FIND bttColumn  WHERE bttColumn.cName = bh:BUFFER-FIELD(i):NAME NO-ERROR.
+				IF NOT AVAILABLE bttColumn THEN NEXT.
+
+				jsonRawRow:ADD(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
+				
+				cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat) NO-ERROR.
+				jsonFormattedRow:ADD(bh:BUFFER-FIELD(i):NAME, cCellValue).
+
+			END.
+			jsonRaw:ADD(jsonRawRow).
+			jsonFormatted:ADD(jsonFormattedRow).
+
+			iPageLength = iPageLength - 1.
+			IF iPageLength = 0 THEN LEAVE. 
+			IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
+		END.
+		dtl = NOW.
+
+		qh:QUERY-CLOSE().
+		DELETE OBJECT qh.
+		DELETE OBJECT bh.
+
+		jsonObject:ADD("rawData", jsonRaw).
+		jsonObject:ADD("formattedData", jsonFormatted).
+
+		jsonDebug:add("recordsRetrieved", jsonRaw:Length).
+		jsonDebug:add("recordsRetrievalTime", dtl - dt).
+
+	END.
+END PROCEDURE.
+
+PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
+	DEFINE VARIABLE jsonData AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE jsonCrud AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE qh AS WIDGET-HANDLE NO-UNDO.
+	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
+	DEFINE VARIABLE fh AS HANDLE  NO-UNDO.
+
+	DEFINE VARIABLE i AS INTEGER NO-UNDO.
+
+message string(inputObject:GetJsonText("params")).
+
+	jsonData = inputObject:GetJsonObject("params"):GetJsonArray("data").
+	jsonCrud = inputObject:GetJsonObject("params"):GetJsonArray("crud").
 
 	CREATE BUFFER bh FOR TABLE inputObject:GetJsonObject("params"):GetCharacter("tableName").
 	CREATE QUERY qh.
 	qh:SET-BUFFERS(bh).
-	qh:QUERY-PREPARE(SUBSTITUTE("FOR EACH &1 NO-LOCK &2 &3", inputObject:GetJsonObject("params"):GetCharacter("tableName"), cWherePhrase, cOrderPhrase)).
+	qh:QUERY-PREPARE(SUBSTITUTE("FOR EACH &1 NO-LOCK", inputObject:GetJsonObject("params"):GetCharacter("tableName"))).
 	qh:QUERY-OPEN.
-	IF inputObject:GetJsonObject("params"):GetCharacter("lastRowID") > "" AND
-	   qh:REPOSITION-TO-ROWID(TO-ROWID(inputObject:GetJsonObject("params"):GetCharacter("lastRowID"))) THEN DO:
-		qh:GET-NEXT().
-	END.
 
-	iPageLength = inputObject:GetJsonObject("params"):GetInteger("pageLength").
-	iTimeOut = inputObject:GetJsonObject("params"):GetInteger("timeOut").
-	dt = now.
-
-	TABLE_LOOP:
-	DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
-		// make filtering here
-		DO i = 1 TO EXTENT(cFilterNames):
-			IF cFilterValues[i] > "" THEN DO:
-				IF NOT STRING(bh:BUFFER-FIELD(cFilterNames[i]):BUFFER-VALUE) MATCHES cFilterValues[i] THEN DO:
-					NEXT TABLE_LOOP.
+	IF inputObject:GetJsonObject("params"):GetCharacter("mode") = "DELETE" THEN DO:
+		DO i = 1 TO jsonCrud:Length:
+			IF qh:REPOSITION-TO-ROWID(TO-ROWID(jsonCrud:GetCharacter(i))) THEN DO:
+				IF qh:GET-NEXT(EXCLUSIVE-LOCK, NO-WAIT) THEN DO:
+					IF bh:LOCKED THEN DO:
+						UNDO, THROW NEW Progress.Lang.AppError("Record is locked", 503).
+					END.
 				END.
+				ELSE DO:
+					UNDO, THROW NEW Progress.Lang.AppError("Record not found", 504).
+				END.
+				bh:BUFFER-DELETE().				
+				
+			END.
+			ELSE DO:
+				UNDO, THROW NEW Progress.Lang.AppError("Record not found", 505).
+			END.
+		END.		
+	END.
+	ELSE DO:
+		IF inputObject:GetJsonObject("params"):GetCharacter("mode") = "INSERT" THEN DO:
+			bh:BUFFER-CREATE().
+		END.
+		ELSE IF inputObject:GetJsonObject("params"):GetCharacter("mode") = "UPDATE" THEN DO:
+			IF qh:REPOSITION-TO-ROWID(TO-ROWID(inputObject:GetJsonObject("params"):GetCharacter("lastRowID"))) THEN DO:
+				IF qh:GET-NEXT(EXCLUSIVE-LOCK, NO-WAIT) THEN DO:
+					IF bh:LOCKED THEN DO:
+						UNDO, THROW NEW Progress.Lang.AppError("Record is locked", 501).
+					END.
+				END.
+				ELSE DO:
+					UNDO, THROW NEW Progress.Lang.AppError("Record not found", 502).
+				END.
+			END.
+			ELSE DO:
+				UNDO, THROW NEW Progress.Lang.AppError("Record not found", 502).
 			END.
 		END.
 
-		jsonRow = new Progress.Json.ObjectModel.JsonObject().
-		jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
-		jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
-		jsonRawRow:ADD("ROWID", STRING(bh:ROWID)).
-		jsonFormattedRow:ADD("ROWID", STRING(bh:ROWID)).
-
-		DO i = 1 to bh:NUM-FIELDS:
-			FIND bttColumn  WHERE bttColumn.cName = bh:BUFFER-FIELD(i):NAME NO-ERROR.
-			IF NOT AVAILABLE bttColumn THEN NEXT.
-
-			jsonRawRow:ADD(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
-			
-			cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat) NO-ERROR.
-			jsonFormattedRow:ADD(bh:BUFFER-FIELD(i):NAME, cCellValue).
-
+		DO i = 1 TO jsonData:Length:
+			fh = ?.
+			ASSIGN fh = bh:BUFFER-FIELD(jsonData:GetJsonObject(i):GetCharacter("key")) NO-ERROR.
+			IF VALID-HANDLE(fh) THEN DO:
+				CASE fh:DATA-TYPE:
+					WHEN "CHARACTER" THEN DO:
+						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetCharacter("defaultValue") THEN DO:
+							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 600).
+						END.
+						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetCharacter("value").
+					END.
+					WHEN "LOGICAL" THEN DO:
+						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetLogical("defaultValue") THEN DO:
+							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 601).
+						END.
+						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetLogical("value").
+					END.
+					WHEN "INTEGER" THEN DO:
+						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetInteger("defaultValue") THEN DO:
+							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 602).
+						END.
+						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetInteger("value").
+					END.
+					WHEN "INT64" THEN DO:
+						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetInt64("defaultValue") THEN DO:
+							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 603).
+						END.
+						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetInt64("value").
+					END.
+					WHEN "date" THEN DO:
+						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetDate("defaultValue") THEN DO:
+							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 604).
+						END.
+						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetDate("value").
+					END.
+					WHEN "datetime" THEN DO:
+						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetDateTime("defaultValue") THEN DO:
+							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 605).
+						END.
+						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetDateTime("value").
+					END.
+					WHEN "datetime-tz" THEN DO:
+						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetDateTimeTZ("defaultValue") THEN DO:
+							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 606).
+						END.
+						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetDateTimeTZ("value").
+					END.
+				END CASE.
+			END.	
 		END.
-		jsonRaw:ADD(jsonRawRow).
-		jsonFormatted:ADD(jsonFormattedRow).
-
-		iPageLength = iPageLength - 1.
-		IF iPageLength = 0 THEN LEAVE. 
-		IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
 	END.
-	dtl = NOW.
-
-	qh:QUERY-CLOSE().
-	DELETE OBJECT qh.
-	DELETE OBJECT bh.
-
-	jsonObject:ADD("columns", jsonFields).
-	jsonObject:ADD("rawData", jsonRaw).
-	jsonObject:ADD("formattedData", jsonFormatted).
-
-	jsonDebug:add("recordsRetrieved", jsonRaw:Length).
-	jsonDebug:add("recordsRetrievalTime", dtl - dt).
-
 END PROCEDURE.

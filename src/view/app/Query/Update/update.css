@@ -1,0 +1,25 @@
+.update-modal {
+    position: center;
+    background-color: var(--vscode-notifications-background);
+    border: var(--vscode-notifications-border);
+    justify-content: center;
+    align-items:center;
+    font-size: inherit;
+    font-style: inherit;
+  }
+
+  .update-btn-container {
+    position:absolute;
+    width: 100%;
+    align: right;
+}
+
+.update-header {
+  position: center;
+  background-color: var(--vscode-notificationCenterHeader-background);
+  width: 100%;
+  height: 30px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}

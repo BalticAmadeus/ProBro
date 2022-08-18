@@ -6,13 +6,20 @@ import QueryForm from "./query";
 import { IOETableData } from "../../../db/oe";
 
 declare global {
-  interface Window {
-    acquireVsCodeApi(): any;
-    tableData: IOETableData;
-  }
+    interface Window {
+        acquireVsCodeApi(): any;
+        tableData: IOETableData;
+        tableName: string;
+    }
 }
 
 const vscode = window.acquireVsCodeApi();
 
 const root = createRoot(document.getElementById("root"));
-root.render(<QueryForm vscode={vscode} tableData={window.tableData} />);
+root.render(
+    <QueryForm
+        vscode={vscode}
+        tableData={window.tableData}
+        tableName={window.tableName}
+    />
+);

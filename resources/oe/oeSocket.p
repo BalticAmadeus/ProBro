@@ -130,6 +130,15 @@ PROCEDURE SocketIO:
 	    	jsonObject:Add("trace", err:CallStack).
 	    END.
         END CATCH.
+        CATCH aerr AS Progress.Lang.StopError:
+            DELETE OBJECT jsonObject NO-ERROR.
+            jsonObject = NEW Progress.Json.ObjectModel.JsonObject().
+            jsonObject:Add("error", aerr:GetMessageNum(1)).
+            jsonObject:Add("description", aerr:GetMessage(1)).
+	    IF SESSION:ERROR-STACK-TRACE = TRUE THEN DO:
+	    	jsonObject:Add("trace", aerr:CallStack).
+	    END.
+        END CATCH.
         FINALLY:
             RUN LOCAL_GET_DEBUG.
             tmpJson = jsonObject:GetJsonText() + chr(10).

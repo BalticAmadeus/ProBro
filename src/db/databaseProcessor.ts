@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { IConfig, TableDetails } from "../view/app/model";
+import { IConfig, ITableData, TableDetails } from "../view/app/model";
 import { IProcessor } from "./IProcessor";
 import * as cp from "child_process";
 import { IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
@@ -22,7 +22,8 @@ export class DatabaseProcessor implements IProcessor {
         return DatabaseProcessor.instance;
     }
 
-    public execShell(cmd: string) {
+    public execShell(params: IOEParams) {
+        const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
         if (DatabaseProcessor.isProcessRunning) {
             console.log("Processor is busy");
             return new Promise<any>(_ => { return { columns: [], data: [] }; });
@@ -67,7 +68,7 @@ export class DatabaseProcessor implements IProcessor {
     }
 
     private getConnectionString(config: IConfig) {
-        var connectionString = `-db ${config.name} ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''}`;
+        var connectionString = `-db ${config.name} -catchStop 1 ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''}`;
         return connectionString;
     }
 
@@ -76,9 +77,7 @@ export class DatabaseProcessor implements IProcessor {
             connectionString: this.getConnectionString(config),
             command: "get_version"
         }
-        // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
-        const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
-        return this.execShell(cmd);
+        return this.execShell(params);
     }
 
     public getTablesList(config: IConfig): Promise<IOETablesList> {
@@ -87,25 +86,36 @@ export class DatabaseProcessor implements IProcessor {
             command: "get_tables"
         }
         // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
-        const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
-        return this.execShell(cmd);
+        return this.execShell(params);
     }
 
-    public getTableData(config: IConfig, tableName: string | undefined, wherePhrase: string, start: number, pageLength: number, lastRowID: string, sortColumns: SortColumn[], filters: any, timeOut: number): Promise<IOETableData> {
-        if (config && tableName) {
+    public getTableData(config: IConfig, tableName: string | undefined, inputParams: ITableData | undefined) {
+        //        wherePhrase: string, start: number, pageLength: number, lastRowID: string, sortColumns: SortColumn[], filters: any, timeOut: number): Promise<IOETableData> {
+        if (config && tableName && inputParams) {
             var params: IOEParams = {
                 connectionString: this.getConnectionString(config),
                 command: "get_table_data",
-                params: { tableName: tableName, wherePhrase: wherePhrase, start: start, pageLength: pageLength, lastRowID: lastRowID, sortColumns: sortColumns, filters: filters, timeOut: timeOut }
+                params: { tableName: tableName, ...inputParams }
             }
-            // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
-            const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
-            return this.execShell(cmd);
+            return this.execShell(params);
         } else {
             return new Promise(resolve => { return { columns: [], data: [] } });
         }
     }
 
+    public submitTableData(config: IConfig, tableName: string | undefined, inputParams: ITableData | undefined) {
+        //        wherePhrase: string, start: number, pageLength: number, lastRowID: string, sortColumns: SortColumn[], filters: any, timeOut: number): Promise<IOETableData> {
+        if (config && tableName && inputParams) {
+            var params: IOEParams = {
+                connectionString: this.getConnectionString(config),
+                command: "submit_table_data",
+                params: { tableName: tableName, ...inputParams }
+            }
+            return this.execShell(params);
+        } else {
+            return new Promise(resolve => { return { columns: [], data: [] } });
+        }
+    }
 
     public getTableDetails(config: IConfig | undefined, tableName: string | undefined): Promise<TableDetails> {
         if (config && tableName) {
@@ -114,9 +124,7 @@ export class DatabaseProcessor implements IProcessor {
                 command: "get_table_details",
                 params: tableName
             }
-            // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
-            const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
-            return this.execShell(cmd);
+            return this.execShell(params);
         } else {
             return new Promise(resolve => { return { fields: [], indexes: [] } });
         }
