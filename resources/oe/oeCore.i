@@ -34,9 +34,9 @@ PROCEDURE LOCAL_CONNECT:
 	CONNECT VALUE(inputObject:GetCharacter("connectionString") + " -ld dictdb") NO-ERROR.
 
 	jsonDebug = jsonObject:GetJsonObject("debug").
-	jsonDebug:add("startConnect", tmpDate).
-	jsonDebug:add("endConnect", NOW).
-	jsonDebug:add("timeConnect", NOW - tmpDate).
+	jsonDebug:Add("startConnect", tmpDate).
+	jsonDebug:Add("endConnect", NOW).
+	jsonDebug:Add("timeConnect", NOW - tmpDate).
 	jsonObject:Set("debug", jsonDebug).
 
 	IF NUM-DBS = 0 THEN DO:
@@ -51,15 +51,15 @@ PROCEDURE LOCAL_GET_DEBUG:
 	END.
 
 jsonDebug = jsonObject:GetJsonObject("debug").
-	jsonDebug:add("start", tmpDate).
-	jsonDebug:add("end", NOW).
-	jsonDebug:add("time", NOW - tmpDate).
+	jsonDebug:Add("start", tmpDate).
+	jsonDebug:Add("end", NOW).
+	jsonDebug:Add("time", NOW - tmpDate).
 	jsonObject:Set("debug", jsonDebug).
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_VERSION:
-	jsonObject:add("dbversion", DBVERSION(1)).
-	jsonObject:add("proversion", PROVERSION(1)).
+	jsonObject:Add("dbversion", DBVERSION(1)).
+	jsonObject:Add("proversion", PROVERSION(1)).
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLES:
@@ -75,14 +75,14 @@ PROCEDURE LOCAL_GET_TABLES:
 	qh:QUERY-OPEN.
 
 	DO WHILE qh:GET-NEXT():
-		jsonTables:add(qh:GET-BUFFER-HANDLE(1)::_file-name).
+		jsonTables:Add(qh:GET-BUFFER-HANDLE(1)::_file-name).
 	END.
 
 	qh:QUERY-CLOSE().
 	DELETE OBJECT qh.
 	DELETE OBJECT bh.
 
-	jsonObject:add("tables", jsonTables).
+	jsonObject:Add("tables", jsonTables).
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLE_DETAILS:
@@ -120,22 +120,23 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 
 	DO WHILE qhField:GET-NEXT():
 		jsonField = NEW Progress.Json.ObjectModel.JsonObject().
-		jsonField:add("order", bhField::_order).
-		jsonField:add("name", bhField::_field-name).
-		jsonField:add("type", bhField::_data-type).
-		jsonField:add("format", bhField::_format).
-		jsonField:add("label", bhField::_label).
-		jsonField:add("initial", bhField::_initial).
-		jsonField:add("columnLabel", bhField::_col-label).
-		jsonField:add("mandatory", bhField::_mandatory).
-		jsonField:add("decimals", bhField::_decimals).
-		jsonField:add("rpos", bhField::_field-rpos).
-		jsonField:add("valExp", bhField::_valexp).
-		jsonField:add("valMessage", bhField::_valmsg).
-		jsonField:add("helpMsg", bhField::_help).
-		jsonField:add("description", bhField::_desc).
-		jsonField:add("viewAs", bhField::_view-as).
-		jsonFields:add(jsonField).
+		jsonField:Add("order", bhField::_order).
+		jsonField:Add("name", bhField::_field-name).
+		jsonField:Add("type", bhField::_data-type).
+		jsonField:Add("format", bhField::_format).
+		jsonField:Add("label", bhField::_label).
+		jsonField:Add("initial", bhField::_initial).
+		jsonField:Add("columnLabel", bhField::_col-label).
+		jsonField:Add("mandatory", bhField::_mandatory).
+		jsonField:Add("extent", bhField::_extent).
+		jsonField:Add("decimals", bhField::_decimals).
+		jsonField:Add("rpos", bhField::_field-rpos).
+		jsonField:Add("valExp", bhField::_valexp).
+		jsonField:Add("valMessage", bhField::_valmsg).
+		jsonField:Add("helpMsg", bhField::_help).
+		jsonField:Add("description", bhField::_desc).
+		jsonField:Add("viewAs", bhField::_view-as).
+		jsonFields:Add(jsonField).
 	END.		
 
 	qhField:QUERY-CLOSE().
@@ -204,10 +205,10 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 	DELETE OBJECT bhIndexField.
 	DELETE OBJECT bhField.
 
-	jsonIndexes:read(TEMP-TABLE bttIndex:HANDLE).
+	jsonIndexes:Read(TEMP-TABLE bttIndex:HANDLE).
 
-	jsonObject:add("fields", jsonFields).
-	jsonObject:add("indexes", jsonIndexes).
+	jsonObject:Add("fields", jsonFields).
+	jsonObject:Add("indexes", jsonIndexes).
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLE_DATA:
@@ -259,23 +260,38 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 
 		EMPTY TEMP-TABLE bttColumn.
 
-		create bttColumn.
+		CREATE bttColumn.
 		bttColumn.cName = "ROWID".
 		bttColumn.cKey = "ROWID".
 		bttColumn.cType = "ROWID".
 		bttColumn.cFormat = ?.
 
 		DO WHILE fqh:GET-NEXT():	
-			IF fqh:GET-BUFFER-HANDLE(1)::_data-type <> "blob" AND fqh:GET-BUFFER-HANDLE(1)::_data-type <> "clob"
-			THEN DO: 
-				create bttColumn.
-				bttColumn.cName = fqh:GET-BUFFER-HANDLE(1)::_field-name.
-				bttColumn.cKey = fqh:GET-BUFFER-HANDLE(1)::_field-name.
-				bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
-				bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
+			IF LOOKUP(fqh:GET-BUFFER-HANDLE(1)::_data-type, 'clob,blob,raw') = 0 
+			THEN DO:
+				IF fqh:GET-BUFFER-HANDLE(1)::_extent = 0
+				THEN DO: 
+					CREATE bttColumn.
+					bttColumn.cName = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+					bttColumn.cKey = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+					bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
+					bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
+					bttColumn.iExtent = fqh:GET-BUFFER-HANDLE(1)::_extent.
+				END.
+				ELSE DO:
+					DO i = 1 TO fqh:GET-BUFFER-HANDLE(1)::_extent:
+						CREATE bttColumn.
+						bttColumn.cName = SUBSTITUTE("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
+						bttColumn.cKey = SUBSTITUTE("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
+						bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
+						bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
+						bttColumn.iExtent = fqh:GET-BUFFER-HANDLE(1)::_extent.
+					END.
+				END.
+
 			END.
 		END.
-		jsonFields:read(TEMP-TABLE bttColumn:HANDLE).
+		jsonFields:Read(TEMP-TABLE bttColumn:HANDLE).
 
 		fqh:QUERY-CLOSE().
 		DELETE OBJECT fqh.
@@ -309,7 +325,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 
 	IF inputObject:GetJsonObject("params"):has("sortColumns") THEN DO:
 		jsonSort = inputObject:GetJsonObject("params"):GetJsonArray("sortColumns").
-		DO i = 1 TO jsonSort:LENGTH:
+		DO i = 1 TO jsonSort:Length:
 			cOrderPhrase = SUBSTITUTE("&1 BY &2.&3 &4", 
 						cOrderPhrase, 
 						inputObject:GetJsonObject("params"):GetCharacter("tableName"),
@@ -331,7 +347,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 
 	iPageLength = inputObject:GetJsonObject("params"):GetInteger("pageLength").
 	iTimeOut = inputObject:GetJsonObject("params"):GetInteger("timeOut").
-	dt = now.
+	dt = NOW.
 
 	TABLE_LOOP:
 	DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
@@ -347,21 +363,32 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		jsonRow = new Progress.Json.ObjectModel.JsonObject().
 		jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
 		jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
-		jsonRawRow:ADD("ROWID", STRING(bh:ROWID)).
-		jsonFormattedRow:ADD("ROWID", STRING(bh:ROWID)).
+		jsonRawRow:Add("ROWID", STRING(bh:ROWID)).
+		jsonFormattedRow:Add("ROWID", STRING(bh:ROWID)).
 
 		DO i = 1 to bh:NUM-FIELDS:
-			FIND bttColumn  WHERE bttColumn.cName = bh:BUFFER-FIELD(i):NAME NO-ERROR.
-			IF NOT AVAILABLE bttColumn THEN NEXT.
-
-			jsonRawRow:ADD(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
+			FIND bttColumn  WHERE bttColumn.cName = bh:BUFFER-FIELD(i):NAME NO-ERROR .
+			IF AVAILABLE bttColumn
+			THEN DO:
+				jsonRawRow:Add(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
 			
-			cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat) NO-ERROR.
-			jsonFormattedRow:ADD(bh:BUFFER-FIELD(i):NAME, cCellValue).
+				cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat) NO-ERROR.
+				jsonFormattedRow:Add(bh:BUFFER-FIELD(i):NAME, cCellValue).
+			END.
+			ELSE DO:
+				j = 0.
+				FOR EACH bttColumn WHERE INDEX(bttColumn.cName, SUBSTITUTE("&1[", bh:BUFFER-FIELD(i):NAME)) = 1 NO-LOCK:
+					j = j + 1.
+					jsonRawRow:Add(bttColumn.cName, bh:BUFFER-FIELD(i):BUFFER-VALUE(j)).
+			
+					cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE(j), bttColumn.cFormat) NO-ERROR.
+					jsonFormattedRow:Add(bttColumn.cName, cCellValue).
+				END.
+			END.
 
 		END.
-		jsonRaw:ADD(jsonRawRow).
-		jsonFormatted:ADD(jsonFormattedRow).
+		jsonRaw:Add(jsonRawRow).
+		jsonFormatted:Add(jsonFormattedRow).
 
 		iPageLength = iPageLength - 1.
 		IF iPageLength = 0 THEN LEAVE. 
@@ -373,11 +400,11 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DELETE OBJECT qh.
 	DELETE OBJECT bh.
 
-	jsonObject:ADD("columns", jsonFields).
-	jsonObject:ADD("rawData", jsonRaw).
-	jsonObject:ADD("formattedData", jsonFormatted).
+	jsonObject:Add("columns", jsonFields).
+	jsonObject:Add("rawData", jsonRaw).
+	jsonObject:Add("formattedData", jsonFormatted).
 
-	jsonDebug:add("recordsRetrieved", jsonRaw:Length).
-	jsonDebug:add("recordsRetrievalTime", dtl - dt).
+	jsonDebug:Add("recordsRetrieved", jsonRaw:Length).
+	jsonDebug:Add("recordsRetrievalTime", dtl - dt).
 
 END PROCEDURE.
