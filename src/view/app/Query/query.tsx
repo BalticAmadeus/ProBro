@@ -460,6 +460,14 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
         vscode.postMessage(command);
         setAction(mode);
     };
+  }
+
+  let inputQuery: HTMLInputElement = undefined;
+  React.useEffect(() => {
+    if (inputQuery) {
+      inputQuery.click();
+    }
+  }, []);
 
     return (
         <React.Fragment>
@@ -518,6 +526,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                         ></UpdatePopup>
                     </div>
                 </div>
+
             </div>
             <DataGrid
                 columns={columns.filter((column) => column.key !== "ROWID")}
