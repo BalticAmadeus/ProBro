@@ -79,6 +79,11 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
     };
 
     var inputQuery: HTMLInputElement = undefined;
+    React.useEffect(() => {
+        if (inputQuery) {
+            inputQuery.click();
+        }
+    }, []);
 
     React.useEffect(() => {
         window.addEventListener("resize", windowResize);
@@ -107,6 +112,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                 }
                 break;
             case "crud":
+                console.log(message.data);
                 if (message.data.error) {
                     setErrorObject({
                         error: message.data.error,
@@ -334,7 +340,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         setFormattedRows([]);
         makeQuery(
             0,
-            1000 /*number of records for first load*/,
+            100 /*number of records for first load*/,
             "",
             sortColumns,
             filters,
@@ -460,14 +466,6 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
         vscode.postMessage(command);
         setAction(mode);
     };
-  }
-
-  let inputQuery: HTMLInputElement = undefined;
-  React.useEffect(() => {
-    if (inputQuery) {
-      inputQuery.click();
-    }
-  }, []);
 
     return (
         <React.Fragment>
@@ -526,7 +524,6 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                         ></UpdatePopup>
                     </div>
                 </div>
-
             </div>
             <DataGrid
                 columns={columns.filter((column) => column.key !== "ROWID")}

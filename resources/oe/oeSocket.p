@@ -127,18 +127,9 @@ PROCEDURE SocketIO:
             jsonObject = NEW Progress.Json.ObjectModel.JsonObject().
             jsonObject:Add("error", err:GetMessageNum(1)).
             jsonObject:Add("description", err:GetMessage(1)).
-	    IF SESSION:ERROR-STACK-TRACE = TRUE THEN DO:
-	    	jsonObject:Add("trace", err:CallStack).
-	    END.
-        END CATCH.
-        CATCH aerr AS Progress.Lang.StopError:
-            DELETE OBJECT jsonObject NO-ERROR.
-            jsonObject = NEW Progress.Json.ObjectModel.JsonObject().
-            jsonObject:Add("error", aerr:GetMessageNum(1)).
-            jsonObject:Add("description", aerr:GetMessage(1)).
-	    IF SESSION:ERROR-STACK-TRACE = TRUE THEN DO:
-	    	jsonObject:Add("trace", aerr:CallStack).
-	    END.
+            IF SESSION:ERROR-STACK-TRACE = TRUE THEN DO:
+                jsonObject:Add("trace", err:CallStack).
+            END.
         END CATCH.
         FINALLY:
             RUN LOCAL_GET_DEBUG.
