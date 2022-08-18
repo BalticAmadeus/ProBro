@@ -64,9 +64,9 @@ END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLES:
 
-	DEFINE VARIABLE jsonTableRow AS Progress.Json.ObjectModel.JsonObject.
-	DEFINE VARIABLE jsonTables AS Progress.Json.ObjectModel.JsonArray.
-	DEFINE VARIABLE qh AS WIDGET-HANDLE.
+	DEFINE VARIABLE jsonTableRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonTables AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIABLE qh AS WIDGET-HANDLE NO-UNDO.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
   
 	jsonTableRow = NEW Progress.Json.ObjectModel.JsonObject().
@@ -258,6 +258,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	jsonFields = new Progress.Json.ObjectModel.JsonArray().
 	DEFINE VARIABLE cCellValue AS CHARACTER NO-UNDO.
 	DEFINE BUFFER bttColumn FOR ttColumn.
+	
 	jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
 	jsonRaw = NEW Progress.Json.ObjectModel.JsonArray().
 	jsonFormatted = NEW Progress.Json.ObjectModel.JsonArray().
