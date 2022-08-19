@@ -92,29 +92,23 @@ export function activate(context: vscode.ExtensionContext) {
 
   vscode.commands.registerCommand( `${Constants.globalExtensionKey}.list-filter`, async () => {
     const options:QuickPickItem[] = [...new Set([...tablesListProvider.tableNodes.map(table => table.tableType)])].map(label => ({label}));
-    options.forEach((filter) => {
-      if (tablesListProvider.filters?.includes(filter.label)) {
-        filter.picked = true; 
+    options.forEach((option) => {
+      if (tablesListProvider.filters?.includes(option.label)) {
+        option.picked = true; 
       }
     });
-    console.log("options: ", options);
     const quickPick = vscode.window.createQuickPick();
     quickPick.items = options;
     quickPick.canSelectMany = true;
     quickPick.onDidAccept(() => quickPick.dispose());
-    if (tablesListProvider.filters) {
-      console.log("filters from table list: ", tablesListProvider.filters);
+
+    if (tablesListProvider.filters) {  
       quickPick.selectedItems = options.filter((option) => option.picked);
-      console.log("quickpick selected items: ", quickPick.selectedItems);
     }
   
-    console.log("buttons", quickPick.buttons);
     quickPick.onDidChangeSelection(async selection => {
-      console.log("selection: ", selection);
-      const filter = selection.map((type) => type.label);
-      console.log("filters on selection: ", filter);
-
-      tablesListProvider.refreshList(filter);
+      const filters = selection.map((type) => type.label);
+      tablesListProvider.refreshList(filters);
     });
 
     quickPick.onDidHide(() => quickPick.dispose());
