@@ -1,10 +1,9 @@
 .r104f42s700-beta13 {
   --rdg-background-color: initial;
   --rdg-header-background-color: var(--vscode-editorWidget-background);
-  --rdg-row-hover-background-color: rgba(0, 0, 0, 0.2);
-  --rdg-row-selected-background-color: var(
-    --vscode-list-inactiveSelectionBackground
-  );
+  --rdg-row-hover-background-color: var(--vscode-list-activeSelectionBackground);
+  --row-selected-hover-background-color: var(--vscode-list-activeSelectionBackground);
+  --rdg-row-selected-background-color: var(--vscode-list-inactiveSelectionBackground);
   --rdg-checkbox-color: inherit;
   --rdg-checkbox-focus-color: inherit;
   --rdg-font-size: inherit;
@@ -68,4 +67,14 @@ color: var(--vscode-input-foreground);
 .form {
   width: fit-content;
   margin-right: 10px;
+}
+
+.c1noyk41700-beta13:checked+.cdwjxv8700-beta13 {
+  background: var(--vscode-editor-foreground);
+  outline: none;
+}
+.cdwjxv8700-beta13 {
+  border: 2px solid var(--vscode-editor-foreground);
+  block-size: 10px;
+  inline-size: 10px;
 }
