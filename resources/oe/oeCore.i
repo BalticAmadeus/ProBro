@@ -83,17 +83,16 @@ PROCEDURE LOCAL_GET_TABLES:
 		jsonTableRow:Add("name", qh:GET-BUFFER-HANDLE(1)::_file-name).
 
 		IF qh:GET-BUFFER-HANDLE(1)::_file-name BEGINS "_sys"
-			THEN DO:
-				jsonTableRow:Add("tableType", "SQLCatalog").
-				qh:GET-NEXT().
-			END.
-
-		IF qh:GET-BUFFER-HANDLE(1)::_file-number > 0 AND qh:GET-BUFFER-HANDLE(1)::_file-number < 32000
-			THEN jsonTableRow:Add("tableType", "UserTable").
-			ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number > -80 AND qh:GET-BUFFER-HANDLE(1)::_file-number < 0
-				THEN jsonTableRow:Add("tableType", "SchemaTable").
-			ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number < -16384 
-				THEN jsonTableRow:Add("tableType", "VirtualSystem").
+		THEN jsonTableRow:Add("tableType", "SQLCatalog").
+		ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number > 0 AND qh:GET-BUFFER-HANDLE(1)::_file-number < 32000 
+		THEN jsonTableRow:Add("tableType", "UserTable").
+		ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number > -80 AND qh:GET-BUFFER-HANDLE(1)::_file-number < 0
+		THEN jsonTableRow:Add("tableType", "SchemaTable").
+		ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number < -16384 
+		THEN jsonTableRow:Add("tableType", "VirtualSystem").
+		ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number >= -16384 AND qh:GET-BUFFER-HANDLE(1)::_file-number <= -80
+		THEN jsonTableRow:Add("tableType", "OtherTables").
+		ELSE NEXT.
 	
 		jsonTables:Add(jsonTableRow).
 	END.

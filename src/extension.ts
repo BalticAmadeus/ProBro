@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { QuickPickItem } from "vscode";
 import { ConnectionEditor } from "./common/connectionEditor";
 import { Constants } from "./common/constants";
 import { QueryEditor } from "./common/queryEditor";
@@ -75,7 +76,7 @@ export function activate(context: vscode.ExtensionContext) {
           context,
           node,
           tablesListProvider
-        )
+        );
       }
     )
   );
@@ -89,21 +90,35 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  enum TableTypes {
-    "UserTable",
-    "SchemaTable",
-    "VirtualSystem",
-    "SQLCatalog"
-  };
-
   vscode.commands.registerCommand( `${Constants.globalExtensionKey}.list-filter`, async () => {
-    const enumVal = Object.keys(TableTypes).filter((val) => isNaN(Number(val)));
-		const value = await vscode.window.showQuickPick(
-      [...enumVal],
-      {
-        canPickMany: true, 
-        placeHolder: 'Select table types to view.',
-      });
-    tablesListProvider.refreshList(value);
-	});
+    const options:QuickPickItem[] = [...new Set([...tablesListProvider.tableNodes.map(table => table.tableType)])].map(label => ({label}));
+    options.forEach((filter) => {
+      if (tablesListProvider.filters?.includes(filter.label)) {
+        filter.picked = true; 
+      }
+    });
+    console.log("options: ", options);
+    const quickPick = vscode.window.createQuickPick();
+    quickPick.items = options;
+    quickPick.canSelectMany = true;
+    quickPick.onDidAccept(() => quickPick.dispose());
+    if (tablesListProvider.filters) {
+      console.log("filters from table list: ", tablesListProvider.filters);
+      quickPick.selectedItems = options.filter((option) => option.picked);
+      console.log("quickpick selected items: ", quickPick.selectedItems);
+    }
+  
+    console.log("buttons", quickPick.buttons);
+    quickPick.onDidChangeSelection(async selection => {
+      console.log("selection: ", selection);
+      const filter = selection.map((type) => type.label);
+      console.log("filters on selection: ", filter);
+
+      tablesListProvider.refreshList(filter);
+    });
+
+    quickPick.onDidHide(() => quickPick.dispose());
+    quickPick.show();
+  
+});
 }

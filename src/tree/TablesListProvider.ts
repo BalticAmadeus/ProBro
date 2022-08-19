@@ -13,8 +13,8 @@ import { v1 } from 'uuid';
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	public config: IConfig | undefined;
 	public node: TableNode | undefined;
-	private tableNodes: tableNode.TableNode[] = [];
-	private filters: String[] | undefined = ["UserTable"];
+	public tableNodes: tableNode.TableNode[] = [];
+	public filters: string[] | undefined = ["UserTable"];
 
 	constructor(private context: vscode.ExtensionContext, private fieldsProvider: FieldsViewProvider, private indexesProvider: FieldsViewProvider) {
 	}
@@ -61,7 +61,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 		this._onDidChangeTreeData.fire();
 	}
 	
-	public refreshList(filters:String[] | undefined): void {
+	public refreshList(filters:string[] | undefined): void {
 		this.filters = filters;
 		this._onDidChangeTreeData.fire();
 	}
@@ -82,6 +82,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 			return DatabaseProcessor.getInstance().getTablesList(this.config).then((oeTables) => {
 				this.tableNodes = [];
 				console.log(`Requested tables list of DB: ${this.config?.name}`);
+				console.log(oeTables);
 				 return oeTables.tables.forEach((table) => {
 					this.tableNodes?.push(new tableNode.TableNode(this.context, table.name, table.tableType));
 				});
