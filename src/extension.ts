@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { QuickPickItem } from "vscode";
 import { ConnectionEditor } from "./common/connectionEditor";
 import { Constants } from "./common/constants";
 import { QueryEditor } from "./common/queryEditor";
@@ -75,7 +76,7 @@ export function activate(context: vscode.ExtensionContext) {
           context,
           node,
           tablesListProvider
-        )
+        );
       }
     )
   );
@@ -88,4 +89,30 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
+
+  vscode.commands.registerCommand( `${Constants.globalExtensionKey}.list-filter`, async () => {
+    const options:QuickPickItem[] = [...new Set([...tablesListProvider.tableNodes.map(table => table.tableType)])].map(label => ({label}));
+    options.forEach((option) => {
+      if (tablesListProvider.filters?.includes(option.label)) {
+        option.picked = true; 
+      }
+    });
+    const quickPick = vscode.window.createQuickPick();
+    quickPick.items = options;
+    quickPick.canSelectMany = true;
+    quickPick.onDidAccept(() => quickPick.dispose());
+
+    if (tablesListProvider.filters) {  
+      quickPick.selectedItems = options.filter((option) => option.picked);
+    }
+  
+    quickPick.onDidChangeSelection(async selection => {
+      const filters = selection.map((type) => type.label);
+      tablesListProvider.refreshList(filters);
+    });
+
+    quickPick.onDidHide(() => quickPick.dispose());
+    quickPick.show();
+  
+});
 }

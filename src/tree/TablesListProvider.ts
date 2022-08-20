@@ -13,6 +13,8 @@ import { v1 } from 'uuid';
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	public config: IConfig | undefined;
 	public node: TableNode | undefined;
+	public tableNodes: tableNode.TableNode[] = [];
+	public filters: string[] | undefined = ["UserTable"];
 
 	constructor(private context: vscode.ExtensionContext, private fieldsProvider: FieldsViewProvider, private indexesProvider: FieldsViewProvider) {
 	}
@@ -20,7 +22,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	public displayData(node: TableNode) {
 		this.fieldsProvider.tableNode = node;
 		this.indexesProvider.tableNode = node;
-		console.log("displayData", node.tableName, node.cache)
+		console.log("displayData", node.tableName);
 		if (node.cache) {
 			this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: node.cache });
 			this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: node.cache });
@@ -58,30 +60,45 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 		this.config = config;
 		this._onDidChangeTreeData.fire();
 	}
+	
+	public refreshList(filters:string[] | undefined): void {
+		this.filters = filters;
+		this._onDidChangeTreeData.fire();
+	}
 
 	public getTreeItem(element: INode): Promise<vscode.TreeItem> | vscode.TreeItem {
 		return element.getTreeItem();
 	}
 
 	public getChildren(element?: INode): Thenable<INode[]> | INode[] {
-		if (!element) {
-			return this.getGroupNodes();
+		if (!element) {		
+			return this.getFilteredTables();
 		}
 		return element.getChildren();
 	}
 
-	private async getGroupNodes(): Promise<tableNode.TableNode[]> {
+	private async getGroupNodes() {
 		if (this.config) {
 			return DatabaseProcessor.getInstance().getTablesList(this.config).then((oeTables) => {
-				const tableNodes: tableNode.TableNode[] = [];
+				this.tableNodes = [];
 				console.log(`Requested tables list of DB: ${this.config?.name}`);
-				oeTables.tables.forEach((table) => {
-					tableNodes.push(new tableNode.TableNode(this.context, table));
+				 return oeTables.tables.forEach((table) => {
+					this.tableNodes?.push(new tableNode.TableNode(this.context, table.name, table.tableType));
 				});
-				return tableNodes;
 			});
 		} else {
-			return [];
+			this.tableNodes = [];
 		}
+	
+	}
+
+	public async getFilteredTables(): Promise<tableNode.TableNode[]>  {	
+		if (this.tableNodes.length === 0) {
+			await this.getGroupNodes();
+		}
+
+		return this.tableNodes.filter((table) => {
+			return this.filters?.includes(table.tableType);
+		});
 	}
 }

@@ -66,19 +66,38 @@ PROCEDURE LOCAL_GET_VERSION:
 END PROCEDURE.
 
 PROCEDURE LOCAL_GET_TABLES:
+
+	DEFINE VARIABLE jsonTableRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonTables AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
 	DEFINE VARIABLE qh AS WIDGET-HANDLE NO-UNDO.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
+  
+	jsonTableRow = NEW Progress.Json.ObjectModel.JsonObject().
 	jsonTables = NEW Progress.Json.ObjectModel.JsonArray().
 
 	CREATE BUFFER bh FOR TABLE "_file".
 	CREATE QUERY qh.
 	qh:SET-BUFFERS(bh).
-	qh:QUERY-PREPARE("FOR EACH _file WHERE _file._tbl-type = 'T' NO-LOCK BY _file._file-name").
+	qh:QUERY-PREPARE("FOR EACH _file NO-LOCK BY _file._file-name").
 	qh:QUERY-OPEN.
 
 	DO WHILE qh:GET-NEXT():
-		jsonTables:Add(qh:GET-BUFFER-HANDLE(1)::_file-name).
+		jsonTableRow = NEW Progress.Json.ObjectModel.JsonObject().
+		jsonTableRow:Add("name", qh:GET-BUFFER-HANDLE(1)::_file-name).
+
+		IF qh:GET-BUFFER-HANDLE(1)::_file-name BEGINS "_sys"
+		THEN jsonTableRow:Add("tableType", "SQLCatalog").
+		ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number > 0 AND qh:GET-BUFFER-HANDLE(1)::_file-number < 32000 
+		THEN jsonTableRow:Add("tableType", "UserTable").
+		ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number > -80 AND qh:GET-BUFFER-HANDLE(1)::_file-number < 0
+		THEN jsonTableRow:Add("tableType", "SchemaTable").
+		ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number < -16384 
+		THEN jsonTableRow:Add("tableType", "VirtualSystem").
+		ELSE IF qh:GET-BUFFER-HANDLE(1)::_file-number >= -16384 AND qh:GET-BUFFER-HANDLE(1)::_file-number <= -80
+		THEN jsonTableRow:Add("tableType", "OtherTables").
+		ELSE NEXT.
+	
+		jsonTables:Add(jsonTableRow).
 	END.
 
 	qh:QUERY-CLOSE().
@@ -244,6 +263,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	jsonFields = new Progress.Json.ObjectModel.JsonArray().
 	DEFINE VARIABLE cCellValue AS CHARACTER NO-UNDO.
 	DEFINE BUFFER bttColumn FOR ttColumn.
+	
 	jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
 	jsonRaw = NEW Progress.Json.ObjectModel.JsonArray().
 	jsonFormatted = NEW Progress.Json.ObjectModel.JsonArray().
