@@ -66,7 +66,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         _setFilters(data);
     };
 
-    const [selectedRows, onSelectedRowsChange] = React.useState(
+    const [selectedRows, setSelectedRows] = React.useState(
         (): ReadonlySet<string> => new Set()
     );
 
@@ -107,12 +107,12 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                     setIsError(true);
                     setIsDataRetrieved(false);
                 } else {
+                    setSelectedRows(new Set());
                     setOpen(false);
                     reloadData();
                 }
                 break;
             case "crud":
-                console.log(message.data);
                 if (message.data.error) {
                     setErrorObject({
                         error: message.data.error,
@@ -123,7 +123,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                     setIsDataRetrieved(false);
                 } else {
                     setColumnsCRUD(message.data.columns);
-                    setRecordsCRUD(message.data.rawData);
+                    setRecordsCRUD(message.data.formattedData);
                     setOpen(true);
                 }
                 break;
@@ -241,7 +241,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                                             {filters.enabled && (
                                                 <div className={"filter-cell"}>
                                                     <input
-                                                    className="textInput"
+                                                        className="textInput"
                                                         autoFocus={
                                                             isCellSelected
                                                         }
@@ -541,7 +541,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 headerRowHeight={filters.enabled ? 70 : undefined}
                 style={{ height: windowHeight - 150, whiteSpace: "pre" }}
                 selectedRows={selectedRows}
-                onSelectedRowsChange={onSelectedRowsChange}
+                onSelectedRowsChange={setSelectedRows}
                 rowKeyGetter={rowKeyGetter}
             ></DataGrid>
             {getFooterTag()}

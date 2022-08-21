@@ -523,40 +523,40 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
 						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetCharacter("value").
 					END.
 					WHEN "LOGICAL" THEN DO:
-						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetLogical("defaultValue") THEN DO:
+						IF fh:BUFFER-VALUE <> LOGICAL(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
 							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 601).
 						END.
-						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetLogical("value").
+						fh:BUFFER-VALUE = LOGICAL(jsonData:GetJsonObject(i):GetCharacter("value")).
 					END.
 					WHEN "INTEGER" THEN DO:
-						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetInteger("defaultValue") THEN DO:
+						IF fh:BUFFER-VALUE <> INTEGER(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
 							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 602).
 						END.
-						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetInteger("value").
+						fh:BUFFER-VALUE = INTEGER(jsonData:GetJsonObject(i):GetCharacter("value")).
 					END.
 					WHEN "INT64" THEN DO:
-						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetInt64("defaultValue") THEN DO:
+						IF fh:BUFFER-VALUE <> INT64(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
 							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 603).
 						END.
-						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetInt64("value").
+						fh:BUFFER-VALUE = INT64(jsonData:GetJsonObject(i):GetCharacter("value")).
 					END.
 					WHEN "date" THEN DO:
-						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetDate("defaultValue") THEN DO:
+						IF fh:BUFFER-VALUE <> DATE(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
 							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 604).
 						END.
-						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetDate("value").
+						fh:BUFFER-VALUE = DATE(jsonData:GetJsonObject(i):GetCharacter("value")).
 					END.
 					WHEN "datetime" THEN DO:
-						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetDateTime("defaultValue") THEN DO:
+						IF fh:BUFFER-VALUE <> DATETIME(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
 							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 605).
 						END.
-						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetDateTime("value").
+						fh:BUFFER-VALUE = DATETIME(jsonData:GetJsonObject(i):GetCharacter("v,alue")).
 					END.
 					WHEN "datetime-tz" THEN DO:
-						IF fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetDateTimeTZ("defaultValue") THEN DO:
+						IF fh:BUFFER-VALUE <> DATETIME-TZ(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
 							UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 606).
 						END.
-						fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetDateTimeTZ("value").
+						fh:BUFFER-VALUE = DATETIME-TZ(jsonData:GetJsonObject(i):GetCharacter("value")).
 					END.
 				END CASE.
 			END.	
