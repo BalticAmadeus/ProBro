@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { IConfig, ITableData, TableDetails } from "../view/app/model";
 import { IProcessor } from "./IProcessor";
 import * as cp from "child_process";
-import { IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
+import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
 import getOEClient from "../common/oeClient"
 import { SortColumn } from "react-data-grid";
 import { resolve } from "path";
@@ -68,11 +68,11 @@ export class DatabaseProcessor implements IProcessor {
     }
 
     private getConnectionString(config: IConfig) {
-        var connectionString = `-db ${config.name} -catchStop 1 ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''}`;
+        var connectionString = `-db ${config.name} ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''}`;
         return connectionString;
     }
 
-    public getDBVersion(config: IConfig): Promise<IOEVersion> {
+    public getDBVersion(config: IConfig): Promise<any> {
         var params: IOEParams = {
             connectionString: this.getConnectionString(config),
             command: "get_version"
@@ -80,7 +80,7 @@ export class DatabaseProcessor implements IProcessor {
         return this.execShell(params);
     }
 
-    public getTablesList(config: IConfig): Promise<IOETablesList> {
+    public getTablesList(config: IConfig): Promise<any> {
         var params: IOEParams = {
             connectionString: this.getConnectionString(config),
             command: "get_tables"

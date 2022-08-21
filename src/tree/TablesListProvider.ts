@@ -60,8 +60,8 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 		this.config = config;
 		this._onDidChangeTreeData.fire();
 	}
-	
-	public refreshList(filters:string[] | undefined): void {
+
+	public refreshList(filters: string[] | undefined): void {
 		this.filters = filters;
 		this._onDidChangeTreeData.fire();
 	}
@@ -71,31 +71,34 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	}
 
 	public getChildren(element?: INode): Thenable<INode[]> | INode[] {
-		if (!element) {		
+		if (!element) {
 			return this.getFilteredTables();
 		}
 		return element.getChildren();
 	}
 
-	private async getGroupNodes() {
+	private async getGroupNodes(): Promise<tableNode.TableNode[]> {
+		this.tableNodes = [];
 		if (this.config) {
 			return DatabaseProcessor.getInstance().getTablesList(this.config).then((oeTables) => {
-				this.tableNodes = [];
-				console.log(`Requested tables list of DB: ${this.config?.name}`);
-				 return oeTables.tables.forEach((table) => {
-					this.tableNodes?.push(new tableNode.TableNode(this.context, table.name, table.tableType));
-				});
+				if (oeTables.error) {
+					vscode.window.showErrorMessage(`Error connecting DB: ${oeTables.description} (${oeTables.error})`);
+				} else {
+					console.log(`Requested tables list of DB: ${this.config?.name}`);
+					oeTables.tables.forEach((table: { name: string; tableType: string; }) => {
+						this.tableNodes?.push(new tableNode.TableNode(this.context, table.name, table.tableType));
+					});
+				}
+				return this.tableNodes;
 			});
-		} else {
-			this.tableNodes = [];
 		}
-	
+		return this.tableNodes;
 	}
 
-	public async getFilteredTables(): Promise<tableNode.TableNode[]>  {	
-		if (this.tableNodes.length === 0) {
-			await this.getGroupNodes();
-		}
+	public async getFilteredTables(): Promise<tableNode.TableNode[]> {
+		// if (this.tableNodes.length === 0) {
+		await this.getGroupNodes();
+		// }
 
 		return this.tableNodes.filter((table) => {
 			return this.filters?.includes(table.tableType);
