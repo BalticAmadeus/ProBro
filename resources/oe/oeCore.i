@@ -34,7 +34,12 @@ PROCEDURE LOCAL_CONNECT:
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 
 	tmpDate = NOW.
-	CONNECT VALUE(inputObject:GetCharacter("connectionString") + " -ld dictdb") NO-ERROR.
+	DO STOP-AFTER 1 ON STOP UNDO, LEAVE:
+		CONNECT VALUE(inputObject:GetCharacter("connectionString") + " -ld dictdb") NO-ERROR.
+	END.
+	IF ERROR-STATUS:ERROR THEN DO:
+		UNDO, THROW NEW Progress.Lang.AppError(ERROR-STATUS:GET-MESSAGE(1), ERROR-STATUS:GET-NUMBER(1)).
+	END.
 
 	jsonDebug = jsonObject:GetJsonObject("debug").
 	jsonDebug:Add("startConnect", tmpDate).
@@ -53,7 +58,7 @@ PROCEDURE LOCAL_GET_DEBUG:
 		jsonObject:Add("debug", NEW Progress.Json.ObjectModel.JsonObject()).
 	END.
 
-jsonDebug = jsonObject:GetJsonObject("debug").
+	jsonDebug = jsonObject:GetJsonObject("debug").
 	jsonDebug:Add("start", tmpDate).
 	jsonDebug:Add("end", NOW).
 	jsonDebug:Add("time", NOW - tmpDate).

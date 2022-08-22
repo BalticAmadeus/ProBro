@@ -44,8 +44,12 @@ export class ConnectionEditor {
                         return;
                     case CommandAction.Test:
                         DatabaseProcessor.getInstance().getDBVersion(command.content!).then((oe) => {
-                            console.log(`Requested version of DB: ${oe.dbversion}`);
-                            this.panel?.webview.postMessage({ id: command.id, command: 'ok' });
+                            if (oe.error) {
+                                vscode.window.showErrorMessage(`Error connecting DB: ${oe.description} (${oe.error})`);
+                            } else {
+                                console.log(`Requested version of DB: ${oe.dbversion}`);
+                                this.panel?.webview.postMessage({ id: command.id, command: 'ok' });
+                            }
                         });
                         return;
                 }

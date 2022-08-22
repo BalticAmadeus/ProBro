@@ -5,6 +5,12 @@ export interface IOEVersion {
     proversion: string;
 }
 
+export interface IOEError {
+    error: number;
+    description: string;
+    trace: string;
+}
+
 export interface IOETablesList {
     tables: ITable[];
 }

@@ -15,7 +15,7 @@ export class GroupListProvider implements vscode.TreeDataProvider<INode> {
   constructor(
     private context: vscode.ExtensionContext,
     private tables: vscode.TreeView<INode>
-  ) {}
+  ) { }
 
   onDidChangeSelection(
     e: vscode.TreeViewSelectionChangeEvent<INode>,
