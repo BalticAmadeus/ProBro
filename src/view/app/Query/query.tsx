@@ -123,7 +123,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                     setIsDataRetrieved(false);
                 } else {
                     setColumnsCRUD(message.data.columns);
-                    setRecordsCRUD(message.data.formattedData);
+                    setRecordsCRUD(message.data.rawData);
                     setOpen(true);
                 }
                 break;
