@@ -47,6 +47,6 @@
   color: var(--vscode-input-foreground);
 }
 
-/* .popup-content {
-  max-height: 70%;
-} */
+.popup-overlay {
+  background: rgba(0, 0, 0, 0.3);
+}
