@@ -20,7 +20,7 @@ export default function UpdatePopup({
     const table = [];
     const inputs: { key: string; input: HTMLInputElement }[] = [];
 
-    if (action != ProcessAction.Delete) {
+    if (action !== ProcessAction.Delete) {
         columns.forEach((column) => {
             let fieldValue =
                 rows && rows[0] && rows[0][column.key]
@@ -31,6 +31,7 @@ export default function UpdatePopup({
                     <td>{column.key === "ROWID" ? undefined : column.name}</td>
                     <td>
                         <input
+                            className="textInput"
                             type={column.key !== "ROWID" ? undefined : "hidden"}
                             defaultValue={fieldValue}
                             ref={(input) =>
@@ -91,7 +92,7 @@ export default function UpdatePopup({
                             {tableName}, {ProcessAction[action]}
                         </div>
                         <div className="body">
-                            {action == ProcessAction.Delete ? (
+                            {action === ProcessAction.Delete ? (
                                 <div>
                                     Are You sure You want delete{" "}
                                     {selectedRows.size} record
@@ -131,7 +132,7 @@ export default function UpdatePopup({
                 type="button"
                 value="Update"
                 onClick={updateRecord}
-                disabled={selectedRows.size == 1 ? false : true}
+                disabled={selectedRows.size === 1 ? false : true}
             ></input>
             <input
                 className="btn"

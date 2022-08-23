@@ -1,25 +1,52 @@
 .update-modal {
-    position: center;
+    position:fixed;
+    top: 50px;
     background-color: var(--vscode-notifications-background);
     border: var(--vscode-notifications-border);
     justify-content: center;
     align-items:center;
     font-size: inherit;
     font-style: inherit;
+    max-height: 70%;
+    height: fit-content;
+    width:auto;
+    box-sizing: border-box;
+    display: flex;
+     flex-direction: column;
+     overflow: hidden;
+    /* overflow-y:auto;  */
+   
+    
   }
 
   .update-btn-container {
-    position:absolute;
+    bottom: 0;
     width: 100%;
-    align: right;
+    align-content: right;
+    padding: 5px;
+}
+
+.body {
+  margin:5px;
+  /* max-height: 70%; */
+  overflow-y:scroll; 
 }
 
 .update-header {
-  position: center;
   background-color: var(--vscode-notificationCenterHeader-background);
   width: 100%;
   height: 30px;
-  text-align: center;
+  text-align:justify;
   font-size: 16px;
   font-weight: bold;
+  padding: 5px;
+}
+
+.textInput {
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+}
+
+.popup-overlay {
+  background: rgba(0, 0, 0, 0.3);
 }
