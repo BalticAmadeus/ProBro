@@ -14,7 +14,7 @@ interface IConfigState {
 function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
     const oldState = vscode.getState();
     const initState = oldState ? oldState : { config: initialData };
-    const [vsState, setVsState] = React.useState<IConfigState>(initState);
+    const [vsState, _] = React.useState<IConfigState>(initState);
     const [buttonState, setButtonState] = React.useState(false);
 
     const [name, setName] = React.useState(vsState.config.name);

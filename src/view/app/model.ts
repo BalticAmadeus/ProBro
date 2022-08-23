@@ -1,5 +1,4 @@
 import { SortColumn } from "react-data-grid";
-import { v1 as uuidv1, v1 } from "uuid";
 
 export interface IConfig {
     id: string;
