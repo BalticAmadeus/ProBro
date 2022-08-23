@@ -82,7 +82,7 @@ export interface ITableData {
     filters?: any,
     timeOut: number,
     crud?: string[],
-    data?: { key: string; value: string; defaultValue: string }[],
+    data?: { key: string; value: string | number; defaultValue: string | number }[],
     mode?: string,
     exportType?: string
 }

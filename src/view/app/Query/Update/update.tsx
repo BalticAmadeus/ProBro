@@ -18,7 +18,11 @@ export default function UpdatePopup({
     action,
 }) {
     const table = [];
-    const inputs: { key: string; input: HTMLInputElement }[] = [];
+    const inputs: {
+        key: string;
+        input: HTMLInputElement;
+        valueType: string;
+    }[] = [];
 
     if (action != ProcessAction.Delete) {
         columns.forEach((column) => {
@@ -26,6 +30,10 @@ export default function UpdatePopup({
                 rows && rows[0] && rows[0][column.key]
                     ? rows[0][column.key]
                     : "";
+            let fieldType = typeof (rows && rows[0] && rows[0][column.key]
+                ? rows[0][column.key]
+                : "");
+
             table.push(
                 <tr>
                     <td>{column.key === "ROWID" ? undefined : column.name}</td>
@@ -34,7 +42,11 @@ export default function UpdatePopup({
                             type={column.key !== "ROWID" ? undefined : "hidden"}
                             defaultValue={fieldValue}
                             ref={(input) =>
-                                inputs.push({ key: column.key, input: input })
+                                inputs.push({
+                                    key: column.key,
+                                    input: input,
+                                    valueType: fieldType,
+                                })
                             }
                         ></input>
                     </td>
@@ -48,8 +60,8 @@ export default function UpdatePopup({
 
         const submitData: {
             key: string;
-            value: string;
-            defaultValue: string;
+            value: string | number;
+            defaultValue: string | number;
         }[] = [];
 
         const rowids: string[] = [];
@@ -60,8 +72,14 @@ export default function UpdatePopup({
         inputs.forEach((input) => {
             submitData.push({
                 key: input.key,
-                value: input.input.value,
-                defaultValue: input.input.defaultValue,
+                value:
+                    input.valueType == "number"
+                        ? Number(input.input.value)
+                        : input.input.value,
+                defaultValue:
+                    input.valueType == "number"
+                        ? Number(input.input.defaultValue)
+                        : input.input.defaultValue,
             });
         });
 
