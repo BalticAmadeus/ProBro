@@ -25,7 +25,7 @@ export class QueryEditor {
 
     this.panel = vscode.window.createWebviewPanel(
       "queryOETable", // Identifies the type of the webview. Used internally
-      `Query of ${this.tableNode.tableName}`, // Title of the panel displayed to the user
+      `${this.tableListProvider.config?.label}.${this.tableNode.tableName}`, // Title of the panel displayed to the user
       vscode.ViewColumn.One, // Editor column to show the new webview panel in.
       {
         enableScripts: true,
@@ -45,6 +45,7 @@ export class QueryEditor {
 
     this.panel.webview.onDidReceiveMessage(
       (command: ICommand) => {
+        
         switch (command.action) {
           case CommandAction.Query:
             if (this.tableListProvider.config) {
