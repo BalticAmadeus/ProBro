@@ -275,6 +275,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	qh:QUERY-PREPARE(SUBSTITUTE("FOR EACH _file WHERE _file._file-name = '&1'", inputObject:GetJsonObject("params"):GetCharacter("tableName"))).
 	qh:QUERY-OPEN.
 
+message "PARAMS:" string(inputObject:GetJsonText("params")).
+
 	DO WHILE qh:GET-NEXT():
 
 		CREATE BUFFER fbh FOR TABLE "_field".
@@ -334,6 +336,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	ELSE DO:
 		cMode = "DATA".
 	END.
+message "MODE:" cMode.
 
 	IF cMode = "UPDATE" THEN DO:
 	END.
@@ -380,13 +383,13 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 
 		IF inputObject:GetJsonObject("params"):GetCharacter("lastRowID") > "" AND
 			qh:REPOSITION-TO-ROWID(TO-ROWID(inputObject:GetJsonObject("params"):GetCharacter("lastRowID"))) THEN DO:
-			qh:GET-NEXT().
+			//qh:GET-NEXT().
 			IF cMode = "DATA" THEN DO:
 				qh:GET-NEXT().
 			END.
 		END.
 		ELSE DO:
-			qh:GET-FIRST().
+			//qh:GET-FIRST().
 		END.
 
 		iPageLength = inputObject:GetJsonObject("params"):GetInteger("pageLength").
@@ -394,7 +397,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		dt = now.
 
 		TABLE_LOOP:
-		DO WHILE NOT qh:QUERY-OFF-END STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
+		DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
 			// make filtering here
 			DO i = 1 TO EXTENT(cFilterNames):
 				IF cFilterValues[i] > "" THEN DO:
@@ -433,9 +436,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 			jsonRaw:Add(jsonRawRow).
 			jsonFormatted:Add(jsonFormattedRow).			
 			iPageLength = iPageLength - 1.
-			IF iPageLength = 0 THEN LEAVE. 
+			IF iPageLength <= 0 THEN LEAVE. 
 			IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
-			qh:GET-NEXT().
 		END.
 
     	dtl = NOW.

@@ -109,7 +109,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                 } else {
                     setSelectedRows(new Set());
                     setOpen(false);
-                    reloadData();
+                    reloadData(100);
                 }
                 break;
             case "crud":
@@ -174,7 +174,9 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                                     var timer;
                                     function handleKeyInputTimeout() {
                                         clearTimeout(timer);
-                                        timer = setTimeout(reloadData, 500);
+                                        timer = setTimeout(() => {
+                                            reloadData(100);
+                                        }, 500);
                                     }
 
                                     function handleInputKeyDown(event) {
@@ -349,7 +351,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         );
     };
 
-    function reloadData() {
+    function reloadData(loaded: number) {
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
