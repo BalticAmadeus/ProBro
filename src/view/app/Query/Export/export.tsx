@@ -5,11 +5,6 @@ import "./export.css";
 import { CommandAction, ICommand } from "../../model";
 import { v1 } from "uuid";
 
-const contentStyle = {
-  maxWidth: "600px",
-  width: "90%",
-};
-
 export default function ExportPopup({ wherePhrase, vscode, sortColumns, filters }) {
   const [exportFormat, setExportFormat] = React.useState("");
 
@@ -26,7 +21,7 @@ export default function ExportPopup({ wherePhrase, vscode, sortColumns, filters 
       id: v1(),
       action: CommandAction.Export,
       params: {
-        where: wherePhrase,
+        wherePhrase: wherePhrase,
         start: 0,
         pageLength: 100000,
         lastRowID: "",
@@ -61,12 +56,12 @@ export default function ExportPopup({ wherePhrase, vscode, sortColumns, filters 
       return window.removeEventListener("message", handleMessage);
     };
   }, []);
+  
 
   return (
     <Popup
       trigger={<button className="btn"> Export Data </button>}
       modal
-      contentStyle={contentStyle}
     >
       {(close) => (
         <div className="modal">

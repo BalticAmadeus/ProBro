@@ -52,19 +52,51 @@ export class QueryEditor {
                 .getTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,
-                  command.params.where,
-                  command.params.start,
-                  command.params.pageLength,
-                  command.params.lastRowID,
-                  command.params.sortColumns,
-                  command.params.filters,
-                  command.params.timeOut
+                  command.params
                 )
                 .then((oe) => {
                   if (this.panel) {
                     this.panel?.webview.postMessage({
                       id: command.id,
                       command: "data",
+                      data: oe,
+                    });
+                  }
+                });
+              break;
+            }
+          case CommandAction.CRUD:
+            if (this.tableListProvider.config) {
+              DatabaseProcessor.getInstance()
+                .getTableData(
+                  this.tableListProvider.config,
+                  this.tableNode.tableName,
+                  command.params
+                )
+                .then((oe) => {
+                  if (this.panel) {
+                    this.panel?.webview.postMessage({
+                      id: command.id,
+                      command: "crud",
+                      data: oe,
+                    });
+                  }
+                });
+              break;
+            }
+          case CommandAction.Submit:
+            if (this.tableListProvider.config) {
+              DatabaseProcessor.getInstance()
+                .submitTableData(
+                  this.tableListProvider.config,
+                  this.tableNode.tableName,
+                  command.params
+                )
+                .then((oe) => {
+                  if (this.panel) {
+                    this.panel?.webview.postMessage({
+                      id: command.id,
+                      command: "submit",
                       data: oe,
                     });
                   }
@@ -78,13 +110,7 @@ export class QueryEditor {
                 .getTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,
-                  command.params.where,
-                  command.params.start,
-                  command.params.pageLength,
-                  command.params.lastRowID,
-                  command.params.sortColumns,
-                  command.params.filters,
-                  command.params.timeOut
+                  command.params
                 )
                 .then((oe) => {
                   if (this.panel) {
@@ -94,7 +120,7 @@ export class QueryEditor {
                       command: "export",
                       tableName: this.tableNode.tableName,
                       data: oe,
-                      format: command.params.exportType
+                      format: command.params!.exportType
                     });
                   }
                 });
@@ -141,6 +167,7 @@ export class QueryEditor {
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
           window.tableData = ${JSON.stringify(tableData)};
+          window.tableName = ${JSON.stringify(this.tableNode.tableName)};
         </script>
     </head>
     <body>

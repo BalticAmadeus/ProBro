@@ -11,6 +11,7 @@ FIELD cName AS CHARACTER SERIALIZE-NAME "name"
 FIELD cKey AS CHARACTER SERIALIZE-NAME "key"
 FIELD cType AS CHARACTER SERIALIZE-NAME "type"
 FIELD cFormat AS CHARACTER SERIALIZE-NAME "format"
+FIELD iExtent AS INTEGER 
 .
 
 DEFINE VARIABLE inputMem AS MEMPTR NO-UNDO.
@@ -126,9 +127,9 @@ PROCEDURE SocketIO:
             jsonObject = NEW Progress.Json.ObjectModel.JsonObject().
             jsonObject:Add("error", err:GetMessageNum(1)).
             jsonObject:Add("description", err:GetMessage(1)).
-	    IF SESSION:ERROR-STACK-TRACE = TRUE THEN DO:
-	    	jsonObject:Add("trace", err:CallStack).
-	    END.
+            IF SESSION:ERROR-STACK-TRACE = TRUE THEN DO:
+                jsonObject:Add("trace", err:CallStack).
+            END.
         END CATCH.
         FINALLY:
             RUN LOCAL_GET_DEBUG.

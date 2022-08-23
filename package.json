@@ -97,7 +97,13 @@
                 "command": "pro-bro.query",
                 "title": "Query",
                 "icon": "$(play)"
+            },
+            {
+                "command": "pro-bro.list-filter",
+                "title": "List-filter",
+                "icon": "$(list-filter)"
             }
+
         ],
         "menus": {
             "view/title": [
@@ -110,7 +116,13 @@
                     "command": "pro-bro.addEntry",
                     "when": "view == pro-bro-databases",
                     "group": "navigation"
+                },
+                {
+                    "command": "pro-bro.list-filter",
+                    "when": "view == pro-bro-tables",
+                    "group": "navigation"
                 }
+
             ],
             "view/item/context": [
                 {
