@@ -1,4 +1,44 @@
-# VSC extension for browsing Progress DB
+# ProBro
 
-More info:
-https://conf.baltic-amadeus.lt/display/PK/Visual+Studio+Code+Progress+DB+Browser
+An extension for Progress DB browsing
+
+## Current status
+This open source project is in active development. Our goal is to simplify the access to Progress DB wen using VSCode as a development environment.
+
+## Features
+- Connection to Progress DB:
+  - Connect to Progress DB via ABL Socket server
+  - Connect to multiple local Progress DBs
+  - Custom connection groups
+  - Deleting Connections
+- Tables
+  - Hidden tables
+  - Launch query
+- Indexes
+- Fields
+- Query data
+  - Server-side multi-sorting
+  - Server-side multi-filtering
+  - Lazy loading
+  - JSON/OE formatting
+  - Custom queries
+- Export
+  - Json
+  - Excel
+  - CSV
+- CRUD operations
+  - Insert
+  - Update
+  - Delete multiple
+## Guide
+TODO
+
+## Related work
+- [DataDigger](https://datadigger.wordpress.com/) developed by Patrick Tingen. A great source of features and examples when working on this project.
+- [vscode-abl](https://github.com/Riverside-Software/vscode-abl) supported by Gilles Querret. VSCode plugin for ABL.
+
+## Changelog
+
+## Sponsored by [Baltic Amadeus](https://www.ba.lt/en).
+
+[![BA](resources/images/Balticmadeus_RGB-01.jpg)](https://www.ba.lt/en)<br>
