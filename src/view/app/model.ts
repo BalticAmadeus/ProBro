@@ -81,7 +81,7 @@ export interface ITableData {
     filters?: any,
     timeOut: number,
     crud?: string[],
-    data?: { key: string; value: string | number; defaultValue: string | number }[],
+    data?: { key: string; value: string | number | boolean; defaultValue: string | number | boolean }[],
     mode?: string,
     exportType?: string
 }
