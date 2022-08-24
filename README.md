@@ -23,13 +23,13 @@ This open source project is in active development. Our goal is to simplify the a
   - JSON/OE formatting
   - Custom queries
 - Export
-  - Json
+  - JSON
   - Excel
   - CSV
 - CRUD operations
-  - Insert
-  - Update
   - Delete multiple
+  - Insert (still in progress)
+  - Update (still in progress)
 ## Guide
 TODO
 
