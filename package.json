@@ -2,7 +2,12 @@
     "name": "pro-bro",
     "displayName": "ProBro",
     "description": "VSC extension for browsing Progress DB",
-    "version": "0.0.1",
+    "version": "0.3.1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/BalticAmadeus/ProBro"
+    },
+    "publisher": "BalticAmadeus",
     "engines": {
         "vscode": "^1.67.0"
     },
@@ -167,7 +172,6 @@
         "style-loader": "^3.3.1",
         "ts-loader": "^9.3.0",
         "typescript": "^4.6.4",
-        "uuid": "^8.3.2",
         "webpack": "^5.73.0",
         "webpack-cli": "^4.9.2"
     },
@@ -179,6 +183,7 @@
         "react-data-grid": "^7.0.0-beta.13",
         "react-dom": "^18.1.0",
         "react-table": "^7.8.0",
-        "reactjs-popup": "^2.0.5"
+        "reactjs-popup": "^2.0.5",
+        "uuid": "^8.3.2"
     }
 }

@@ -43,7 +43,7 @@ class OEClient {
     private runProc(): Promise<any> {
         return new Promise((resolve) => {
 
-            const cmd = `${Constants.context.extensionPath}\\resources\\oe\\oe.bat -b -p "${Constants.context.extensionPath}\\resources\\oe\\oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}"`;
+            const cmd = `${Constants.context.extensionPath}\\resources\\oe\\oe.bat -b -debugalert -p "${Constants.context.extensionPath}\\resources\\oe\\oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}"`;
 
             this.proc = cp.spawn('cmd.exe', ['/c',
                 `${Constants.context.extensionPath}\\resources\\oe\\oe.bat`,

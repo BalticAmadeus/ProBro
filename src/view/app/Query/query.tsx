@@ -66,7 +66,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         _setFilters(data);
     };
 
-    const [selectedRows, onSelectedRowsChange] = React.useState(
+    const [selectedRows, setSelectedRows] = React.useState(
         (): ReadonlySet<string> => new Set()
     );
 
@@ -107,12 +107,12 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                     setIsError(true);
                     setIsDataRetrieved(false);
                 } else {
+                    setSelectedRows(new Set());
                     setOpen(false);
-                    reloadData();
+                    reloadData(100);
                 }
                 break;
             case "crud":
-                console.log(message.data);
                 if (message.data.error) {
                     setErrorObject({
                         error: message.data.error,
@@ -174,7 +174,9 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                                     var timer;
                                     function handleKeyInputTimeout() {
                                         clearTimeout(timer);
-                                        timer = setTimeout(reloadData, 500);
+                                        timer = setTimeout(() => {
+                                            reloadData(100);
+                                        }, 500);
                                     }
 
                                     function handleInputKeyDown(event) {
@@ -241,7 +243,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                                             {filters.enabled && (
                                                 <div className={"filter-cell"}>
                                                     <input
-                                                    className="textInput"
+                                                        className="textInput"
                                                         autoFocus={
                                                             isCellSelected
                                                         }
@@ -349,7 +351,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         );
     };
 
-    function reloadData() {
+    function reloadData(loaded: number) {
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
@@ -541,7 +543,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 headerRowHeight={filters.enabled ? 70 : undefined}
                 style={{ height: windowHeight - 150, whiteSpace: "pre" }}
                 selectedRows={selectedRows}
-                onSelectedRowsChange={onSelectedRowsChange}
+                onSelectedRowsChange={setSelectedRows}
                 rowKeyGetter={rowKeyGetter}
             ></DataGrid>
             {getFooterTag()}
