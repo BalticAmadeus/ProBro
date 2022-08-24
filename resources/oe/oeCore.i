@@ -275,8 +275,6 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	qh:QUERY-PREPARE(SUBSTITUTE("FOR EACH _file WHERE _file._file-name = '&1'", inputObject:GetJsonObject("params"):GetCharacter("tableName"))).
 	qh:QUERY-OPEN.
 
-message "PARAMS:" string(inputObject:GetJsonText("params")).
-
 	DO WHILE qh:GET-NEXT():
 
 		CREATE BUFFER fbh FOR TABLE "_field".
@@ -523,52 +521,53 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
 				IF fh:EXTENT = 0 THEN DO:
 					CASE fh:DATA-TYPE:
 						WHEN "CHARACTER" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetCharacter("defaultValue") THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetJsonText("defaultValue") THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 600).
 							END.
-							fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetCharacter("value").
+							fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetJsonText("value").
 						END.
 						WHEN "LOGICAL" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> LOGICAL(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
+message "LOGICAL" string(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) string(jsonData:GetJsonObject(i):GetJsonText("value")) fh:BUFFER-VALUE.
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> LOGICAL(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 601).
 							END.
-							fh:BUFFER-VALUE = LOGICAL(jsonData:GetJsonObject(i):GetCharacter("value")).
+							fh:BUFFER-VALUE = LOGICAL(jsonData:GetJsonObject(i):GetJsonText("value")).
 						END.
 						WHEN "INTEGER" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetInteger("defaultValue") THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> INTEGER(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 602).
 							END.
-							fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetInteger("value").
+							fh:BUFFER-VALUE = INTEGER(jsonData:GetJsonObject(i):GetJsonText("value")).
 						END.
 						WHEN "INT64" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetInt64("defaultValue") THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> INT64(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 603).
 							END.
-							fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetInt64("value").
+							fh:BUFFER-VALUE = INT64(jsonData:GetJsonObject(i):GetJsonText("value")).
 						END.
 						WHEN "DECIMAL" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> jsonData:GetJsonObject(i):GetDecimal("defaultValue") THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> DECIMAL(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 603).
 							END.
-							fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetDecimal("value").
+							fh:BUFFER-VALUE = DECIMAL(jsonData:GetJsonObject(i):GetJsonText("value")).
 						END.
 						WHEN "date" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> OpenEdge.Core.TimeStamp:ToABLDateFromISO(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> OpenEdge.Core.TimeStamp:ToABLDateFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("defaultValue"))) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 604).
 							END.
-							fh:BUFFER-VALUE = OpenEdge.Core.TimeStamp:ToABLDateFromISO(jsonData:GetJsonObject(i):GetCharacter("value")).
+							fh:BUFFER-VALUE = OpenEdge.Core.TimeStamp:ToABLDateFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("value"))).
 						END.
 						WHEN "datetime" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <>  OpenEdge.Core.TimeStamp:ToABLDateTimeFromISO(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <>  OpenEdge.Core.TimeStamp:ToABLDateTimeFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("defaultValue"))) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 605).
 							END.
-							fh:BUFFER-VALUE = OpenEdge.Core.TimeStamp:ToABLDateTimeFromISO(jsonData:GetJsonObject(i):GetCharacter("v,alue")).
+							fh:BUFFER-VALUE = OpenEdge.Core.TimeStamp:ToABLDateTimeFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("value"))).
 						END.
 						WHEN "datetime-tz" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> OpenEdge.Core.TimeStamp:ToABLDateTimeTzFromISO(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> OpenEdge.Core.TimeStamp:ToABLDateTimeTzFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("defaultValue"))) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 606).
 							END.
-							fh:BUFFER-VALUE = OpenEdge.Core.TimeStamp:ToABLDateTimeTzFromISO(jsonData:GetJsonObject(i):GetCharacter("value")).
+							fh:BUFFER-VALUE = OpenEdge.Core.TimeStamp:ToABLDateTimeTzFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("value"))).
 						END.
 					END CASE.
 				END.
@@ -576,52 +575,52 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
 					j = INTEGER(ENTRY(1, ENTRY(2, jsonData:GetJsonObject(i):GetCharacter("key"), "["), "]")).
 					CASE fh:DATA-TYPE:
 						WHEN "CHARACTER" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> jsonData:GetJsonObject(i):GetCharacter("defaultValue") THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> jsonData:GetJsonObject(i):GetJsonText("defaultValue") THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 600).
 							END.
-							fh:BUFFER-VALUE[j] = jsonData:GetJsonObject(i):GetCharacter("value").
+							fh:BUFFER-VALUE[j] = jsonData:GetJsonObject(i):GetJsonText("value").
 						END.
 						WHEN "LOGICAL" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> LOGICAL(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> LOGICAL(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 601).
 							END.
-							fh:BUFFER-VALUE[j] = LOGICAL(jsonData:GetJsonObject(i):GetCharacter("value")).
+							fh:BUFFER-VALUE[j] = LOGICAL(jsonData:GetJsonObject(i):GetJsonText("value")).
 						END.
 						WHEN "INTEGER" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> jsonData:GetJsonObject(i):GetInteger("defaultValue") THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> INTEGER(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 602).
 							END.
-							fh:BUFFER-VALUE[j] = jsonData:GetJsonObject(i):GetInteger("value").
+							fh:BUFFER-VALUE[j] = INTEGER(jsonData:GetJsonObject(i):GetJsonText("value")).
 						END.
 						WHEN "INT64" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> jsonData:GetJsonObject(i):GetInt64("defaultValue") THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> INT64(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 603).
 							END.
-							fh:BUFFER-VALUE[j] = jsonData:GetJsonObject(i):GetInt64("value").
+							fh:BUFFER-VALUE[j] = INT64(jsonData:GetJsonObject(i):GetJsonText("value")).
 						END.
 						WHEN "DECIMAL" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> jsonData:GetJsonObject(i):GetDecimal("defaultValue") THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> DECIMAL(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 603).
 							END.
-							fh:BUFFER-VALUE[j] = jsonData:GetJsonObject(i):GetDecimal("value").
+							fh:BUFFER-VALUE[j] = DECIMAL(jsonData:GetJsonObject(i):GetJsonText("value")).
 						END.
 						WHEN "date" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> OpenEdge.Core.TimeStamp:ToABLDateFromISO(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> OpenEdge.Core.TimeStamp:ToABLDateFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("defaultValue"))) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 604).
 							END.
-							fh:BUFFER-VALUE[j] = OpenEdge.Core.TimeStamp:ToABLDateFromISO(jsonData:GetJsonObject(i):GetCharacter("value")).
+							fh:BUFFER-VALUE[j] = OpenEdge.Core.TimeStamp:ToABLDateFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("value"))).
 						END.
 						WHEN "datetime" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <>  OpenEdge.Core.TimeStamp:ToABLDateTimeFromISO(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <>  OpenEdge.Core.TimeStamp:ToABLDateTimeFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("defaultValue"))) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 605).
 							END.
-							fh:BUFFER-VALUE[j] = OpenEdge.Core.TimeStamp:ToABLDateTimeFromISO(jsonData:GetJsonObject(i):GetCharacter("v,alue")).
+							fh:BUFFER-VALUE[j] = OpenEdge.Core.TimeStamp:ToABLDateTimeFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("value"))).
 						END.
 						WHEN "datetime-tz" THEN DO:
-							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> OpenEdge.Core.TimeStamp:ToABLDateTimeTzFromISO(jsonData:GetJsonObject(i):GetCharacter("defaultValue")) THEN DO:
+							IF cMode = "UPDATE" AND fh:BUFFER-VALUE[j] <> OpenEdge.Core.TimeStamp:ToABLDateTimeTzFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("defaultValue"))) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 606).
 							END.
-							fh:BUFFER-VALUE[j] = OpenEdge.Core.TimeStamp:ToABLDateTimeTzFromISO(jsonData:GetJsonObject(i):GetCharacter("value")).
+							fh:BUFFER-VALUE[j] = OpenEdge.Core.TimeStamp:ToABLDateTimeTzFromISO(STRING(jsonData:GetJsonObject(i):GetJsonText("value"))).
 						END.
 					END CASE.
 				END.

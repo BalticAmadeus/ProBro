@@ -26,13 +26,15 @@ export default function UpdatePopup({
 
     if (action != ProcessAction.Delete) {
         columns.forEach((column) => {
-            let fieldValue =
-                rows && rows[0] && rows[0][column.key]
-                    ? rows[0][column.key]
-                    : "";
-            let fieldType = typeof (rows && rows[0] && rows[0][column.key]
+            let fieldType = typeof (rows &&
+            rows[0] &&
+            String(rows[0][column.key])
                 ? rows[0][column.key]
                 : "");
+            let fieldValue =
+                rows && rows[0] && String(rows[0][column.key])
+                    ? String(rows[0][column.key])
+                    : "";
 
             table.push(
                 <tr>
@@ -60,8 +62,8 @@ export default function UpdatePopup({
 
         const submitData: {
             key: string;
-            value: string | number;
-            defaultValue: string | number;
+            value: string | number | boolean;
+            defaultValue: string | number | boolean;
         }[] = [];
 
         const rowids: string[] = [];
@@ -75,10 +77,14 @@ export default function UpdatePopup({
                 value:
                     input.valueType == "number"
                         ? Number(input.input.value)
+                        : input.valueType == "boolean"
+                        ? input.input.value.toLowerCase() === "true"
                         : input.input.value,
                 defaultValue:
                     input.valueType == "number"
                         ? Number(input.input.defaultValue)
+                        : input.valueType == "boolean"
+                        ? input.input.defaultValue.toLowerCase() === "true"
                         : input.input.defaultValue,
             });
         });
@@ -97,6 +103,7 @@ export default function UpdatePopup({
                 mode: ProcessAction[action],
             },
         };
+        console.log(command);
         vscode.postMessage(command);
     };
 

@@ -109,7 +109,9 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                 } else {
                     setSelectedRows(new Set());
                     setOpen(false);
-                    reloadData(100);
+                    reloadData(
+                        loaded + (action == ProcessAction.Insert ? 1 : 0)
+                    );
                 }
                 break;
             case "crud":
@@ -449,6 +451,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
         processRecord(ProcessAction.Delete);
     };
     const processRecord = (mode: ProcessAction) => {
+        setAction(mode);
         const rowids: string[] = [];
         selectedRows.forEach((element) => {
             rowids.push(element);
@@ -467,7 +470,6 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
             },
         };
         vscode.postMessage(command);
-        setAction(mode);
     };
 
     return (
