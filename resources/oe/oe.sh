@@ -1,7 +1,7 @@
 #!/bin/sh
 
 export TERM=xterm
-export PROPATH=$PROPATH:/home/dmikai/ProBro/resources/oe/
+export PROPATH=$PROPATH:$PWD
 
 PROEXE=${PROEXE-$DLC/bin/_progres}
 
