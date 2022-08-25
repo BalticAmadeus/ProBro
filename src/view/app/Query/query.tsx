@@ -6,6 +6,11 @@ import { CommandAction, ICommand, ProcessAction } from "../model";
 import { v1 } from "uuid";
 import ExportData from "./Export";
 import UpdatePopup from "./Update";
+import { ProBroButton } from "./Components/button";
+import RawOnTwoToneIcon from '@mui/icons-material/RawOnTwoTone';
+import RawOffTwoToneIcon from '@mui/icons-material/RawOffTwoTone';
+import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
+
 
 const filterCSS: React.CSSProperties = {
     inlineSize: "100%",
@@ -78,7 +83,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         setWindowHeight(window.innerHeight);
     };
 
-    var inputQuery: HTMLInputElement = undefined;
+    var inputQuery: HTMLButtonElement = undefined;
     React.useEffect(() => {
         if (inputQuery) {
             inputQuery.click();
@@ -490,13 +495,11 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                                         setWherePhrase(event.target.value);
                                     }}
                                 />
-                                <input
+                                <ProBroButton
                                     ref={(input) => (inputQuery = input)}
-                                    className="btn"
-                                    type="submit"
-                                    value="Query"
+                                    startIcon={<PlayArrowTwoToneIcon />}
                                     onClick={onQueryClick}
-                                ></input>
+                                >Query</ProBroButton>
                             </div>
                         </div>
                     </form>
@@ -507,12 +510,10 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                             sortColumns={sortColumns}
                             filters={filters}
                         />
-                        <input
-                            className="btn"
-                            type="button"
-                            value={isFormatted.toString()}
+                        <ProBroButton
                             onClick={getDataFormat}
-                        ></input>
+                            startIcon={isFormatted ? <RawOffTwoToneIcon /> : <RawOnTwoToneIcon /> }
+                        > </ProBroButton>
                     </div>
                     <div className="query-options">
                         <UpdatePopup
@@ -543,7 +544,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 onSortColumnsChange={onSortClick}
                 className={filters.enabled ? "filter-cell" : undefined}
                 headerRowHeight={filters.enabled ? 70 : undefined}
-                style={{ height: windowHeight - 150, whiteSpace: "pre" }}
+                style={{ height: windowHeight - 175, whiteSpace: "pre" }}
                 selectedRows={selectedRows}
                 onSelectedRowsChange={setSelectedRows}
                 rowKeyGetter={rowKeyGetter}
