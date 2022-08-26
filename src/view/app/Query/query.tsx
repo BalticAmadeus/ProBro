@@ -56,6 +56,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
     const [loaded, setLoaded] = React.useState(() => 0);
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
     const [rowID, setRowID] = React.useState("");
+    const [scrollHeight, setScrollHeight] = React.useState(() => 0);
 
     const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
         []
@@ -398,10 +399,19 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         );
     }
 
+    function isHorizontalScroll({
+        currentTarget,
+    }: React.UIEvent<HTMLDivElement>): boolean {
+        return (
+            currentTarget.scrollTop === scrollHeight
+        );
+    }
+
     async function handleScroll(event: React.UIEvent<HTMLDivElement>) {
-        if (isLoading || !isAtBottom(event)) {
+        if (isLoading || !isAtBottom(event) || isHorizontalScroll(event)) {
             return;
         }
+        setScrollHeight(event.currentTarget.scrollTop);
         setIsLoading(true);
         makeQuery(loaded, 1000, rowID, sortColumns, filters, 100);
     }
