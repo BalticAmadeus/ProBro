@@ -43,6 +43,13 @@ export class QueryEditor {
       });
     }
 
+    // React.useEffect (() => {
+    //   this.panel?.webview.postMessage({
+    //     command: "columns",   
+    //     columns: tableNode.cache?.selectedColumns,
+    //   })
+    // })
+
     this.panel.webview.onDidReceiveMessage(
       (command: ICommand) => {
         switch (command.action) {
@@ -59,9 +66,12 @@ export class QueryEditor {
                     this.panel?.webview.postMessage({
                       id: command.id,
                       command: "data",
+                      columns: tableNode.cache?.selectedColumns,
                       data: oe,
                     });
                   }
+                  console.log("tablename: ", tableNode.tableName);
+                  console.log("fields: ", tableNode.cache?.fields);
                 });
               break;
             }

@@ -46,6 +46,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         () => tableData.data
     );
     const [columns, setColumns] = React.useState(() => tableData.columns);
+    const [selectedColumns, setSelectedColumns] = React.useState([]);
     const [columnsCRUD, setColumnsCRUD] = React.useState(() => []);
     const [recordsCRUD, setRecordsCRUD] = React.useState(() => []);
     const [loaded, setLoaded] = React.useState(() => 0);
@@ -93,9 +94,19 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         };
     }, []);
 
+    React.useEffect(() => {
+        console.log("changed field.tsx selected columns: ", selectedColumns);
+
+        console.log("columns: ", columns);
+    })
+
     const messageEvent = (event) => {
         const message = event.data;
         switch (message.command) {
+            case "columns":
+                console.log("got selected columns to quesry.tsx: ", message.columns);
+
+                break;
             case "submit":
                 if (message.data.error) {
                     // should be displayed in UpdatePopup window
@@ -138,6 +149,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                     setIsDataRetrieved(false);
                 } else {
                     if (message.data.columns.length !== columns.length) {
+                        console.log("query.tsx, columns from fields.tsx: ", message.columns);
                         const fontSize = +window
                             .getComputedStyle(
                                 document.getElementsByClassName(
@@ -285,6 +297,11 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                             }
                         });
                         setColumns([SelectColumn, ...message.data.columns]);
+                        console.log("sortColumns: ", selectedColumns);
+                        if (message.columns !== undefined) {
+                            setSelectedColumns([...message.columns]); 
+                        }
+                        
                     }
                     const boolField = message.data.columns.filter(
                         (field) => field.type === "logical"
@@ -468,6 +485,16 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
         setAction(mode);
     };
 
+   function filterColumns() {
+        if (selectedColumns.length !== 0) {
+            return columns.filter((column) => selectedColumns.includes(column.key) || column.key === "select-row");
+        } else {
+            return columns.filter((column) => column.key !== "ROWID");
+        } 
+    };
+
+    const selected = filterColumns();
+
     return (
         <React.Fragment>
             <div className="container">
@@ -528,7 +555,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 </div>
             </div>
             <DataGrid
-                columns={columns.filter((column) => column.key !== "ROWID")}
+                columns={selected}
                 rows={isFormatted ? formattedRows : rawRows}
                 onScroll={handleScroll}
                 defaultColumnOptions={{

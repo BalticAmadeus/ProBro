@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useMemo } from "react";
 
 import { FieldRow, CommandAction, ICommand } from "../model";
-import DataGrid from "react-data-grid";
+import DataGrid, { SelectColumn }from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 
 import * as columnName from "./column.json";
@@ -45,9 +45,7 @@ function rowKeyGetter(row: FieldRow) {
 function Fields({ initialData, vscode }) {
     const [rows, setRows] = useState(initialData.fields as FieldRow[]);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
-    const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>(
-        () => new Set()
-    );
+    const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>();
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
 
     const windowRezise = () => {
@@ -91,16 +89,31 @@ function Fields({ initialData, vscode }) {
             switch (message.command) {
                 case "data":
                     console.log("GOT FIELDS MESSAGE");
-                    setRows(message.data.fields);                    
+                    setRows(message.data.fields);
+                    if (message.data.selectedColumns === undefined) { 
+                        setSelectedRows((): ReadonlySet<number> => new Set(message.data.fields.map(field => field.order)));   
+                    } else {
+                        const selected = message.data.fields.filter(row => message.data.selectedColumns.includes(row.name));
+                        setSelectedRows((): ReadonlySet<number> => new Set(selected.map(row => row.order)));
+                    }        
             }
         });
+    });
+
+    React.useEffect(() => {
+       const command = {
+            id: v1(),
+            action: CommandAction.UpdateColumns,
+            columns: rows.filter(row => selectedRows.has(row.order)).map(row => row.name)
+        };
+        vscode.postMessage(command);
     });
 
     return (
         <div>
             {rows.length > 0 ? (
                 <DataGrid
-                    columns={columnName.columns}
+                    columns={[SelectColumn, ...columnName.columns]}
                     rows={sortedRows}
                     defaultColumnOptions={{
                         sortable: true,
