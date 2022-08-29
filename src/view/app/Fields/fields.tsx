@@ -6,7 +6,6 @@ import DataGrid, { SelectColumn }from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 
 import * as columnName from "./column.json";
-import { v1 } from "uuid";
 
 type Comparator = (a: FieldRow, b: FieldRow) => number;
 function getComparator(sortColumn: string): Comparator {

@@ -1,11 +1,18 @@
 import * as React from "react";
 import Popup from "reactjs-popup";
 import exportFromJSON from "export-from-json";
-import "./export.css";
 import { CommandAction, ICommand } from "../../model";
 import { v1 } from "uuid";
+import ExportIcon from "@mui/icons-material/FileDownloadTwoTone";
+import "./export.css";
+import { ProBroButton } from "../Components/button";
 
-export default function ExportPopup({ wherePhrase, vscode, sortColumns, filters }) {
+export default function ExportPopup({
+  wherePhrase,
+  vscode,
+  sortColumns,
+  filters,
+}) {
   const [exportFormat, setExportFormat] = React.useState("");
 
   const exportTypes = ["json", "csv", "xls"];
@@ -26,7 +33,7 @@ export default function ExportPopup({ wherePhrase, vscode, sortColumns, filters 
         pageLength: 100000,
         lastRowID: "",
         sortColumns: sortColumns,
-        filters: filters, 
+        filters: filters,
         exportType: exportFormat,
         timeOut: 0,
       },
@@ -38,9 +45,9 @@ export default function ExportPopup({ wherePhrase, vscode, sortColumns, filters 
     const message = event.data;
     switch (message.command) {
       case "export":
-        const exportData = message.data.rawData.map(({ROWID, ...rest}) => {
+        const exportData = message.data.rawData.map(({ ROWID, ...rest }) => {
           return rest;
-        } );
+        });
         exportFromJSON({
           data: exportData,
           fileName: message.tableName,
@@ -56,11 +63,14 @@ export default function ExportPopup({ wherePhrase, vscode, sortColumns, filters 
       return window.removeEventListener("message", handleMessage);
     };
   }, []);
-  
 
   return (
     <Popup
-      trigger={<button className="btn"> Export Data </button>}
+      trigger={
+        <ProBroButton startIcon={<ExportIcon />}>
+          Export
+        </ProBroButton>
+      }
       modal
     >
       {(close) => (

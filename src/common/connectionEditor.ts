@@ -1,8 +1,7 @@
 import path = require("path");
 import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
-import * as fs from "fs";
-import { v1 as uuidv1, v1 } from "uuid";
+import {v4} from "uuid";
 import { Constants } from "./constants";
 import { DatabaseProcessor } from "../db/databaseProcessor";
 
@@ -75,7 +74,7 @@ export class ConnectionEditor {
         const reactAppUri = reactAppPathOnDisk.with({ scheme: "vscode-resource" });
 
         const config: IConfig = {
-            id: v1(),
+            id: v4(),
             label: "",
             name: "",
             description: "",

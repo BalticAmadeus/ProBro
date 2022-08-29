@@ -2,12 +2,11 @@ import * as React from "react";
 import { useState, useMemo } from "react";
 
 
-import { CommandAction, ICommand, IndexRow } from "../model";
+import { IndexRow } from "../model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 
 import * as columnName from "./column.json";
-import { v1 } from "uuid";
 
 type Comparator = (a: IndexRow, b: IndexRow) => number;
 function getComparator(sortColumn: string): Comparator {

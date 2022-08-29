@@ -6,6 +6,11 @@ import { CommandAction, ICommand, ProcessAction } from "../model";
 import { v1 } from "uuid";
 import ExportData from "./Export";
 import UpdatePopup from "./Update";
+import { ProBroButton } from "./Components/button";
+import RawOnTwoToneIcon from '@mui/icons-material/RawOnTwoTone';
+import RawOffTwoToneIcon from '@mui/icons-material/RawOffTwoTone';
+import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
+
 
 const filterCSS: React.CSSProperties = {
     inlineSize: "100%",
@@ -52,6 +57,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
     const [loaded, setLoaded] = React.useState(() => 0);
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
     const [rowID, setRowID] = React.useState("");
+    const [scrollHeight, setScrollHeight] = React.useState(() => 0);
 
     const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
         []
@@ -67,7 +73,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         _setFilters(data);
     };
 
-    const [selectedRows, onSelectedRowsChange] = React.useState(
+    const [selectedRows, setSelectedRows] = React.useState(
         (): ReadonlySet<string> => new Set()
     );
 
@@ -79,7 +85,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         setWindowHeight(window.innerHeight);
     };
 
-    var inputQuery: HTMLInputElement = undefined;
+    var inputQuery: HTMLButtonElement = undefined;
     React.useEffect(() => {
         if (inputQuery) {
             inputQuery.click();
@@ -111,12 +117,14 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                     setIsError(true);
                     setIsDataRetrieved(false);
                 } else {
+                    setSelectedRows(new Set());
                     setOpen(false);
-                    reloadData();
+                    reloadData(
+                        loaded + (action == ProcessAction.Insert ? 1 : 0)
+                    );
                 }
                 break;
             case "crud":
-                console.log(message.data);
                 if (message.data.error) {
                     setErrorObject({
                         error: message.data.error,
@@ -178,7 +186,9 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                                     var timer;
                                     function handleKeyInputTimeout() {
                                         clearTimeout(timer);
-                                        timer = setTimeout(reloadData, 500);
+                                        timer = setTimeout(() => {
+                                            reloadData(100);
+                                        }, 500);
                                     }
 
                                     function handleInputKeyDown(event) {
@@ -245,7 +255,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                                             {filters.enabled && (
                                                 <div className={"filter-cell"}>
                                                     <input
-                                                    className="textInput"
+                                                        className="textInput"
                                                         autoFocus={
                                                             isCellSelected
                                                         }
@@ -358,7 +368,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         );
     };
 
-    function reloadData() {
+    function reloadData(loaded: number) {
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
@@ -398,10 +408,19 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         );
     }
 
+    function isHorizontalScroll({
+        currentTarget,
+    }: React.UIEvent<HTMLDivElement>): boolean {
+        return (
+            currentTarget.scrollTop === scrollHeight
+        );
+    }
+
     async function handleScroll(event: React.UIEvent<HTMLDivElement>) {
-        if (isLoading || !isAtBottom(event)) {
+        if (isLoading || !isAtBottom(event) || isHorizontalScroll(event)) {
             return;
         }
+        setScrollHeight(event.currentTarget.scrollTop);
         setIsLoading(true);
         makeQuery(loaded, 1000, rowID, sortColumns, filters, 100);
     }
@@ -456,6 +475,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
         processRecord(ProcessAction.Delete);
     };
     const processRecord = (mode: ProcessAction) => {
+        setAction(mode);
         const rowids: string[] = [];
         selectedRows.forEach((element) => {
             rowids.push(element);
@@ -474,7 +494,6 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
             },
         };
         vscode.postMessage(command);
-        setAction(mode);
     };
 
    function filterColumns() {
@@ -505,13 +524,11 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                                         setWherePhrase(event.target.value);
                                     }}
                                 />
-                                <input
+                                <ProBroButton
                                     ref={(input) => (inputQuery = input)}
-                                    className="btn"
-                                    type="submit"
-                                    value="Query"
+                                    startIcon={<PlayArrowTwoToneIcon />}
                                     onClick={onQueryClick}
-                                ></input>
+                                >Query</ProBroButton>
                             </div>
                         </div>
                     </form>
@@ -522,12 +539,10 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                             sortColumns={sortColumns}
                             filters={filters}
                         />
-                        <input
-                            className="btn"
-                            type="button"
-                            value={isFormatted.toString()}
+                        <ProBroButton
                             onClick={getDataFormat}
-                        ></input>
+                            startIcon={isFormatted ? <RawOffTwoToneIcon /> : <RawOnTwoToneIcon /> }
+                        > </ProBroButton>
                     </div>
                     <div className="query-options">
                         <UpdatePopup
@@ -558,9 +573,9 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 onSortColumnsChange={onSortClick}
                 className={filters.enabled ? "filter-cell" : undefined}
                 headerRowHeight={filters.enabled ? 70 : undefined}
-                style={{ height: windowHeight - 150, whiteSpace: "pre" }}
+                style={{ height: windowHeight - 175, whiteSpace: "pre" }}
                 selectedRows={selectedRows}
-                onSelectedRowsChange={onSelectedRowsChange}
+                onSelectedRowsChange={setSelectedRows}
                 rowKeyGetter={rowKeyGetter}
             ></DataGrid>
             {getFooterTag()}

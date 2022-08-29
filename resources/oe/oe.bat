@@ -1,6 +1,6 @@
 @echo off 
 
-if "%DLC%"==""    set DLC=C:\Progress\OpenEdge
+if "%DLC%"==""         set DLC=C:\Progress\OpenEdge
 if exist "%DLC%"\promsgs goto BIN
    echo DLC environment variable not set correctly - Please set DLC variable
    goto END

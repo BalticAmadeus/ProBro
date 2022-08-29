@@ -1,5 +1,4 @@
 import { SortColumn } from "react-data-grid";
-import { v1 as uuidv1, v1 } from "uuid";
 
 export interface IConfig {
     id: string;
@@ -85,7 +84,7 @@ export interface ITableData {
     filters?: any,
     timeOut: number,
     crud?: string[],
-    data?: { key: string; value: string; defaultValue: string }[],
+    data?: { key: string; value: string | number | boolean; defaultValue: string | number | boolean }[],
     mode?: string,
     exportType?: string
 }
