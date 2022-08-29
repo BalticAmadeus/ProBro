@@ -72,11 +72,12 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.query`,
       (node: TableNode) => {
-        new QueryEditor(
+        var queryEditor = new QueryEditor(
           context,
           node,
           tablesListProvider
         );
+        fieldsProvider.addQueryEditor(queryEditor);
       }
     )
   );

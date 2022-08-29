@@ -151,6 +151,10 @@ export class QueryEditor {
     );
   }
 
+  public updateFields() {
+    console.log("updateFields");
+  }
+
   private getWebviewContent(tableData: IOETableData): string {
     // Local path to main script run in the webview
     const reactAppPathOnDisk = vscode.Uri.file(

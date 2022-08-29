@@ -17,9 +17,21 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
     public _view?: vscode.WebviewView;
     public tableNode?: TableNode;
     public tableListProvider?: TablesListProvider;
+    private queryEditors : QueryEditor[] = [];
 
     constructor(
         private context: vscode.ExtensionContext, private _type: string) {
+    }
+
+    public addQueryEditor(queryEditor : QueryEditor) {
+        this.queryEditors.push(queryEditor);
+        console.log("queryEditors: ", this.queryEditors.length);
+    }
+
+    public notifyQueryEditors() {
+        for (let i = 0; i < this.queryEditors.length; i++) {
+            this.queryEditors[i].updateFields();
+        }
     }
 
     public resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
@@ -48,10 +60,8 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
                             this.tableNode.cache.selectedColumns = command.columns;
                             console.log("got columns from fields.tsx: ", this.tableNode?.cache); 
                         }
-                        vscode.EventEmitter
-
-                      
-                        
+                        this.notifyQueryEditors();
+                        break;
                         
                 }
             }
