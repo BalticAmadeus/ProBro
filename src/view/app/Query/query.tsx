@@ -94,18 +94,11 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         };
     }, []);
 
-    React.useEffect(() => {
-        console.log("changed field.tsx selected columns: ", selectedColumns);
-
-        console.log("columns: ", columns);
-    })
-
     const messageEvent = (event) => {
         const message = event.data;
         switch (message.command) {
             case "columns":
-                console.log("got selected columns to quesry.tsx: ", message.columns);
-
+                setSelectedColumns([...message.columns]);
                 break;
             case "submit":
                 if (message.data.error) {
@@ -149,7 +142,6 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                     setIsDataRetrieved(false);
                 } else {
                     if (message.data.columns.length !== columns.length) {
-                        console.log("query.tsx, columns from fields.tsx: ", message.columns);
                         const fontSize = +window
                             .getComputedStyle(
                                 document.getElementsByClassName(
@@ -297,9 +289,10 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                             }
                         });
                         setColumns([SelectColumn, ...message.data.columns]);
-                        console.log("sortColumns: ", selectedColumns);
                         if (message.columns !== undefined) {
                             setSelectedColumns([...message.columns]); 
+                        } else {
+                            setSelectedColumns([...message.data.columns.map(column => column.name)].filter(column => column !== "ROWID"));
                         }
                         
                     }
@@ -489,8 +482,8 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
         if (selectedColumns.length !== 0) {
             return columns.filter((column) => selectedColumns.includes(column.key) || column.key === "select-row");
         } else {
-            return columns.filter((column) => column.key !== "ROWID");
-        } 
+            return [];
+        }
     };
 
     const selected = filterColumns();

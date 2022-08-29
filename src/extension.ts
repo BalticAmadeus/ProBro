@@ -75,9 +75,9 @@ export function activate(context: vscode.ExtensionContext) {
         var queryEditor = new QueryEditor(
           context,
           node,
-          tablesListProvider
+          tablesListProvider,
+          fieldsProvider
         );
-        fieldsProvider.addQueryEditor(queryEditor);
       }
     )
   );
