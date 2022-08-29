@@ -66,7 +66,7 @@ export interface IndexRow {
 export interface TableDetails {
     fields: FieldRow[],
     indexes: IndexRow[],
-    selectedColumns: string[]
+    selectedColumns?: string[]
 }
 
 export enum ProcessAction {

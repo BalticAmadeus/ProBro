@@ -294,7 +294,6 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                         } else {
                             setSelectedColumns([...message.data.columns.map(column => column.name)].filter(column => column !== "ROWID"));
                         }
-                        
                     }
                     const boolField = message.data.columns.filter(
                         (field) => field.type === "logical"

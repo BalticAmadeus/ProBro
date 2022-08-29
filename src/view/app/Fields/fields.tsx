@@ -101,7 +101,7 @@ function Fields({ initialData, vscode }) {
     });
 
     React.useEffect(() => {
-       const command = {
+       const command: ICommand = {
             id: v1(),
             action: CommandAction.UpdateColumns,
             columns: rows.filter(row => selectedRows.has(row.order)).map(row => row.name)

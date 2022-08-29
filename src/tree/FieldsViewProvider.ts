@@ -59,7 +59,7 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
         });
 
         this._view.webview.onDidReceiveMessage(
-            (command) => {
+            (command: ICommand) => {
                 switch (command.action) {
                     case CommandAction.UpdateColumns:
                         if (this.tableNode !== undefined && this.tableNode.cache !== undefined) {
