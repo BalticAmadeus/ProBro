@@ -100,12 +100,10 @@ function Fields({ initialData, vscode }) {
     });
 
     React.useEffect(() => {
-       const command: ICommand = {
-            id: v1(),
+        vscode.postMessage({
             action: CommandAction.UpdateColumns,
             columns: rows.filter(row => selectedRows.has(row.order)).map(row => row.name)
-        };
-        vscode.postMessage(command);
+        });
     });
 
     return (
