@@ -91,7 +91,7 @@ export default function ExportPopup({
             <br />
           </div>
           <div className="btn-container">
-            <button
+            <ProBroButton
               className="button"
               onClick={() => {
                 getData();
@@ -99,15 +99,15 @@ export default function ExportPopup({
               }}
             >
               Export
-            </button>
-            <button
+            </ProBroButton>
+            <ProBroButton
               className="button"
               onClick={() => {
                 close();
               }}
             >
               Cancel
-            </button>
+            </ProBroButton>
           </div>
         </div>
       )}
