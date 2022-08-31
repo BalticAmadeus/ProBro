@@ -4,7 +4,8 @@ import { config } from 'process';
 import { v1 } from 'uuid';
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
-import { Constants } from '../common/constants';
+import { Constants } from '../db/constants';
+import { QueryEditor } from '../common/queryEditor';
 import { DatabaseProcessor } from '../db/databaseProcessor';
 import { CommandAction, ICommand, IConfig, TableDetails } from '../view/app/model';
 import { TableNode } from './tableNode';
@@ -16,9 +17,27 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
     public _view?: vscode.WebviewView;
     public tableNode?: TableNode;
     public tableListProvider?: TablesListProvider;
+    private queryEditors : QueryEditor[] = [];
 
     constructor(
         private context: vscode.ExtensionContext, private _type: string) {
+    }
+
+    public addQueryEditor(queryEditor : QueryEditor) {
+        this.queryEditors.push(queryEditor);
+    }
+
+    public removeQueryEditor(queryEditor : QueryEditor) {
+        this.queryEditors = this.queryEditors.filter(query => query !== queryEditor);
+    }
+
+    public notifyQueryEditors() {
+        for (let i = 0; i < this.queryEditors.length; i++) {
+            if (this.queryEditors[i].tableName === this.tableNode?.tableName) {
+                this.queryEditors[i].updateFields();
+            }
+        }
+            
     }
 
     public resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
@@ -29,7 +48,7 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
                 vscode.Uri.file(path.join(this.context.asAbsolutePath(''), "out"))
             ]
         };
-        this._view.webview.html = this.getWebviewContent({ fields: [], indexes: [] });
+        this._view.webview.html = this.getWebviewContent({ fields: [], indexes: [], selectedColumns: [] });
 
         this._view.onDidChangeVisibility(ev => {
             if (this._view?.visible) {
@@ -37,25 +56,39 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
                     this.tableListProvider?.displayData(this.tableNode);
                 }
             }
-        })
+        });
 
         this._view.webview.onDidReceiveMessage(
             (command: ICommand) => {
                 switch (command.action) {
-                    case CommandAction.FieldsRefresh:
-                        if (this.tableNode) {
-                            this.tableListProvider?.displayData(this.tableNode);
+                    case CommandAction.UpdateColumns:
+                        if (this.tableNode !== undefined && this.tableNode.cache !== undefined) {
+                            this.tableNode.cache.selectedColumns = command.columns;
                         }
-                        return;
+                        this.notifyQueryEditors();
+                        break;
+                        
                 }
             }
         );
+
+        // this._view.webview.onDidReceiveMessage(
+        //     (command: ICommand) => {
+        //         switch (command.action) {
+        //             case CommandAction.FieldsRefresh:
+        //                 if (this.tableNode) {
+        //                     this.tableListProvider?.displayData(this.tableNode);
+        //                 }
+        //                 return;
+        //         }
+        //     }
+        // );
     }
 
     private getWebviewContent(data: TableDetails): string {
         // Local path to main script run in the webview
         const reactAppPathOnDisk = vscode.Uri.file(
-            path.join(vscode.Uri.file(this.context.asAbsolutePath(path.join("out/view/app", this._type == "fields" ? "fields.js" : "indexes.js"))).fsPath)
+            path.join(vscode.Uri.file(this.context.asAbsolutePath(path.join("out/view/app", this._type === "fields" ? "fields.js" : "indexes.js"))).fsPath)
         );
         const reactAppUri = reactAppPathOnDisk.with({ scheme: "vscode-resource" });
         const displayType = this._type;
