@@ -7,32 +7,31 @@ import { v1 } from "uuid";
 import ExportData from "./Export";
 import UpdatePopup from "./Update";
 import { ProBroButton } from "./Components/button";
-import RawOnTwoToneIcon from '@mui/icons-material/RawOnTwoTone';
-import RawOffTwoToneIcon from '@mui/icons-material/RawOffTwoTone';
-import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
-
+import RawOnTwoToneIcon from "@mui/icons-material/RawOnTwoTone";
+import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
+import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
 
 const filterCSS: React.CSSProperties = {
-    inlineSize: "100%",
-    padding: "4px",
-    fontSize: "14px",
+  inlineSize: "100%",
+  padding: "4px",
+  fontSize: "14px",
 };
 
 interface IConfigProps {
-    vscode: any;
-    tableData: IOETableData;
-    tableName: string;
+  vscode: any;
+  tableData: IOETableData;
+  tableName: string;
 }
 
 interface IErrorObject {
-    error: String;
-    description: String;
-    trace?: String;
+  error: String;
+  description: String;
+  trace?: String;
 }
 interface IStatisticsObject {
-    recordsRetrieved: number;
-    recordsRetrievalTime: number;
-    connectTime: number;
+  recordsRetrieved: number;
+  recordsRetrievalTime: number;
+  connectTime: number;
 }
 
 function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
@@ -76,426 +75,385 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
     const [selectedRows, setSelectedRows] = React.useState(
         (): ReadonlySet<string> => new Set()
     );
-
+    
     const getDataFormat = () => {
-        setIsFormatted(!isFormatted);
+      setIsFormatted(!isFormatted);
     };
 
     const windowResize = () => {
-        setWindowHeight(window.innerHeight);
+      setWindowHeight(window.innerHeight);
     };
 
     var inputQuery: HTMLButtonElement = undefined;
     React.useEffect(() => {
-        if (inputQuery) {
-            inputQuery.click();
-        }
+     if (inputQuery) {
+       inputQuery.click();
+       }    
     }, []);
 
-    React.useEffect(() => {
-        window.addEventListener("resize", windowResize);
+  React.useEffect(() => {
+    window.addEventListener("resize", windowResize);
 
-        return () => {
-            window.removeEventListener("resize", windowResize);
-        };
-    }, []);
-
-    const messageEvent = (event) => {
-        const message = event.data;
-        switch (message.command) {
-            case "columns":
-                setSelectedColumns([...message.columns]);
-                break;
-            case "submit":
-                if (message.data.error) {
-                    // should be displayed in UpdatePopup window
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsError(true);
-                    setIsDataRetrieved(false);
-                } else {
-                    setSelectedRows(new Set());
-                    setOpen(false);
-                    reloadData(
-                        loaded + (action == ProcessAction.Insert ? 1 : 0)
-                    );
-                }
-                break;
-            case "crud":
-                if (message.data.error) {
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsError(true);
-                    setIsDataRetrieved(false);
-                } else {
-                    setColumnsCRUD(message.data.columns);
-                    setRecordsCRUD(message.data.rawData);
-                    setOpen(true);
-                }
-                break;
-            case "data":
-                if (message.data.error) {
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsError(true);
-                    setIsDataRetrieved(false);
-                } else {
-                    if (message.data.columns.length !== columns.length) {
-                        const fontSize = +window
-                            .getComputedStyle(
-                                document.getElementsByClassName(
-                                    "rdg-header-row"
-                                )[0]
-                            )
-                            .getPropertyValue("font-size")
-                            .match(/\d+[.]?\d+/);
-                        message.data.columns.forEach((column) => {
-                            if (column.key !== "ROWID") {
-                                column.headerRenderer = function ({
-                                    column,
-                                    sortDirection,
-                                    priority,
-                                    onSort,
-                                    isCellSelected,
-                                }) {
-                                    function handleKeyDown(event) {
-                                        if (
-                                            event.key === " " ||
-                                            event.key === "Enter"
-                                        ) {
-                                            event.preventDefault();
-                                            onSort(
-                                                event.ctrlKey || event.metaKey
-                                            );
-                                        }
-                                    }
-
-                                    function handleClick(event) {
-                                        onSort(event.ctrlKey || event.metaKey);
-                                    }
-
-                                    var timer;
-                                    function handleKeyInputTimeout() {
-                                        clearTimeout(timer);
-                                        timer = setTimeout(() => {
-                                            reloadData(100);
-                                        }, 500);
-                                    }
-
-                                    function handleInputKeyDown(event) {
-                                        var tempFilters = filters;
-                                        tempFilters.columns[column.key] =
-                                            event.target.value;
-                                        setFilters(tempFilters);
-                                        handleKeyInputTimeout();
-                                    }
-
-                                    return (
-                                        <React.Fragment>
-                                            <div
-                                                className={
-                                                    filters.enabled
-                                                        ? "filter-cell"
-                                                        : undefined
-                                                }
-                                            >
-                                                <span
-                                                    tabIndex={-1}
-                                                    style={{
-                                                        cursor: "pointer",
-                                                        display: "flex",
-                                                    }}
-                                                    className="rdg-header-sort-cell"
-                                                    onClick={handleClick}
-                                                    onKeyDown={handleKeyDown}
-                                                >
-                                                    <span
-                                                        className="rdg-header-sort-name"
-                                                        style={{
-                                                            flexGrow: "1",
-                                                            overflow: "clip",
-                                                            textOverflow:
-                                                                "ellipsis",
-                                                        }}
-                                                    >
-                                                        {column.name}
-                                                    </span>
-                                                    <span>
-                                                        <svg
-                                                            viewBox="0 0 12 8"
-                                                            width="12"
-                                                            height="8"
-                                                            className="rdg-sort-arrow"
-                                                            style={{
-                                                                fill: "currentcolor",
-                                                            }}
-                                                        >
-                                                            {sortDirection ===
-                                                                "ASC" && (
-                                                                <path d="M0 8 6 0 12 8"></path>
-                                                            )}
-                                                            {sortDirection ===
-                                                                "DESC" && (
-                                                                <path d="M0 0 6 8 12 0"></path>
-                                                            )}
-                                                        </svg>
-                                                        {priority}
-                                                    </span>
-                                                </span>
-                                            </div>
-                                            {filters.enabled && (
-                                                <div className={"filter-cell"}>
-                                                    <input
-                                                        className="textInput"
-                                                        autoFocus={
-                                                            isCellSelected
-                                                        }
-                                                        style={filterCSS}
-                                                        defaultValue={
-                                                            filters.columns[
-                                                                column.key
-                                                            ]
-                                                        }
-                                                        onChange={
-                                                            handleInputKeyDown
-                                                        }
-                                                    />
-                                                </div>
-                                            )}
-                                        </React.Fragment>
-                                    );
-                                };
-                            }
-                            column.minWidth =
-                                column.name.length * (fontSize - 3);
-                            switch (column.type) {
-                                case "integer":
-                                case "decimal":
-                                case "int64":
-                                    column.cellClass = "rightAlign";
-                                    column.headerCellClass = "rightAlign";
-                                    column.width = 100;
-                                    break;
-                                case "character":
-                                    const dataLength =
-                                        +column.format.match(/\d+/);
-                                    column.width = dataLength * (fontSize - 3);
-                                    break;
-                                case "date":
-                                    column.width =
-                                        column.format.length * (fontSize - 3);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        });
-                        setColumns([SelectColumn, ...message.data.columns]);
-                        if (message.columns !== undefined) {
-                            setSelectedColumns([...message.columns]); 
-                        } else {
-                            setSelectedColumns([...message.data.columns.map(column => column.name)].filter(column => column !== "ROWID"));
-                        }
-                    }
-                    const boolField = message.data.columns.filter(
-                        (field) => field.type === "logical"
-                    );
-                    if (boolField.length !== 0) {
-                        message.data.rawData.forEach((row) => {
-                            boolField.forEach((field) => {
-                                row[field.name] = row[field.name].toString();
-                            });
-                        });
-                    }
-                    setRawRows([...rawRows, ...message.data.rawData]);
-                    setRowID(
-                        message.data.rawData.length > 0
-                            ? message.data.rawData[
-                                  message.data.rawData.length - 1
-                              ].ROWID
-                            : rowID
-                    );
-                    setLoaded(loaded + message.data.rawData.length);
-                    setFormattedRows([
-                        ...formattedRows,
-                        ...message.data.formattedData,
-                    ]);
-                    setLoaded(loaded + message.data.formattedData.length);
-                    setIsError(false);
-                    setIsDataRetrieved(true);
-                    setStatisticsObject({
-                        recordsRetrieved: message.data.debug.recordsRetrieved,
-                        recordsRetrievalTime:
-                            message.data.debug.recordsRetrievalTime,
-                        connectTime: message.data.debug.timeConnect,
-                    });
-                }
-        }
-        setIsLoading(false);
+    return () => {
+      window.removeEventListener("resize", windowResize);
     };
+  }, []);
 
-    React.useEffect(() => {
-        window.addEventListener("message", messageEvent);
-        return () => {
-            window.removeEventListener("message", messageEvent);
-        };
-    });
-
-    const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        if (isLoading) {
-            return;
+  const messageEvent = (event) => {
+    const message = event.data;
+    switch (message.command) {
+      case "submit":
+        if (message.data.error) {
+          // should be displayed in UpdatePopup window
+          setErrorObject({
+            error: message.data.error,
+            description: message.data.description,
+            trace: message.data.trace,
+          });
+          setIsError(true);
+          setIsDataRetrieved(false);
+        } else {
+          setSelectedRows(new Set());
+          setOpen(false);
+          reloadData(loaded + (action == ProcessAction.Insert ? 1 : 0));
         }
-        setIsLoading(true);
-        setLoaded(0);
-        setRawRows([]);
-        setFormattedRows([]);
-        makeQuery(
-            0,
-            100 /*number of records for first load*/,
-            "",
-            sortColumns,
-            filters,
-            500 /*ms for data retrieval*/
-        );
+        break;
+      case "crud":
+        if (message.data.error) {
+          setErrorObject({
+            error: message.data.error,
+            description: message.data.description,
+            trace: message.data.trace,
+          });
+          setIsError(true);
+          setIsDataRetrieved(false);
+        } else {
+          setColumnsCRUD(message.data.columns);
+          setRecordsCRUD(message.data.rawData);
+          setOpen(true);
+        }
+        break;
+      case "data":
+        if (message.data.error) {
+          setErrorObject({
+            error: message.data.error,
+            description: message.data.description,
+            trace: message.data.trace,
+          });
+          setIsError(true);
+          setIsDataRetrieved(false);
+        } else {
+          if (message.data.columns.length !== columns.length) {
+            const fontSize = +window
+              .getComputedStyle(
+                document.getElementsByClassName("rdg-header-row")[0]
+              )
+              .getPropertyValue("font-size")
+              .match(/\d+[.]?\d+/);
+            message.data.columns.forEach((column) => {
+              if (column.key !== "ROWID") {
+                column.headerRenderer = function ({
+                  column,
+                  sortDirection,
+                  priority,
+                  onSort,
+                  isCellSelected,
+                }) {
+                  function handleKeyDown(event) {
+                    if (event.key === " " || event.key === "Enter") {
+                      event.preventDefault();
+                      onSort(event.ctrlKey || event.metaKey);
+                    }
+                  }
+
+                  function handleClick(event) {
+                    onSort(event.ctrlKey || event.metaKey);
+                  }
+
+                  var timer;
+                  function handleKeyInputTimeout() {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                      reloadData(100);
+                    }, 500);
+                  }
+
+                  function handleInputKeyDown(event) {
+                    var tempFilters = filters;
+                    tempFilters.columns[column.key] = event.target.value;
+                    setFilters(tempFilters);
+                    handleKeyInputTimeout();
+                  }
+
+                  return (
+                    <React.Fragment>
+                      <div
+                        className={filters.enabled ? "filter-cell" : undefined}
+                      >
+                        <span
+                          tabIndex={-1}
+                          style={{
+                            cursor: "pointer",
+                            display: "flex",
+                          }}
+                          className="rdg-header-sort-cell"
+                          onClick={handleClick}
+                          onKeyDown={handleKeyDown}
+                        >
+                          <span
+                            className="rdg-header-sort-name"
+                            style={{
+                              flexGrow: "1",
+                              overflow: "clip",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {column.name}
+                          </span>
+                          <span>
+                            <svg
+                              viewBox="0 0 12 8"
+                              width="12"
+                              height="8"
+                              className="rdg-sort-arrow"
+                              style={{
+                                fill: "currentcolor",
+                              }}
+                            >
+                              {sortDirection === "ASC" && (
+                                <path d="M0 8 6 0 12 8"></path>
+                              )}
+                              {sortDirection === "DESC" && (
+                                <path d="M0 0 6 8 12 0"></path>
+                              )}
+                            </svg>
+                            {priority}
+                          </span>
+                        </span>
+                      </div>
+                      {filters.enabled && (
+                        <div className={"filter-cell"}>
+                          <input
+                            className="textInput"
+                            autoFocus={isCellSelected}
+                            style={filterCSS}
+                            defaultValue={filters.columns[column.key]}
+                            onChange={handleInputKeyDown}
+                          />
+                        </div>
+                      )}
+                    </React.Fragment>
+                  );
+                };
+              }
+              column.minWidth = column.name.length * (fontSize - 3);
+              switch (column.type) {
+                case "integer":
+                case "decimal":
+                case "int64":
+                  column.cellClass = "rightAlign";
+                  column.headerCellClass = "rightAlign";
+                  column.width = 100;
+                  break;
+                case "character":
+                  let dataLength = column.format.length;
+                  if (/x\(\d+\)/.test(column.format)) {
+                    dataLength = +column.format.match(/\d+/);
+                  }
+                  column.width = dataLength * (fontSize - 3);
+                  break;
+                case "date":
+                  column.width = column.format.length * (fontSize - 3);
+                  break;
+                default:
+                  break;
+              }
+            });
+            setColumns([SelectColumn, ...message.data.columns]);
+          }
+          const boolField = message.data.columns.filter(
+            (field) => field.type === "logical"
+          );
+          if (boolField.length !== 0) {
+            message.data.rawData.forEach((row) => {
+              boolField.forEach((field) => {
+                row[field.name] = row[field.name].toString();
+              });
+            });
+          }
+          setRawRows([...rawRows, ...message.data.rawData]);
+          setRowID(
+            message.data.rawData.length > 0
+              ? message.data.rawData[message.data.rawData.length - 1].ROWID
+              : rowID
+          );
+          setLoaded(loaded + message.data.rawData.length);
+          setFormattedRows([...formattedRows, ...message.data.formattedData]);
+          setLoaded(loaded + message.data.formattedData.length);
+          setIsError(false);
+          setIsDataRetrieved(true);
+          setStatisticsObject({
+            recordsRetrieved: message.data.debug.recordsRetrieved,
+            recordsRetrievalTime: message.data.debug.recordsRetrievalTime,
+            connectTime: message.data.debug.timeConnect,
+          });
+        }
+    }
+    setIsLoading(false);
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("message", messageEvent);
+    return () => {
+      window.removeEventListener("message", messageEvent);
     };
+  });
 
-    function reloadData(loaded: number) {
-        setLoaded(0);
-        setRawRows([]);
-        setFormattedRows([]);
-        makeQuery(0, loaded, "", sortColumns, filters, 0);
+  const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    if (isLoading) {
+      return;
     }
+    setIsLoading(true);
+    setLoaded(0);
+    setRawRows([]);
+    setFormattedRows([]);
+    makeQuery(
+      0,
+      100 /*number of records for first load*/,
+      "",
+      sortColumns,
+      filters,
+      500 /*ms for data retrieval*/
+    );
+  };
 
-    function makeQuery(
-        loaded,
-        pageLength,
-        lastRowID,
-        sortColumns,
-        inputFilters,
-        timeOut
-    ) {
-        const command: ICommand = {
-            id: v1(),
-            action: CommandAction.Query,
-            params: {
-                wherePhrase: wherePhrase,
-                start: loaded,
-                pageLength: pageLength,
-                lastRowID: lastRowID,
-                sortColumns: sortColumns,
-                filters: inputFilters,
-                timeOut: timeOut,
-            },
-        };
-        vscode.postMessage(command);
+  function reloadData(loaded: number) {
+    setLoaded(0);
+    setRawRows([]);
+    setFormattedRows([]);
+    makeQuery(0, loaded, "", sortColumns, filters, 0);
+  }
+
+  function makeQuery(
+    loaded,
+    pageLength,
+    lastRowID,
+    sortColumns,
+    inputFilters,
+    timeOut
+  ) {
+    const command: ICommand = {
+      id: v1(),
+      action: CommandAction.Query,
+      params: {
+        wherePhrase: wherePhrase,
+        start: loaded,
+        pageLength: pageLength,
+        lastRowID: lastRowID,
+        sortColumns: sortColumns,
+        filters: inputFilters,
+        timeOut: timeOut,
+      },
+    };
+    vscode.postMessage(command);
+  }
+
+  function isAtBottom({
+    currentTarget,
+  }: React.UIEvent<HTMLDivElement>): boolean {
+    return (
+      currentTarget.scrollTop + 10 >=
+      currentTarget.scrollHeight - currentTarget.clientHeight
+    );
+  }
+
+  function isHorizontalScroll({
+    currentTarget,
+  }: React.UIEvent<HTMLDivElement>): boolean {
+    return currentTarget.scrollTop === scrollHeight;
+  }
+
+  async function handleScroll(event: React.UIEvent<HTMLDivElement>) {
+    if (isLoading || !isAtBottom(event) || isHorizontalScroll(event)) {
+      return;
     }
+    setScrollHeight(event.currentTarget.scrollTop);
+    setIsLoading(true);
+    makeQuery(loaded, 1000, rowID, sortColumns, filters, 100);
+  }
 
-    function isAtBottom({
-        currentTarget,
-    }: React.UIEvent<HTMLDivElement>): boolean {
-        return (
-            currentTarget.scrollTop + 10 >=
-            currentTarget.scrollHeight - currentTarget.clientHeight
-        );
+  function onSortClick(inputSortColumns: SortColumn[]) {
+    if (isLoading) {
+      return;
     }
+    setSortColumns(inputSortColumns);
+    setLoaded(0);
+    setRawRows([]);
+    setFormattedRows([]);
+    makeQuery(0, loaded, "", inputSortColumns, filters, 0);
+  }
 
-    function isHorizontalScroll({
-        currentTarget,
-    }: React.UIEvent<HTMLDivElement>): boolean {
-        return (
-            currentTarget.scrollTop === scrollHeight
-        );
-    }
-
-    async function handleScroll(event: React.UIEvent<HTMLDivElement>) {
-        if (isLoading || !isAtBottom(event) || isHorizontalScroll(event)) {
-            return;
-        }
-        setScrollHeight(event.currentTarget.scrollTop);
-        setIsLoading(true);
-        makeQuery(loaded, 1000, rowID, sortColumns, filters, 100);
-    }
-
-    function onSortClick(inputSortColumns: SortColumn[]) {
-        if (isLoading) {
-            return;
-        }
-        setSortColumns(inputSortColumns);
-        setLoaded(0);
-        setRawRows([]);
-        setFormattedRows([]);
-        makeQuery(0, loaded, "", inputSortColumns, filters, 0);
-    }
-
-    function getFooterTag() {
-        if (isError) {
-            return (
-                <div style={{ color: "red" }}>
-                    <pre>{`Error: ${errorObject.error}
+  function getFooterTag() {
+    if (isError) {
+      return (
+        <div style={{ color: "red" }}>
+          <pre>{`Error: ${errorObject.error}
 Description: ${errorObject.description}`}</pre>
-                </div>
-            );
-        } else if (isDataRetrieved) {
-            return (
-                <div>
-                    <pre>{`Records in grid: ${loaded}
+        </div>
+      );
+    } else if (isDataRetrieved) {
+      return (
+        <div>
+          <pre>{`Records in grid: ${loaded}
 Recent records numbers: ${statisticsObject.recordsRetrieved}
 Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
-                </div>
-            );
-        } else {
-            return <></>;
-        }
+        </div>
+      );
+    } else {
+      return <></>;
     }
+  }
 
-    function rowKeyGetter(row: any) {
-        return row.ROWID;
-    }
+  function rowKeyGetter(row: any) {
+    return row.ROWID;
+  }
 
-    // CRUD operations
-    const [open, setOpen] = React.useState(false);
-    const [action, setAction] = React.useState<ProcessAction>();
+  // CRUD operations
+  const [open, setOpen] = React.useState(false);
+  const [action, setAction] = React.useState<ProcessAction>();
 
-    const insertRecord = () => {
-        processRecord(ProcessAction.Insert);
+  const insertRecord = () => {
+    processRecord(ProcessAction.Insert);
+  };
+  const updateRecord = () => {
+    processRecord(ProcessAction.Update);
+  };
+  const deleteRecord = () => {
+    processRecord(ProcessAction.Delete);
+  };
+  const processRecord = (mode: ProcessAction) => {
+    setAction(mode);
+    const rowids: string[] = [];
+    selectedRows.forEach((element) => {
+      rowids.push(element);
+    });
+
+    const command: ICommand = {
+      id: v1(),
+      action: CommandAction.CRUD,
+      params: {
+        start: 0,
+        pageLength: selectedRows.size,
+        timeOut: 1000,
+        lastRowID: selectedRows.values().next().value,
+        crud: rowids,
+        mode: ProcessAction[mode],
+      },
     };
-    const updateRecord = () => {
-        processRecord(ProcessAction.Update);
-    };
-    const deleteRecord = () => {
-        processRecord(ProcessAction.Delete);
-    };
-    const processRecord = (mode: ProcessAction) => {
-        setAction(mode);
-        const rowids: string[] = [];
-        selectedRows.forEach((element) => {
-            rowids.push(element);
-        });
-
-        const command: ICommand = {
-            id: v1(),
-            action: CommandAction.CRUD,
-            params: {
-                start: 0,
-                pageLength: selectedRows.size,
-                timeOut: 1000,
-                lastRowID: selectedRows.values().next().value,
-                crud: rowids,
-                mode: ProcessAction[mode],
-            },
-        };
-        vscode.postMessage(command);
-    };
-
+    vscode.postMessage(command);
+  }; 
+  
    function filterColumns() {
         if (selectedColumns.length !== 0) {
             return columns.filter((column) => selectedColumns.includes(column.key) || column.key === "select-row");
