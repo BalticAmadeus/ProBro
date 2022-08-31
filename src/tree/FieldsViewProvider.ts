@@ -4,7 +4,7 @@ import { config } from 'process';
 import { v1 } from 'uuid';
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
-import { Constants } from '../common/constants';
+import { Constants } from '../db/constants';
 import { QueryEditor } from '../common/queryEditor';
 import { DatabaseProcessor } from '../db/databaseProcessor';
 import { CommandAction, ICommand, IConfig, TableDetails } from '../view/app/model';

@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
 import * as fs from "fs";
 import { v1 as uuidv1, v1 } from "uuid";
-import { Constants } from "./constants";
+import { Constants } from "../db/constants";
 import { DatabaseProcessor } from "../db/databaseProcessor";
 import { IOETableData } from "../db/oe";
 import { TableNode } from "../tree/tableNode";
@@ -48,13 +48,6 @@ export class QueryEditor {
         data: [],
       });
     }
-
-    // React.useEffect (() => {
-    //   this.panel?.webview.postMessage({
-    //     command: "columns",   
-    //     columns: tableNode.cache?.selectedColumns,
-    //   })
-    // })
 
     this.panel.webview.onDidReceiveMessage(
       (command: ICommand) => {

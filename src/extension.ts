@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { QuickPickItem } from "vscode";
 import { ConnectionEditor } from "./common/connectionEditor";
-import { Constants } from "./common/constants";
+import { Constants } from "./db/constants";
 import { QueryEditor } from "./common/queryEditor";
 import { DatabaseProcessor } from "./db/databaseProcessor";
 import { DbConnectionNode } from "./tree/dbConnectionNode";
