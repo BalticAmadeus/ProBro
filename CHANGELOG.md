@@ -1,9 +1,41 @@
 # Change Log
 
-All notable changes to the "pro-bro" extension will be documented in this file.
+## 0.4.0
+### Added
+- Linux support
+- Show only selected fields
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+### Changed
+- Fixed issues with updating logical decimal and integer fields
+- Fixed horizontal scroll flickering
+- Fixed DictDB issue
+- Export popup design improvements
 
-## [Unreleased]
+### Removed
+## Initial release [0.1.0 - 0.3.1]
 
-- Initial release
+### Added
+- Connection to Progress DB:
+  - Connect to Progress DB via ABL Socket server
+  - Connect to multiple local Progress DBs
+  - Custom connection groups
+  - Deleting Connections
+- Tables
+  - Hidden tables
+  - Launch query
+- Indexes
+- Fields
+- Query data
+  - Server-side multi-sorting
+  - Server-side multi-filtering
+  - Lazy loading
+  - JSON/OE formatting
+  - Custom queries
+- Export
+  - JSON
+  - Excel
+  - CSV
+- CRUD operations
+  - Delete multiple
+  - Insert
+  - Update

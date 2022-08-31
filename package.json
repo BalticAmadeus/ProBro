@@ -1,7 +1,7 @@
 {
     "name": "pro-bro",
     "displayName": "ProBro",
-    "description": "VSC extension for browsing Progress DB",
+    "description": "VSC extension for browsing Progress OpenEdge DB",
     "version": "0.3.1",
     "repository": {
         "type": "git",
