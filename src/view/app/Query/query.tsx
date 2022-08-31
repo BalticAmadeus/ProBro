@@ -102,6 +102,9 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
   const messageEvent = (event) => {
     const message = event.data;
     switch (message.command) {
+      case "columns":
+        setSelectedColumns([...message.columns]);
+        break;
       case "submit":
         if (message.data.error) {
           // should be displayed in UpdatePopup window
@@ -270,6 +273,11 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
               }
             });
             setColumns([SelectColumn, ...message.data.columns]);
+            if (message.columns !== undefined) {
+              setSelectedColumns([...message.columns]); 
+          } else {
+              setSelectedColumns([...message.data.columns.map(column => column.name)].filter(column => column !== "ROWID"));
+          }
           }
           const boolField = message.data.columns.filter(
             (field) => field.type === "logical"

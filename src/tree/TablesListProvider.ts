@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Constants } from '../common/constants';
+import { Constants } from '../db/constants';
 import { INode } from './INode';
 import * as tableNode from './tableNode';
 import { CommandAction, ICommand, IConfig } from '../view/app/model';
