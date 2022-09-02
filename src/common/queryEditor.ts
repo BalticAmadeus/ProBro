@@ -3,25 +3,31 @@ import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
 import * as fs from "fs";
 import { v1 as uuidv1, v1 } from "uuid";
-import { Constants } from "./constants";
+import { Constants } from "../db/constants";
 import { DatabaseProcessor } from "../db/databaseProcessor";
 import { IOETableData } from "../db/oe";
 import { TableNode } from "../tree/tableNode";
 import { TablesListProvider } from "../tree/TablesListProvider";
+import { FieldsViewProvider } from "../tree/FieldsViewProvider";
 
 export class QueryEditor {
   private readonly panel: vscode.WebviewPanel | undefined;
   private readonly extensionPath: string;
   private disposables: vscode.Disposable[] = [];
-  //private tableNode?: TableNode;
+  public tableName: string;
+  private fieldsProvider: FieldsViewProvider;
 
   constructor(
     private context: vscode.ExtensionContext,
     private tableNode: TableNode,
-    private tableListProvider: TablesListProvider
+    private tableListProvider: TablesListProvider,
+    private fieldProvider: FieldsViewProvider
   ) {
     this.extensionPath = context.asAbsolutePath("");
     //        this.tableNode = this.tableListProvider.node;
+
+    this.tableName = tableNode.tableName;
+    this.fieldsProvider = fieldProvider;
 
     this.panel = vscode.window.createWebviewPanel(
       "queryOETable", // Identifies the type of the webview. Used internally
@@ -60,6 +66,7 @@ export class QueryEditor {
                     this.panel?.webview.postMessage({
                       id: command.id,
                       command: "data",
+                      columns: tableNode.cache?.selectedColumns,
                       data: oe,
                     });
                   }
@@ -105,8 +112,7 @@ export class QueryEditor {
               break;
             }
           case CommandAction.Export:
-            console.log("config: ", this.tableListProvider.config);
-            if (this.tableListProvider.config) {
+             if (this.tableListProvider.config) {
               DatabaseProcessor.getInstance()
                 .getTableData(
                   this.tableListProvider.config,
@@ -115,7 +121,6 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    console.log(`Requested data: ${this.tableNode.tableName}`);
                     this.panel?.webview.postMessage({
                       id: command.id,
                       command: "export",
@@ -133,13 +138,23 @@ export class QueryEditor {
       context.subscriptions
     );
 
+    this.fieldsProvider.addQueryEditor(this);
+
     this.panel.onDidDispose(
       () => {
         // When the panel is closed, cancel any future updates to the webview content
+        this.fieldsProvider.removeQueryEditor(this);
       },
       null,
       context.subscriptions
     );
+  }
+
+  public updateFields() {
+      this.panel?.webview.postMessage({
+        command: "columns",   
+        columns: this.tableNode.cache?.selectedColumns,
+      });
   }
 
   private getWebviewContent(tableData: IOETableData): string {

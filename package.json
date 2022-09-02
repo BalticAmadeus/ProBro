@@ -1,7 +1,7 @@
 {
     "name": "pro-bro",
     "displayName": "ProBro",
-    "description": "VSC extension for browsing Progress DB",
+    "description": "VSC extension for browsing Progress OpenEdge DB",
     "version": "0.3.1",
     "repository": {
         "type": "git",
@@ -11,14 +11,15 @@
     "engines": {
         "vscode": "^1.67.0"
     },
-    "categories": ["Other"],
+    "categories": [
+        "Other"
+    ],
     "icon": "resources/pB_logo.png",
     "galleryBanner": {
-      "color": "#248bfa",
-      "theme": "dark"
+        "color": "#248bfa",
+        "theme": "dark"
     },
     "activationEvents": [
-        "onCommand:pro-bro.proBroBonjour",
         "onCommand:pro-bro.connect",
         "onView:pro-bro-databases",
         "onView:pro-bro-tables",
@@ -108,7 +109,6 @@
                 "title": "List-filter",
                 "icon": "$(list-filter)"
             }
-
         ],
         "menus": {
             "view/title": [
@@ -127,7 +127,6 @@
                     "when": "view == pro-bro-tables",
                     "group": "navigation"
                 }
-
             ],
             "view/item/context": [
                 {
@@ -176,6 +175,10 @@
         "webpack-cli": "^4.9.2"
     },
     "dependencies": {
+        "@emotion/react": "^11.10.0",
+        "@emotion/styled": "^11.10.0",
+        "@mui/icons-material": "^5.10.2",
+        "@mui/material": "^5.10.2",
         "bootstrap": "^5.2.0",
         "export-from-json": "^1.6.0",
         "faker": "^5.5.3",

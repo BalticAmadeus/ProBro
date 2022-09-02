@@ -1,7 +1,7 @@
 import * as Net from "net"
 import * as cp from "child_process";
 import * as vscode from "vscode";
-import { Constants } from "./constants";
+import { Constants } from "../db/constants";
 
 class OEClient {
     private port: number = 23456;
@@ -43,17 +43,31 @@ class OEClient {
     private runProc(): Promise<any> {
         return new Promise((resolve) => {
 
-            const cmd = `${Constants.context.extensionPath}\\resources\\oe\\oe.bat -b -debugalert -p "${Constants.context.extensionPath}\\resources\\oe\\oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}"`;
+            const cmd = `${Constants.context.extensionPath}/resources/oe/oe.bat -b -debugalert -p "${Constants.context.extensionPath}/resources/oe/oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}"`;
 
-            this.proc = cp.spawn('cmd.exe', ['/c',
-                `${Constants.context.extensionPath}\\resources\\oe\\oe.bat`,
-                '-b',
-                '-p',
-                `${Constants.context.extensionPath}\\resources\\oe\\oeSocket.p`,
-                '-debugalert',
-                '-clientlog',
-                `${Constants.context.extensionPath}\\resources\\oe\\oeSocket.pro`
-            ]);
+            if (process.platform === 'linux') {
+                this.proc = cp.spawn('bash', ['-c',
+                    [`"${Constants.context.extensionPath}/resources/oe/oe.sh"`,
+                        '-b',
+                        '-p',
+                    `"${Constants.context.extensionPath}/resources/oe/oeSocket.p"`,
+                        '-debugalert',
+                        '-clientlog',
+                    `"${Constants.context.extensionPath}/resources/oe/oeSocket.pro"`
+                    ].join(' ')]);
+            } else if (process.platform === 'win32') {
+                this.proc = cp.spawn('cmd.exe', ['/c',
+                    `${Constants.context.extensionPath}/resources/oe/oe.bat`,
+                    '-b',
+                    '-p',
+                    `${Constants.context.extensionPath}/resources/oe/oeSocket.p`,
+                    '-debugalert',
+                    '-clientlog',
+                    `${Constants.context.extensionPath}/resources/oe/oeSocket.pro`
+                ]);
+            } else {
+                // should be error here
+            }
 
             this.proc.on('exit', (code, signal) => {
                 console.log('child process exited with ' +
