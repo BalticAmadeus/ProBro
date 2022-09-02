@@ -109,9 +109,17 @@ export default function UpdatePopup({
     vscode.postMessage(command);
   };
 
+  const closeModal = () => {
+    setOpen(false);
+  };
+
+
+  //add to popup tags:
+  //onClose={closeModal} - to close popup on click outside
+  //closeOnDocumentClick={false} - to keep oper popup,but all the background is still active(datagrid, buttons, selection)
   return (
     <React.Fragment>
-      <Popup open={open} modal>
+      <Popup open={open} onClose={closeModal} modal>
         {(close) => (
           <div className="update-modal">
             <div className="update-header">
