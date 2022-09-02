@@ -467,7 +467,14 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
   
    function filterColumns() {
         if (selectedColumns.length !== 0) {
-            return columns.filter((column) => selectedColumns.includes(column.key) || column.key === "select-row");
+          const selection = columns.filter((column) => {
+            let testColumn = column.key;
+            if (/\[\d+\]$/.test(column.key)) {
+              testColumn = column.key.match(/[^[]+/)[0];
+            }
+            return selectedColumns.includes(testColumn) || testColumn === "select-row";
+          });
+          return selection;
         } else {
             return [];
         }

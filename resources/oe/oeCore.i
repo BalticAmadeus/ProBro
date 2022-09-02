@@ -295,6 +295,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		CREATE bttColumn.
 		bttColumn.cName = "ROWID".
 		bttColumn.cKey = "ROWID".
+		bttColumn.cLabel = "ROWID".
 		bttColumn.cType = "ROWID".
 		bttColumn.cFormat = ?.
 
@@ -306,6 +307,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 					CREATE bttColumn.
 					bttColumn.cName = fqh:GET-BUFFER-HANDLE(1)::_field-name.
 					bttColumn.cKey = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+					bttColumn.cLabel = fqh:GET-BUFFER-HANDLE(1)::_field-name.
 					bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
 					bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
 					bttColumn.iExtent = fqh:GET-BUFFER-HANDLE(1)::_extent.
@@ -315,6 +317,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 						CREATE bttColumn.
 						bttColumn.cName = SUBSTITUTE("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
 						bttColumn.cKey = SUBSTITUTE("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
+						bttColumn.cLabel = fqh:GET-BUFFER-HANDLE(1)::_field-name.
 						bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
 						bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
 						bttColumn.iExtent = fqh:GET-BUFFER-HANDLE(1)::_extent.
