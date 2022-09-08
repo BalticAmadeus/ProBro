@@ -75,6 +75,12 @@ export enum ProcessAction {
     Submit
 }
 
+export enum DataToExport {
+    Table,
+    Filter,
+    Selection
+}
+
 export interface ITableData {
     wherePhrase?: string,
     start: number,

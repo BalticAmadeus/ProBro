@@ -507,6 +507,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                             vscode={vscode}
                             sortColumns={sortColumns}
                             filters={filters}
+                            selectedRows={selectedRows}
                         />
                         <ProBroButton
                             onClick={getDataFormat}
