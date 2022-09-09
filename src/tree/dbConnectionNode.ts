@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import path = require("path");
 import { INode } from "./INode";
 import { IConfig } from "../view/app/model";
+import { ConnectionEditor } from "../common/connectionEditor";
 
 export class DbConnectionNode implements INode {
   public readonly id: string;
@@ -44,5 +45,9 @@ export class DbConnectionNode implements INode {
     delete connections[this.config.id];
     this.context.globalState.update(`pro-bro.dbconfig`, connections);
     vscode.commands.executeCommand(`pro-bro.refreshList`);
+  }
+
+  public editConnection(context: vscode.ExtensionContext) {
+    new ConnectionEditor(context, "Add New Connection", this.id);
   }
 }
