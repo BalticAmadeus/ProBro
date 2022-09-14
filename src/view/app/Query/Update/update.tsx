@@ -78,15 +78,15 @@ export default function UpdatePopup({
       submitData.push({
         key: input.key,
         value:
-          input.valueType == "number"
+          input.valueType === "number"
             ? Number(input.input.value)
-            : input.valueType == "boolean"
+            : input.valueType === "boolean"
             ? input.input.value.toLowerCase() === "true"
             : input.input.value,
         defaultValue:
-          input.valueType == "number"
+          input.valueType === "number"
             ? Number(input.input.defaultValue)
-            : input.valueType == "boolean"
+            : input.valueType === "boolean"
             ? input.input.defaultValue.toLowerCase() === "true"
             : input.input.defaultValue,
       });
@@ -109,17 +109,9 @@ export default function UpdatePopup({
     vscode.postMessage(command);
   };
 
-  const closeModal = () => {
-    setOpen(false);
-  };
-
-
-  //add to popup tags:
-  //onClose={closeModal} - to close popup on click outside
-  //closeOnDocumentClick={false} - to keep oper popup,but all the background is still active(datagrid, buttons, selection)
   return (
     <React.Fragment>
-      <Popup open={open} onClose={closeModal} modal>
+      <Popup open={open} onClose={() => setOpen(false)} modal>
         {(close) => (
           <div className="update-modal">
             <div className="update-header">

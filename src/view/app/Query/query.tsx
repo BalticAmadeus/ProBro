@@ -118,7 +118,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         } else {
           setSelectedRows(new Set());
           setOpen(false);
-          reloadData(loaded + (action == ProcessAction.Insert ? 1 : 0));
+          reloadData(loaded + (action === ProcessAction.Insert ? 1 : 0));
         }
         break;
       case "crud":
