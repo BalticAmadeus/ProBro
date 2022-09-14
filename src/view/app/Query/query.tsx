@@ -6,6 +6,7 @@ import { CommandAction, ICommand, ProcessAction } from "../model";
 import { v1 } from "uuid";
 import ExportData from "./Export";
 import UpdatePopup from "./Update";
+import ReadPopup from "./read";
 import { ProBroButton } from "./Components/button";
 import RawOnTwoToneIcon from "@mui/icons-material/RawOnTwoTone";
 import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
@@ -472,8 +473,15 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
             return [];
         }
     };
-
     const selected = filterColumns();
+
+    // read record 
+    const [readOpen, setReadOpen] = React.useState(false);
+    const [readRow, setReadRow] = React.useState([]);
+    function readRecord(row: string[]) {
+      setReadRow(row);
+      setReadOpen(true);
+    }
 
     return (
         <React.Fragment>
@@ -528,6 +536,14 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                             deleteRecord={deleteRecord}
                         ></UpdatePopup>
                     </div>
+                    <div className="query-options">
+                        <ReadPopup
+                            tableName={tableName}
+                            readOpen={readOpen}
+                            setReadOpen={setReadOpen}
+                            row={readRow}
+                        ></ReadPopup>
+                    </div>
                 </div>
             </div>
             <DataGrid
@@ -546,6 +562,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 selectedRows={selectedRows}
                 onSelectedRowsChange={setSelectedRows}
                 rowKeyGetter={rowKeyGetter}
+                onRowDoubleClick={readRecord}
             ></DataGrid>
             {getFooterTag()}
             {isLoading && <div>Loading more rows...</div>}
