@@ -6,7 +6,6 @@ import { CommandAction, ICommand, ProcessAction } from "../model";
 import { v1 } from "uuid";
 import ExportData from "./Export";
 import UpdatePopup from "./Update";
-import ReadPopup from "./read";
 import { ProBroButton } from "./Components/button";
 import RawOnTwoToneIcon from "@mui/icons-material/RawOnTwoTone";
 import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
@@ -119,7 +118,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         } else {
           setSelectedRows(new Set());
           setOpen(false);
-          reloadData(loaded + (action == ProcessAction.Insert ? 1 : 0));
+          reloadData(loaded + (action === ProcessAction.Insert ? 1 : 0));
         }
         break;
       case "crud":
@@ -434,6 +433,13 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
   // CRUD operations
   const [open, setOpen] = React.useState(false);
   const [action, setAction] = React.useState<ProcessAction>();
+  const [readRow, setReadRow] = React.useState([]);
+
+  const readRecord = (row: string[]) => {
+    setAction(ProcessAction.Read);
+    setReadRow(row);
+    setOpen(true);
+  };
 
   const insertRecord = () => {
     processRecord(ProcessAction.Insert);
@@ -474,14 +480,6 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
         }
     };
     const selected = filterColumns();
-
-    // read record 
-    const [readOpen, setReadOpen] = React.useState(false);
-    const [readRow, setReadRow] = React.useState([]);
-    function readRecord(row: string[]) {
-      setReadRow(row);
-      setReadOpen(true);
-    }
 
     return (
         <React.Fragment>
@@ -534,15 +532,8 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                             insertRecord={insertRecord}
                             updateRecord={updateRecord}
                             deleteRecord={deleteRecord}
+                            readRow={readRow}
                         ></UpdatePopup>
-                    </div>
-                    <div className="query-options">
-                        <ReadPopup
-                            tableName={tableName}
-                            readOpen={readOpen}
-                            setReadOpen={setReadOpen}
-                            row={readRow}
-                        ></ReadPopup>
                     </div>
                 </div>
             </div>
