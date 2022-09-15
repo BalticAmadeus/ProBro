@@ -290,6 +290,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
           if (boolField.length !== 0) {
             message.data.rawData.forEach((row) => {
               boolField.forEach((field) => {
+                if( row[field.name] !== null )
                 row[field.name] = row[field.name].toString();
               });
             });
