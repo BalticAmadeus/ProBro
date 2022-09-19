@@ -47,6 +47,7 @@ export class ConnectionEditor {
                                 vscode.window.showErrorMessage(`Error connecting DB: ${oe.description} (${oe.error})`);
                             } else {
                                 console.log(`Requested version of DB: ${oe.dbversion}`);
+                                vscode.window.showInformationMessage("Connection OK");
                                 this.panel?.webview.postMessage({ id: command.id, command: 'ok' });
                             }
                         });

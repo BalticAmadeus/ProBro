@@ -194,7 +194,6 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
                                     type="submit"
                                     value="Test"
                                     onClick={onTestClick}
-                                    disabled={buttonState}
                                 />
                             </div>
                             <div className="button-narrow">

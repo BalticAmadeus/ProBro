@@ -25,7 +25,7 @@ export class DatabaseProcessor implements IProcessor {
     public execShell(params: IOEParams) {
         const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
         if (DatabaseProcessor.isProcessRunning) {
-            console.log("Processor is busy");
+            vscode.window.showInformationMessage("Processor is busy");
             return new Promise<any>(_ => { return { columns: [], data: [] }; });
         }
 
