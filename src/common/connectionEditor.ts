@@ -9,6 +9,7 @@ export class ConnectionEditor {
     private readonly panel: vscode.WebviewPanel | undefined;
     private readonly extensionPath: string;
     private disposables: vscode.Disposable[] = [];
+    private isTestedSuccesfully: boolean = false;
 
     constructor(private context: vscode.ExtensionContext, action: string) {
         this.extensionPath = context.asAbsolutePath('');
@@ -31,13 +32,17 @@ export class ConnectionEditor {
             (command: ICommand) => {
                 switch (command.action) {
                     case CommandAction.Save:
+                        if (!this.isTestedSuccesfully) {
+                            vscode.window.showInformationMessage("Connection should be tested before saving.");
+                            return;
+                        }
                         let connections = this.context.globalState.get<{ [id: string]: IConfig }>(`${Constants.globalExtensionKey}.dbconfig`);
                         if (!connections) {
                             connections = {};
                         }
                         connections[command.content!.id] = command.content!;
                         this.context.globalState.update(`${Constants.globalExtensionKey}.dbconfig`, connections);
-                        this.panel?.webview.postMessage({ command: 'ok' });
+                        vscode.window.showInformationMessage("Connection saved succesfully.");
                         this.panel?.dispose();
                         vscode.commands.executeCommand(`${Constants.globalExtensionKey}.refreshList`);
                         return;
@@ -48,7 +53,7 @@ export class ConnectionEditor {
                             } else {
                                 console.log(`Requested version of DB: ${oe.dbversion}`);
                                 vscode.window.showInformationMessage("Connection OK");
-                                this.panel?.webview.postMessage({ id: command.id, command: 'ok' });
+                                this.isTestedSuccesfully = true;
                             }
                         });
                         return;
