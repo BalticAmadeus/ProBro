@@ -48,6 +48,6 @@ export class DbConnectionNode implements INode {
   }
 
   public editConnection(context: vscode.ExtensionContext) {
-    new ConnectionEditor(context, "Add New Connection", this.id);
+    new ConnectionEditor(context, "Edit Connection", this.id);
   }
 }
