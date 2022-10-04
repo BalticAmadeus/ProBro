@@ -10,6 +10,10 @@
   color: inherit;
   --rdg-selection-color: var(--vscode-focusBorder);
   --rdg-border-color: var(--vscode-menu-border);
+
+}
+.c1wupbe700-beta13 {
+  padding-inline: 4px;
 }
 
 .rdg-row-even {
@@ -37,7 +41,7 @@ color: var(--vscode-input-foreground);
 
 .filter-cell > div {
     padding-block: 0;
-    padding-inline: 8px;
+    padding-inline: 4px;
 }
 
 .filter-cell > div:first-child {

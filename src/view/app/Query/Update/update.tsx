@@ -20,6 +20,7 @@ export default function UpdatePopup({
   open,
   setOpen,
   action,
+  readRow
 }) {
   const table = [];
   const inputs: {
@@ -29,38 +30,57 @@ export default function UpdatePopup({
   }[] = [];
 
   if (action !== ProcessAction.Delete) {
-    columns.forEach((column) => {
-      if (rows[0][column.key] === null) {
-        rows[0][column.key] = "?";
-      }
-      let fieldType = typeof (rows && rows[0] && String(rows[0][column.key])
-        ? rows[0][column.key]
-        : "");
-      let fieldValue =
-        rows && rows[0] && String(rows[0][column.key])
-          ? String(rows[0][column.key])
-          : "";
-
-      table.push(
-        <tr>
-          <td>{column.key === "ROWID" ? undefined : column.name}</td>
-          <td>
-            <input
-              className="textInput"
-              type={column.key !== "ROWID" ? undefined : "hidden"}
-              defaultValue={fieldValue}
-              ref={(input) =>
-                inputs.push({
-                  key: column.key,
-                  input: input,
-                  valueType: fieldType,
-                })
-              }
-            ></input>
-          </td>
-        </tr>
-      );
-    });
+    switch (action) {
+      case ProcessAction.Insert:
+      case ProcessAction.Update:
+        columns.forEach((column) => {
+          if (rows[0][column.key] === null) {
+          rows[0][column.key] = "?";
+          }
+          let fieldType = typeof (rows && rows[0] && String(rows[0][column.key])
+            ? rows[0][column.key]
+            : "");
+          let fieldValue =
+            rows && rows[0] && String(rows[0][column.key])
+              ? String(rows[0][column.key])
+              : "";
+    
+          table.push(
+            <tr>
+              <td>{column.key === "ROWID" ? undefined : column.name}</td>
+              <td>
+                <input
+                  className="textInput"
+                  type={column.key !== "ROWID" ? undefined : "hidden"}
+                  defaultValue={fieldValue}
+                  ref={(input) =>
+                    inputs.push({
+                      key: column.key,
+                      input: input,
+                      valueType: fieldType,
+                    })
+                  }
+                ></input>
+              </td>
+            </tr>
+          );
+        });        
+        break;
+      case ProcessAction.Read:
+        Object.keys(readRow).forEach(key => {
+          if(key !== "ROWID") {
+               table.push(
+            <tr>
+              <td>{key}</td>
+              <td>{readRow[key]}</td>
+            </tr>
+          );
+          }
+        });  
+      break;
+      default:
+        break;
+    }
   }
 
   const onSubmitClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -81,15 +101,15 @@ export default function UpdatePopup({
       submitData.push({
         key: input.key,
         value:
-          input.valueType == "number"
+          input.valueType === "number"
             ? Number(input.input.value)
-            : input.valueType == "boolean"
+            : input.valueType === "boolean"
             ? input.input.value.toLowerCase() === "true"
             : input.input.value,
         defaultValue:
-          input.valueType == "number"
+          input.valueType === "number"
             ? Number(input.input.defaultValue)
-            : input.valueType == "boolean"
+            : input.valueType === "boolean"
             ? input.input.defaultValue.toLowerCase() === "true"
             : input.input.defaultValue,
       });
@@ -114,7 +134,7 @@ export default function UpdatePopup({
 
   return (
     <React.Fragment>
-      <Popup open={open} modal>
+      <Popup open={open} onClose={() => setOpen(false)} modal>
         {(close) => (
           <div className="update-modal">
             <div className="update-header">
@@ -133,9 +153,12 @@ export default function UpdatePopup({
               )}
             </div>
             <div className="update-btn-container">
-              <button className="button" onClick={onSubmitClick}>
+              {ProcessAction[action]!== "Read" ? (
+                <button className="button" onClick={onSubmitClick}>
                 {ProcessAction[action]}
-              </button>
+                </button>
+              ) : null 
+              }            
               <button
                 className="button"
                 onClick={() => {

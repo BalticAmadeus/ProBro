@@ -72,7 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.query`,
       (node: TableNode) => {
-        var queryEditor = new QueryEditor(
+        new QueryEditor(
           context,
           node,
           tablesListProvider,
@@ -87,6 +87,15 @@ export function activate(context: vscode.ExtensionContext) {
       `${Constants.globalExtensionKey}.deleteConnection`,
       (dbConnectionNode: DbConnectionNode) => {
         dbConnectionNode.deleteConnection(context);
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      `${Constants.globalExtensionKey}.editConnection`,
+      (dbConnectionNode: DbConnectionNode) => {
+        dbConnectionNode.editConnection(context);
       }
     )
   );
