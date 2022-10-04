@@ -34,6 +34,9 @@ export default function UpdatePopup({
       case ProcessAction.Insert:
       case ProcessAction.Update:
         columns.forEach((column) => {
+          if (rows[0][column.key] === null) {
+          rows[0][column.key] = "?";
+          }
           let fieldType = typeof (rows && rows[0] && String(rows[0][column.key])
             ? rows[0][column.key]
             : "");
