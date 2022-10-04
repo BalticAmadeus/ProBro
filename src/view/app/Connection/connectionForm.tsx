@@ -106,6 +106,7 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
                                 <input
                                     type="text"
                                     placeholder="Physical name"
+                                    value={name}
                                     onChange={(event) => {
                                         setName(event.target.value);
                                     }}

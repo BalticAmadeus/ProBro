@@ -72,7 +72,14 @@ export enum ProcessAction {
     Insert,
     Update,
     Delete,
-    Submit
+    Submit,
+    Read
+}
+
+export enum DataToExport {
+    Table,
+    Filter,
+    Selection
 }
 
 export interface ITableData {
