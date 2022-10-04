@@ -10,6 +10,7 @@ export class ConnectionEditor {
     private readonly extensionPath: string;
     private disposables: vscode.Disposable[] = [];
     private isTestedSuccesfully: boolean = false;
+    private readonly id?: string;
 
 
     constructor(private context: vscode.ExtensionContext, action: string, id?: string,) {
