@@ -249,14 +249,14 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                   );
                 };
               }
-              column.minWidth = column.name.length * (fontSize - 3);
+              column.minWidth = column.name.length * (fontSize);
               switch (column.type) {
                 case "integer":
                 case "decimal":
                 case "int64":
                   column.cellClass = "rightAlign";
                   column.headerCellClass = "rightAlign";
-                  column.width = 100;
+                  column.width = column.format.length * (fontSize - 3);
                   break;
                 case "character":
                   let dataLength = column.format.length;
@@ -266,6 +266,8 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                   column.width = dataLength * (fontSize - 3);
                   break;
                 case "date":
+                case "datetime":
+                case "datetime-tz":
                   column.width = column.format.length * (fontSize - 3);
                   break;
                 case "logical":
@@ -288,7 +290,9 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
           if (boolField.length !== 0) {
             message.data.rawData.forEach((row) => {
               boolField.forEach((field) => {
-                row[field.name] = row[field.name].toString();
+                if( row[field.name] !== null ) {
+                  row[field.name] = row[field.name].toString();
+                }
               });
             });
           }
