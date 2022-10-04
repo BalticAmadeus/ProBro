@@ -95,6 +95,11 @@
                 "icon": "$(add)"
             },
             {
+                "command": "pro-bro.editConnection",
+                "title": "Edit connection",
+                "icon": "$(edit)"
+            },
+            {
                 "command": "pro-bro.deleteConnection",
                 "title": "Delete connection",
                 "icon": "$(trash)"
@@ -129,6 +134,11 @@
                 }
             ],
             "view/item/context": [
+                {
+                    "command": "pro-bro.editConnection",
+                    "when": "view == pro-bro-databases && viewItem == dbConnection",
+                    "group": "inline"
+                },
                 {
                     "command": "pro-bro.deleteConnection",
                     "when": "view == pro-bro-databases && viewItem == dbConnection",
