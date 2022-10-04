@@ -78,15 +78,15 @@ export default function UpdatePopup({
       submitData.push({
         key: input.key,
         value:
-          input.valueType == "number"
+          input.valueType === "number"
             ? Number(input.input.value)
-            : input.valueType == "boolean"
+            : input.valueType === "boolean"
             ? input.input.value.toLowerCase() === "true"
             : input.input.value,
         defaultValue:
-          input.valueType == "number"
+          input.valueType === "number"
             ? Number(input.input.defaultValue)
-            : input.valueType == "boolean"
+            : input.valueType === "boolean"
             ? input.input.defaultValue.toLowerCase() === "true"
             : input.input.defaultValue,
       });
@@ -111,7 +111,7 @@ export default function UpdatePopup({
 
   return (
     <React.Fragment>
-      <Popup open={open} modal>
+      <Popup open={open} onClose={() => setOpen(false)} modal>
         {(close) => (
           <div className="update-modal">
             <div className="update-header">
