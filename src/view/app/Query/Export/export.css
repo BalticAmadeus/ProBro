@@ -1,7 +1,7 @@
 .modal {
     position: center;
-    width: 220px;
-    height: 150px;
+    width: 250px;
+    height: 210px;
     background-color: var(--vscode-notifications-background);
   border: var(--vscode-notifications-border);
     justify-content: center;
@@ -31,15 +31,12 @@
 }
 
 .btn-container {
-    position:absolute;
-    left: 5%;
-    top: 96px;
+  text-align: center;
 }
 
 .modal .content {
   display:block;
-  position:absolute;
-  left: 23%;
+  text-align: center;
   margin-top: 10px;
 }
 
@@ -58,4 +55,8 @@
   }
   .btn-container .button {
     margin-right: 10px;
+  }
+  .checkbox {
+    margin-top: inherit;
+
   }
