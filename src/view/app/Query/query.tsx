@@ -118,7 +118,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         } else {
           setSelectedRows(new Set());
           setOpen(false);
-          reloadData(loaded + (action == ProcessAction.Insert ? 1 : 0));
+          reloadData(loaded + (action === ProcessAction.Insert ? 1 : 0));
         }
         break;
       case "crud":
@@ -249,14 +249,14 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                   );
                 };
               }
-              column.minWidth = column.name.length * (fontSize - 3);
+              column.minWidth = column.name.length * (fontSize);
               switch (column.type) {
                 case "integer":
                 case "decimal":
                 case "int64":
                   column.cellClass = "rightAlign";
                   column.headerCellClass = "rightAlign";
-                  column.width = 100;
+                  column.width = column.format.length * (fontSize - 3);
                   break;
                 case "character":
                   let dataLength = column.format.length;
@@ -266,6 +266,8 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                   column.width = dataLength * (fontSize - 3);
                   break;
                 case "date":
+                case "datetime":
+                case "datetime-tz":
                   column.width = column.format.length * (fontSize - 3);
                   break;
                 case "logical":
@@ -288,7 +290,9 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
           if (boolField.length !== 0) {
             message.data.rawData.forEach((row) => {
               boolField.forEach((field) => {
-                row[field.name] = row[field.name].toString();
+                if( row[field.name] !== null ) {
+                  row[field.name] = row[field.name].toString();
+                }
               });
             });
           }
@@ -433,6 +437,13 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
   // CRUD operations
   const [open, setOpen] = React.useState(false);
   const [action, setAction] = React.useState<ProcessAction>();
+  const [readRow, setReadRow] = React.useState([]);
+
+  const readRecord = (row: string[]) => {
+    setAction(ProcessAction.Read);
+    setReadRow(row);
+    setOpen(true);
+  };
 
   const insertRecord = () => {
     processRecord(ProcessAction.Insert);
@@ -467,12 +478,18 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
   
    function filterColumns() {
         if (selectedColumns.length !== 0) {
-            return columns.filter((column) => selectedColumns.includes(column.key) || column.key === "select-row");
+          const selection = columns.filter((column) => {
+            let testColumn = column.key;
+            if (/\[\d+\]$/.test(column.key)) {
+              testColumn = column.key.match(/[^[]+/)[0];
+            }
+            return selectedColumns.includes(testColumn) || testColumn === "select-row";
+          });
+          return selection;
         } else {
             return [];
         }
     };
-
     const selected = filterColumns();
 
     return (
@@ -507,6 +524,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                             vscode={vscode}
                             sortColumns={sortColumns}
                             filters={filters}
+                            selectedRows={selectedRows}
                         />
                         <ProBroButton
                             onClick={getDataFormat}
@@ -526,6 +544,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                             insertRecord={insertRecord}
                             updateRecord={updateRecord}
                             deleteRecord={deleteRecord}
+                            readRow={readRow}
                         ></UpdatePopup>
                     </div>
                 </div>
@@ -546,6 +565,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 selectedRows={selectedRows}
                 onSelectedRowsChange={setSelectedRows}
                 rowKeyGetter={rowKeyGetter}
+                onRowDoubleClick={readRecord}
             ></DataGrid>
             {getFooterTag()}
             {isLoading && <div>Loading more rows...</div>}
