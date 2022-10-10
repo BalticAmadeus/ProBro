@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useMemo } from "react";
 
-import { FieldRow, CommandAction, ICommand } from "../model";
+import { FieldRow, CommandAction} from "../model";
 import DataGrid, { SelectColumn }from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 
