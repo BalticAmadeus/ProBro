@@ -1,4 +1,3 @@
-import * as vsCode from "vscode";
 import * as React from "react";
 import { v1 } from "uuid";
 import { CommandAction, ICommand, IConfig } from "../model";
