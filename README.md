@@ -11,22 +11,29 @@ This open source project is in active development. Our goal is to simplify the a
   - Connect to multiple local Progress DBs
   - Custom connection groups
   - Deleting Connections
+  - Edit Connections *(new)*
 - Tables
   - Hidden tables
   - Launch query
 - Indexes
 - Fields
-  - Show only selected fields *(new)*
+  - Show only selected fields
 - Query data
   - Server-side multi-sorting
   - Server-side multi-filtering
   - Lazy loading
   - JSON/OE formatting
   - Custom queries
+  - View record on double-click *(new)*
 - Export
-  - JSON
-  - Excel
-  - CSV
+  - Formats
+    - JSON
+    - Excel
+    - CSV
+  - Scope *(new)*
+    - All records
+    - Selected records
+    - Filtered records
 - CRUD operations
   - Delete multiple
   - Insert

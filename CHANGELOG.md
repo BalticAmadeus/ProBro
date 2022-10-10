@@ -1,5 +1,17 @@
 # Change Log
 
+## 1.0.0
+
+### Added
+- New options for data exporting
+- Edit connection
+- Read record on double-click
+
+### Changed
+- Fixed test connection bug
+- Fixed array fields bug
+- Other minor bug fixes and improvements
+
 ## 0.4.0
 ### Added
 - Linux support
@@ -12,7 +24,7 @@
 - Export popup design improvements
 
 ### Removed
-## Initial release [0.1.0 - 0.3.1]
+## Initial releases [0.1.0 - 0.3.1]
 
 ### Added
 - Connection to Progress DB:
