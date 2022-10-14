@@ -1,6 +1,6 @@
 # ProBro
 
-An extension for Progress DB browsing
+An extension for Progress DB browsing.
 
 ## Current status
 This open source project is in active development. Our goal is to simplify the access to Progress DB wen using VSCode as a development environment.
@@ -11,25 +11,33 @@ This open source project is in active development. Our goal is to simplify the a
   - Connect to multiple local Progress DBs
   - Custom connection groups
   - Deleting Connections
+  - Edit Connections *(new)*
 - Tables
   - Hidden tables
   - Launch query
 - Indexes
 - Fields
+  - Show only selected fields
 - Query data
   - Server-side multi-sorting
   - Server-side multi-filtering
   - Lazy loading
   - JSON/OE formatting
   - Custom queries
+  - View record on double-click *(new)*
 - Export
-  - JSON
-  - Excel
-  - CSV
+  - Formats
+    - JSON
+    - Excel
+    - CSV
+  - Scope *(new)*
+    - All records
+    - Selected records
+    - Filtered records
 - CRUD operations
   - Delete multiple
-  - Insert (still in progress)
-  - Update (still in progress)
+  - Insert
+  - Update
 ## Guide
 TODO
 
@@ -38,6 +46,8 @@ TODO
 - [vscode-abl](https://github.com/Riverside-Software/vscode-abl) supported by Gilles Querret. VSCode plugin for ABL.
 
 ## Changelog
+
+Full changelog is available [here](CHANGELOG.md)
 
 ## Sponsored by [Baltic Amadeus](https://www.ba.lt/en).
 

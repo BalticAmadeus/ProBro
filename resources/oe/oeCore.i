@@ -26,7 +26,9 @@ PROCEDURE LOCAL_PROCESS:
 		END.
 	END CASE.
 
-	DISCONNECT DICTDB NO-ERROR.
+	FINALLY:
+		DISCONNECT DICTDB NO-ERROR.
+	END.
 END PROCEDURE.
 
 PROCEDURE LOCAL_CONNECT:
@@ -34,9 +36,7 @@ PROCEDURE LOCAL_CONNECT:
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 
 	tmpDate = NOW.
-	DO STOP-AFTER 1 ON STOP UNDO, LEAVE:
-		CONNECT VALUE(inputObject:GetCharacter("connectionString") + " -ld dictdb") NO-ERROR.
-	END.
+	CONNECT VALUE(substitute("&1 &2 &3", inputObject:GetCharacter("connectionString"), "-ld dictdb", "-ct 1")) NO-ERROR.
 	IF ERROR-STATUS:ERROR THEN DO:
 		UNDO, THROW NEW Progress.Lang.AppError(ERROR-STATUS:GET-MESSAGE(1), ERROR-STATUS:GET-NUMBER(1)).
 	END.
@@ -238,23 +238,58 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 	jsonObject:Add("indexes", jsonIndexes).
 END PROCEDURE.
 
+PROCEDURE GET_ROW_DATA:
+	DEFINE INPUT PARAMETER hfield AS WIDGET-HANDLE NO-UNDO.
+	DEFINE OUTPUT PARAMETER jsonRawRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE OUTPUT PARAMETER jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE cCellValue AS CHARACTER NO-UNDO.
+	DEFINE VARIABLE i AS INTEGER NO-UNDO.
+	DEFINE VARIABLE j AS INTEGER NO-UNDO.
+
+	DEFINE BUFFER btt FOR ttColumn.
+
+	jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
+	jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
+	jsonRawRow:Add("ROWID", STRING(hfield:ROWID)).
+	jsonFormattedRow:Add("ROWID", STRING(hfield:ROWID)).
+
+	DO i = 1 to hfield:NUM-FIELDS:
+		FIND btt  WHERE btt.cName = hfield:BUFFER-FIELD(i):NAME NO-ERROR .
+		IF AVAILABLE btt
+		THEN DO:
+			jsonRawRow:Add(hfield:BUFFER-FIELD(i):NAME, hfield:BUFFER-FIELD(i):BUFFER-VALUE).
+		
+			cCellValue = STRING(hfield:BUFFER-FIELD(i):BUFFER-VALUE, btt.cFormat) NO-ERROR.
+			jsonFormattedRow:Add(hfield:BUFFER-FIELD(i):NAME, cCellValue).
+		END.
+		ELSE DO:
+			j = 0.
+			FOR EACH btt WHERE INDEX(btt.cName, SUBSTITUTE("&1[", hfield:BUFFER-FIELD(i):NAME)) = 1 NO-LOCK:
+				j = j + 1.
+				jsonRawRow:Add(btt.cName, hfield:BUFFER-FIELD(i):BUFFER-VALUE(j)).
+		
+				cCellValue = STRING(hfield:BUFFER-FIELD(i):BUFFER-VALUE(j), btt.cFormat) NO-ERROR.
+				jsonFormattedRow:Add(btt.cName, cCellValue).
+			END.
+		END.
+	END.
+END.
+
 PROCEDURE LOCAL_GET_TABLE_DATA:
-	DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
 	DEFINE VARIABLE jsonRaw AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
 	DEFINE VARIABLE jsonFormatted AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
 	DEFINE VARIABLE jsonSort AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
 	DEFINE VARIABLE jsonFilter AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
-	DEFINE VARIABLE jsonRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonRawRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE jsonCrud AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
 	DEFINE VARIABLE qh AS WIDGET-HANDLE NO-UNDO.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE fqh AS WIDGET-HANDLE NO-UNDO.
 	DEFINE VARIABLE fbh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE i AS INTEGER NO-UNDO.
-	DEFINE VARIABLE j AS INTEGER NO-UNDO.
 	DEFINE VARIABLE dt AS DATETIME-TZ NO-UNDO.
 	DEFINE VARIABLE dtl AS DATETIME-TZ NO-UNDO.
 	DEFINE VARIABLE iPageLength AS INTEGER NO-UNDO.
@@ -265,8 +300,6 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE cFilterValues AS CHARACTER EXTENT NO-UNDO.
 	DEFINE VARIABLE cMode AS CHARACTER NO-UNDO.
 
-	jsonFields = new Progress.Json.ObjectModel.JsonArray().
-	DEFINE VARIABLE cCellValue AS CHARACTER NO-UNDO.
 	DEFINE BUFFER bttColumn FOR ttColumn.
 	
 	jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
@@ -293,6 +326,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		CREATE bttColumn.
 		bttColumn.cName = "ROWID".
 		bttColumn.cKey = "ROWID".
+		bttColumn.cLabel = "ROWID".
 		bttColumn.cType = "ROWID".
 		bttColumn.cFormat = ?.
 
@@ -304,6 +338,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 					CREATE bttColumn.
 					bttColumn.cName = fqh:GET-BUFFER-HANDLE(1)::_field-name.
 					bttColumn.cKey = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+					bttColumn.cLabel = fqh:GET-BUFFER-HANDLE(1)::_field-name.
 					bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
 					bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
 					bttColumn.iExtent = fqh:GET-BUFFER-HANDLE(1)::_extent.
@@ -313,6 +348,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 						CREATE bttColumn.
 						bttColumn.cName = SUBSTITUTE("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
 						bttColumn.cKey = SUBSTITUTE("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
+						bttColumn.cLabel = fqh:GET-BUFFER-HANDLE(1)::_field-name.
 						bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
 						bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
 						bttColumn.iExtent = fqh:GET-BUFFER-HANDLE(1)::_extent.
@@ -385,6 +421,11 @@ message "MODE:" cMode.
 							IF jsonSort:GetJsonObject(i):GetCharacter("direction") = "ASC" THEN "" ELSE "DESCENDING").
 			END.
 		END.
+
+		IF inputObject:GetJsonObject("params"):has("crud") THEN DO:
+			jsonCrud = inputObject:GetJsonObject("params"):GetJsonArray("crud").
+		END.
+
 	END.
 
 	IF CAN-DO("UPDATE,DATA", cMode) THEN DO:
@@ -409,39 +450,39 @@ message "MODE:" cMode.
 		iTimeOut = inputObject:GetJsonObject("params"):GetInteger("timeOut").
 		dt = now.
 
-		TABLE_LOOP:
-		DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
-			jsonRow = new Progress.Json.ObjectModel.JsonObject().
-			jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
-			jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
-			jsonRawRow:Add("ROWID", STRING(bh:ROWID)).
-			jsonFormattedRow:Add("ROWID", STRING(bh:ROWID)).
+		IF jsonCrud = ? THEN DO:
+			TABLE_LOOP:
+			DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
+				jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
+				jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
 
-			DO i = 1 to bh:NUM-FIELDS:
-				FIND bttColumn  WHERE bttColumn.cName = bh:BUFFER-FIELD(i):NAME NO-ERROR .
-				IF AVAILABLE bttColumn
-				THEN DO:
-					jsonRawRow:Add(bh:BUFFER-FIELD(i):NAME, bh:BUFFER-FIELD(i):BUFFER-VALUE).
-				
-					cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE, bttColumn.cFormat) NO-ERROR.
-					jsonFormattedRow:Add(bh:BUFFER-FIELD(i):NAME, cCellValue).
-				END.
-				ELSE DO:
-					j = 0.
-					FOR EACH bttColumn WHERE INDEX(bttColumn.cName, SUBSTITUTE("&1[", bh:BUFFER-FIELD(i):NAME)) = 1 NO-LOCK:
-						j = j + 1.
-						jsonRawRow:Add(bttColumn.cName, bh:BUFFER-FIELD(i):BUFFER-VALUE(j)).
-				
-						cCellValue = STRING(bh:BUFFER-FIELD(i):BUFFER-VALUE(j), bttColumn.cFormat) NO-ERROR.
-						jsonFormattedRow:Add(bttColumn.cName, cCellValue).
-					END.
-				END.
+				RUN GET_ROW_DATA(input bh:HANDLE,
+					output jsonRawRow,
+					output jsonFormattedRow).
+
+				jsonRaw:Add(jsonRawRow).
+				jsonFormatted:Add(jsonFormattedRow).			
+				iPageLength = iPageLength - 1.
+				IF iPageLength <= 0 THEN LEAVE. 
+				IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
 			END.
-			jsonRaw:Add(jsonRawRow).
-			jsonFormatted:Add(jsonFormattedRow).			
-			iPageLength = iPageLength - 1.
-			IF iPageLength <= 0 THEN LEAVE. 
-			IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
+		END.
+		ELSE DO:
+
+			DO i = 1 TO jsonCrud:Length:
+				qh:REPOSITION-TO-ROWID(TO-ROWID(jsonCrud:GetCharacter(i))). 
+				qh:GET-NEXT().
+
+				jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
+				jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
+
+				RUN GET_ROW_DATA(input bh:handle,
+					output jsonRawRow,
+					output jsonFormattedRow).
+
+				jsonRaw:Add(jsonRawRow).
+				jsonFormatted:Add(jsonFormattedRow).				
+			END.		
 		END.
 
     	dtl = NOW.

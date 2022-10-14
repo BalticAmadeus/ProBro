@@ -35,60 +35,61 @@ interface IStatisticsObject {
 }
 
 function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
-  const [wherePhrase, setWherePhrase] = React.useState<string>("");
-  const [isLoading, setIsLoading] = React.useState(false);
+    const [wherePhrase, setWherePhrase] = React.useState<string>("");
+    const [isLoading, setIsLoading] = React.useState(false);
 
-  const [isFormatted, setIsFormatted] = React.useState(false);
-  const [isError, setIsError] = React.useState(false);
-  const [isDataRetrieved, setIsDataRetrieved] = React.useState(false);
-  const [errorObject, setErrorObject] = React.useState<IErrorObject>();
-  const [statisticsObject, setStatisticsObject] =
-    React.useState<IStatisticsObject>();
+    const [isFormatted, setIsFormatted] = React.useState(false);
+    const [isError, setIsError] = React.useState(false);
+    const [isDataRetrieved, setIsDataRetrieved] = React.useState(false);
+    const [errorObject, setErrorObject] = React.useState<IErrorObject>();
+    const [statisticsObject, setStatisticsObject] =
+        React.useState<IStatisticsObject>();
 
-  const [rawRows, setRawRows] = React.useState(() => tableData.data);
-  const [formattedRows, setFormattedRows] = React.useState(
-    () => tableData.data
-  );
-  const [columns, setColumns] = React.useState(() => tableData.columns);
-  const [columnsCRUD, setColumnsCRUD] = React.useState(() => []);
-  const [recordsCRUD, setRecordsCRUD] = React.useState(() => []);
-  const [loaded, setLoaded] = React.useState(() => 0);
-  const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
-  const [rowID, setRowID] = React.useState("");
-  const [scrollHeight, setScrollHeight] = React.useState(() => 0);
+    const [rawRows, setRawRows] = React.useState(() => tableData.data);
+    const [formattedRows, setFormattedRows] = React.useState(
+        () => tableData.data
+    );
+    const [columns, setColumns] = React.useState(() => tableData.columns);
+    const [selectedColumns, setSelectedColumns] = React.useState([]);
+    const [columnsCRUD, setColumnsCRUD] = React.useState(() => []);
+    const [recordsCRUD, setRecordsCRUD] = React.useState(() => []);
+    const [loaded, setLoaded] = React.useState(() => 0);
+    const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
+    const [rowID, setRowID] = React.useState("");
+    const [scrollHeight, setScrollHeight] = React.useState(() => 0);
 
-  const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
-    []
-  );
+    const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
+        []
+    );
 
-  const [filters, _setFilters] = React.useState({
-    columns: {},
-    enabled: true,
-  });
-  const filtersRef = React.useRef(filters);
-  const setFilters = (data) => {
-    filtersRef.current = data;
-    _setFilters(data);
-  };
+    const [filters, _setFilters] = React.useState({
+        columns: {},
+        enabled: true,
+    });
+    const filtersRef = React.useRef(filters);
+    const setFilters = (data) => {
+        filtersRef.current = data;
+        _setFilters(data);
+    };
 
-  const [selectedRows, setSelectedRows] = React.useState(
-    (): ReadonlySet<string> => new Set()
-  );
+    const [selectedRows, setSelectedRows] = React.useState(
+        (): ReadonlySet<string> => new Set()
+    );
+    
+    const getDataFormat = () => {
+      setIsFormatted(!isFormatted);
+    };
 
-  const getDataFormat = () => {
-    setIsFormatted(!isFormatted);
-  };
+    const windowResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
 
-  const windowResize = () => {
-    setWindowHeight(window.innerHeight);
-  };
-
-  var inputQuery: HTMLButtonElement = undefined;
-  React.useEffect(() => {
-    if (inputQuery) {
-      inputQuery.click();
-    }
-  }, []);
+    var inputQuery: HTMLButtonElement = undefined;
+    React.useEffect(() => {
+     if (inputQuery) {
+       inputQuery.click();
+       }    
+    }, []);
 
   React.useEffect(() => {
     window.addEventListener("resize", windowResize);
@@ -101,6 +102,9 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
   const messageEvent = (event) => {
     const message = event.data;
     switch (message.command) {
+      case "columns":
+        setSelectedColumns([...message.columns]);
+        break;
       case "submit":
         if (message.data.error) {
           // should be displayed in UpdatePopup window
@@ -114,7 +118,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         } else {
           setSelectedRows(new Set());
           setOpen(false);
-          reloadData(loaded + (action == ProcessAction.Insert ? 1 : 0));
+          reloadData(loaded + (action === ProcessAction.Insert ? 1 : 0));
         }
         break;
       case "crud":
@@ -245,14 +249,14 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                   );
                 };
               }
-              column.minWidth = column.name.length * (fontSize - 3);
+              column.minWidth = column.name.length * (fontSize);
               switch (column.type) {
                 case "integer":
                 case "decimal":
                 case "int64":
                   column.cellClass = "rightAlign";
                   column.headerCellClass = "rightAlign";
-                  column.width = 100;
+                  column.width = column.format.length * (fontSize - 3);
                   break;
                 case "character":
                   let dataLength = column.format.length;
@@ -262,13 +266,23 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                   column.width = dataLength * (fontSize - 3);
                   break;
                 case "date":
+                case "datetime":
+                case "datetime-tz":
                   column.width = column.format.length * (fontSize - 3);
+                  break;
+                case "logical":
+                  column.width = column.name.length * (fontSize - 3);
                   break;
                 default:
                   break;
               }
             });
             setColumns([SelectColumn, ...message.data.columns]);
+            if (message.columns !== undefined) {
+              setSelectedColumns([...message.columns]); 
+          } else {
+              setSelectedColumns([...message.data.columns.map(column => column.name)].filter(column => column !== "ROWID"));
+          }
           }
           const boolField = message.data.columns.filter(
             (field) => field.type === "logical"
@@ -276,7 +290,9 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
           if (boolField.length !== 0) {
             message.data.rawData.forEach((row) => {
               boolField.forEach((field) => {
-                row[field.name] = row[field.name].toString();
+                if( row[field.name] !== null ) {
+                  row[field.name] = row[field.name].toString();
+                }
               });
             });
           }
@@ -421,6 +437,13 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
   // CRUD operations
   const [open, setOpen] = React.useState(false);
   const [action, setAction] = React.useState<ProcessAction>();
+  const [readRow, setReadRow] = React.useState([]);
+
+  const readRecord = (row: string[]) => {
+    setAction(ProcessAction.Read);
+    setReadRow(row);
+    setOpen(true);
+  };
 
   const insertRecord = () => {
     processRecord(ProcessAction.Insert);
@@ -451,90 +474,103 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
       },
     };
     vscode.postMessage(command);
-  };
+  }; 
+  
+   function filterColumns() {
+        if (selectedColumns.length !== 0) {
+          const selection = columns.filter((column) => {
+            let testColumn = column.key;
+            if (/\[\d+\]$/.test(column.key)) {
+              testColumn = column.key.match(/[^[]+/)[0];
+            }
+            return selectedColumns.includes(testColumn) || testColumn === "select-row";
+          });
+          return selection;
+        } else {
+            return [];
+        }
+    };
+    const selected = filterColumns();
 
-  return (
-    <React.Fragment>
-      <div className="container">
-        <div className="title">Query</div>
-        <div className="content">
-          <form className="form" action="#">
-            <div className="connection-details">
-              <div className="input-box">
-                <input
-                  className="textInput"
-                  type="text"
-                  placeholder="WHERE ..."
-                  value={wherePhrase}
-                  style={{ width: "370px" }}
-                  onChange={(event) => {
-                    setWherePhrase(event.target.value);
-                  }}
-                />
-                <ProBroButton
-                  ref={(input) => (inputQuery = input)}
-                  startIcon={<PlayArrowTwoToneIcon />}
-                  onClick={onQueryClick}
-                >
-                  Query
-                </ProBroButton>
-              </div>
+    return (
+        <React.Fragment>
+            <div className="container">
+                <div className="title">Query</div>
+                <div className="content">
+                    <form className="form" action="#">
+                        <div className="connection-details">
+                            <div className="input-box">
+                                <input
+                                    className="textInput"
+                                    type="text"
+                                    placeholder="WHERE ..."
+                                    value={wherePhrase}
+                                    style={{ width: "370px" }}
+                                    onChange={(event) => {
+                                        setWherePhrase(event.target.value);
+                                    }}
+                                />
+                                <ProBroButton
+                                    ref={(input) => (inputQuery = input)}
+                                    startIcon={<PlayArrowTwoToneIcon />}
+                                    onClick={onQueryClick}
+                                >Query</ProBroButton>
+                            </div>
+                        </div>
+                    </form>
+                    <div className="query-options">
+                        <ExportData
+                            wherePhrase={wherePhrase}
+                            vscode={vscode}
+                            sortColumns={sortColumns}
+                            filters={filters}
+                            selectedRows={selectedRows}
+                        />
+                        <ProBroButton
+                            onClick={getDataFormat}
+                            startIcon={isFormatted ? <RawOffTwoToneIcon /> : <RawOnTwoToneIcon /> }
+                        > </ProBroButton>
+                    </div>
+                    <div className="query-options">
+                        <UpdatePopup
+                            vscode={vscode}
+                            selectedRows={selectedRows}
+                            columns={columnsCRUD}
+                            rows={recordsCRUD}
+                            tableName={tableName}
+                            open={open}
+                            setOpen={setOpen}
+                            action={action}
+                            insertRecord={insertRecord}
+                            updateRecord={updateRecord}
+                            deleteRecord={deleteRecord}
+                            readRow={readRow}
+                        ></UpdatePopup>
+                    </div>
+                </div>
             </div>
-          </form>
-          <div className="query-options">
-            <ExportData
-              wherePhrase={wherePhrase}
-              vscode={vscode}
-              sortColumns={sortColumns}
-              filters={filters}
-            />
-            <ProBroButton
-              onClick={getDataFormat}
-              startIcon={
-                isFormatted ? <RawOffTwoToneIcon /> : <RawOnTwoToneIcon />
-              }
-            >
-              {" "}
-            </ProBroButton>
-          </div>
-          <div className="query-options">
-            <UpdatePopup
-              vscode={vscode}
-              selectedRows={selectedRows}
-              columns={columnsCRUD}
-              rows={recordsCRUD}
-              tableName={tableName}
-              open={open}
-              setOpen={setOpen}
-              action={action}
-              insertRecord={insertRecord}
-              updateRecord={updateRecord}
-              deleteRecord={deleteRecord}
-            ></UpdatePopup>
-          </div>
-        </div>
-      </div>
-      <DataGrid
-        columns={columns.filter((column) => column.key !== "ROWID")}
-        rows={isFormatted ? formattedRows : rawRows}
-        onScroll={handleScroll}
-        defaultColumnOptions={{
-          sortable: true,
-          resizable: true,
-        }}
-        sortColumns={sortColumns}
-        onSortColumnsChange={onSortClick}
-        className={filters.enabled ? "filter-cell" : undefined}
-        headerRowHeight={filters.enabled ? 70 : undefined}
-        style={{ height: windowHeight - 175, whiteSpace: "pre" }}
-        selectedRows={selectedRows}
-        onSelectedRowsChange={setSelectedRows}
-        rowKeyGetter={rowKeyGetter}
-      ></DataGrid>
-      {getFooterTag()}
-      {isLoading && <div>Loading more rows...</div>}
-    </React.Fragment>
-  );
+            <DataGrid
+                columns={selected}
+                rows={isFormatted ? formattedRows : rawRows}
+                onScroll={handleScroll}
+                defaultColumnOptions={{
+                    sortable: true,
+                    resizable: true,
+                }}
+                sortColumns={sortColumns}
+                onSortColumnsChange={onSortClick}
+                className={filters.enabled ? "filter-cell" : undefined}
+                headerRowHeight={filters.enabled ? 70 : undefined}
+                style={{ height: windowHeight - 175, whiteSpace: "pre" }}
+                selectedRows={selectedRows}
+                onSelectedRowsChange={setSelectedRows}
+                rowKeyGetter={rowKeyGetter}
+                onRowDoubleClick={readRecord}
+            ></DataGrid>
+            {getFooterTag()}
+            {isLoading && <div>Loading more rows...</div>}
+        </React.Fragment>
+    );
 }
 
 export default QueryForm;

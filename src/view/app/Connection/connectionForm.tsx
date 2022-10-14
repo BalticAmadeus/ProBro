@@ -15,7 +15,6 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
     const oldState = vscode.getState();
     const initState = oldState ? oldState : { config: initialData };
     const [vsState, _] = React.useState<IConfigState>(initState);
-    const [buttonState, setButtonState] = React.useState(false);
 
     const [name, setName] = React.useState(vsState.config.name);
     const [description, setDescription] = React.useState(
@@ -29,19 +28,8 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
     const [label, setLabel] = React.useState(vsState.config.label);
     const [params, setParams] = React.useState(vsState.config.params);
 
-    React.useEffect(() => {
-        window.addEventListener("message", (event) => {
-            const message = event.data;
-            switch (message.command) {
-                case "ok":
-                    setButtonState(false);
-            }
-        });
-    });
-
     const onSaveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        setButtonState(true);
         const id: string = v1();
         const config: IConfig = {
             id: vsState.config.id,
@@ -65,7 +53,6 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
 
     const onTestClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        setButtonState(true);
         const id: string = v1();
         const config: IConfig = {
             id: vsState.config.id,
@@ -118,6 +105,7 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
                                 <input
                                     type="text"
                                     placeholder="Physical name"
+                                    value={name}
                                     onChange={(event) => {
                                         setName(event.target.value);
                                     }}
@@ -194,7 +182,6 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
                                     type="submit"
                                     value="Test"
                                     onClick={onTestClick}
-                                    disabled={buttonState}
                                 />
                             </div>
                             <div className="button-narrow">
@@ -202,7 +189,6 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
                                     type="submit"
                                     value="Save"
                                     onClick={onSaveClick}
-                                    disabled={buttonState}
                                 />
                             </div>
                         </div>

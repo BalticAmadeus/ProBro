@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { QuickPickItem } from "vscode";
 import { ConnectionEditor } from "./common/connectionEditor";
-import { Constants } from "./common/constants";
+import { Constants } from "./db/constants";
 import { QueryEditor } from "./common/queryEditor";
 import { DatabaseProcessor } from "./db/databaseProcessor";
 import { DbConnectionNode } from "./tree/dbConnectionNode";
@@ -75,7 +75,8 @@ export function activate(context: vscode.ExtensionContext) {
         new QueryEditor(
           context,
           node,
-          tablesListProvider
+          tablesListProvider,
+          fieldsProvider
         );
       }
     )
@@ -86,6 +87,15 @@ export function activate(context: vscode.ExtensionContext) {
       `${Constants.globalExtensionKey}.deleteConnection`,
       (dbConnectionNode: DbConnectionNode) => {
         dbConnectionNode.deleteConnection(context);
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      `${Constants.globalExtensionKey}.editConnection`,
+      (dbConnectionNode: DbConnectionNode) => {
+        dbConnectionNode.editConnection(context);
       }
     )
   );

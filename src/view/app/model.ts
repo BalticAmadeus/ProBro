@@ -18,6 +18,7 @@ export interface ICommand {
     action: CommandAction;
     content?: IConfig;
     params?: ITableData;
+    columns?: string[];
 }
 
 export interface IQueryParams {
@@ -32,7 +33,8 @@ export enum CommandAction {
     FieldsRefresh,
     Export,
     CRUD,
-    Submit
+    Submit,
+    UpdateColumns
 }
 
 export interface FieldRow {
@@ -62,14 +64,22 @@ export interface IndexRow {
 
 export interface TableDetails {
     fields: FieldRow[],
-    indexes: IndexRow[]
+    indexes: IndexRow[],
+    selectedColumns?: string[]
 }
 
 export enum ProcessAction {
     Insert,
     Update,
     Delete,
-    Submit
+    Submit,
+    Read
+}
+
+export enum DataToExport {
+    Table,
+    Filter,
+    Selection
 }
 
 export interface ITableData {

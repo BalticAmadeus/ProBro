@@ -1,7 +1,7 @@
 import * as React from "react";
 import Popup from "reactjs-popup";
 import exportFromJSON from "export-from-json";
-import { CommandAction, ICommand } from "../../model";
+import { CommandAction, DataToExport, ICommand } from "../../model";
 import { v1 } from "uuid";
 import ExportIcon from "@mui/icons-material/FileDownloadTwoTone";
 import "./export.css";
@@ -12,8 +12,17 @@ export default function ExportPopup({
   vscode,
   sortColumns,
   filters,
+  selectedRows
 }) {
   const [exportFormat, setExportFormat] = React.useState("");
+  const [radioSelection, setRadioSelection] = React.useState("");
+  
+  function handleChange ({ currentTarget }:React.ChangeEvent<HTMLInputElement>) {
+    setRadioSelection(currentTarget.value);
+    console.log(currentTarget.value);
+  };
+
+
 
   const exportTypes = ["json", "csv", "xls"];
 
@@ -24,20 +33,55 @@ export default function ExportPopup({
     .reverse();
 
   const getData = () => {
+    console.log("get data");
     const command: ICommand = {
       id: v1(),
       action: CommandAction.Export,
-      params: {
-        wherePhrase: wherePhrase,
-        start: 0,
-        pageLength: 100000,
-        lastRowID: "",
-        sortColumns: sortColumns,
-        filters: filters,
-        exportType: exportFormat,
-        timeOut: 0,
-      },
     };
+    switch (radioSelection) {
+      case DataToExport[DataToExport.Table]:
+       command.params = {
+            wherePhrase: wherePhrase,
+            start: 0,
+            pageLength: 100000,
+            lastRowID: "",
+            sortColumns: sortColumns,
+            exportType: exportFormat,
+            timeOut: 0,
+          };
+        break;
+        case DataToExport[DataToExport.Filter]:
+          command.params = {
+            wherePhrase: wherePhrase,
+            start: 0,
+            pageLength: 100000,
+            lastRowID: "",
+            sortColumns: sortColumns,
+            filters: filters,
+            exportType: exportFormat,
+            timeOut: 0
+          };
+          break;
+        case DataToExport[DataToExport.Selection]:
+          const rowids: string[] = [];
+          selectedRows.forEach((element) => {
+            rowids.push(element);
+          });
+          command.params = {
+            wherePhrase: wherePhrase,
+            start: 0,
+            pageLength: 100000,
+            lastRowID: "",
+            sortColumns: sortColumns,
+            filters: filters,
+            exportType: exportFormat,
+            timeOut: 0,
+            crud: rowids
+          };
+          break;
+      default:
+        break;
+    }
     vscode.postMessage(command);
   };
 
@@ -77,7 +121,7 @@ export default function ExportPopup({
         <div className="modal">
           <div className="header"> Export to {exportFormat} </div>
           <div className="content">
-            Select export format:
+           <b>Select export format:</b>
             <br />
             <br />
             <select
@@ -89,9 +133,27 @@ export default function ExportPopup({
               ))}
             </select>
             <br />
+            
+            <div className="checkbox">  
+              <label><b> 
+                Data to export:
+              </b></label>
+              <br/>
+              <br/>
+              {Object.keys(DataToExport).filter(key => Number.isNaN(+key)).map((key) => (
+                <label className="radioBtn">
+                  <input type="radio" 
+                  name="exportdata"
+                  onChange={(e)=> handleChange(e)}
+                  value={key}
+                  />
+                  {key}
+                </label>
+              ))} 
+           </div>
           </div>
           <div className="btn-container">
-            <button
+            <ProBroButton
               className="button"
               onClick={() => {
                 getData();
@@ -99,15 +161,15 @@ export default function ExportPopup({
               }}
             >
               Export
-            </button>
-            <button
+            </ProBroButton>
+            <ProBroButton
               className="button"
               onClick={() => {
                 close();
               }}
             >
               Cancel
-            </button>
+            </ProBroButton>
           </div>
         </div>
       )}
