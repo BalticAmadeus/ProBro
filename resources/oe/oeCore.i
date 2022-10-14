@@ -354,12 +354,22 @@ message "MODE:" cMode.
 			inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetLogical("enabled") = true THEN DO:
 			jsonFilter = inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetJsonObject("columns").
 			cFilterNames = jsonFilter:GetNames().
+
 			IF EXTENT(cFilterNames) > 0 THEN DO:
-				EXTENT(cFilterValues) = EXTENT(cFilterNames).
-				cFilterValues = ?.
 				DO i = 1 TO EXTENT(cFilterNames):
 					IF jsonFilter:GetCharacter(cFilterNames[i]) > "" THEN DO:
-						cFilterValues[i] = SUBSTITUTE("*&1*", jsonFilter:GetCharacter(cFilterNames[i])).
+						IF cWherePhrase = "" THEN DO:
+							cWherePhrase = "where".
+						END.
+						ELSE DO:
+							cWherePhrase = SUBSTITUTE("&1 AND", cWherePhrase).
+						END.
+						cWherePhrase = SUBSTITUTE("&1 STRING(&2.&3) BEGINS ~"&4~"",
+												  cWherePhrase, 
+												  inputObject:GetJsonObject("params"):GetCharacter("tableName"),
+												  cFilterNames[i],
+												  jsonFilter:GetCharacter(cFilterNames[i])
+												  ).
 					END.
 				END.
 			END.
@@ -401,15 +411,6 @@ message "MODE:" cMode.
 
 		TABLE_LOOP:
 		DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
-			// make filtering here
-			DO i = 1 TO EXTENT(cFilterNames):
-				IF cFilterValues[i] > "" THEN DO:
-					IF NOT STRING(bh:BUFFER-FIELD(cFilterNames[i]):BUFFER-VALUE) MATCHES cFilterValues[i] THEN DO:
-						NEXT TABLE_LOOP.
-					END.
-				END.
-			END.
-
 			jsonRow = new Progress.Json.ObjectModel.JsonObject().
 			jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
 			jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
