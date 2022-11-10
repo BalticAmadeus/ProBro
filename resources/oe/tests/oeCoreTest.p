@@ -31,16 +31,13 @@ DEFINE VARIABLE cTestCase AS CHARACTER NO-UNDO.
 
 @Setup.
 PROCEDURE SETUP:
-    inputObject = NEW JsonObject().
-        
+    inputObject = NEW JsonObject().        
     jsonObject = NEW JsonObject().
     jsonObject:Add("debug", NEW JsonObject()).
-    
 END.
 
 
 // LOCAL_GET_TABLES
-
 @Test.
 PROCEDURE testTableListIsEquals:
     cTestCase = "jsonTables".

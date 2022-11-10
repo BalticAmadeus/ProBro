@@ -1,1 +1,97 @@
-{"connectionString":"-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001","command":"submit_table_data","params":{"tableName":"SalesRep","start":0,"pageLength":0,"timeOut":1000,"lastRowID":"0x0000000000009403","crud":["0x0000000000009403"],"data":[{"key":"ROWID","value":"0x0000000000009403","defaultValue":"0x0000000000009403"},{"key":"SalesRep","value":"DOS","defaultValue":"DOS"},{"key":"RepName","value":"Donna Swindall","defaultValue":"Donna Swindall"},{"key":"Region","value":"Southern","defaultValue":"Southern"},{"key":"MonthQuota[1]","value":3800,"defaultValue":3800},{"key":"MonthQuota[2]","value":3914,"defaultValue":3914},{"key":"MonthQuota[3]","value":4031,"defaultValue":4031},{"key":"MonthQuota[4]","value":100,"defaultValue":4152},{"key":"MonthQuota[5]","value":4277,"defaultValue":4277},{"key":"MonthQuota[6]","value":4405,"defaultValue":4405},{"key":"MonthQuota[7]","value":4537,"defaultValue":4537},{"key":"MonthQuota[8]","value":4673,"defaultValue":4673},{"key":"MonthQuota[9]","value":4813,"defaultValue":4813},{"key":"MonthQuota[10]","value":4957,"defaultValue":4957},{"key":"MonthQuota[11]","value":5106,"defaultValue":5106},{"key":"MonthQuota[12]","value":5259,"defaultValue":5259}],"mode":"Update"}}
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "submit_table_data",
+    "params": {
+        "tableName": "SalesRep",
+        "start": 0,
+        "pageLength": 0,
+        "timeOut": 1000,
+        "lastRowID": "0x0000000000009403",
+        "crud": [
+            "0x0000000000009403"
+        ],
+        "data": [
+            {
+                "key": "ROWID",
+                "value": "0x0000000000009403",
+                "defaultValue": "0x0000000000009403"
+            },
+            {
+                "key": "SalesRep",
+                "value": "DOS",
+                "defaultValue": "DOS"
+            },
+            {
+                "key": "RepName",
+                "value": "Donna Swindall",
+                "defaultValue": "Donna Swindall"
+            },
+            {
+                "key": "Region",
+                "value": "Southern",
+                "defaultValue": "Southern"
+            },
+            {
+                "key": "MonthQuota[1]",
+                "value": 3800,
+                "defaultValue": 3800
+            },
+            {
+                "key": "MonthQuota[2]",
+                "value": 3914,
+                "defaultValue": 3914
+            },
+            {
+                "key": "MonthQuota[3]",
+                "value": 4031,
+                "defaultValue": 4031
+            },
+            {
+                "key": "MonthQuota[4]",
+                "value": 100,
+                "defaultValue": 4152
+            },
+            {
+                "key": "MonthQuota[5]",
+                "value": 4277,
+                "defaultValue": 4277
+            },
+            {
+                "key": "MonthQuota[6]",
+                "value": 4405,
+                "defaultValue": 4405
+            },
+            {
+                "key": "MonthQuota[7]",
+                "value": 4537,
+                "defaultValue": 4537
+            },
+            {
+                "key": "MonthQuota[8]",
+                "value": 4673,
+                "defaultValue": 4673
+            },
+            {
+                "key": "MonthQuota[9]",
+                "value": 4813,
+                "defaultValue": 4813
+            },
+            {
+                "key": "MonthQuota[10]",
+                "value": 4957,
+                "defaultValue": 4957
+            },
+            {
+                "key": "MonthQuota[11]",
+                "value": 5106,
+                "defaultValue": 5106
+            },
+            {
+                "key": "MonthQuota[12]",
+                "value": 5259,
+                "defaultValue": 5259
+            }
+        ],
+        "mode": "Update"
+    }
+}
