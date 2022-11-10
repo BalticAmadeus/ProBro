@@ -1,0 +1,62 @@
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "submit_table_data",
+    "params": {
+        "tableName": "OrderLine",
+        "start": 0,
+        "pageLength": 0,
+        "timeOut": 1000,
+        "lastRowID": "0x000000000000742a",
+        "crud": [
+            "0x000000000000742a"
+        ],
+        "data": [
+            {
+                "key": "ROWID",
+                "value": "0x000000000000742a",
+                "defaultValue": "0x000000000000742a"
+            },
+            {
+                "key": "OrderNum",
+                "value": 10045,
+                "defaultValue": 10045
+            },
+            {
+                "key": "LineNum",
+                "value": 1,
+                "defaultValue": 1
+            },
+            {
+                "key": "ItemNum",
+                "value": 34,
+                "defaultValue": 34
+            },
+            {
+                "key": "Price",
+                "value": 14.27,
+                "defaultValue": 14.27
+            },
+            {
+                "key": "Qty",
+                "value": 50,
+                "defaultValue": 49
+            },
+            {
+                "key": "Discount",
+                "value": 25,
+                "defaultValue": 25
+            },
+            {
+                "key": "ExtendedPrice",
+                "value": 524.42,
+                "defaultValue": 524.42
+            },
+            {
+                "key": "OrderLineStatus",
+                "value": "Shipped",
+                "defaultValue": "Shipped"
+            }
+        ],
+        "mode": "Update"
+    }
+}

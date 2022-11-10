@@ -1,0 +1,22 @@
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "get_table_data",
+    "params": {
+        "tableName": "Customer",
+        "wherePhrase": "country = \"usa\"",
+        "start": 0,
+        "pageLength": 100,
+        "lastRowID": "",
+        "sortColumns": [
+            {
+                "columnKey": "Name",
+                "direction": "ASC"
+            }
+        ],
+        "filters": {
+            "columns": {},
+            "enabled": true
+        },
+        "timeOut": 0
+    }
+}

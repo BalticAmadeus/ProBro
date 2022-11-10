@@ -1,0 +1,24 @@
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "get_table_data",
+    "params": {
+        "tableName": "OrderLine",
+        "wherePhrase": "discount >20",
+        "start": 0,
+        "pageLength": 100,
+        "lastRowID": "",
+        "sortColumns": [
+            {
+                "columnKey": "LineNum",
+                "direction": "ASC"
+            }
+        ],
+        "filters": {
+            "columns": {
+                "OrderLineStatus": "orde"
+            },
+            "enabled": true
+        },
+        "timeOut": 0
+    }
+}

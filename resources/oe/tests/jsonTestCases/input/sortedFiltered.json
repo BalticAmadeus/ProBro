@@ -1,0 +1,24 @@
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "get_table_data",
+    "params": {
+        "tableName": "Family",
+        "wherePhrase": "",
+        "start": 0,
+        "pageLength": 27,
+        "lastRowID": "",
+        "sortColumns": [
+            {
+                "columnKey": "BirthDate",
+                "direction": "ASC"
+            }
+        ],
+        "filters": {
+            "columns": {
+                "Relation": "son"
+            },
+            "enabled": true
+        },
+        "timeOut": 0
+    }
+}

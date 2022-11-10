@@ -1,0 +1,16 @@
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "submit_table_data",
+    "params": {
+        "tableName": "Vacation",
+        "start": 0,
+        "pageLength": 0,
+        "timeOut": 1000,
+        "lastRowID": "",
+        "crud": [
+            "0x000000000000c403"
+        ],
+        "data": [],
+        "mode": "Delete"
+    }
+}
