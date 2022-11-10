@@ -1,0 +1,635 @@
+{
+    "debug": {
+        "startConnect": "2022-10-24T12:09:09.199+03:00",
+        "endConnect": "2022-10-24T12:09:09.213+03:00",
+        "timeConnect": 14
+    },
+    "columns": [
+        {
+            "name": "ROWID",
+            "key": "ROWID",
+            "label": "ROWID",
+            "type": "ROWID",
+            "format": null,
+            "iExtent": 0
+        },
+        {
+            "name": "Invoicenum",
+            "key": "Invoicenum",
+            "label": "Invoicenum",
+            "type": "integer",
+            "format": "zzzzzzzzz9",
+            "iExtent": 0
+        },
+        {
+            "name": "CustNum",
+            "key": "CustNum",
+            "label": "CustNum",
+            "type": "integer",
+            "format": ">>>>9",
+            "iExtent": 0
+        },
+        {
+            "name": "InvoiceDate",
+            "key": "InvoiceDate",
+            "label": "InvoiceDate",
+            "type": "date",
+            "format": "99\/99\/9999",
+            "iExtent": 0
+        },
+        {
+            "name": "Amount",
+            "key": "Amount",
+            "label": "Amount",
+            "type": "decimal",
+            "format": "->>,>>9.99",
+            "iExtent": 0
+        },
+        {
+            "name": "TotalPaid",
+            "key": "TotalPaid",
+            "label": "TotalPaid",
+            "type": "decimal",
+            "format": "->>,>>9.99",
+            "iExtent": 0
+        },
+        {
+            "name": "Adjustment",
+            "key": "Adjustment",
+            "label": "Adjustment",
+            "type": "decimal",
+            "format": "->>,>>9.99",
+            "iExtent": 0
+        },
+        {
+            "name": "OrderNum",
+            "key": "OrderNum",
+            "label": "OrderNum",
+            "type": "integer",
+            "format": "zzzzzzzzz9",
+            "iExtent": 0
+        },
+        {
+            "name": "ShipCharge",
+            "key": "ShipCharge",
+            "label": "ShipCharge",
+            "type": "decimal",
+            "format": "->>,>>9.99",
+            "iExtent": 0
+        }
+    ],
+    "rawData": [
+        {
+            "ROWID": "0x0000000000005403",
+            "Invoicenum": 3,
+            "CustNum": 3320,
+            "InvoiceDate": "2021-05-22",
+            "Amount": 23504.59,
+            "TotalPaid": 23504.59,
+            "Adjustment": 0.0,
+            "OrderNum": 10010,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x0000000000005404",
+            "Invoicenum": 4,
+            "CustNum": 3405,
+            "InvoiceDate": "2021-09-16",
+            "Amount": 11756.67,
+            "TotalPaid": 11756.67,
+            "Adjustment": 0.0,
+            "OrderNum": 10015,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x0000000000005405",
+            "Invoicenum": 5,
+            "CustNum": 3350,
+            "InvoiceDate": "2021-10-11",
+            "Amount": 15126.78,
+            "TotalPaid": 15126.78,
+            "Adjustment": 0.0,
+            "OrderNum": 10020,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x000000000000540c",
+            "Invoicenum": 12,
+            "CustNum": 3175,
+            "InvoiceDate": "2021-07-30",
+            "Amount": 10288.58,
+            "TotalPaid": 11831.87,
+            "Adjustment": 0.0,
+            "OrderNum": 10055,
+            "ShipCharge": 1543.29
+        },
+        {
+            "ROWID": "0x0000000000005412",
+            "Invoicenum": 18,
+            "CustNum": 3140,
+            "InvoiceDate": "2021-10-21",
+            "Amount": 14530.46,
+            "TotalPaid": 14530.46,
+            "Adjustment": 0.0,
+            "OrderNum": 10085,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x0000000000005414",
+            "Invoicenum": 20,
+            "CustNum": 3065,
+            "InvoiceDate": "2021-07-23",
+            "Amount": 19108.2,
+            "TotalPaid": 21974.43,
+            "Adjustment": 0.0,
+            "OrderNum": 10095,
+            "ShipCharge": 2866.23
+        },
+        {
+            "ROWID": "0x000000000000542e",
+            "Invoicenum": 46,
+            "CustNum": 3405,
+            "InvoiceDate": "2021-07-06",
+            "Amount": 29762.58,
+            "TotalPaid": 29762.58,
+            "Adjustment": 0.0,
+            "OrderNum": 10225,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x000000000000542f",
+            "Invoicenum": 47,
+            "CustNum": 3300,
+            "InvoiceDate": "2021-07-28",
+            "Amount": 11397.99,
+            "TotalPaid": 11397.99,
+            "Adjustment": 0.0,
+            "OrderNum": 10230,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x000000000000543e",
+            "Invoicenum": 62,
+            "CustNum": 3160,
+            "InvoiceDate": "2021-10-06",
+            "Amount": 17502.95,
+            "TotalPaid": 17502.95,
+            "Adjustment": 0.0,
+            "OrderNum": 10305,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x000000000000543f",
+            "Invoicenum": 63,
+            "CustNum": 3195,
+            "InvoiceDate": "2021-11-01",
+            "Amount": 11217.96,
+            "TotalPaid": 11217.96,
+            "Adjustment": 0.0,
+            "OrderNum": 10310,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x0000000000005440",
+            "Invoicenum": 64,
+            "CustNum": 3190,
+            "InvoiceDate": "2021-07-08",
+            "Amount": 26912.81,
+            "TotalPaid": 30949.73,
+            "Adjustment": 0.0,
+            "OrderNum": 10315,
+            "ShipCharge": 4036.92
+        },
+        {
+            "ROWID": "0x0000000000005442",
+            "Invoicenum": 66,
+            "CustNum": 3320,
+            "InvoiceDate": "2021-06-15",
+            "Amount": 36587.69,
+            "TotalPaid": 36587.69,
+            "Adjustment": 0.0,
+            "OrderNum": 10325,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x0000000000005445",
+            "Invoicenum": 69,
+            "CustNum": 3405,
+            "InvoiceDate": "2021-07-15",
+            "Amount": 14513.86,
+            "TotalPaid": 14513.86,
+            "Adjustment": 0.0,
+            "OrderNum": 10340,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x000000000000544f",
+            "Invoicenum": 79,
+            "CustNum": 3000,
+            "InvoiceDate": "2021-07-20",
+            "Amount": 34707.84,
+            "TotalPaid": 34707.84,
+            "Adjustment": 0.0,
+            "OrderNum": 10390,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x0000000000005453",
+            "Invoicenum": 83,
+            "CustNum": 3245,
+            "InvoiceDate": "2021-10-08",
+            "Amount": 11975.88,
+            "TotalPaid": 11975.88,
+            "Adjustment": 0.0,
+            "OrderNum": 10410,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x000000000000545f",
+            "Invoicenum": 95,
+            "CustNum": 3125,
+            "InvoiceDate": "2021-10-01",
+            "Amount": 18053.0,
+            "TotalPaid": 0.0,
+            "Adjustment": 0.0,
+            "OrderNum": 10470,
+            "ShipCharge": 2707.95
+        },
+        {
+            "ROWID": "0x000000000000546c",
+            "Invoicenum": 108,
+            "CustNum": 3040,
+            "InvoiceDate": "2021-07-28",
+            "Amount": 10866.06,
+            "TotalPaid": 0.0,
+            "Adjustment": 0.0,
+            "OrderNum": 10535,
+            "ShipCharge": 1629.91
+        },
+        {
+            "ROWID": "0x0000000000005472",
+            "Invoicenum": 114,
+            "CustNum": 3315,
+            "InvoiceDate": "2021-08-18",
+            "Amount": 40439.43,
+            "TotalPaid": 0.0,
+            "Adjustment": 0.0,
+            "OrderNum": 10565,
+            "ShipCharge": 6065.91
+        },
+        {
+            "ROWID": "0x0000000000005474",
+            "Invoicenum": 116,
+            "CustNum": 3125,
+            "InvoiceDate": "2021-08-04",
+            "Amount": 19075.61,
+            "TotalPaid": 0.0,
+            "Adjustment": 0.0,
+            "OrderNum": 10580,
+            "ShipCharge": 2861.34
+        },
+        {
+            "ROWID": "0x0000000000005476",
+            "Invoicenum": 118,
+            "CustNum": 3220,
+            "InvoiceDate": "2021-06-13",
+            "Amount": 22266.26,
+            "TotalPaid": 0.0,
+            "Adjustment": 0.0,
+            "OrderNum": 10590,
+            "ShipCharge": 3339.94
+        },
+        {
+            "ROWID": "0x000000000000547f",
+            "Invoicenum": 127,
+            "CustNum": 3215,
+            "InvoiceDate": "2021-10-16",
+            "Amount": 10055.51,
+            "TotalPaid": 0.0,
+            "Adjustment": 0.0,
+            "OrderNum": 10635,
+            "ShipCharge": 1508.33
+        },
+        {
+            "ROWID": "0x0000000000005486",
+            "Invoicenum": 134,
+            "CustNum": 3110,
+            "InvoiceDate": "2021-05-28",
+            "Amount": 15147.81,
+            "TotalPaid": 0.0,
+            "Adjustment": 0.0,
+            "OrderNum": 10685,
+            "ShipCharge": 2272.17
+        },
+        {
+            "ROWID": "0x000000000000548a",
+            "Invoicenum": 138,
+            "CustNum": 3365,
+            "InvoiceDate": "2021-07-04",
+            "Amount": 14780.25,
+            "TotalPaid": 0.0,
+            "Adjustment": 0.0,
+            "OrderNum": 10705,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x000000000000548d",
+            "Invoicenum": 141,
+            "CustNum": 3090,
+            "InvoiceDate": "2021-08-12",
+            "Amount": 25236.78,
+            "TotalPaid": 0.0,
+            "Adjustment": 0.0,
+            "OrderNum": 10745,
+            "ShipCharge": 0.0
+        },
+        {
+            "ROWID": "0x0000000000005490",
+            "Invoicenum": 144,
+            "CustNum": 3400,
+            "InvoiceDate": "2021-11-02",
+            "Amount": 23947.6,
+            "TotalPaid": 0.0,
+            "Adjustment": 0.0,
+            "OrderNum": 10800,
+            "ShipCharge": 0.0
+        }
+    ],
+    "formattedData": [
+        {
+            "ROWID": "0x0000000000005403",
+            "Invoicenum": "         3",
+            "CustNum": " 3320",
+            "InvoiceDate": "05\/22\/2021",
+            "Amount": " 23,504.59",
+            "TotalPaid": " 23,504.59",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10010",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x0000000000005404",
+            "Invoicenum": "         4",
+            "CustNum": " 3405",
+            "InvoiceDate": "09\/16\/2021",
+            "Amount": " 11,756.67",
+            "TotalPaid": " 11,756.67",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10015",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x0000000000005405",
+            "Invoicenum": "         5",
+            "CustNum": " 3350",
+            "InvoiceDate": "10\/11\/2021",
+            "Amount": " 15,126.78",
+            "TotalPaid": " 15,126.78",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10020",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x000000000000540c",
+            "Invoicenum": "        12",
+            "CustNum": " 3175",
+            "InvoiceDate": "07\/30\/2021",
+            "Amount": " 10,288.58",
+            "TotalPaid": " 11,831.87",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10055",
+            "ShipCharge": "  1,543.29"
+        },
+        {
+            "ROWID": "0x0000000000005412",
+            "Invoicenum": "        18",
+            "CustNum": " 3140",
+            "InvoiceDate": "10\/21\/2021",
+            "Amount": " 14,530.46",
+            "TotalPaid": " 14,530.46",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10085",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x0000000000005414",
+            "Invoicenum": "        20",
+            "CustNum": " 3065",
+            "InvoiceDate": "07\/23\/2021",
+            "Amount": " 19,108.20",
+            "TotalPaid": " 21,974.43",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10095",
+            "ShipCharge": "  2,866.23"
+        },
+        {
+            "ROWID": "0x000000000000542e",
+            "Invoicenum": "        46",
+            "CustNum": " 3405",
+            "InvoiceDate": "07\/06\/2021",
+            "Amount": " 29,762.58",
+            "TotalPaid": " 29,762.58",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10225",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x000000000000542f",
+            "Invoicenum": "        47",
+            "CustNum": " 3300",
+            "InvoiceDate": "07\/28\/2021",
+            "Amount": " 11,397.99",
+            "TotalPaid": " 11,397.99",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10230",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x000000000000543e",
+            "Invoicenum": "        62",
+            "CustNum": " 3160",
+            "InvoiceDate": "10\/06\/2021",
+            "Amount": " 17,502.95",
+            "TotalPaid": " 17,502.95",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10305",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x000000000000543f",
+            "Invoicenum": "        63",
+            "CustNum": " 3195",
+            "InvoiceDate": "11\/01\/2021",
+            "Amount": " 11,217.96",
+            "TotalPaid": " 11,217.96",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10310",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x0000000000005440",
+            "Invoicenum": "        64",
+            "CustNum": " 3190",
+            "InvoiceDate": "07\/08\/2021",
+            "Amount": " 26,912.81",
+            "TotalPaid": " 30,949.73",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10315",
+            "ShipCharge": "  4,036.92"
+        },
+        {
+            "ROWID": "0x0000000000005442",
+            "Invoicenum": "        66",
+            "CustNum": " 3320",
+            "InvoiceDate": "06\/15\/2021",
+            "Amount": " 36,587.69",
+            "TotalPaid": " 36,587.69",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10325",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x0000000000005445",
+            "Invoicenum": "        69",
+            "CustNum": " 3405",
+            "InvoiceDate": "07\/15\/2021",
+            "Amount": " 14,513.86",
+            "TotalPaid": " 14,513.86",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10340",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x000000000000544f",
+            "Invoicenum": "        79",
+            "CustNum": " 3000",
+            "InvoiceDate": "07\/20\/2021",
+            "Amount": " 34,707.84",
+            "TotalPaid": " 34,707.84",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10390",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x0000000000005453",
+            "Invoicenum": "        83",
+            "CustNum": " 3245",
+            "InvoiceDate": "10\/08\/2021",
+            "Amount": " 11,975.88",
+            "TotalPaid": " 11,975.88",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10410",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x000000000000545f",
+            "Invoicenum": "        95",
+            "CustNum": " 3125",
+            "InvoiceDate": "10\/01\/2021",
+            "Amount": " 18,053.00",
+            "TotalPaid": "      0.00",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10470",
+            "ShipCharge": "  2,707.95"
+        },
+        {
+            "ROWID": "0x000000000000546c",
+            "Invoicenum": "       108",
+            "CustNum": " 3040",
+            "InvoiceDate": "07\/28\/2021",
+            "Amount": " 10,866.06",
+            "TotalPaid": "      0.00",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10535",
+            "ShipCharge": "  1,629.91"
+        },
+        {
+            "ROWID": "0x0000000000005472",
+            "Invoicenum": "       114",
+            "CustNum": " 3315",
+            "InvoiceDate": "08\/18\/2021",
+            "Amount": " 40,439.43",
+            "TotalPaid": "      0.00",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10565",
+            "ShipCharge": "  6,065.91"
+        },
+        {
+            "ROWID": "0x0000000000005474",
+            "Invoicenum": "       116",
+            "CustNum": " 3125",
+            "InvoiceDate": "08\/04\/2021",
+            "Amount": " 19,075.61",
+            "TotalPaid": "      0.00",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10580",
+            "ShipCharge": "  2,861.34"
+        },
+        {
+            "ROWID": "0x0000000000005476",
+            "Invoicenum": "       118",
+            "CustNum": " 3220",
+            "InvoiceDate": "06\/13\/2021",
+            "Amount": " 22,266.26",
+            "TotalPaid": "      0.00",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10590",
+            "ShipCharge": "  3,339.94"
+        },
+        {
+            "ROWID": "0x000000000000547f",
+            "Invoicenum": "       127",
+            "CustNum": " 3215",
+            "InvoiceDate": "10\/16\/2021",
+            "Amount": " 10,055.51",
+            "TotalPaid": "      0.00",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10635",
+            "ShipCharge": "  1,508.33"
+        },
+        {
+            "ROWID": "0x0000000000005486",
+            "Invoicenum": "       134",
+            "CustNum": " 3110",
+            "InvoiceDate": "05\/28\/2021",
+            "Amount": " 15,147.81",
+            "TotalPaid": "      0.00",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10685",
+            "ShipCharge": "  2,272.17"
+        },
+        {
+            "ROWID": "0x000000000000548a",
+            "Invoicenum": "       138",
+            "CustNum": " 3365",
+            "InvoiceDate": "07\/04\/2021",
+            "Amount": " 14,780.25",
+            "TotalPaid": "      0.00",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10705",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x000000000000548d",
+            "Invoicenum": "       141",
+            "CustNum": " 3090",
+            "InvoiceDate": "08\/12\/2021",
+            "Amount": " 25,236.78",
+            "TotalPaid": "      0.00",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10745",
+            "ShipCharge": "      0.00"
+        },
+        {
+            "ROWID": "0x0000000000005490",
+            "Invoicenum": "       144",
+            "CustNum": " 3400",
+            "InvoiceDate": "11\/02\/2021",
+            "Amount": " 23,947.60",
+            "TotalPaid": "      0.00",
+            "Adjustment": "      0.00",
+            "OrderNum": "     10800",
+            "ShipCharge": "      0.00"
+        }
+    ]
+}
