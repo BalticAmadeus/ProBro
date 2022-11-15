@@ -78,7 +78,7 @@ function Fields({ initialData, vscode }) {
 
     const sortedRows = useMemo((): readonly FieldRow[] => {
         if (sortColumns.length === 0) {
-            return rows;
+            return filteredRows;
         }
 
         return [...filteredRows].sort((a, b) => {
@@ -119,11 +119,10 @@ function Fields({ initialData, vscode }) {
 			} else {
 			tempFilters.columns[column.key] = event.target.value;
 			}
-			console.log("tempFilters: ", tempFilters);
 			setFilters(tempFilters);
 
 			if (Object.keys(filters.columns).length === 0) {
-			setFilteredRows(rows);
+				setFilteredRows(rows);
 			} else {
 				setFilteredRows(rows.filter( (row) => {
 					for (let [key, value] of Object.entries(filters.columns)) {
@@ -207,6 +206,10 @@ function Fields({ initialData, vscode }) {
 					console.log("fields data: ", message);
 				setRows(message.data.fields);
 				setFilteredRows(message.data.fields);
+				setFilters({columns: {},
+					enabled: true
+				});
+
 				if (message.data.selectedColumns === undefined) {
 					setSelectedRows(
 						(): ReadonlySet<number> =>
