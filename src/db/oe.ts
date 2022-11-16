@@ -5,8 +5,14 @@ export interface IOEVersion {
     proversion: string;
 }
 
+export interface IOEError {
+    error: number;
+    description: string;
+    trace: string;
+}
+
 export interface IOETablesList {
-    tables: string[];
+    tables: ITable[];
 }
 
 export interface IOEParams {
@@ -18,4 +24,9 @@ export interface IOEParams {
 export interface IOETableData {
     columns: Column<string, unknown>[],
     data: string[]
+}
+
+interface ITable {
+    name: string;
+    tableType: string;
 }

@@ -1,13 +1,14 @@
 .modal {
     position: center;
     width: 250px;
-    height: 175px;
+    height: 210px;
     background-color: var(--vscode-notifications-background);
   border: var(--vscode-notifications-border);
     justify-content: center;
     align-items:center;
     font-size: inherit;
     font-style: inherit;
+    margin: auto;
   }
 
 .menu {
@@ -25,14 +26,37 @@
 
 #dropdown {
     width: 120px;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--vscode-editor-inactiveSelectionBackground);
     color: inherit;
 }
 
 .btn-container {
-    position:absolute;
-    width: 100%;
-    align: right;
-    bottom: 10px;
-
+  text-align: center;
 }
+
+.modal .content {
+  display:block;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.popup-overlay {
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 997 !important;
+    pointer-events: none !important;
+    display: none;
+  }
+
+  .popup-content {
+    z-index: 998 !important;
+    position:relative;
+    pointer-events: auto;
+    display: block;
+  }
+  .btn-container .button {
+    margin-right: 10px;
+  }
+  .checkbox {
+    margin-top: inherit;
+
+  }

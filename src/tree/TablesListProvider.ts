@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Constants } from '../common/constants';
+import { Constants } from '../db/constants';
 import { INode } from './INode';
 import * as tableNode from './tableNode';
 import { CommandAction, ICommand, IConfig } from '../view/app/model';
@@ -13,6 +13,8 @@ import { v1 } from 'uuid';
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	public config: IConfig | undefined;
 	public node: TableNode | undefined;
+	public tableNodes: tableNode.TableNode[] = [];
+	public filters: string[] | undefined = ["UserTable"];
 
 	constructor(private context: vscode.ExtensionContext, private fieldsProvider: FieldsViewProvider, private indexesProvider: FieldsViewProvider) {
 	}
@@ -20,13 +22,13 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	public displayData(node: TableNode) {
 		this.fieldsProvider.tableNode = node;
 		this.indexesProvider.tableNode = node;
-		console.log("displayData", node.tableName, node.cache)
+		console.log("displayData", node.tableName);
 		if (node.cache) {
 			this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: node.cache });
 			this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: node.cache });
 			return;
 		} else {
-			return new DatabaseProcessor(this.context).getTableDetails(this.config, node.tableName).then((oeTableDetails) => {
+			return DatabaseProcessor.getInstance().getTableDetails(this.config, node.tableName).then((oeTableDetails) => {
 				node.cache = oeTableDetails;
 				this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: oeTableDetails });
 				this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: oeTableDetails });
@@ -59,29 +61,47 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 		this._onDidChangeTreeData.fire();
 	}
 
+	public refreshList(filters: string[] | undefined): void {
+		this.filters = filters;
+		this._onDidChangeTreeData.fire();
+	}
+
 	public getTreeItem(element: INode): Promise<vscode.TreeItem> | vscode.TreeItem {
 		return element.getTreeItem();
 	}
 
 	public getChildren(element?: INode): Thenable<INode[]> | INode[] {
 		if (!element) {
-			return this.getGroupNodes();
+			return this.getFilteredTables();
 		}
 		return element.getChildren();
 	}
 
 	private async getGroupNodes(): Promise<tableNode.TableNode[]> {
+		this.tableNodes = [];
 		if (this.config) {
-			return new DatabaseProcessor(this.context).getTablesList(this.config).then((oeTables) => {
-				const tableNodes: tableNode.TableNode[] = [];
-				console.log(`Requested tables list of DB: ${this.config?.name}`);
-				oeTables.tables.forEach((table) => {
-					tableNodes.push(new tableNode.TableNode(this.context, table));
-				});
-				return tableNodes;
+			return DatabaseProcessor.getInstance().getTablesList(this.config).then((oeTables) => {
+				if (oeTables.error) {
+					vscode.window.showErrorMessage(`Error connecting DB: ${oeTables.description} (${oeTables.error})`);
+				} else {
+					console.log(`Requested tables list of DB: ${this.config?.name}`);
+					oeTables.tables.forEach((table: { name: string; tableType: string; }) => {
+						this.tableNodes?.push(new tableNode.TableNode(this.context, table.name, table.tableType));
+					});
+				}
+				return this.tableNodes;
 			});
-		} else {
-			return [];
 		}
+		return this.tableNodes;
+	}
+
+	public async getFilteredTables(): Promise<tableNode.TableNode[]> {
+		// if (this.tableNodes.length === 0) {
+		await this.getGroupNodes();
+		// }
+
+		return this.tableNodes.filter((table) => {
+			return this.filters?.includes(table.tableType);
+		});
 	}
 }

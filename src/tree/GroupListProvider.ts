@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { Constants } from "../common/constants";
+import { Constants } from "../db/constants";
 import { INode } from "./INode";
 import * as groupNode from "./groupNode";
 import { IConfig } from "../view/app/model";
@@ -15,7 +15,7 @@ export class GroupListProvider implements vscode.TreeDataProvider<INode> {
   constructor(
     private context: vscode.ExtensionContext,
     private tables: vscode.TreeView<INode>
-  ) {}
+  ) { }
 
   onDidChangeSelection(
     e: vscode.TreeViewSelectionChangeEvent<INode>,

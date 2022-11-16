@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Constants } from '../common/constants';
+import { Constants } from '../db/constants';
 import { IConfig } from '../view/app/model';
 import { INode } from './INode';
 import * as connectionNode from './dbConnectionNode';
@@ -17,7 +17,6 @@ export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
 	}
 
 	public getTreeItem(element: INode): Promise<vscode.TreeItem> | vscode.TreeItem {
-		//console.log(element.getTreeItem());
 		return element.getTreeItem();
 	}
 

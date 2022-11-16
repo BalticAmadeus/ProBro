@@ -1,48 +1,19 @@
 import * as React from "react";
 import { useState, useMemo } from "react";
-import { createRoot } from "react-dom/client";
-import "./fields.css";
 
-import { IConfig, FieldRow, CommandAction, ICommand } from "./model";
+
+import { IndexRow } from "../model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 
-import * as columnName from "./fieldsColumn.json";
-import { v1 } from "uuid";
+import * as columnName from "./column.json";
 
-declare global {
-    interface Window {
-        acquireVsCodeApi(): any;
-        initialData: IConfig;
-    }
-}
-
-const vscode = window.acquireVsCodeApi();
-
-const root = createRoot(document.getElementById("root"));
-
-type Comparator = (a: FieldRow, b: FieldRow) => number;
+type Comparator = (a: IndexRow, b: IndexRow) => number;
 function getComparator(sortColumn: string): Comparator {
     switch (sortColumn) {
-        case "order":
-        case "extent":
-        case "decimals":
-        case "rpos":
-            return (a, b) => {
-                return a[sortColumn] - b[sortColumn];
-            };
-        case "name":
-        case "type":
-        case "format":
-        case "label":
-        case "initial":
-        case "columnLabel":
-        case "mandatory":
-        case "valexp":
-        case "valMessage":
-        case "helpMsg":
-        case "description":
-        case "viewAs":
+        case "cName":
+        case "cFlags":
+        case "cFields":
             return (a, b) => {
                 return a[sortColumn].localeCompare(b[sortColumn]);
             };
@@ -51,14 +22,14 @@ function getComparator(sortColumn: string): Comparator {
     }
 }
 
-function rowKeyGetter(row: FieldRow) {
-    return row.order;
+function rowKeyGetter(row: IndexRow) {
+    return row.cName;
 }
 
-function Fields({ initialData, vscode }) {
-    const [rows, setRows] = useState(initialData.fields as FieldRow[]);
+function Indexes({ initialData, vscode }) {
+    const [rows, setRows] = useState(initialData.indexes as IndexRow[]);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
-    const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>(
+    const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
         () => new Set()
     );
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
@@ -68,14 +39,14 @@ function Fields({ initialData, vscode }) {
     };
 
     React.useEffect(() => {
-        window.addEventListener("resize", windowRezise);
+        window.addEventListener('resize', windowRezise);
 
         return () => {
-            window.removeEventListener("resize", windowRezise);
+            window.removeEventListener('resize', windowRezise);
         };
     }, []);
 
-    const sortedRows = useMemo((): readonly FieldRow[] => {
+    const sortedRows = useMemo((): readonly IndexRow[] => {
         if (sortColumns.length === 0) {
             return rows;
         }
@@ -103,8 +74,8 @@ function Fields({ initialData, vscode }) {
             const message = event.data;
             switch (message.command) {
                 case "data":
-                    console.log("GOT FIELDS MESSAGE");
-                    setRows(message.data.fields);                    
+                    console.log("GOT INDEXES MESSAGE");
+                    setRows(message.data.indexes);
             }
         });
     });
@@ -125,11 +96,11 @@ function Fields({ initialData, vscode }) {
                     onRowsChange={setRows}
                     sortColumns={sortColumns}
                     onSortColumnsChange={setSortColumns}
-                    style={{ height: windowHeight }}
+                    style={{ height: windowHeight}}
                 />
             ) : null}
         </div>
     );
 }
 
-root.render(<Fields initialData={window.initialData} vscode={vscode} />);
+export default Indexes;

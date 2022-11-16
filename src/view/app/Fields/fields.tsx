@@ -1,38 +1,34 @@
 import * as React from "react";
 import { useState, useMemo } from "react";
-import { createRoot } from "react-dom/client";
-import "./indexes.css";
 
-import { CommandAction, ICommand, IConfig, IndexRow } from "./model";
-import DataGrid from "react-data-grid";
+import { FieldRow, CommandAction} from "../model";
+import DataGrid, { SelectColumn }from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 
-import * as columnName from "./indexesColumn.json";
-import { v1 } from "uuid";
+import * as columnName from "./column.json";
 
-declare global {
-    interface Window {
-        acquireVsCodeApi(): any;
-        initialData: IConfig;
-    }
-}
-
-const defaultColumnProperties = {
-    sortable: true,
-};
-
-columnName.columns.map((c) => ({ ...c, ...defaultColumnProperties }));
-
-const vscode = window.acquireVsCodeApi();
-
-const root = createRoot(document.getElementById("root"));
-
-type Comparator = (a: IndexRow, b: IndexRow) => number;
+type Comparator = (a: FieldRow, b: FieldRow) => number;
 function getComparator(sortColumn: string): Comparator {
     switch (sortColumn) {
-        case "cName":
-        case "cFlags":
-        case "cFields":
+        case "order":
+        case "extent":
+        case "decimals":
+        case "rpos":
+            return (a, b) => {
+                return a[sortColumn] - b[sortColumn];
+            };
+        case "name":
+        case "type":
+        case "format":
+        case "label":
+        case "initial":
+        case "columnLabel":
+        case "mandatory":
+        case "valexp":
+        case "valMessage":
+        case "helpMsg":
+        case "description":
+        case "viewAs":
             return (a, b) => {
                 return a[sortColumn].localeCompare(b[sortColumn]);
             };
@@ -41,16 +37,14 @@ function getComparator(sortColumn: string): Comparator {
     }
 }
 
-function rowKeyGetter(row: IndexRow) {
-    return row.cName;
+function rowKeyGetter(row: FieldRow) {
+    return row.order;
 }
 
-function Indexes({ initialData, vscode }) {
-    const [rows, setRows] = useState(initialData.indexes as IndexRow[]);
+function Fields({ initialData, vscode }) {
+    const [rows, setRows] = useState(initialData.fields as FieldRow[]);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
-    const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
-        () => new Set()
-    );
+    const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>();
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
 
     const windowRezise = () => {
@@ -58,14 +52,14 @@ function Indexes({ initialData, vscode }) {
     };
 
     React.useEffect(() => {
-        window.addEventListener('resize', windowRezise);
+        window.addEventListener("resize", windowRezise);
 
         return () => {
-            window.removeEventListener('resize', windowRezise);
-        }
+            window.removeEventListener("resize", windowRezise);
+        };
     }, []);
 
-    const sortedRows = useMemo((): readonly IndexRow[] => {
+    const sortedRows = useMemo((): readonly FieldRow[] => {
         if (sortColumns.length === 0) {
             return rows;
         }
@@ -93,9 +87,22 @@ function Indexes({ initialData, vscode }) {
             const message = event.data;
             switch (message.command) {
                 case "data":
-                    console.log("GOT INDEXES MESSAGE");
-                    setRows(message.data.indexes);
+                    console.log("GOT FIELDS MESSAGE");
+                    setRows(message.data.fields);
+                    if (message.data.selectedColumns === undefined) { 
+                        setSelectedRows((): ReadonlySet<number> => new Set(message.data.fields.map(field => field.order)));   
+                    } else {
+                        const selected = message.data.fields.filter(row => message.data.selectedColumns.includes(row.name));
+                        setSelectedRows((): ReadonlySet<number> => new Set(selected.map(row => row.order)));
+                    }        
             }
+        });
+    });
+
+    React.useEffect(() => {
+        vscode.postMessage({
+            action: CommandAction.UpdateColumns,
+            columns: rows.filter(row => selectedRows.has(row.order)).map(row => row.name)
         });
     });
 
@@ -103,7 +110,7 @@ function Indexes({ initialData, vscode }) {
         <div>
             {rows.length > 0 ? (
                 <DataGrid
-                    columns={columnName.columns}
+                    columns={[SelectColumn, ...columnName.columns]}
                     rows={sortedRows}
                     defaultColumnOptions={{
                         sortable: true,
@@ -115,11 +122,13 @@ function Indexes({ initialData, vscode }) {
                     onRowsChange={setRows}
                     sortColumns={sortColumns}
                     onSortColumnsChange={setSortColumns}
-                    style={{ height: windowHeight}}
+                    style={{ height: windowHeight }}
                 />
             ) : null}
         </div>
     );
-}
+};
 
-root.render(<Indexes initialData={window.initialData} vscode={vscode} />);
+export default Fields;
+
+

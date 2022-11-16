@@ -1,14 +1,36 @@
 import * as vscode from "vscode";
-import { IConfig, TableDetails } from "../view/app/model";
+import { IConfig, ITableData, TableDetails } from "../view/app/model";
 import { IProcessor } from "./IProcessor";
 import * as cp from "child_process";
-import { IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
+import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
 import getOEClient from "../common/oeClient"
 import { SortColumn } from "react-data-grid";
+import { resolve } from "path";
 
 export class DatabaseProcessor implements IProcessor {
 
-    public execShell(cmd: string) {
+    private static instance: DatabaseProcessor;
+    private static isProcessRunning: boolean = false;
+
+    private constructor() { }
+
+    public static getInstance(): DatabaseProcessor {
+        if (!DatabaseProcessor.instance) {
+            DatabaseProcessor.instance = new DatabaseProcessor();
+        }
+
+        return DatabaseProcessor.instance;
+    }
+
+    public execShell(params: IOEParams) {
+        const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
+        if (DatabaseProcessor.isProcessRunning) {
+            vscode.window.showInformationMessage("Processor is busy");
+            return new Promise<any>(_ => { return { columns: [], data: [] }; });
+        }
+
+        DatabaseProcessor.isProcessRunning = true;
+
         console.log(cmd);
         var timeInMs = Date.now();
 
@@ -20,6 +42,8 @@ export class DatabaseProcessor implements IProcessor {
                 //console.log("output data: ", data)
                 var json = JSON.parse(data);
                 console.log(`Process time: ${Date.now() - timeInMs}, OE time: ${json.debug.time}, Connect time: ${json.debug.timeConnect}`);
+                console.log(JSON.stringify(json.debug))
+                DatabaseProcessor.isProcessRunning = false;
                 return json;
             });
 
@@ -43,49 +67,55 @@ export class DatabaseProcessor implements IProcessor {
 
     }
 
-    constructor(private context: vscode.ExtensionContext) {
-    }
-
     private getConnectionString(config: IConfig) {
         var connectionString = `-db ${config.name} ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''}`;
         return connectionString;
     }
 
-    public getDBVersion(config: IConfig): Promise<IOEVersion> {
+    public getDBVersion(config: IConfig): Promise<any> {
         var params: IOEParams = {
             connectionString: this.getConnectionString(config),
             command: "get_version"
         }
-        // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
-        const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
-        return this.execShell(cmd);
+        return this.execShell(params);
     }
 
-    public getTablesList(config: IConfig): Promise<IOETablesList> {
+    public getTablesList(config: IConfig): Promise<any> {
         var params: IOEParams = {
             connectionString: this.getConnectionString(config),
             command: "get_tables"
         }
         // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
-        const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
-        return this.execShell(cmd);
+        return this.execShell(params);
     }
 
-    public getTableData(config: IConfig, tableName: string | undefined, wherePhrase: string, start: number, pageLength: number, sortColumns: SortColumn[], filters: any): Promise<IOETableData> {
-        if (config && tableName) {
+    public getTableData(config: IConfig, tableName: string | undefined, inputParams: ITableData | undefined) {
+        //        wherePhrase: string, start: number, pageLength: number, lastRowID: string, sortColumns: SortColumn[], filters: any, timeOut: number): Promise<IOETableData> {
+        if (config && tableName && inputParams) {
             var params: IOEParams = {
                 connectionString: this.getConnectionString(config),
                 command: "get_table_data",
-                params: { tableName: tableName, wherePhrase: wherePhrase, start: start, pageLength: pageLength, sortColumns: sortColumns, filters: filters }
+                params: { tableName: tableName, ...inputParams }
             }
-            // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
-            const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
-            return this.execShell(cmd);
+            return this.execShell(params);
         } else {
             return new Promise(resolve => { return { columns: [], data: [] } });
         }
     }
 
+    public submitTableData(config: IConfig, tableName: string | undefined, inputParams: ITableData | undefined) {
+        //        wherePhrase: string, start: number, pageLength: number, lastRowID: string, sortColumns: SortColumn[], filters: any, timeOut: number): Promise<IOETableData> {
+        if (config && tableName && inputParams) {
+            var params: IOEParams = {
+                connectionString: this.getConnectionString(config),
+                command: "submit_table_data",
+                params: { tableName: tableName, ...inputParams }
+            }
+            return this.execShell(params);
+        } else {
+            return new Promise(resolve => { return { columns: [], data: [] } });
+        }
+    }
 
     public getTableDetails(config: IConfig | undefined, tableName: string | undefined): Promise<TableDetails> {
         if (config && tableName) {
@@ -94,9 +124,7 @@ export class DatabaseProcessor implements IProcessor {
                 command: "get_table_details",
                 params: tableName
             }
-            // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
-            const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
-            return this.execShell(cmd);
+            return this.execShell(params);
         } else {
             return new Promise(resolve => { return { fields: [], indexes: [] } });
         }
