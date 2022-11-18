@@ -83,7 +83,9 @@ export class ConnectionEditor {
         const reactAppPathOnDisk = vscode.Uri.file(
             path.join(vscode.Uri.file(this.context.asAbsolutePath(path.join("out/view/app", "connection.js"))).fsPath)
         );
-        const reactAppUri = reactAppPathOnDisk.with({ scheme: "vscode-resource" });
+
+        const reactAppUri = this.panel?.webview.asWebviewUri(reactAppPathOnDisk);
+        const cspSource = this.panel?.webview.cspSource;
 
         let config: IConfig = {
             id: v4(),
@@ -112,8 +114,8 @@ export class ConnectionEditor {
         <meta http-equiv="Content-Security-Policy"
               content="default-src 'none';
                       img-src https:;
-                      script-src 'unsafe-eval' 'unsafe-inline' vscode-resource:;
-                      style-src vscode-resource: 'unsafe-inline';">
+                      script-src 'unsafe-eval' 'unsafe-inline' ${cspSource};
+                      style-src ${cspSource} 'unsafe-inline';">
 
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
