@@ -166,7 +166,9 @@ export class QueryEditor {
         ).fsPath
       )
     );
-    const reactAppUri = reactAppPathOnDisk.with({ scheme: "vscode-resource" });
+
+    const reactAppUri = this.panel?.webview.asWebviewUri(reactAppPathOnDisk);
+    const cspSource = this.panel?.webview.cspSource;
 
     return `<!DOCTYPE html>
     <html lang="en">
@@ -177,8 +179,8 @@ export class QueryEditor {
         <meta http-equiv="Content-Security-Policy"
               content="default-src 'none';
                       img-src https:;
-                      script-src 'unsafe-eval' 'unsafe-inline' vscode-resource:;
-                      style-src vscode-resource: 'unsafe-inline';">
+                      script-src 'unsafe-eval' 'unsafe-inline' ${cspSource};
+                      style-src ${cspSource} 'unsafe-inline';">
 
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
