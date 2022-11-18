@@ -90,8 +90,9 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
         const reactAppPathOnDisk = vscode.Uri.file(
             path.join(vscode.Uri.file(this.context.asAbsolutePath(path.join("out/view/app", this._type === "fields" ? "fields.js" : "indexes.js"))).fsPath)
         );
-        const reactAppUri = reactAppPathOnDisk.with({ scheme: "vscode-resource" });
-        const displayType = this._type;
+
+        const reactAppUri = this._view?.webview.asWebviewUri(reactAppPathOnDisk);
+        const cspSource = this._view?.webview.cspSource;
 
         return `<!DOCTYPE html>
     <html lang="en">
@@ -102,8 +103,8 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
         <meta http-equiv="Content-Security-Policy"
               content="default-src 'none';
                       img-src https:;
-                      script-src 'unsafe-eval' 'unsafe-inline' vscode-resource:;
-                      style-src vscode-resource: 'unsafe-inline';">
+                      script-src 'unsafe-eval' 'unsafe-inline' ${cspSource};
+                      style-src ${cspSource} 'unsafe-inline';">
 
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
