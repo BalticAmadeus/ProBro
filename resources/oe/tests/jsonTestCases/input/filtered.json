@@ -1,0 +1,19 @@
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "get_table_data",
+    "params": {
+        "tableName": "Employee",
+        "wherePhrase": "",
+        "start": 0,
+        "pageLength": 100,
+        "lastRowID": "",
+        "sortColumns": [],
+        "filters": {
+            "columns": {
+                "Position": "Consultant"
+            },
+            "enabled": true
+        },
+        "timeOut": 0
+    }
+}

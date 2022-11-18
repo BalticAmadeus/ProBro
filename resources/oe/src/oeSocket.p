@@ -147,4 +147,4 @@ PROCEDURE SocketIO:
 
 END PROCEDURE.
 
-{oeCore.i}
+{src/oeCore.i}

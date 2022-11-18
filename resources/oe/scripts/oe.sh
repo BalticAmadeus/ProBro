@@ -1,7 +1,7 @@
 #!/bin/sh
 
 export TERM=xterm
-export PROPATH=$PROPATH:$PWD
+export PROPATH=$PROPATH:$(dirname "$PWD")
 
 PROEXE=${PROEXE-$DLC/bin/_progres}
 

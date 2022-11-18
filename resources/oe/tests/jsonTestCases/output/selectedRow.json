@@ -1,0 +1,177 @@
+{
+    "debug": {
+        "startConnect": "2022-10-24T13:36:50.700+03:00",
+        "endConnect": "2022-10-24T13:36:50.714+03:00",
+        "timeConnect": 14
+    },
+    "columns": [
+        {
+            "name": "ROWID",
+            "key": "ROWID",
+            "label": "ROWID",
+            "type": "ROWID",
+            "format": null,
+            "iExtent": 0
+        },
+        {
+            "name": "SalesRep",
+            "key": "SalesRep",
+            "label": "SalesRep",
+            "type": "character",
+            "format": "x(4)",
+            "iExtent": 0
+        },
+        {
+            "name": "RepName",
+            "key": "RepName",
+            "label": "RepName",
+            "type": "character",
+            "format": "x(30)",
+            "iExtent": 0
+        },
+        {
+            "name": "Region",
+            "key": "Region",
+            "label": "Region",
+            "type": "character",
+            "format": "x(8)",
+            "iExtent": 0
+        },
+        {
+            "name": "MonthQuota[1]",
+            "key": "MonthQuota[1]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        },
+        {
+            "name": "MonthQuota[2]",
+            "key": "MonthQuota[2]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        },
+        {
+            "name": "MonthQuota[3]",
+            "key": "MonthQuota[3]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        },
+        {
+            "name": "MonthQuota[4]",
+            "key": "MonthQuota[4]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        },
+        {
+            "name": "MonthQuota[5]",
+            "key": "MonthQuota[5]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        },
+        {
+            "name": "MonthQuota[6]",
+            "key": "MonthQuota[6]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        },
+        {
+            "name": "MonthQuota[7]",
+            "key": "MonthQuota[7]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        },
+        {
+            "name": "MonthQuota[8]",
+            "key": "MonthQuota[8]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        },
+        {
+            "name": "MonthQuota[9]",
+            "key": "MonthQuota[9]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        },
+        {
+            "name": "MonthQuota[10]",
+            "key": "MonthQuota[10]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        },
+        {
+            "name": "MonthQuota[11]",
+            "key": "MonthQuota[11]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        },
+        {
+            "name": "MonthQuota[12]",
+            "key": "MonthQuota[12]",
+            "label": "MonthQuota",
+            "type": "integer",
+            "format": "->,>>>,>>9",
+            "iExtent": 12
+        }
+    ],
+    "rawData": [
+        {
+            "ROWID": "0x0000000000009402",
+            "SalesRep": "DKP",
+            "RepName": "Pitt , Dirk K.",
+            "Region": "Central",
+            "MonthQuota[1]": 1800,
+            "MonthQuota[2]": 1854,
+            "MonthQuota[3]": 1910,
+            "MonthQuota[4]": 1967,
+            "MonthQuota[5]": 2026,
+            "MonthQuota[6]": 2087,
+            "MonthQuota[7]": 2150,
+            "MonthQuota[8]": 2215,
+            "MonthQuota[9]": 2281,
+            "MonthQuota[10]": 2349,
+            "MonthQuota[11]": 2419,
+            "MonthQuota[12]": 2492
+        }
+    ],
+    "formattedData": [
+        {
+            "ROWID": "0x0000000000009402",
+            "SalesRep": "DKP ",
+            "RepName": "Pitt , Dirk K.                ",
+            "Region": "Central ",
+            "MonthQuota[1]": "     1,800",
+            "MonthQuota[2]": "     1,854",
+            "MonthQuota[3]": "     1,910",
+            "MonthQuota[4]": "     1,967",
+            "MonthQuota[5]": "     2,026",
+            "MonthQuota[6]": "     2,087",
+            "MonthQuota[7]": "     2,150",
+            "MonthQuota[8]": "     2,215",
+            "MonthQuota[9]": "     2,281",
+            "MonthQuota[10]": "     2,349",
+            "MonthQuota[11]": "     2,419",
+            "MonthQuota[12]": "     2,492"
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "get_table_data",
+    "params": {
+        "tableName": "POLine",
+        "wherePhrase": "",
+        "start": 0,
+        "pageLength": 100,
+        "lastRowID": "",
+        "sortColumns": [],
+        "filters": {
+            "columns": {
+                "LineNum": "1",
+                "ItemNum": "1",
+                "POLineStatus": "",
+                "Qty": "5"
+            },
+            "enabled": true
+        },
+        "timeOut": 0
+    }
+}
