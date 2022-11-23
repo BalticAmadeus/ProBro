@@ -192,18 +192,10 @@ function Fields({ initialData, vscode }) {
 	});
 
 	React.useEffect(() => {
-		// const command: ICommand = {
-		//     id: v1(),
-		//     action: CommandAction.FieldsRefresh,
-		// };
-		// vscode.postMessage(command);
-
 		window.addEventListener("message", (event) => {
 			const message = event.data;
 			switch (message.command) {
 				case "data":
-					console.log("GOT FIELDS MESSAGE");
-					console.log("fields data: ", message);
 				setRows(message.data.fields);
 				setFilteredRows(message.data.fields);
 				setFilters({columns: {},
