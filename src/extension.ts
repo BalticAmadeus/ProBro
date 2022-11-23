@@ -125,4 +125,20 @@ export function activate(context: vscode.ExtensionContext) {
     quickPick.show();
   
 });
+
+vscode.commands.registerCommand(
+  `${Constants.globalExtensionKey}.dblClickQuery`,(node: TableNode) => {
+    tablesListProvider.clickCount();
+    console.log("selected table", tablesListProvider.tableClicked);
+    console.log("tableNode: ", node.tableName);
+    if (tablesListProvider.tableClicked.count === 2) {
+      new QueryEditor(
+              context,
+              node,
+              tablesListProvider,
+              fieldsProvider
+            );
+    }
+  } 
+);
 }
