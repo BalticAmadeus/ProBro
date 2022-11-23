@@ -49,7 +49,7 @@ export class DatabaseProcessor implements IProcessor {
 
         /*
                 return new Promise<string>((resolve, reject) => {
-            const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
+            const cmd = `${this.context.extensionPath}/resources/oe/scripts/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
                     cp.exec(cmd, (err, out) => {
                         if (err) {
                             console.log("STDERR: ", err);
@@ -85,7 +85,7 @@ export class DatabaseProcessor implements IProcessor {
             connectionString: this.getConnectionString(config),
             command: "get_tables"
         }
-        // const cmd = `${this.context.extensionPath}/resources/oe/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
+        // const cmd = `${this.context.extensionPath}/resources/oe/scripts/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
         return this.execShell(params);
     }
 

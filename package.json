@@ -2,7 +2,7 @@
     "name": "pro-bro",
     "displayName": "ProBro",
     "description": "VSC extension for browsing Progress OpenEdge DB",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"

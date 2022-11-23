@@ -1,0 +1,32 @@
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "submit_table_data",
+    "params": {
+        "tableName": "Department",
+        "start": 0,
+        "pageLength": 0,
+        "timeOut": 1000,
+        "lastRowID": "0x0000000000002c08",
+        "crud": [
+            "0x0000000000002c08"
+        ],
+        "data": [
+            {
+                "key": "ROWID",
+                "value": "0x0000000000002c08",
+                "defaultValue": "0x0000000000002c08"
+            },
+            {
+                "key": "DeptCode",
+                "value": "801",
+                "defaultValue": "800"
+            },
+            {
+                "key": "DeptName",
+                "value": "Shipping",
+                "defaultValue": "Shipping"
+            }
+        ],
+        "mode": "Update"
+    }
+}

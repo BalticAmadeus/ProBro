@@ -1,0 +1,30 @@
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "submit_table_data",
+    "params": {
+        "tableName": "Department",
+        "start": 0,
+        "pageLength": 0,
+        "timeOut": 1000,
+        "lastRowID": "",
+        "crud": [],
+        "data": [
+            {
+                "key": "ROWID",
+                "value": "",
+                "defaultValue": ""
+            },
+            {
+                "key": "DeptCode",
+                "value": "101",
+                "defaultValue": ""
+            },
+            {
+                "key": "DeptName",
+                "value": "This is a test case",
+                "defaultValue": ""
+            }
+        ],
+        "mode": "Insert"
+    }
+}

@@ -1,4 +1,4 @@
-import * as Net from "net"
+import * as Net from "net";
 import * as cp from "child_process";
 import * as vscode from "vscode";
 import { Constants } from "../db/constants";
@@ -43,24 +43,24 @@ class OEClient {
     private runProc(): Promise<any> {
         return new Promise((resolve) => {
 
-            const cmd = `${Constants.context.extensionPath}/resources/oe/oe.bat -b -debugalert -p "${Constants.context.extensionPath}/resources/oe/oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}"`;
+            const cmd = `${Constants.context.extensionPath}/resources/oe/scripts/oe.bat -b -debugalert -p "${Constants.context.extensionPath}/resources/oe/src/oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}"`;
 
             if (process.platform === 'linux') {
                 this.proc = cp.spawn('bash', ['-c',
-                    [`"${Constants.context.extensionPath}/resources/oe/oe.sh"`,
+                    [`"${Constants.context.extensionPath}/resources/oe/scripts/oe.sh"`,
                         '-b',
                         '-p',
-                    `"${Constants.context.extensionPath}/resources/oe/oeSocket.p"`,
+                    `"${Constants.context.extensionPath}/resources/oe/src/oeSocket.p"`,
                         '-debugalert',
                         '-clientlog',
                     `"${Constants.context.extensionPath}/resources/oe/oeSocket.pro"`
                     ].join(' ')]);
             } else if (process.platform === 'win32') {
                 this.proc = cp.spawn('cmd.exe', ['/c',
-                    `${Constants.context.extensionPath}/resources/oe/oe.bat`,
+                    `${Constants.context.extensionPath}/resources/oe/scripts/oe.bat`,
                     '-b',
                     '-p',
-                    `${Constants.context.extensionPath}/resources/oe/oeSocket.p`,
+                    `${Constants.context.extensionPath}/resources/oe/src/oeSocket.p`,
                     '-debugalert',
                     '-clientlog',
                     `${Constants.context.extensionPath}/resources/oe/oeSocket.pro`
@@ -91,15 +91,15 @@ class OEClient {
             });
 
             this.procFinish = resolve;
-        })
+        });
     }
 
     public sendCommand(cmd: string): Promise<string> {
         this.data = "";
         return new Promise((resolve) => {
             this.client.write(`${cmd}\n`);
-            this.dataFinish = resolve
-        })
+            this.dataFinish = resolve;
+        });
     }
 }
 

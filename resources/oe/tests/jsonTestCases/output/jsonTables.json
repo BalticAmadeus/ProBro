@@ -1,0 +1,637 @@
+{
+    "debug": {
+        "startConnect": "2022-10-24T14:15:37.420+03:00",
+        "endConnect": "2022-10-24T14:15:38.460+03:00",
+        "timeConnect": 1040
+    },
+    "tables": [
+        {
+            "name": "_ActAILog",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActBILog",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActBuffer",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActIndex",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActIOFile",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActIOType",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActLock",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActOther",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActPWs",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActRecord",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActServer",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActSpace",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_ActSummary",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Area",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_AreaExtent",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_AreaStatus",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_AreaThreshold",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Block",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_BuffStatus",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Cache",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Checkpoint",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Client-Session",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_Code-Feature",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Codepage",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_Collation",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_Connect",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Constraint",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_Constraint-Keys",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_Database-Feature",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Db",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_Db-Detail",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_Db-Option",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_DbParams",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_DbServiceManager",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_DbServiceManagerObjects",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_DbStatus",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Field",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_Field-Trig",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_File",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_File-Trig",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_Filelist",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Index",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_Index-Field",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_IndexStat",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_KeyEvent",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_Latch",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_License",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_LobStat",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Lock",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_LockReq",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Logging",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_MstrBlk",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_MyConnection",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Partition-Set",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_Partition-Set-Detail",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_Repl-Agent",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Repl-AgentActivity",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Repl-AgentAIStreaming",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Repl-AgentControl",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Repl-AgentControlActivity",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Repl-InterAgentActivity",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Repl-Server",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Resrc",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_sec-authentication-domain",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_sec-authentication-system",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_sec-granted-role",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_sec-granted-role-condition",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_sec-role",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_Segments",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Sequence",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_Servers",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_SQL_Properties",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_StorageObject",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_Sysautostats",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysbigintstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Syscalctable",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Syscharstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Syschkcolusage",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Syschkconstr_Name_Map",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Syschkconstrs",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Syscolauth",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Syscolstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysdatatypes",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysdatestat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysdbauth",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysfloatstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysidxstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysintstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Syskeycolusage",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysncharstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysnumstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysnvarcharstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysprocauth",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysprocbin",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysproccolumns",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysprocedures",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysproctext",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysrealstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysrefconstrs",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysroles",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysschemas",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysseqauth",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Syssmintstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_SysStatUse",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Syssynonyms",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Systabauth",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Systblconstrs",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Systblstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Systimestat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Systinyintstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Systrigcols",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Systrigger",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Systsstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Syststzstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysvarcharstat",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysviews",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_Sysviews_Name_Map",
+            "tableType": "SQLCatalog"
+        },
+        {
+            "name": "_TableStat",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_Tenant",
+            "tableType": "OtherTables"
+        },
+        {
+            "name": "_Trans",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_TxeLock",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_User",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_UserIndexStat",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_UserIO",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_UserLobStat",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_UserLock",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_UserStatus",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_UserTableStat",
+            "tableType": "VirtualSystem"
+        },
+        {
+            "name": "_View",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_View-Col",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_View-Ref",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "_Word-rule",
+            "tableType": "SchemaTable"
+        },
+        {
+            "name": "Benefits",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "BillTo",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Bin",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Customer",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Department",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Employee",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Family",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Feedback",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "InventoryTrans",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Invoice",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Item",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "LocalDefault",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Order",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "OrderLine",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "POLine",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "PurchaseOrder",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "RefCall",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "SalesRep",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "ShipTo",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "State",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Supplier",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "SupplierItemXref",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "TimeSheet",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Vacation",
+            "tableType": "UserTable"
+        },
+        {
+            "name": "Warehouse",
+            "tableType": "UserTable"
+        }
+    ]
+}

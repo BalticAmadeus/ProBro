@@ -1,0 +1,17 @@
+{
+    "options": {
+        "output": {
+            "location": "..",
+            "format": "xml"
+        },
+        "quitOnEnd": true,
+        "writeLog": true,
+        "showErrorMessage": true,
+        "throwError": true
+    },
+    "tests": [
+        {
+            "test": "..\\tests\\oeCoreTest.p"
+        }
+    ]
+}
