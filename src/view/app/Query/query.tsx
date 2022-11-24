@@ -324,8 +324,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
     };
   });
 
-  const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+  const prepareQuery = () => {
     if (isLoading) {
       return;
     }
@@ -341,6 +340,18 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
       filters,
       500 /*ms for data retrieval*/
     );
+  };
+
+  const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    prepareQuery();
+  };
+
+  const handleKeyDown = (event) => {
+    if(event.key === "Enter") {
+      event.preventDefault();
+      prepareQuery();
+    }
   };
 
   function reloadData(loaded: number) {
@@ -509,6 +520,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                                     onChange={(event) => {
                                         setWherePhrase(event.target.value);
                                     }}
+                                    onKeyDown={handleKeyDown}
                                 />
                                 <ProBroButton
                                     ref={(input) => (inputQuery = input)}
