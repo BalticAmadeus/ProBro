@@ -3,7 +3,7 @@ import { IConfig, ITableData, TableDetails } from "../view/app/model";
 import { IProcessor } from "./IProcessor";
 import * as cp from "child_process";
 import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
-import getOEClient from "../common/oeClient"
+import getOEClient from "../common/oeClient";
 import { SortColumn } from "react-data-grid";
 import { resolve } from "path";
 
@@ -39,10 +39,9 @@ export class DatabaseProcessor implements IProcessor {
                 return client.sendCommand(cmd);
             })
             .then((data) => {
-                //console.log("output data: ", data)
                 var json = JSON.parse(data);
                 console.log(`Process time: ${Date.now() - timeInMs}, OE time: ${json.debug.time}, Connect time: ${json.debug.timeConnect}`);
-                console.log(JSON.stringify(json.debug))
+                console.log(JSON.stringify(json.debug));
                 DatabaseProcessor.isProcessRunning = false;
                 return json;
             });
@@ -76,7 +75,7 @@ export class DatabaseProcessor implements IProcessor {
         var params: IOEParams = {
             connectionString: this.getConnectionString(config),
             command: "get_version"
-        }
+        };
         return this.execShell(params);
     }
 
@@ -84,7 +83,7 @@ export class DatabaseProcessor implements IProcessor {
         var params: IOEParams = {
             connectionString: this.getConnectionString(config),
             command: "get_tables"
-        }
+        };
         // const cmd = `${this.context.extensionPath}/resources/oe/scripts/oe.bat -b -p "${this.context.extensionPath}/resources/oe/oe.p" -param "${Buffer.from(JSON.stringify(params)).toString('base64')}"`;
         return this.execShell(params);
     }
@@ -96,10 +95,10 @@ export class DatabaseProcessor implements IProcessor {
                 connectionString: this.getConnectionString(config),
                 command: "get_table_data",
                 params: { tableName: tableName, ...inputParams }
-            }
+            };
             return this.execShell(params);
         } else {
-            return new Promise(resolve => { return { columns: [], data: [] } });
+            return new Promise(resolve => { return { columns: [], data: [] }; });
         }
     }
 
@@ -110,10 +109,10 @@ export class DatabaseProcessor implements IProcessor {
                 connectionString: this.getConnectionString(config),
                 command: "submit_table_data",
                 params: { tableName: tableName, ...inputParams }
-            }
+            };
             return this.execShell(params);
         } else {
-            return new Promise(resolve => { return { columns: [], data: [] } });
+            return new Promise(resolve => { return { columns: [], data: [] };});
         }
     }
 
@@ -123,10 +122,10 @@ export class DatabaseProcessor implements IProcessor {
                 connectionString: this.getConnectionString(config),
                 command: "get_table_details",
                 params: tableName
-            }
+            };
             return this.execShell(params);
         } else {
-            return new Promise(resolve => { return { fields: [], indexes: [] } });
+            return new Promise(resolve => { return { fields: [], indexes: [] }; });
         }
     }
 

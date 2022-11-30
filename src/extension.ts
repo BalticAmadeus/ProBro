@@ -10,10 +10,14 @@ import { FieldsViewProvider } from "./tree/FieldsViewProvider";
 import { GroupListProvider } from "./tree/GroupListProvider";
 import { TableNode } from "./tree/tableNode";
 import { TablesListProvider } from "./tree/TablesListProvider";
+import { DbConnectionUpdater } from "./tree/DbConnectionUpdater";
 
 export function activate(context: vscode.ExtensionContext) {
 
   Constants.context = context;
+
+  const connectionUpdater = new DbConnectionUpdater();
+  connectionUpdater.updateConnectionStatuses(context);
 
   const fieldsProvider = new FieldsViewProvider(context, "fields");
   const fields = vscode.window.registerWebviewViewProvider(
@@ -63,7 +67,9 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.refreshList`,
       () => {
-        groupListProvider.refresh();
+        connectionUpdater.updateConnectionStatuses(context).then(() => {
+           groupListProvider.refresh();
+        });
       }
     )
   );
