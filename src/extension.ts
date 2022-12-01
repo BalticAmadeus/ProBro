@@ -127,14 +127,12 @@ export function activate(context: vscode.ExtensionContext) {
 });
 
 vscode.commands.registerCommand(
-  `${Constants.globalExtensionKey}.dblClickQuery`,(node: TableNode) => {
-    tablesListProvider.clickCount();
-    console.log("selected table", tablesListProvider.tableClicked);
-    console.log("tableNode: ", node.tableName);
+  `${Constants.globalExtensionKey}.dblClickQuery`,(_) => {
+    tablesListProvider.countClick();
     if (tablesListProvider.tableClicked.count === 2) {
       new QueryEditor(
               context,
-              node,
+              tablesListProvider.node as TableNode,
               tablesListProvider,
               fieldsProvider
             );

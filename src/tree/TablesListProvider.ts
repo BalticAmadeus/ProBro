@@ -67,18 +67,16 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 		return item;
 	}
 
-	public clickCount() {
+	public countClick() {
 		if (this.tableClicked.tableName === this.node?.tableName) {
 			this.tableClicked.count = this.tableClicked.count + 1;
 		}
 		else {
 			this.tableClicked = {tableName: this.node?.tableName, count: 1};
 		}
-		console.log("count: ", this.tableClicked);
-		console.log("clickCount tablenode: ", this.node?.tableName);
+
 		setTimeout(() => {
 			this.tableClicked = {tableName: undefined, count: 0};
-			console.log("after timeout: ", this.tableClicked);
 		}, 500);
 	}
 
