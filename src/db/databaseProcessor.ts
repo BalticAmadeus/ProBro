@@ -6,11 +6,12 @@ import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./
 import getOEClient from "../common/oeClient";
 import { SortColumn } from "react-data-grid";
 import { resolve } from "path";
+import { rejects } from "assert";
 
 export class DatabaseProcessor implements IProcessor {
 
     private static instance: DatabaseProcessor;
-    private static isProcessRunning: boolean = false;
+    public static isProcessRunning: boolean = false;
 
     private constructor() { }
 
@@ -22,11 +23,11 @@ export class DatabaseProcessor implements IProcessor {
         return DatabaseProcessor.instance;
     }
 
-    public execShell(params: IOEParams) {
+    public execShell(params: IOEParams): Promise<any> {
         const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
         if (DatabaseProcessor.isProcessRunning) {
             vscode.window.showInformationMessage("Processor is busy");
-            return new Promise<any>(_ => { return { columns: [], data: [] }; });
+            return Promise.resolve(new Error("Processor is busy"));
         }
 
         DatabaseProcessor.isProcessRunning = true;

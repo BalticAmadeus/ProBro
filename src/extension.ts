@@ -3,9 +3,7 @@ import { QuickPickItem } from "vscode";
 import { ConnectionEditor } from "./common/connectionEditor";
 import { Constants } from "./db/constants";
 import { QueryEditor } from "./common/queryEditor";
-import { DatabaseProcessor } from "./db/databaseProcessor";
 import { DbConnectionNode } from "./tree/dbConnectionNode";
-import { DetailListProvider } from "./tree/DetailListProvider";
 import { FieldsViewProvider } from "./tree/FieldsViewProvider";
 import { GroupListProvider } from "./tree/GroupListProvider";
 import { TableNode } from "./tree/tableNode";
@@ -66,11 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.refreshList`,
-      () => {
-        connectionUpdater.updateConnectionStatuses(context).then(() => {
-           groupListProvider.refresh();
-        });
-      }
+      () => { connectionUpdater.updateConnectionStatusesWithRefreshCallback(context, groupListProvider);}
     )
   );
 
