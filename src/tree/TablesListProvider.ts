@@ -100,7 +100,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	}
 
 	public async getFilteredTables(): Promise<tableNode.TableNode[]> {
-		await this.getGroupNodes().then(() => {console.log('getFilteredTables3');});
+		await this.getGroupNodes();
 
 		return this.tableNodes.filter((table) => {
 			return this.filters?.includes(table.tableType);

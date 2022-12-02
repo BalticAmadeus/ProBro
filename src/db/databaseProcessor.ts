@@ -6,12 +6,11 @@ import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./
 import getOEClient from "../common/oeClient";
 import { SortColumn } from "react-data-grid";
 import { resolve } from "path";
-import { rejects } from "assert";
 
 export class DatabaseProcessor implements IProcessor {
 
     private static instance: DatabaseProcessor;
-    public static isProcessRunning: boolean = false;
+    private static isProcessRunning: boolean = false;
 
     private constructor() { }
 
@@ -99,7 +98,7 @@ export class DatabaseProcessor implements IProcessor {
             };
             return this.execShell(params);
         } else {
-            return new Promise(resolve => { return { columns: [], data: [] }; });
+            return Promise.resolve({columns: [], data: []});
         }
     }
 
@@ -113,7 +112,7 @@ export class DatabaseProcessor implements IProcessor {
             };
             return this.execShell(params);
         } else {
-            return new Promise(resolve => { return { columns: [], data: [] };});
+            return Promise.resolve({ columns: [], data: [] });
         }
     }
 
@@ -126,7 +125,7 @@ export class DatabaseProcessor implements IProcessor {
             };
             return this.execShell(params);
         } else {
-            return new Promise(resolve => { return { fields: [], indexes: [] }; });
+            return Promise.resolve( { fields: [], indexes: [] });
         }
     }
 
