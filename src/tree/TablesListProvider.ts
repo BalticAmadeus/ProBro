@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Constants } from '../db/constants';
 import { INode } from './INode';
 import * as tableNode from './tableNode';
-import { CommandAction, ICommand, IConfig } from '../view/app/model';
+import { CommandAction, ICommand, IConfig, TableCount } from '../view/app/model';
 import { DatabaseProcessor } from '../db/databaseProcessor';
 import { DetailNode } from './detailNode';
 import { TableNode } from './tableNode';
@@ -15,6 +15,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	public node: TableNode | undefined;
 	public tableNodes: tableNode.TableNode[] = [];
 	public filters: string[] | undefined = ["UserTable"];
+	public tableClicked: TableCount = {tableName: undefined, count: 0};
 
 	constructor(private context: vscode.ExtensionContext, private fieldsProvider: FieldsViewProvider, private indexesProvider: FieldsViewProvider) {
 	}
@@ -55,6 +56,28 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 
 	public _onDidChangeTreeData: vscode.EventEmitter<INode | undefined | void> = new vscode.EventEmitter<INode | undefined | void>();
 	readonly onDidChangeTreeData: vscode.Event<INode | undefined | void> = this._onDidChangeTreeData.event;
+
+	resolveTreeItem(item: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem> {
+		const command: vscode.Command = {
+			title: "DblClickQuery",
+			command: "pro-bro.dblClickQuery"
+		};
+		item.command = command;
+		return item;
+	}
+
+	public countClick() {
+		if (this.tableClicked.tableName === this.node?.tableName) {
+			this.tableClicked.count = this.tableClicked.count + 1;
+		}
+		else {
+			this.tableClicked = {tableName: this.node?.tableName, count: 1};
+		}
+
+		setTimeout(() => {
+			this.tableClicked = {tableName: undefined, count: 0};
+		}, 500);
+	}
 
 	public refresh(config: IConfig | undefined): void {
 		this.config = config;

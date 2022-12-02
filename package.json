@@ -113,6 +113,10 @@
                 "command": "pro-bro.list-filter",
                 "title": "List-filter",
                 "icon": "$(list-filter)"
+            },
+            {
+                "command": "pro-bro.dblClickQuery",
+                "title": "DblClickQuery"
             }
         ],
         "menus": {

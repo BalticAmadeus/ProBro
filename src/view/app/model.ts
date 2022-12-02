@@ -96,3 +96,8 @@ export interface ITableData {
     mode?: string,
     exportType?: string
 }
+
+export interface TableCount {
+    tableName: string | undefined,
+    count: number
+}
