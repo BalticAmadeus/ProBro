@@ -60,8 +60,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	resolveTreeItem(item: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem> {
 		const command: vscode.Command = {
 			title: "DblClickQuery",
-			command: "pro-bro.dblClickQuery",
-			arguments: [this.node]
+			command: "pro-bro.dblClickQuery"
 		};
 		item.command = command;
 		return item;
