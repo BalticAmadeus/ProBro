@@ -11,6 +11,7 @@ export interface IConfig {
     password: string;
     group: string;
     params: string;
+    conStatus?: boolean;
 }
 
 export interface ICommand {

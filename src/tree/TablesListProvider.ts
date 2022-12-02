@@ -77,28 +77,30 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 		return element.getChildren();
 	}
 
-	private async getGroupNodes(): Promise<tableNode.TableNode[]> {
+	private async getGroupNodes() : Promise<void> {
 		this.tableNodes = [];
 		if (this.config) {
-			return DatabaseProcessor.getInstance().getTablesList(this.config).then((oeTables) => {
+			await DatabaseProcessor.getInstance().getTablesList(this.config)
+			.then((oeTables) => {
+				if (oeTables instanceof Error) {
+					return;
+				}
+				
 				if (oeTables.error) {
 					vscode.window.showErrorMessage(`Error connecting DB: ${oeTables.description} (${oeTables.error})`);
-				} else {
-					console.log(`Requested tables list of DB: ${this.config?.name}`);
-					oeTables.tables.forEach((table: { name: string; tableType: string; }) => {
-						this.tableNodes?.push(new tableNode.TableNode(this.context, table.name, table.tableType));
-					});
+					return;
 				}
-				return this.tableNodes;
+
+				console.log(`Requested tables list of DB: ${this.config?.name}`);
+				oeTables.tables.forEach((table: { name: string; tableType: string; }) => {
+					this.tableNodes?.push(new tableNode.TableNode(this.context, table.name, table.tableType));
+				});
 			});
 		}
-		return this.tableNodes;
 	}
 
 	public async getFilteredTables(): Promise<tableNode.TableNode[]> {
-		// if (this.tableNodes.length === 0) {
 		await this.getGroupNodes();
-		// }
 
 		return this.tableNodes.filter((table) => {
 			return this.filters?.includes(table.tableType);

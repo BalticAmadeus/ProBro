@@ -5,8 +5,9 @@ import * as groupNode from "./groupNode";
 import { IConfig } from "../view/app/model";
 import { TablesListProvider } from "./TablesListProvider";
 import { DbConnectionNode } from "./dbConnectionNode";
+import { IRefreshCallback } from "./IRefreshCallback";
 
-export class GroupListProvider implements vscode.TreeDataProvider<INode> {
+export class GroupListProvider implements vscode.TreeDataProvider<INode>, IRefreshCallback {
   private _onDidChangeTreeData: vscode.EventEmitter<INode | undefined | void> =
     new vscode.EventEmitter<INode | undefined | void>();
   readonly onDidChangeTreeData: vscode.Event<INode | undefined | void> =

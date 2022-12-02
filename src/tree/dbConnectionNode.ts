@@ -25,7 +25,7 @@ export class DbConnectionNode implements INode {
         "..",
         "..",
         "resources/icon",
-        "progress_icon.svg"
+        this.config.conStatus ? "progress_icon.svg" : "progress_icon_stop.svg",
       ),
     };
   }
