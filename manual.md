@@ -18,7 +18,7 @@ This document provides guidelines how to use ProBro extension.
 
  For creating and editing db connections is used same stucture.For editing new tab with selected database information will be displayed.
 
- ![Db Create](resources/images/CreateEditTab.png)
+ ![Db Create](resources/images/createEditTab.png)
 
   - **Connection name:** name of your database which will appear in group list.
   - **Group:** name of group where database will be assigned. Default group name is "EMPTY"
