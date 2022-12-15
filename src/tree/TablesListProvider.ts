@@ -42,16 +42,14 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	}
 
 	onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>): any {
-		console.log('TablesList event', e);
 		if (e.selection.length && this.config) {
 			if (e.selection[0] instanceof TableNode) {
 				this.node = e.selection[0] as TableNode;
-				console.log('FieldsList', this.node.tableName);
 				this.displayData(this.node);
 			}
 		}
-		this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
-		this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
+		// this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
+		// this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
 	}
 
 	public _onDidChangeTreeData: vscode.EventEmitter<INode | undefined | void> = new vscode.EventEmitter<INode | undefined | void>();

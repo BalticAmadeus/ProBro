@@ -63,7 +63,7 @@ function Indexes({ initialData, vscode }) {
         });
     }, [rows, sortColumns]);
 
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
         // const command: ICommand = {
         //     id: v1(),
         //     action: CommandAction.FieldsRefresh,
@@ -74,7 +74,6 @@ function Indexes({ initialData, vscode }) {
             const message = event.data;
             switch (message.command) {
                 case "data":
-                    console.log("GOT INDEXES MESSAGE");
                     setRows(message.data.indexes);
             }
         });
