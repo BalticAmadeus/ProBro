@@ -70,7 +70,6 @@ function Fields({ initialData, vscode }) {
 
     React.useEffect(() => {
         window.addEventListener("resize", windowRezise);
-
         return () => {
             window.removeEventListener("resize", windowRezise);
         };

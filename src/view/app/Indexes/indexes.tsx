@@ -1,11 +1,8 @@
 import * as React from "react";
 import { useState, useMemo } from "react";
-
-
 import { IndexRow } from "../model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
-
 import * as columnName from "./column.json";
 
 type Comparator = (a: IndexRow, b: IndexRow) => number;
@@ -64,12 +61,6 @@ function Indexes({ initialData, vscode }) {
     }, [rows, sortColumns]);
 
     React.useLayoutEffect(() => {
-        // const command: ICommand = {
-        //     id: v1(),
-        //     action: CommandAction.FieldsRefresh,
-        // };
-        // vscode.postMessage(command);
-
         window.addEventListener("message", (event) => {
             const message = event.data;
             switch (message.command) {

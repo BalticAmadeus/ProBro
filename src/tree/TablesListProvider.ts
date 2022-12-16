@@ -1,10 +1,8 @@
 import * as vscode from 'vscode';
-import { Constants } from '../db/constants';
 import { INode } from './INode';
 import * as tableNode from './tableNode';
-import { CommandAction, ICommand, IConfig, TableCount } from '../view/app/model';
+import { IConfig, TableCount } from '../view/app/model';
 import { DatabaseProcessor } from '../db/databaseProcessor';
-import { DetailNode } from './detailNode';
 import { TableNode } from './tableNode';
 import { FieldsViewProvider } from './FieldsViewProvider';
 import { v1 } from 'uuid';
@@ -48,8 +46,6 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 				this.displayData(this.node);
 			}
 		}
-		// this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
-		// this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
 	}
 
 	public _onDidChangeTreeData: vscode.EventEmitter<INode | undefined | void> = new vscode.EventEmitter<INode | undefined | void>();
