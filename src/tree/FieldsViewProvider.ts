@@ -1,7 +1,6 @@
 import { AnyARecord } from 'dns';
 import path = require('path');
 import { config } from 'process';
-import { v1 } from 'uuid';
 import * as vscode from 'vscode';
 import { Uri } from 'vscode';
 import { Constants } from '../db/constants';

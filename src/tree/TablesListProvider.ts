@@ -7,7 +7,6 @@ import { DatabaseProcessor } from '../db/databaseProcessor';
 import { DetailNode } from './detailNode';
 import { TableNode } from './tableNode';
 import { FieldsViewProvider } from './FieldsViewProvider';
-import { v1 } from 'uuid';
 
 
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
@@ -25,33 +24,29 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 		this.indexesProvider.tableNode = node;
 		console.log("displayData", node.tableName);
 		if (node.cache) {
-			this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: node.cache });
-			this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: node.cache });
+			this.fieldsProvider._view?.webview.postMessage({ id: "1", command: 'data', data: node.cache });
+			this.indexesProvider._view?.webview.postMessage({ id: "2", command: 'data', data: node.cache });
 			return;
 		} else {
 			return DatabaseProcessor.getInstance().getTableDetails(this.config, node.tableName).then((oeTableDetails) => {
 				node.cache = oeTableDetails;
-				this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: oeTableDetails });
-				this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: oeTableDetails });
+				this.fieldsProvider._view?.webview.postMessage({ id: "3", command: 'data', data: oeTableDetails });
+				this.indexesProvider._view?.webview.postMessage({ id: "4", command: 'data', data: oeTableDetails });
 			}).catch((err) => {
 				vscode.window.showErrorMessage(err);
-				this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
-				this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
+				this.fieldsProvider._view?.webview.postMessage({ id: "5", command: 'data', data: null });
+				this.indexesProvider._view?.webview.postMessage({ id: "6", command: 'data', data: null });
 			});
 		}
 	}
 
 	onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>): any {
-		console.log('TablesList event', e);
 		if (e.selection.length && this.config) {
 			if (e.selection[0] instanceof TableNode) {
 				this.node = e.selection[0] as TableNode;
-				console.log('FieldsList', this.node.tableName);
 				this.displayData(this.node);
 			}
 		}
-		this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
-		this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
 	}
 
 	public _onDidChangeTreeData: vscode.EventEmitter<INode | undefined | void> = new vscode.EventEmitter<INode | undefined | void>();

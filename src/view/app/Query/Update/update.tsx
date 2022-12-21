@@ -1,6 +1,5 @@
 import * as React from "react";
 import Popup from "reactjs-popup";
-import { v1 } from "uuid";
 import { CommandAction, ICommand, ProcessAction } from "../../model";
 import AddIcon from "@mui/icons-material/AddTwoTone";
 import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
@@ -116,7 +115,7 @@ export default function UpdatePopup({
     });
 
     const command: ICommand = {
-      id: v1(),
+      id: "Submit",
       action: CommandAction.Submit,
       params: {
         start: 0,
