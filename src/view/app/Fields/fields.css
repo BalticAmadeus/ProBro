@@ -12,7 +12,7 @@
   --rdg-font-size: inherit;
   color: inherit;
   --rdg-selection-color: var(--vscode-focusBorder);
-  --rdg-border-color: var(--vscode-menu-border);
+  --rdg-border-color: none;
 }
 
 .rdg-row-even {
