@@ -1,12 +1,8 @@
-import { AnyARecord } from 'dns';
 import path = require('path');
-import { config } from 'process';
 import * as vscode from 'vscode';
-import { Uri } from 'vscode';
 import { Constants } from '../db/constants';
 import { QueryEditor } from '../common/queryEditor';
-import { DatabaseProcessor } from '../db/databaseProcessor';
-import { CommandAction, ICommand, IConfig, TableDetails } from '../view/app/model';
+import { CommandAction, ICommand, TableDetails } from '../view/app/model';
 import { TableNode } from './tableNode';
 import { TablesListProvider } from './TablesListProvider';
 
@@ -35,8 +31,7 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
             if (this.queryEditors[i].tableName === this.tableNode?.tableName) {
                 this.queryEditors[i].updateFields();
             }
-        }
-            
+        } 
     }
 
     public resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
@@ -65,23 +60,10 @@ export class FieldsViewProvider implements vscode.WebviewViewProvider {
                             this.tableNode.cache.selectedColumns = command.columns;
                         }
                         this.notifyQueryEditors();
-                        break;
-                        
+                        break; 
                 }
             }
         );
-
-        // this._view.webview.onDidReceiveMessage(
-        //     (command: ICommand) => {
-        //         switch (command.action) {
-        //             case CommandAction.FieldsRefresh:
-        //                 if (this.tableNode) {
-        //                     this.tableListProvider?.displayData(this.tableNode);
-        //                 }
-        //                 return;
-        //         }
-        //     }
-        // );
     }
 
     private getWebviewContent(data: TableDetails): string {

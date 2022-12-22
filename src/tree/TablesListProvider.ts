@@ -1,10 +1,8 @@
 import * as vscode from 'vscode';
-import { Constants } from '../db/constants';
 import { INode } from './INode';
 import * as tableNode from './tableNode';
-import { CommandAction, ICommand, IConfig, TableCount } from '../view/app/model';
+import { IConfig, TableCount } from '../view/app/model';
 import { DatabaseProcessor } from '../db/databaseProcessor';
-import { DetailNode } from './detailNode';
 import { TableNode } from './tableNode';
 import { FieldsViewProvider } from './FieldsViewProvider';
 

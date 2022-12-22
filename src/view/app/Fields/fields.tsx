@@ -70,7 +70,6 @@ function Fields({ initialData, vscode }) {
 
     React.useEffect(() => {
         window.addEventListener("resize", windowRezise);
-
         return () => {
             window.removeEventListener("resize", windowRezise);
         };
@@ -191,7 +190,7 @@ function Fields({ initialData, vscode }) {
 		};
 	});
 
-	React.useEffect(() => {
+	React.useLayoutEffect(() => {
 		window.addEventListener("message", (event) => {
 			const message = event.data;
 			switch (message.command) {
