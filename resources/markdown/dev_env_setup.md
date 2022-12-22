@@ -1,7 +1,12 @@
 # Developement environment setup
 Welcome to ProBro development team!
 
-## First things first - instalation
+## Requirements
+1. Preferably Windows OS (also tested and works with Ubuntu 20.04)
+2. Progress Openedge DB
+3. Visual Studo Code (1.67 and up)
+
+## Instalation
 
 1. Clone repository
 ```
@@ -26,20 +31,20 @@ To start vscode extension, you need to run project:
 - another instance of vsCode IDE runs with ProBro extension. Now you can test your code.
 
 
-
-
-
-
-
-
-
-## Running OE part tests
+## Launching OE tests (only for Windows)
 
 To test OE part communication with database, tests were written.
 
-Sports2020 (not modified) were selected as a testing database. 
+Sports2020 (not modified) was selected as a testing database. 
 
-To launch test:
- - from vscode terminal get to ```resources/oe/ablunitRunWin``` directory
- - run ```./launch_unit.bat FullPathToTestDb```.
- - test result will be saved in ```oe/results.xml``` file.
+To launch tests:
+1. Set DLC parameter in ```resources/oe/propath.ini``` file
+1. from vscode terminal get to ```resources/oe/ablunitRunWin``` directory
+2. run ```./launch_unit.bat PathToPfFile```
+3. test result will be saved in ```oe/results.xml``` file.
+
+## Launching Node tests
+TODO
+
+## Launching scenario tests
+TODO 

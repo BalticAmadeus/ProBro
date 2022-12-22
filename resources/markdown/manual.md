@@ -3,7 +3,7 @@ This document provides guidelines how to use ProBro extension.
 
 
 ## **1. Opening ProBro extention:**
-![Db Connection](resources/images/DbConnection.png)
+![Db Connection](../images/DbConnection.png)
 
  1. ProBro extension image on sidebar.
  2. Create new db connection. 
@@ -18,7 +18,7 @@ This document provides guidelines how to use ProBro extension.
 
  For creating and editing db connections is used same stucture.For editing new tab with selected database information will be displayed.
 
- ![Db Create](resources/images/createEditTab.png)
+ ![Db Create](../images/createEditTab.png)
 
   - **Connection name:** name of your database which will appear in group list.
   - **Group:** name of group where database will be assigned. Default group name is "EMPTY"
@@ -32,7 +32,7 @@ This document provides guidelines how to use ProBro extension.
   ## **3. Table explorer**
   Once selected database, table list is displayed. 
 
-![table Explorer](resources/images/tableExplorer.png)
+![table Explorer](../images/tableExplorer.png)
 
 1. **Filter:** By default only user table are displayed. Use filtering to see other (virtualSystem, schemaTable, SQLCatalog).
 
@@ -42,12 +42,12 @@ This document provides guidelines how to use ProBro extension.
 
   - Select table to see fields and indexes. Fields and Indexes are displayed in panel view. By default, they are on seperate tabs, but can be merged by dragging.
 
-<img src="resources/images/mergeFieldsIndexes.gif" height="150">
+<img src="../images/mergeFieldsIndexes.gif" height="150">
 
  - In fields explorer has multisorting and multifiltering options.
 Multisorting can be used by holding CTRL key and selecting prefered columns. 
 
-<img src="resources/images/multisorting.gif">
+<img src="../images/multisorting.gif">
 
 - By selecting field rows, query columns can be shown/hidden.
 
@@ -57,7 +57,7 @@ In first launch of query, all records are displayed.
 
 ProBro extension uses server-side multisorting and multifiltering.
 
-![query window](resources/images/queryWindow.png)
+![query window](../images/queryWindow.png)
 1. **Custom query** request can be written to filter records. Query should be formatted like WHERE statement.
 2. **Export of records:**
     - formats available for exporting: 

@@ -2,7 +2,7 @@
     "name": "pro-bro",
     "displayName": "ProBro",
     "description": "VSC extension for browsing Progress OpenEdge DB",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -86,32 +86,32 @@
         "commands": [
             {
                 "command": "pro-bro.refreshList",
-                "title": "Refresh",
+                "title": "ProBro: Refresh",
                 "icon": "$(refresh)"
             },
             {
                 "command": "pro-bro.addEntry",
-                "title": "Add",
+                "title": "ProBro: Add Connection",
                 "icon": "$(add)"
             },
             {
                 "command": "pro-bro.editConnection",
-                "title": "Edit connection",
+                "title": "ProBro: Edit Connection",
                 "icon": "$(edit)"
             },
             {
                 "command": "pro-bro.deleteConnection",
-                "title": "Delete connection",
+                "title": "ProBro: Delete Connection",
                 "icon": "$(trash)"
             },
             {
                 "command": "pro-bro.query",
-                "title": "Query",
+                "title": "ProBro: Query",
                 "icon": "$(play)"
             },
             {
                 "command": "pro-bro.list-filter",
-                "title": "List-filter",
+                "title": "ProBro: List Filter",
                 "icon": "$(list-filter)"
             },
             {
