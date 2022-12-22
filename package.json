@@ -200,7 +200,7 @@
         "export-from-json": "^1.6.0",
         "faker": "^5.5.3",
         "react": "^18.1.0",
-        "react-data-grid": "^7.0.0-beta.13",
+        "react-data-grid": "7.0.0-beta.13",
         "react-dom": "^18.1.0",
         "react-table": "^7.8.0",
         "reactjs-popup": "^2.0.5"
