@@ -1,0 +1,29 @@
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "get_table_data",
+    "params": {
+        "tableName": "OrderLine",
+        "wherePhrase": "",
+        "start": 0,
+        "pageLength": 60,
+        "lastRowID": "",
+        "sortColumns": [
+            {
+                "columnKey": "OrderNum",
+                "direction": "ASC"
+            },
+            {
+                "columnKey": "ExtendedPrice",
+                "direction": "ASC"
+            }
+        ],
+        "filters": {
+            "columns": {
+                "OrderLineStatus": "shipped",
+                "Discount": "15"
+            },
+            "enabled": true
+        },
+        "timeOut": 0
+    }
+}

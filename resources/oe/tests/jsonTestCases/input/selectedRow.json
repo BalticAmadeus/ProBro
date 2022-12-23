@@ -1,0 +1,15 @@
+{
+    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
+    "command": "get_table_data",
+    "params": {
+        "tableName": "SalesRep",
+        "start": 0,
+        "pageLength": 1,
+        "timeOut": 1000,
+        "lastRowID": "0x0000000000009402",
+        "crud": [
+            "0x0000000000009402"
+        ],
+        "mode": "Update"
+    }
+}

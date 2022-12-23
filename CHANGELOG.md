@@ -1,7 +1,23 @@
 # Change Log
 
-## 1.0.0
+## 1.1.0 (2022-12-23)
+### Added
+- Support for Linux OS
+- Filtering to fields table
+- Connection status indicator
+- Launch Query on double click
+- Install, setup documentation and user manual
 
+### Changed
+- Fixed various small bugs
+- Improved popup window design
+
+## 1.0.1 HF (2022-11-18)
+### Changed
+- Fixed critical WebViews issue which appeared after VS Code 1.73 release
+- Removed MATCH logic for better performance when filtering data
+
+## 1.0.0
 ### Added
 - New options for data exporting
 - Edit connection
@@ -23,7 +39,6 @@
 - Fixed DictDB issue
 - Export popup design improvements
 
-### Removed
 ## Initial releases [0.1.0 - 0.3.1]
 
 ### Added

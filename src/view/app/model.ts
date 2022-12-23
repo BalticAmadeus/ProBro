@@ -11,6 +11,7 @@ export interface IConfig {
     password: string;
     group: string;
     params: string;
+    conStatus?: boolean;
 }
 
 export interface ICommand {
@@ -94,4 +95,9 @@ export interface ITableData {
     data?: { key: string; value: string | number | boolean; defaultValue: string | number | boolean }[],
     mode?: string,
     exportType?: string
+}
+
+export interface TableCount {
+    tableName: string | undefined,
+    count: number
 }

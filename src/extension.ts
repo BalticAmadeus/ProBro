@@ -3,17 +3,19 @@ import { QuickPickItem } from "vscode";
 import { ConnectionEditor } from "./common/connectionEditor";
 import { Constants } from "./db/constants";
 import { QueryEditor } from "./common/queryEditor";
-import { DatabaseProcessor } from "./db/databaseProcessor";
 import { DbConnectionNode } from "./tree/dbConnectionNode";
-import { DetailListProvider } from "./tree/DetailListProvider";
 import { FieldsViewProvider } from "./tree/FieldsViewProvider";
 import { GroupListProvider } from "./tree/GroupListProvider";
 import { TableNode } from "./tree/tableNode";
 import { TablesListProvider } from "./tree/TablesListProvider";
+import { DbConnectionUpdater } from "./tree/DbConnectionUpdater";
 
 export function activate(context: vscode.ExtensionContext) {
 
   Constants.context = context;
+
+  const connectionUpdater = new DbConnectionUpdater();
+  connectionUpdater.updateConnectionStatuses(context);
 
   const fieldsProvider = new FieldsViewProvider(context, "fields");
   const fields = vscode.window.registerWebviewViewProvider(
@@ -62,9 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.refreshList`,
-      () => {
-        groupListProvider.refresh();
-      }
+      () => { connectionUpdater.updateConnectionStatusesWithRefreshCallback(context, groupListProvider);}
     )
   );
 
@@ -125,4 +125,18 @@ export function activate(context: vscode.ExtensionContext) {
     quickPick.show();
   
 });
+
+vscode.commands.registerCommand(
+  `${Constants.globalExtensionKey}.dblClickQuery`,(_) => {
+    tablesListProvider.countClick();
+    if (tablesListProvider.tableClicked.count === 2) {
+      new QueryEditor(
+              context,
+              tablesListProvider.node as TableNode,
+              tablesListProvider,
+              fieldsProvider
+            );
+    }
+  } 
+);
 }

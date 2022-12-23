@@ -1,9 +1,6 @@
 import path = require("path");
 import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
-import * as fs from "fs";
-import { v1 as uuidv1, v1 } from "uuid";
-import { Constants } from "../db/constants";
 import { DatabaseProcessor } from "../db/databaseProcessor";
 import { IOETableData } from "../db/oe";
 import { TableNode } from "../tree/tableNode";

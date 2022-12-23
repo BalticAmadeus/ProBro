@@ -1,5 +1,4 @@
 import * as React from "react";
-import { v1 } from "uuid";
 import { CommandAction, ICommand, IConfig } from "../model";
 
 interface IConfigProps {
@@ -30,7 +29,7 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
 
     const onSaveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        const id: string = v1();
+        const id: string = "SaveClick";
         const config: IConfig = {
             id: vsState.config.id,
             label: label,
@@ -53,7 +52,7 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
 
     const onTestClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        const id: string = v1();
+        const id: string = "TestClick";
         const config: IConfig = {
             id: vsState.config.id,
             label: label,

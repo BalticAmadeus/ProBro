@@ -26,7 +26,7 @@
 
 #dropdown {
     width: 120px;
-    background-color: var(--vscode-editor-inactiveSelectionBackground);
+    background-color: var(--vscode-dropdown-background);
     color: inherit;
 }
 

@@ -2,7 +2,6 @@ import * as React from "react";
 import Popup from "reactjs-popup";
 import exportFromJSON from "export-from-json";
 import { CommandAction, DataToExport, ICommand } from "../../model";
-import { v1 } from "uuid";
 import ExportIcon from "@mui/icons-material/FileDownloadTwoTone";
 import "./export.css";
 import { ProBroButton } from "../Components/button";
@@ -35,7 +34,7 @@ export default function ExportPopup({
   const getData = () => {
     console.log("get data");
     const command: ICommand = {
-      id: v1(),
+      id: "GetData",
       action: CommandAction.Export,
     };
     switch (radioSelection) {

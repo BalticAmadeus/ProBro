@@ -11,7 +11,7 @@ if not "%PROEXE%"=="" goto START
 
 if "%ICU_DATA%"==""    set ICU_DATA="%DLC%\bin\icu\data\\"
 
-cd %~dp0
+cd %~dp0/..
 
 "%PROEXE%" %1 %2 %3 %4 %5 %6 %7 %8 %9
 

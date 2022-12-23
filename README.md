@@ -11,12 +11,15 @@ This open source project is in active development. Our goal is to simplify the a
   - Connect to multiple local Progress DBs
   - Custom connection groups
   - Deleting Connections
-  - Edit Connections *(new)*
+  - Edit Connections
+  - Connection status indicator *(new)*
 - Tables
   - Hidden tables
   - Launch query
+  - Launch query on double click *(new)*
 - Indexes
 - Fields
+  - Filtering *(new)*
   - Show only selected fields
 - Query data
   - Server-side multi-sorting
@@ -24,13 +27,13 @@ This open source project is in active development. Our goal is to simplify the a
   - Lazy loading
   - JSON/OE formatting
   - Custom queries
-  - View record on double-click *(new)*
+  - View record on double-click
 - Export
   - Formats
     - JSON
     - Excel
     - CSV
-  - Scope *(new)*
+  - Scope
     - All records
     - Selected records
     - Filtered records
@@ -38,12 +41,17 @@ This open source project is in active development. Our goal is to simplify the a
   - Delete multiple
   - Insert
   - Update
+- Supported OS
+  - Windows
+  - Linux *(new)*
 ## Guide
-TODO
+- [Install and setup guide](resources/markdown/setup.md)
+- [User manual](resources/markdown/manual.md)
+- [Development setup guide](esources/markdown/dev_env_setup.md)
 
 ## Related work
 - [DataDigger](https://datadigger.wordpress.com/) developed by Patrick Tingen. A great source of features and examples when working on this project.
-- [vscode-abl](https://github.com/Riverside-Software/vscode-abl) supported by Gilles Querret. VSCode plugin for ABL.
+- [vscode-abl](https://github.com/chriscamicas/vscode-abl) a VSCode plugin for ABL.
 
 ## Changelog
 

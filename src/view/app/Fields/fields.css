@@ -12,7 +12,7 @@
   --rdg-font-size: inherit;
   color: inherit;
   --rdg-selection-color: var(--vscode-focusBorder);
-  --rdg-border-color: var(--vscode-menu-border);
+  --rdg-border-color: none;
 }
 
 .rdg-row-even {
@@ -32,3 +32,13 @@ body.vscode-dark .rdg-row-even {
   block-size: 10px;
   inline-size: 10px;
 }
+
+.filter-cell{
+  line-height: 35px;
+  padding: 0;
+}
+
+.textInput {
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  }
