@@ -51,7 +51,6 @@ class OEClient {
                         '-b',
                         '-p',
                     `"${Constants.context.extensionPath}/resources/oe/src/oeSocket.p"`,
-                        '-ttwrdrul 254',
                         '-debugalert',
                         '-clientlog',
                     `"${Constants.context.extensionPath}/resources/oe/oeSocket.pro"`

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-DLC=/usr/dlc
-
+export DLC=/usr/dlc
+export PROWD254=/usr/dlc/proword.254
 export TERM=xterm
 export PROPATH=$PROPATH:$(dirname "$PWD")
 
@@ -37,7 +37,5 @@ fi
  
 # Set the Progress Shared lib environment
 . $DLC/bin/slib_env
-
-export PROWD254=/usr/dlc/proword.254
 
 exec $PROEXE -1 "$@"
