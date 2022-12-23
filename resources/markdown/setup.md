@@ -27,6 +27,7 @@ We'll definetly improve this process with future releases.
 /home/<user directory>/.vscode/extensions/balticamadeus.pro-bro-<version>/resources/oe/scripts/oe.sh
 ```
 
+Also, change ```oe.sh``` file permissions to make it executable.
 
 ### For Windows
 ```
