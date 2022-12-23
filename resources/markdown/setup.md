@@ -2,8 +2,8 @@
 
 ## Requirements
 1. Windows OS or Linux OS
-2. Progress Openedge DB
-3. Visual Studo Code (1.67 and up)
+2. Progress OpenEdge installation with developer a license (tested with 11.7, and 12.2)
+3. Visual Studio Code (1.67 and up)
 
 ## Instalation
 
@@ -16,11 +16,11 @@ $ ext install BalticAmadeus.pro-bro
 2. ProBro Icon should appear in the Activity Bar
 
 
-## Stup
+## Setup
 
 Currently, to set up DLC and other variables and custom parameters you need to make changes inside ProBro scripts.
 
-We'll definetly improve this process with future releases.
+We'll definitely improve this process with future releases.
 
 ### For Linux
 ```
