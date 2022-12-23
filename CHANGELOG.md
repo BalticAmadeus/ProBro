@@ -5,7 +5,7 @@
 - Support for Linux OS
 - Filtering to fields table
 - Connection status indicator
-- Launch Query on dobule click
+- Launch Query on double click
 - Install, setup documentation and user manual
 
 ### Changed

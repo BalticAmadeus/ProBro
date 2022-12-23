@@ -5,7 +5,7 @@
 2. Progress OpenEdge installation with developer a license (tested with 11.7, and 12.2)
 3. Visual Studio Code (1.67 and up)
 
-## Instalation
+## Installation
 
 1. Launch VS Code Quick Open (```Ctrl+P```), paste the following command, and press enter.
 ```
