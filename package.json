@@ -2,7 +2,7 @@
     "name": "pro-bro",
     "displayName": "ProBro",
     "description": "VSC extension for browsing Progress OpenEdge DB",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -86,32 +86,32 @@
         "commands": [
             {
                 "command": "pro-bro.refreshList",
-                "title": "Refresh",
+                "title": "ProBro: Refresh",
                 "icon": "$(refresh)"
             },
             {
                 "command": "pro-bro.addEntry",
-                "title": "Add",
+                "title": "ProBro: Add Connection",
                 "icon": "$(add)"
             },
             {
                 "command": "pro-bro.editConnection",
-                "title": "Edit connection",
+                "title": "ProBro: Edit Connection",
                 "icon": "$(edit)"
             },
             {
                 "command": "pro-bro.deleteConnection",
-                "title": "Delete connection",
+                "title": "ProBro: Delete Connection",
                 "icon": "$(trash)"
             },
             {
                 "command": "pro-bro.query",
-                "title": "Query",
+                "title": "ProBro: Query",
                 "icon": "$(play)"
             },
             {
                 "command": "pro-bro.list-filter",
-                "title": "List-filter",
+                "title": "ProBro: List Filter",
                 "icon": "$(list-filter)"
             },
             {
@@ -176,7 +176,6 @@
         "@types/node": "14.x",
         "@types/react": "^18.0.12",
         "@types/react-dom": "^18.0.5",
-        "@types/uuid": "^8.3.4",
         "@types/vscode": "^1.67.0",
         "@typescript-eslint/eslint-plugin": "^5.21.0",
         "@typescript-eslint/parser": "^5.21.0",
@@ -201,10 +200,9 @@
         "export-from-json": "^1.6.0",
         "faker": "^5.5.3",
         "react": "^18.1.0",
-        "react-data-grid": "^7.0.0-beta.13",
+        "react-data-grid": "7.0.0-beta.13",
         "react-dom": "^18.1.0",
         "react-table": "^7.8.0",
-        "reactjs-popup": "^2.0.5",
-        "uuid": "^8.3.2"
+        "reactjs-popup": "^2.0.5"
     }
 }

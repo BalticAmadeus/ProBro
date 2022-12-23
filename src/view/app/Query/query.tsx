@@ -3,7 +3,6 @@ import { IOETableData } from "../../../db/oe";
 import DataGrid, { SortColumn, SelectColumn } from "react-data-grid";
 
 import { CommandAction, ICommand, ProcessAction } from "../model";
-import { v1 } from "uuid";
 import ExportData from "./Export";
 import UpdatePopup from "./Update";
 import { ProBroButton } from "./Components/button";
@@ -370,7 +369,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
     timeOut
   ) {
     const command: ICommand = {
-      id: v1(),
+      id: "Query",
       action: CommandAction.Query,
       params: {
         wherePhrase: wherePhrase,
@@ -473,7 +472,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
     });
 
     const command: ICommand = {
-      id: v1(),
+      id: "CRUD",
       action: CommandAction.CRUD,
       params: {
         start: 0,

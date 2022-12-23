@@ -5,7 +5,6 @@ import { IConfig, TableCount } from '../view/app/model';
 import { DatabaseProcessor } from '../db/databaseProcessor';
 import { TableNode } from './tableNode';
 import { FieldsViewProvider } from './FieldsViewProvider';
-import { v1 } from 'uuid';
 
 
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
@@ -23,18 +22,18 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 		this.indexesProvider.tableNode = node;
 		console.log("displayData", node.tableName);
 		if (node.cache) {
-			this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: node.cache });
-			this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: node.cache });
+			this.fieldsProvider._view?.webview.postMessage({ id: "1", command: 'data', data: node.cache });
+			this.indexesProvider._view?.webview.postMessage({ id: "2", command: 'data', data: node.cache });
 			return;
 		} else {
 			return DatabaseProcessor.getInstance().getTableDetails(this.config, node.tableName).then((oeTableDetails) => {
 				node.cache = oeTableDetails;
-				this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: oeTableDetails });
-				this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: oeTableDetails });
+				this.fieldsProvider._view?.webview.postMessage({ id: "3", command: 'data', data: oeTableDetails });
+				this.indexesProvider._view?.webview.postMessage({ id: "4", command: 'data', data: oeTableDetails });
 			}).catch((err) => {
 				vscode.window.showErrorMessage(err);
-				this.fieldsProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
-				this.indexesProvider._view?.webview.postMessage({ id: v1(), command: 'data', data: null });
+				this.fieldsProvider._view?.webview.postMessage({ id: "5", command: 'data', data: null });
+				this.indexesProvider._view?.webview.postMessage({ id: "6", command: 'data', data: null });
 			});
 		}
 	}

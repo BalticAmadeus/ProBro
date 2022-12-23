@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export DLC=/usr/dlc
+export PROWD254=/usr/dlc/proword.254
 export TERM=xterm
 export PROPATH=$PROPATH:$(dirname "$PWD")
 

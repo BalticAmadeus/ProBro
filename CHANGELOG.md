@@ -1,5 +1,17 @@
 # Change Log
 
+## 1.1.0 (2022-12-23)
+### Added
+- Support for Linux OS
+- Filtering to fields table
+- Connection status indicator
+- Launch Query on dobule click
+- Install, setup documentation and user manual
+
+### Changed
+- Fixed various small bugs
+- Improved popup window design
+
 ## 1.0.1 HF (2022-11-18)
 ### Changed
 - Fixed critical WebViews issue which appeared after VS Code 1.73 release
