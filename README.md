@@ -51,7 +51,7 @@ This open source project is in active development. Our goal is to simplify the a
 
 ## Related work
 - [DataDigger](https://datadigger.wordpress.com/) developed by Patrick Tingen. A great source of features and examples when working on this project.
-- [vscode-abl](https://github.com/Riverside-Software/vscode-abl) supported by Gilles Querret. VSCode plugin for ABL.
+- [vscode-abl](https://github.com/chriscamicas/vscode-abl) a VSCode plugin for ABL.
 
 ## Changelog
 

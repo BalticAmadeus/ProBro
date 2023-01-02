@@ -2,7 +2,7 @@
 This document provides guidelines how to use ProBro extension.
 
 
-## **1. Opening ProBro extention:**
+## **1. Opening ProBro extension:**
 ![Db Connection](../images/DbConnection.png)
 
  1. ProBro extension image on sidebar.
@@ -10,13 +10,13 @@ This document provides guidelines how to use ProBro extension.
  3. Refresh db connection list.
  4. Delete existing connection.
  5. Edit existing connection.
- 6. Group lists of databases. If no group is asigned to database, group is set to "Empty".
+ 6. Group lists of databases. If no group is assigned to database, group is set to "Empty".
 
- Every db connection on start of extention or refreshing are testes if they are connected. Otherwise near the Openedge logo appears red sign.
+ Every db connection on start of extension or refreshing are testes if they are connected. Otherwise near the OpenEdge logo appears red sign.
 
  ## **2. Creating new connection**
 
- For creating and editing db connections is used same stucture.For editing new tab with selected database information will be displayed.
+ For creating and editing db connections is used same structure. For editing new tab with selected database information will be displayed.
 
  ![Db Create](../images/createEditTab.png)
 
@@ -40,12 +40,12 @@ This document provides guidelines how to use ProBro extension.
 
 ## 4. Fields and Indexes explorer
 
-  - Select table to see fields and indexes. Fields and Indexes are displayed in panel view. By default, they are on seperate tabs, but can be merged by dragging.
+  - Select table to see fields and indexes. Fields and Indexes are displayed in panel view. By default, they are on separate tabs, but can be merged by dragging.
 
 <img src="../images/mergeFieldsIndexes.gif" height="150">
 
- - In fields explorer has multisorting and multifiltering options.
-Multisorting can be used by holding CTRL key and selecting prefered columns. 
+ - In fields explorer has multi-sorting and multi-filtering options.
+Multi-sorting can be used by holding CTRL key and selecting preferred columns. 
 
 <img src="../images/multisorting.gif">
 
@@ -55,7 +55,7 @@ Multisorting can be used by holding CTRL key and selecting prefered columns.
 
 In first launch of query, all records are displayed.
 
-ProBro extension uses server-side multisorting and multifiltering.
+ProBro extension uses server-side multi-sorting and multi-filtering.
 
 ![query window](../images/queryWindow.png)
 1. **Custom query** request can be written to filter records. Query should be formatted like WHERE statement.
@@ -68,7 +68,7 @@ ProBro extension uses server-side multisorting and multifiltering.
         - table: export all records. ;
         - Filter: export only filtered records;
         - Selection: export only selected rows of records.
-    - When selected table or filter scopes, custom quered data will be exported.
+    - When selected table or filter scopes, custom queried data will be exported.
     - Record are exported in user sorted order.
 3. **Record display formats:**
     - RAW - Json formatted data;
@@ -78,4 +78,4 @@ ProBro extension uses server-side multisorting and multifiltering.
     - UPDATE - update record. Available only when there is one selected record.
     - DELETE - deletes one or more selected records.
     - READ - double clicked on record, all details are shown in popup box.
-5. **Data retrieval information:** ProBro extention is using lazy loading for better performance with large tables. Information shows current number of records, recent number of records loaded and record retrieval time in ms.
+5. **Data retrieval information:** ProBro extension is using lazy loading for better performance with large tables. Information shows current number of records, recent number of records loaded and record retrieval time in ms.

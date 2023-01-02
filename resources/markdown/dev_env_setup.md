@@ -1,28 +1,21 @@
-# Developement environment setup
+# Development environment setup
 Welcome to ProBro development team!
 
 ## Requirements
 1. Preferably Windows OS (also tested and works with Ubuntu 20.04)
-2. Progress Openedge DB
-3. Visual Studo Code (1.67 and up)
+2. Progress OpenEdge installation with developer a license (tested with 11.7, and 12.2)
+3. Visual Studio Code (1.67 and up)
 
-## Instalation
+## Installation
 
 1. Clone repository
 ```
 $ git clone https://github.com/BalticAmadeus/ProBro
 ```
-2. Install nessesary dependencies
+2. Install necessary dependencies
 ```
 $ npm install
 ```
-
-<!-- 
-I assume that we should mention here, that machine has to have openedge package? 
-Also, I think should be stated working versions of OE.
-
-How about structure of folders? It should be introduced? 
--->
 
 ## Launching extension
 
