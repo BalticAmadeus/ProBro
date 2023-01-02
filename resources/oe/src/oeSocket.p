@@ -185,7 +185,7 @@ PROCEDURE LOCAL_CONNECT:
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 
 	tmpDate = NOW.
-	CONNECT VALUE(substitute("&1 &2 &3", inputObject:GetCharacter("connectionString"), "-ld dictdb", "-ct 1")) NO-ERROR.
+	CONNECT VALUE(SUBSTITUTE("&1 &2", inputObject:GetCharacter("connectionString"), "-ct 1")) NO-ERROR.
 	IF ERROR-STATUS:ERROR THEN DO:
 		UNDO, THROW NEW Progress.Lang.AppError(ERROR-STATUS:GET-MESSAGE(1), ERROR-STATUS:GET-NUMBER(1)).
 	END.
@@ -402,7 +402,7 @@ PROCEDURE GET_ROW_DATA:
 	jsonRawRow:Add("ROWID", STRING(hfield:ROWID)).
 	jsonFormattedRow:Add("ROWID", STRING(hfield:ROWID)).
 
-	DO i = 1 to hfield:NUM-FIELDS:
+	DO i = 1 TO hfield:NUM-FIELDS:
 		FIND btt  WHERE btt.cName = hfield:BUFFER-FIELD(i):NAME NO-ERROR .
 		IF AVAILABLE btt
 		THEN DO:
@@ -434,9 +434,9 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonCrud AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
-	DEFINE VARIABLE qh AS WIDGET-HANDLE NO-UNDO.
+	DEFINE VARIABLE qh AS HANDLE NO-UNDO.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
-	DEFINE VARIABLE fqh AS WIDGET-HANDLE NO-UNDO.
+	DEFINE VARIABLE fqh AS HANDLE NO-UNDO.
 	DEFINE VARIABLE fbh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE i AS INTEGER NO-UNDO.
 	DEFINE VARIABLE dt AS DATETIME-TZ NO-UNDO.
@@ -524,7 +524,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	ELSE DO:
 		cMode = "DATA".
 	END.
-message "MODE:" cMode.
+MESSAGE "MODE:" cMode.
 
 	IF cMode = "UPDATE" THEN DO:
 	END.
@@ -536,7 +536,7 @@ message "MODE:" cMode.
 		END.
 
 		IF inputObject:GetJsonObject("params"):Has("filters") AND 
-			inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetLogical("enabled") = true THEN DO:
+			inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetLogical("enabled") = TRUE THEN DO:
 			jsonFilter = inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetJsonObject("columns").
 			cFilterNames = jsonFilter:GetNames().
 
@@ -584,68 +584,76 @@ message "MODE:" cMode.
 		qh:QUERY-PREPARE(SUBSTITUTE("FOR EACH &1 NO-LOCK &2 &3", inputObject:GetJsonObject("params"):GetCharacter("tableName"), cWherePhrase, cOrderPhrase)).
 		qh:QUERY-OPEN.
 
-		IF inputObject:GetJsonObject("params"):GetCharacter("lastRowID") > "" AND
-			qh:REPOSITION-TO-ROWID(TO-ROWID(inputObject:GetJsonObject("params"):GetCharacter("lastRowID"))) THEN DO:
-			//qh:GET-NEXT().
-			IF cMode = "DATA" THEN DO:
-				qh:GET-NEXT().
-			END.
+		IF inputObject:GetJsonObject("params"):Has("exportType") AND inputObject:GetJsonObject("params"):GetCharacter("exportType") = "dumpFile" THEN DO:
+
+			MESSAGE "if of dumpfile entered.".
+			RUN LOCAL_EXPORT_DUMPFILE(qh:handle).
 		END.
 		ELSE DO:
-			//qh:GET-FIRST().
-		END.
-
-		iPageLength = inputObject:GetJsonObject("params"):GetInteger("pageLength").
-		iTimeOut = inputObject:GetJsonObject("params"):GetInteger("timeOut").
-		dt = now.
-
-		IF jsonCrud = ? THEN DO:
-			TABLE_LOOP:
-			DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
-				jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
-				jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
-
-				RUN GET_ROW_DATA(input bh:HANDLE,
-					output jsonRawRow,
-					output jsonFormattedRow).
-
-				jsonRaw:Add(jsonRawRow).
-				jsonFormatted:Add(jsonFormattedRow).			
-				iPageLength = iPageLength - 1.
-				IF iPageLength <= 0 THEN LEAVE. 
-				IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
+			MESSAGE "if of dumpfile false".
+			IF inputObject:GetJsonObject("params"):GetCharacter("lastRowID") > "" AND
+				qh:REPOSITION-TO-ROWID(TO-ROWID(inputObject:GetJsonObject("params"):GetCharacter("lastRowID"))) THEN DO:
+				//qh:GET-NEXT().
+				IF cMode = "DATA" THEN DO:
+					qh:GET-NEXT().
+				END.
 			END.
+			ELSE DO:
+				//qh:GET-FIRST().
+			END.
+
+			iPageLength = inputObject:GetJsonObject("params"):GetInteger("pageLength").
+			iTimeOut = inputObject:GetJsonObject("params"):GetInteger("timeOut").
+			dt = NOW.
+
+			IF jsonCrud = ? THEN DO:
+				TABLE_LOOP:
+				DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
+					jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
+					jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
+
+					RUN GET_ROW_DATA(INPUT bh:HANDLE,
+						OUTPUT jsonRawRow,
+						OUTPUT jsonFormattedRow).
+
+					jsonRaw:Add(jsonRawRow).
+					jsonFormatted:Add(jsonFormattedRow).			
+					iPageLength = iPageLength - 1.
+					IF iPageLength <= 0 THEN LEAVE. 
+					IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
+				END.
+			END.
+			ELSE DO:
+
+				DO i = 1 TO jsonCrud:Length:
+					qh:REPOSITION-TO-ROWID(TO-ROWID(jsonCrud:GetCharacter(i))). 
+					qh:GET-NEXT().
+
+					jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
+					jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
+
+					RUN GET_ROW_DATA(INPUT bh:HANDLE,
+						OUTPUT jsonRawRow,
+						OUTPUT jsonFormattedRow).
+
+					jsonRaw:Add(jsonRawRow).
+					jsonFormatted:Add(jsonFormattedRow).				
+				END.		
+			END.
+
+			dtl = NOW.
+
+			qh:QUERY-CLOSE().
+			DELETE OBJECT qh.
+			DELETE OBJECT bh.
+
+			jsonObject:ADD("rawData", jsonRaw).
+			jsonObject:ADD("formattedData", jsonFormatted).
+
+			jsonDebug:add("recordsRetrieved", jsonRaw:Length).
+			jsonDebug:add("recordsRetrievalTime", dtl - dt).
+
 		END.
-		ELSE DO:
-
-			DO i = 1 TO jsonCrud:Length:
-				qh:REPOSITION-TO-ROWID(TO-ROWID(jsonCrud:GetCharacter(i))). 
-				qh:GET-NEXT().
-
-				jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
-				jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
-
-				RUN GET_ROW_DATA(input bh:handle,
-					output jsonRawRow,
-					output jsonFormattedRow).
-
-				jsonRaw:Add(jsonRawRow).
-				jsonFormatted:Add(jsonFormattedRow).				
-			END.		
-		END.
-
-    	dtl = NOW.
-
-		qh:QUERY-CLOSE().
-		DELETE OBJECT qh.
-		DELETE OBJECT bh.
-
-		jsonObject:ADD("rawData", jsonRaw).
-		jsonObject:ADD("formattedData", jsonFormatted).
-
-		jsonDebug:add("recordsRetrieved", jsonRaw:Length).
-		jsonDebug:add("recordsRetrievalTime", dtl - dt).
-
 	END.
 END PROCEDURE.
 
@@ -723,7 +731,7 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
 							fh:BUFFER-VALUE = jsonData:GetJsonObject(i):GetJsonText("value").
 						END.
 						WHEN "LOGICAL" THEN DO:
-message "LOGICAL" string(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) string(jsonData:GetJsonObject(i):GetJsonText("value")) fh:BUFFER-VALUE.
+MESSAGE "LOGICAL" STRING(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) STRING(jsonData:GetJsonObject(i):GetJsonText("value")) fh:BUFFER-VALUE.
 							IF cMode = "UPDATE" AND fh:BUFFER-VALUE <> LOGICAL(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) THEN DO:
 								UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 601).
 							END.
@@ -824,3 +832,92 @@ message "LOGICAL" string(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) 
 		END.
 	END.
 END PROCEDURE.
+
+PROCEDURE LOCAL_EXPORT_DUMPFILE :
+
+	DEFINE INPUT PARAMETER hQuery AS HANDLE NO-UNDO.
+
+	DEFINE VARIABLE cTimeStamp AS CHARACTER   NO-UNDO.
+	DEFINE VARIABLE hBuffer    AS HANDLE      NO-UNDO.
+	DEFINE VARIABLE hColumn    AS HANDLE      NO-UNDO.
+	DEFINE VARIABLE hField     AS HANDLE      NO-UNDO.
+	DEFINE VARIABLE iBack      AS INTEGER     NO-UNDO.
+	DEFINE VARIABLE iColumn    AS INTEGER     NO-UNDO.
+	DEFINE VARIABLE iExtent    AS INTEGER     NO-UNDO.
+	DEFINE VARIABLE iRecords   AS INTEGER     NO-UNDO.
+	DEFINE VARIABLE iTrailer   AS INTEGER     NO-UNDO.
+	DEFINE VARIABLE lFirst     AS LOGICAL     NO-UNDO.
+
+	hBuffer = hQuery:GET-BUFFER-HANDLE(1).
+
+	ASSIGN
+		iRecords   = 0
+		cTimeStamp = STRING(YEAR( TODAY),"9999":u) + "/":u
+				+ string(MONTH(TODAY),"99":u  ) + "/":u
+				+ string(DAY(  TODAY),"99":u  ) + "-":u
+				+ string(TIME,"HH:MM:SS":u).
+
+	hQuery:GET-FIRST.
+
+	/* Open outputfile */
+	OUTPUT TO VALUE("C:/workspaces/temp_dump.d") NO-ECHO NO-MAP.
+	EXPORT ?.
+	iBack = SEEK(OUTPUT) - 1.
+	SEEK OUTPUT TO 0.
+
+	REPEAT WHILE NOT hQuery:QUERY-OFF-END
+	ON STOP UNDO, LEAVE:
+
+		ASSIGN
+		iRecords = iRecords + 1
+		lFirst   = TRUE
+		.
+
+		PROCESS EVENTS.
+
+		browseColumn:
+		DO iColumn = 1 TO hBuffer:NUM-FIELDS:
+    
+    		ASSIGN hField = hBuffer:BUFFER-FIELD(iColumn) NO-ERROR.
+    		
+    		/* If no column found, something weird happened */
+    		IF hField = ? THEN NEXT browseColumn.
+    
+    		IF hField:DATA-TYPE = "recid":u THEN NEXT browseColumn.
+    
+    		IF lFirst THEN
+    			lFirst = FALSE.
+    		ELSE
+    		DO:
+    			SEEK OUTPUT TO SEEK(OUTPUT) - iBack.
+    			PUT CONTROL ' ':u.
+    		END.
+    
+    		EXPORT hField:BUFFER-VALUE.
+    
+	   END.
+	   hQuery:GET-NEXT().
+    END.
+	   
+
+	/* Add a checksum and nr of records at the end of the file.
+	*/
+	PUT UNFORMATTED ".":u SKIP.
+	iTrailer = SEEK(OUTPUT).
+
+	PUT UNFORMATTED
+			"PSC":u
+		SKIP "filename=":u hBuffer:TABLE
+		SKIP "records=":u  STRING(iRecords,"9999999999999":u)
+		SKIP "ldbname=":u  hBuffer:DBNAME
+		SKIP "timestamp=":u cTimeStamp
+		SKIP "numformat=":u ASC(SESSION:NUMERIC-SEPARATOR) ",":u ASC(SESSION:NUMERIC-DECIMAL-POINT)
+		SKIP "dateformat=":u SESSION:DATE-FORMAT "-":u SESSION:YEAR-OFFSET
+		SKIP "map=NO-MAP":u
+		SKIP "cpstream=":u SESSION:CPSTREAM
+		SKIP ".":u
+		SKIP STRING(iTrailer,"9999999999":u)
+		SKIP.
+
+	OUTPUT CLOSE.
+END.
