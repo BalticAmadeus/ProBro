@@ -198,7 +198,6 @@ function Fields({ initialData, vscode }) {
 					message.data.fields.forEach(field => {
 						if (field.mandatory !== null) {
 							field.mandatory = field.mandatory ? "yes" : "no";	
-							console.log(field.mandatory);
 						}						
 					});
 				setRows(message.data.fields);
