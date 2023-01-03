@@ -195,6 +195,12 @@ function Fields({ initialData, vscode }) {
 			const message = event.data;
 			switch (message.command) {
 				case "data":
+					message.data.fields.forEach(field => {
+						if (field.mandatory !== null) {
+							field.mandatory = field.mandatory ? "yes" : "no";	
+							console.log(field.mandatory);
+						}						
+					});
 				setRows(message.data.fields);
 				setFilteredRows(message.data.fields);
 				setFilters({columns: {},
