@@ -118,11 +118,12 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
+                    const exportData = command.params?.exportType === "dumpFile" ? this.formatDumpFile(oe, this.tableNode.tableName, this.tableListProvider.config!.label): oe;
                     this.panel?.webview.postMessage({
                       id: command.id,
                       command: "export",
                       tableName: this.tableNode.tableName,
-                      data: oe,
+                      data: exportData,
                       format: command.params!.exportType
                     });
                   }
@@ -145,6 +146,68 @@ export class QueryEditor {
       null,
       context.subscriptions
     );
+  }
+
+  private formatDumpFile(data: any, fileName: string, dbName: string) {
+    const dumpData = data.rawData.reduce((accumulator: string, row: any) => {
+      return accumulator + Object.entries(row).filter(element => element[0] !== "ROWID").reduce((accumulator: any, element: any, index) => {
+         
+        if (index > 0) {
+          accumulator += " ";
+        }
+        // typeof null === "object"
+        if(typeof element[1] === "object") {
+          return accumulator + "?";
+        }
+        const column = data.columns.find((column: { name: string; }) => column.name === element[0]);
+        switch (column.type) {
+          case "integer":
+          case "decimal":
+          case "int64":
+            return accumulator + element[1];
+          case "character":
+            const formatted = element[1].replace(/\"/g, `""`);
+            return accumulator + `\"${formatted}\"`;
+          case "date":
+            const tempDate = new Date(element[1]);
+            const tempYMD = {
+              y: tempDate.getFullYear().toString().slice(2),
+              m: (tempDate.getMonth() + 1).toString().padStart(2, "0"),
+              d: tempDate.getDate().toString().padStart(2, "0"),
+            };
+            const tempDateFormat = data.PSC.dateformat.substring(0,3); //mdy
+            const date = tempDateFormat
+            .split("")
+            .map((letter: string)  => {
+              return tempYMD[letter as keyof typeof tempYMD];
+            })
+            .join("/");
+          return accumulator + date;
+          case "datetime":
+          case "datetime-tz":
+            return accumulator + element[1];
+          case "logical":
+            return accumulator + (element[1] ? "yes" : "no");
+          default:
+            break;
+          }
+      }, "") + "\r\n";    
+    }, "");
+
+    const trailerInfo = `\r
+PSC\r
+filename=${fileName}\r
+records=${String(data.rawData.length).padStart(13, "0")}\r
+ldbname=${dbName}\r
+timestamp=${data.PSC.timestamp}\r
+numformat=${data.PSC.numformat}\r
+dateformat=${data.PSC.dateformat}\r
+map=NO-MAP\r
+cpstream=${data.PSC.cpstream}\r
+.\r
+${String(dumpData.length + 3).padStart(10, "0")}\r
+`;
+    return dumpData + "." + trailerInfo;
   }
 
   public updateFields() {

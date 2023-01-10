@@ -85,6 +85,12 @@ export default function ExportPopup({
         if (message.format === "dumpFile") {
           console.log("dumpfile export got.");
           console.log(message);
+          exportFromJSON({
+            data: message.data,
+            fileName: message.tableName,
+            exportType: exportFromJSON.types.txt,
+            extension: "d"
+          });
           break;
         }
         const exportData = message.data.rawData.map(({ ROWID, ...rest }) => {

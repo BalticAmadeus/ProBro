@@ -406,10 +406,18 @@ PROCEDURE GET_ROW_DATA:
 		FIND btt  WHERE btt.cName = hfield:BUFFER-FIELD(i):NAME NO-ERROR .
 		IF AVAILABLE btt
 		THEN DO:
+			IF LOOKUP(btt.cType, 'clob,blob,raw') = 0 THEN DO:
 			jsonRawRow:Add(hfield:BUFFER-FIELD(i):NAME, hfield:BUFFER-FIELD(i):BUFFER-VALUE).
 		
 			cCellValue = STRING(hfield:BUFFER-FIELD(i):BUFFER-VALUE, btt.cFormat) NO-ERROR.
 			jsonFormattedRow:Add(hfield:BUFFER-FIELD(i):NAME, cCellValue).
+			END.
+			ELSE DO:
+				DEFINE VARIABLE cDummy AS CHARACTER NO-UNDO.
+				cDummy = ?.
+				jsonRawRow:Add(hfield:BUFFER-FIELD(i):NAME, cDummy).
+				jsonFormattedRow:Add(hfield:BUFFER-FIELD(i):NAME, cDummy).
+			END.
 		END.
 		ELSE DO:
 			j = 0.
@@ -434,6 +442,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonCrud AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+	DEFINE VARIable PSC AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE qh AS HANDLE NO-UNDO.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE fqh AS HANDLE NO-UNDO.
@@ -479,31 +488,32 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		bttColumn.cType = "ROWID".
 		bttColumn.cFormat = ?.
 
-		DO WHILE fqh:GET-NEXT():	
-			IF LOOKUP(fqh:GET-BUFFER-HANDLE(1)::_data-type, 'clob,blob,raw') = 0 
-			THEN DO:
-				IF fqh:GET-BUFFER-HANDLE(1)::_extent = 0
-				THEN DO: 
+		DO WHILE fqh:GET-NEXT():
+			IF NOT inputObject:GetJsonObject("params"):Has("exportType") OR inputObject:GetJsonObject("params"):GetCharacter("exportType") <> "dumpFile"THEN DO:
+				IF LOOKUP(fqh:GET-BUFFER-HANDLE(1)::_data-type, 'clob,blob,raw') <> 0  
+				THEN NEXT.
+			END.
+			
+			IF fqh:GET-BUFFER-HANDLE(1)::_extent = 0
+			THEN DO: 
+				CREATE bttColumn.
+				bttColumn.cName = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+				bttColumn.cKey = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+				bttColumn.cLabel = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+				bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
+				bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
+				bttColumn.iExtent = fqh:GET-BUFFER-HANDLE(1)::_extent.
+			END.
+			ELSE DO:
+				DO i = 1 TO fqh:GET-BUFFER-HANDLE(1)::_extent:
 					CREATE bttColumn.
-					bttColumn.cName = fqh:GET-BUFFER-HANDLE(1)::_field-name.
-					bttColumn.cKey = fqh:GET-BUFFER-HANDLE(1)::_field-name.
+					bttColumn.cName = SUBSTITUTE("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
+					bttColumn.cKey = SUBSTITUTE("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
 					bttColumn.cLabel = fqh:GET-BUFFER-HANDLE(1)::_field-name.
 					bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
 					bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
 					bttColumn.iExtent = fqh:GET-BUFFER-HANDLE(1)::_extent.
 				END.
-				ELSE DO:
-					DO i = 1 TO fqh:GET-BUFFER-HANDLE(1)::_extent:
-						CREATE bttColumn.
-						bttColumn.cName = SUBSTITUTE("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
-						bttColumn.cKey = SUBSTITUTE("&1[&2]", fqh:GET-BUFFER-HANDLE(1)::_field-name, i).
-						bttColumn.cLabel = fqh:GET-BUFFER-HANDLE(1)::_field-name.
-						bttColumn.cType = fqh:GET-BUFFER-HANDLE(1)::_data-type.
-						bttColumn.cFormat = fqh:GET-BUFFER-HANDLE(1)::_format.
-						bttColumn.iExtent = fqh:GET-BUFFER-HANDLE(1)::_extent.
-					END.
-				END.
-
 			END.
 		END.
 		jsonFields:Read(TEMP-TABLE bttColumn:HANDLE).
@@ -585,75 +595,76 @@ MESSAGE "MODE:" cMode.
 		qh:QUERY-OPEN.
 
 		IF inputObject:GetJsonObject("params"):Has("exportType") AND inputObject:GetJsonObject("params"):GetCharacter("exportType") = "dumpFile" THEN DO:
-
-			MESSAGE "if of dumpfile entered.".
-			RUN LOCAL_EXPORT_DUMPFILE(qh:handle).
+			PSC = NEW Progress.Json.ObjectModel.JsonObject().
+			PSC:Add("timestamp", SUBSTITUTE("&1/&2/&3-&4", STRING(YEAR( TODAY),"9999"), STRING(MONTH(TODAY),"99"), STRING(DAY(TODAY),"99"), STRING(TIME,"HH:MM:SS"))).
+			PSC:Add("numformat", SUBSTITUTE("&1,&2", ASC(SESSION:NUMERIC-SEPARATOR), ASC(SESSION:NUMERIC-DECIMAL-POINT))).
+			PSC:Add("dateformat", SUBSTITUTE("&1-&2", SESSION:DATE-FORMAT, SESSION:YEAR-OFFSET)).
+			PSC:Add("cpstream", SESSION:CPSTREAM).
+			JsonObject:Add("PSC", PSC).
+		END.
+	
+		IF inputObject:GetJsonObject("params"):GetCharacter("lastRowID") > "" AND
+			qh:REPOSITION-TO-ROWID(TO-ROWID(inputObject:GetJsonObject("params"):GetCharacter("lastRowID"))) THEN DO:
+			//qh:GET-NEXT().
+			IF cMode = "DATA" THEN DO:
+				qh:GET-NEXT().
+			END.
 		END.
 		ELSE DO:
-			MESSAGE "if of dumpfile false".
-			IF inputObject:GetJsonObject("params"):GetCharacter("lastRowID") > "" AND
-				qh:REPOSITION-TO-ROWID(TO-ROWID(inputObject:GetJsonObject("params"):GetCharacter("lastRowID"))) THEN DO:
-				//qh:GET-NEXT().
-				IF cMode = "DATA" THEN DO:
-					qh:GET-NEXT().
-				END.
-			END.
-			ELSE DO:
-				//qh:GET-FIRST().
-			END.
-
-			iPageLength = inputObject:GetJsonObject("params"):GetInteger("pageLength").
-			iTimeOut = inputObject:GetJsonObject("params"):GetInteger("timeOut").
-			dt = NOW.
-
-			IF jsonCrud = ? THEN DO:
-				TABLE_LOOP:
-				DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
-					jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
-					jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
-
-					RUN GET_ROW_DATA(INPUT bh:HANDLE,
-						OUTPUT jsonRawRow,
-						OUTPUT jsonFormattedRow).
-
-					jsonRaw:Add(jsonRawRow).
-					jsonFormatted:Add(jsonFormattedRow).			
-					iPageLength = iPageLength - 1.
-					IF iPageLength <= 0 THEN LEAVE. 
-					IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
-				END.
-			END.
-			ELSE DO:
-
-				DO i = 1 TO jsonCrud:Length:
-					qh:REPOSITION-TO-ROWID(TO-ROWID(jsonCrud:GetCharacter(i))). 
-					qh:GET-NEXT().
-
-					jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
-					jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
-
-					RUN GET_ROW_DATA(INPUT bh:HANDLE,
-						OUTPUT jsonRawRow,
-						OUTPUT jsonFormattedRow).
-
-					jsonRaw:Add(jsonRawRow).
-					jsonFormatted:Add(jsonFormattedRow).				
-				END.		
-			END.
-
-			dtl = NOW.
-
-			qh:QUERY-CLOSE().
-			DELETE OBJECT qh.
-			DELETE OBJECT bh.
-
-			jsonObject:ADD("rawData", jsonRaw).
-			jsonObject:ADD("formattedData", jsonFormatted).
-
-			jsonDebug:add("recordsRetrieved", jsonRaw:Length).
-			jsonDebug:add("recordsRetrievalTime", dtl - dt).
-
+			//qh:GET-FIRST().
 		END.
+
+		iPageLength = inputObject:GetJsonObject("params"):GetInteger("pageLength").
+		iTimeOut = inputObject:GetJsonObject("params"):GetInteger("timeOut").
+		dt = NOW.
+
+		IF jsonCrud = ? THEN DO:
+			TABLE_LOOP:
+			DO WHILE qh:GET-NEXT() STOP-AFTER 1 /*every data query should lasts not more then 1 second*/ ON STOP UNDO, LEAVE:
+				jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
+				jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
+
+				RUN GET_ROW_DATA(INPUT bh:HANDLE,
+					OUTPUT jsonRawRow,
+					OUTPUT jsonFormattedRow).
+
+				jsonRaw:Add(jsonRawRow).
+				jsonFormatted:Add(jsonFormattedRow).			
+				iPageLength = iPageLength - 1.
+				IF iPageLength <= 0 THEN LEAVE. 
+				IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
+			END.
+		END.
+		ELSE DO:
+
+			DO i = 1 TO jsonCrud:Length:
+				qh:REPOSITION-TO-ROWID(TO-ROWID(jsonCrud:GetCharacter(i))). 
+				qh:GET-NEXT().
+
+				jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
+				jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
+
+				RUN GET_ROW_DATA(INPUT bh:HANDLE,
+					OUTPUT jsonRawRow,
+					OUTPUT jsonFormattedRow).
+
+				jsonRaw:Add(jsonRawRow).
+				jsonFormatted:Add(jsonFormattedRow).				
+			END.		
+		END.
+
+		dtl = NOW.
+
+		qh:QUERY-CLOSE().
+		DELETE OBJECT qh.
+		DELETE OBJECT bh.
+
+		jsonObject:ADD("rawData", jsonRaw).
+		jsonObject:ADD("formattedData", jsonFormatted).
+
+		jsonDebug:add("recordsRetrieved", jsonRaw:Length).
+		jsonDebug:add("recordsRetrievalTime", dtl - dt).
+
 	END.
 END PROCEDURE.
 
@@ -832,92 +843,3 @@ MESSAGE "LOGICAL" STRING(jsonData:GetJsonObject(i):GetJsonText("defaultValue")) 
 		END.
 	END.
 END PROCEDURE.
-
-PROCEDURE LOCAL_EXPORT_DUMPFILE :
-
-	DEFINE INPUT PARAMETER hQuery AS HANDLE NO-UNDO.
-
-	DEFINE VARIABLE cTimeStamp AS CHARACTER   NO-UNDO.
-	DEFINE VARIABLE hBuffer    AS HANDLE      NO-UNDO.
-	DEFINE VARIABLE hColumn    AS HANDLE      NO-UNDO.
-	DEFINE VARIABLE hField     AS HANDLE      NO-UNDO.
-	DEFINE VARIABLE iBack      AS INTEGER     NO-UNDO.
-	DEFINE VARIABLE iColumn    AS INTEGER     NO-UNDO.
-	DEFINE VARIABLE iExtent    AS INTEGER     NO-UNDO.
-	DEFINE VARIABLE iRecords   AS INTEGER     NO-UNDO.
-	DEFINE VARIABLE iTrailer   AS INTEGER     NO-UNDO.
-	DEFINE VARIABLE lFirst     AS LOGICAL     NO-UNDO.
-
-	hBuffer = hQuery:GET-BUFFER-HANDLE(1).
-
-	ASSIGN
-		iRecords   = 0
-		cTimeStamp = STRING(YEAR( TODAY),"9999":u) + "/":u
-				+ string(MONTH(TODAY),"99":u  ) + "/":u
-				+ string(DAY(  TODAY),"99":u  ) + "-":u
-				+ string(TIME,"HH:MM:SS":u).
-
-	hQuery:GET-FIRST.
-
-	/* Open outputfile */
-	OUTPUT TO VALUE("C:/workspaces/temp_dump.d") NO-ECHO NO-MAP.
-	EXPORT ?.
-	iBack = SEEK(OUTPUT) - 1.
-	SEEK OUTPUT TO 0.
-
-	REPEAT WHILE NOT hQuery:QUERY-OFF-END
-	ON STOP UNDO, LEAVE:
-
-		ASSIGN
-		iRecords = iRecords + 1
-		lFirst   = TRUE
-		.
-
-		PROCESS EVENTS.
-
-		browseColumn:
-		DO iColumn = 1 TO hBuffer:NUM-FIELDS:
-    
-    		ASSIGN hField = hBuffer:BUFFER-FIELD(iColumn) NO-ERROR.
-    		
-    		/* If no column found, something weird happened */
-    		IF hField = ? THEN NEXT browseColumn.
-    
-    		IF hField:DATA-TYPE = "recid":u THEN NEXT browseColumn.
-    
-    		IF lFirst THEN
-    			lFirst = FALSE.
-    		ELSE
-    		DO:
-    			SEEK OUTPUT TO SEEK(OUTPUT) - iBack.
-    			PUT CONTROL ' ':u.
-    		END.
-    
-    		EXPORT hField:BUFFER-VALUE.
-    
-	   END.
-	   hQuery:GET-NEXT().
-    END.
-	   
-
-	/* Add a checksum and nr of records at the end of the file.
-	*/
-	PUT UNFORMATTED ".":u SKIP.
-	iTrailer = SEEK(OUTPUT).
-
-	PUT UNFORMATTED
-			"PSC":u
-		SKIP "filename=":u hBuffer:TABLE
-		SKIP "records=":u  STRING(iRecords,"9999999999999":u)
-		SKIP "ldbname=":u  hBuffer:DBNAME
-		SKIP "timestamp=":u cTimeStamp
-		SKIP "numformat=":u ASC(SESSION:NUMERIC-SEPARATOR) ",":u ASC(SESSION:NUMERIC-DECIMAL-POINT)
-		SKIP "dateformat=":u SESSION:DATE-FORMAT "-":u SESSION:YEAR-OFFSET
-		SKIP "map=NO-MAP":u
-		SKIP "cpstream=":u SESSION:CPSTREAM
-		SKIP ".":u
-		SKIP STRING(iTrailer,"9999999999":u)
-		SKIP.
-
-	OUTPUT CLOSE.
-END.
