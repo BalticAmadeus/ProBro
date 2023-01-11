@@ -1,6 +1,6 @@
 import * as React from "react";
 import { IOETableData } from "../../../db/oe";
-import DataGrid, { SortColumn, SelectColumn } from "react-data-grid";
+import DataGrid, { SortColumn, SelectColumn, CopyEvent, PasteEvent } from "react-data-grid";
 
 import { CommandAction, ICommand, ProcessAction } from "../model";
 import ExportData from "./Export";
@@ -502,6 +502,12 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
     };
     const selected = filterColumns();
 
+    function handleCopy({ sourceRow, sourceColumnKey }: CopyEvent<any>): void {
+      if (window.isSecureContext) {
+        navigator.clipboard.writeText(sourceRow[sourceColumnKey]);
+      }
+    }
+    
     return (
         <React.Fragment>
             <div className="container">
@@ -577,6 +583,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 onSelectedRowsChange={setSelectedRows}
                 rowKeyGetter={rowKeyGetter}
                 onRowDoubleClick={readRecord}
+                onCopy={handleCopy}
             ></DataGrid>
             {getFooterTag()}
             {isLoading && <div>Loading more rows...</div>}
