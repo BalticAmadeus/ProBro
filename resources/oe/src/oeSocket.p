@@ -406,17 +406,19 @@ PROCEDURE GET_ROW_DATA:
 		FIND btt  WHERE btt.cName = hfield:BUFFER-FIELD(i):NAME NO-ERROR .
 		IF AVAILABLE btt
 		THEN DO:
-			IF LOOKUP(btt.cType, 'clob,blob,raw') = 0 THEN DO:
+			IF LOOKUP(btt.cType, 'clob,blob') = 0 THEN DO:
 			jsonRawRow:Add(hfield:BUFFER-FIELD(i):NAME, hfield:BUFFER-FIELD(i):BUFFER-VALUE).
 		
 			cCellValue = STRING(hfield:BUFFER-FIELD(i):BUFFER-VALUE, btt.cFormat) NO-ERROR.
 			jsonFormattedRow:Add(hfield:BUFFER-FIELD(i):NAME, cCellValue).
 			END.
+			ELSE IF btt.cType = "raw" THEN DO:
+				jsonRawRow:Add(hfield:BUFFER-FIELD(i):NAME, STRING(hfield:BUFFER-FIELD(i):BUFFER-VALUE)).	
+			END.
 			ELSE DO:
 				DEFINE VARIABLE cDummy AS CHARACTER NO-UNDO.
 				cDummy = ?.
 				jsonRawRow:Add(hfield:BUFFER-FIELD(i):NAME, cDummy).
-				jsonFormattedRow:Add(hfield:BUFFER-FIELD(i):NAME, cDummy).
 			END.
 		END.
 		ELSE DO:
@@ -442,7 +444,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE jsonFormattedRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE jsonCrud AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
-	DEFINE VARIable PSC AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+	DEFINE VARIABLE PSC AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 	DEFINE VARIABLE qh AS HANDLE NO-UNDO.
 	DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
 	DEFINE VARIABLE fqh AS HANDLE NO-UNDO.
@@ -457,6 +459,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE cFilterNames AS CHARACTER EXTENT NO-UNDO.
 	DEFINE VARIABLE cFilterValues AS CHARACTER EXTENT NO-UNDO.
 	DEFINE VARIABLE cMode AS CHARACTER NO-UNDO.
+	DEFINE VARIABLE lExport AS LOGICAL NO-UNDO INITIAL false.
+	DEFINE VARIABLE lDumpFile AS LOGICAL No-UNDO INITIAL false.
 
 	DEFINE BUFFER bttColumn FOR ttColumn.
 	
@@ -464,6 +468,12 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	jsonRaw = NEW Progress.Json.ObjectModel.JsonArray().
 	jsonFormatted = NEW Progress.Json.ObjectModel.JsonArray().
 	jsonDebug = jsonObject:GetJsonObject("debug").
+
+	IF inputObject:GetJsonObject("params"):Has("exportType")
+	THEN lExport = true.
+
+	IF lExport AND inputObject:GetJsonObject("params"):GetCharacter("exportType") = "dumpFile" 
+	THEN lDumpFile = true.
 
 	CREATE BUFFER bh FOR TABLE "_file".
 	CREATE QUERY qh.
@@ -489,7 +499,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 		bttColumn.cFormat = ?.
 
 		DO WHILE fqh:GET-NEXT():
-			IF NOT inputObject:GetJsonObject("params"):Has("exportType") OR inputObject:GetJsonObject("params"):GetCharacter("exportType") <> "dumpFile"THEN DO:
+			IF NOT lDumpFile THEN DO:
 				IF LOOKUP(fqh:GET-BUFFER-HANDLE(1)::_data-type, 'clob,blob,raw') <> 0  
 				THEN NEXT.
 			END.
@@ -594,7 +604,7 @@ MESSAGE "MODE:" cMode.
 		qh:QUERY-PREPARE(SUBSTITUTE("FOR EACH &1 NO-LOCK &2 &3", inputObject:GetJsonObject("params"):GetCharacter("tableName"), cWherePhrase, cOrderPhrase)).
 		qh:QUERY-OPEN.
 
-		IF inputObject:GetJsonObject("params"):Has("exportType") AND inputObject:GetJsonObject("params"):GetCharacter("exportType") = "dumpFile" THEN DO:
+		IF lDumpFile THEN DO:
 			PSC = NEW Progress.Json.ObjectModel.JsonObject().
 			PSC:Add("timestamp", SUBSTITUTE("&1/&2/&3-&4", STRING(YEAR( TODAY),"9999"), STRING(MONTH(TODAY),"99"), STRING(DAY(TODAY),"99"), STRING(TIME,"HH:MM:SS"))).
 			PSC:Add("numformat", SUBSTITUTE("&1,&2", ASC(SESSION:NUMERIC-SEPARATOR), ASC(SESSION:NUMERIC-DECIMAL-POINT))).
@@ -649,7 +659,8 @@ MESSAGE "MODE:" cMode.
 					OUTPUT jsonFormattedRow).
 
 				jsonRaw:Add(jsonRawRow).
-				jsonFormatted:Add(jsonFormattedRow).				
+				IF NOT lExport 
+				THEN jsonFormatted:Add(jsonFormattedRow).				
 			END.		
 		END.
 
@@ -660,7 +671,8 @@ MESSAGE "MODE:" cMode.
 		DELETE OBJECT bh.
 
 		jsonObject:ADD("rawData", jsonRaw).
-		jsonObject:ADD("formattedData", jsonFormatted).
+		IF NOT lExport 
+		THEN jsonObject:ADD("formattedData", jsonFormatted).
 
 		jsonDebug:add("recordsRetrieved", jsonRaw:Length).
 		jsonDebug:add("recordsRetrievalTime", dtl - dt).

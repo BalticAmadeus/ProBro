@@ -151,8 +151,8 @@ export class QueryEditor {
   private formatDumpFile(data: any, fileName: string, dbName: string) {
     const dumpData = data.rawData.reduce((accumulator: string, row: any) => {
       return accumulator + Object.entries(row).filter(element => element[0] !== "ROWID").reduce((accumulator: any, element: any, index) => {
-         
-        if (index > 0) {
+
+        if (index > 0 && accumulator.length !== 0) {
           accumulator += " ";
         }
         // typeof null === "object"
@@ -161,10 +161,15 @@ export class QueryEditor {
         }
         const column = data.columns.find((column: { name: string; }) => column.name === element[0]);
         switch (column.type) {
-          case "integer":
+          
           case "decimal":
+            if (element[1] < 1 && element[1] > 0 ) {
+              return accumulator + element[1].toString().slice(1);
+            }
+          case "integer":
           case "int64":
             return accumulator + element[1];
+          case "raw":
           case "character":
             const formatted = element[1].replace(/\"/g, `""`);
             return accumulator + `\"${formatted}\"`;
@@ -175,7 +180,7 @@ export class QueryEditor {
               m: (tempDate.getMonth() + 1).toString().padStart(2, "0"),
               d: tempDate.getDate().toString().padStart(2, "0"),
             };
-            const tempDateFormat = data.PSC.dateformat.substring(0,3); //mdy
+            const tempDateFormat = data.PSC.dateformat.substring(0,3);
             const date = tempDateFormat
             .split("")
             .map((letter: string)  => {
@@ -189,7 +194,7 @@ export class QueryEditor {
           case "logical":
             return accumulator + (element[1] ? "yes" : "no");
           default:
-            break;
+            return accumulator.slice(0,-1);
           }
       }, "") + "\r\n";    
     }, "");
