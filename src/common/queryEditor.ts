@@ -48,7 +48,6 @@ export class QueryEditor {
 
     this.panel.webview.onDidReceiveMessage(
       (command: ICommand) => {
-        
         switch (command.action) {
           case CommandAction.Query:
             if (this.tableListProvider.config) {
@@ -109,7 +108,7 @@ export class QueryEditor {
               break;
             }
           case CommandAction.Export:
-             if (this.tableListProvider.config) {
+            if (this.tableListProvider.config) {
               DatabaseProcessor.getInstance()
                 .getTableData(
                   this.tableListProvider.config,
@@ -118,17 +117,24 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    const exportData = command.params?.exportType === "dumpFile" ? this.formatDumpFile(oe, this.tableNode.tableName, this.tableListProvider.config!.label): oe;
+                    const exportData =
+                      command.params?.exportType === "dumpFile"
+                        ? this.formatDumpFile(
+                            oe,
+                            this.tableNode.tableName,
+                            this.tableListProvider.config!.label
+                          )
+                        : oe;
                     this.panel?.webview.postMessage({
                       id: command.id,
                       command: "export",
                       tableName: this.tableNode.tableName,
                       data: exportData,
-                      format: command.params!.exportType
+                      format: command.params!.exportType,
                     });
                   }
                 });
-            };
+            }
             break;
         }
       },
@@ -150,76 +156,81 @@ export class QueryEditor {
 
   private formatDumpFile(data: any, fileName: string, dbName: string) {
     const dumpData = data.rawData.reduce((accumulator: string, row: any) => {
-      return accumulator + Object.entries(row).filter(element => element[0] !== "ROWID").reduce((accumulator: any, element: any, index) => {
-
-        if (index > 0 && accumulator.length !== 0) {
-          accumulator += " ";
-        }
-        // typeof null === "object"
-        if(typeof element[1] === "object") {
-          return accumulator + "?";
-        }
-        const column = data.columns.find((column: { name: string; }) => column.name === element[0]);
-        switch (column.type) {
-          
-          case "decimal":
-            if (element[1] < 1 && element[1] > 0 ) {
-              return accumulator + element[1].toString().slice(1);
+      return (
+        accumulator +
+        Object.entries(row)
+          .filter((element) => element[0] !== "ROWID")
+          .reduce((accumulator: any, element: any, index) => {
+            if (index > 0 && accumulator.length !== 0) {
+              accumulator += " ";
             }
-          case "integer":
-          case "int64":
-            return accumulator + element[1];
-          case "raw":
-          case "character":
-            const formatted = element[1].replace(/\"/g, `""`);
-            return accumulator + `\"${formatted}\"`;
-          case "date":
-            const tempDate = new Date(element[1]);
-            const tempYMD = {
-              y: tempDate.getFullYear().toString().slice(2),
-              m: (tempDate.getMonth() + 1).toString().padStart(2, "0"),
-              d: tempDate.getDate().toString().padStart(2, "0"),
-            };
-            const tempDateFormat = data.PSC.dateformat.substring(0,3);
-            const date = tempDateFormat
-            .split("")
-            .map((letter: string)  => {
-              return tempYMD[letter as keyof typeof tempYMD];
-            })
-            .join("/");
-          return accumulator + date;
-          case "datetime":
-          case "datetime-tz":
-            return accumulator + element[1];
-          case "logical":
-            return accumulator + (element[1] ? "yes" : "no");
-          default:
-            return accumulator.slice(0,-1);
-          }
-      }, "") + "\r\n";    
+            // typeof null === "object"
+            if (typeof element[1] === "object") {
+              return accumulator + "?";
+            }
+            const column = data.columns.find(
+              (column: { name: string }) => column.name === element[0]
+            );
+            switch (column.type) {
+              case "decimal":
+                if (element[1] < 1 && element[1] > 0) {
+                  return accumulator + element[1].toString().slice(1);
+                }
+              case "integer":
+              case "int64":
+                return accumulator + element[1];
+              case "raw":
+              case "character":
+                const formatted = element[1].replace(/\"/g, `""`);
+                return accumulator + `\"${formatted}\"`;
+              case "date":
+                const tempDate = new Date(element[1]);
+                const tempYMD = {
+                  y: tempDate.getFullYear().toString().slice(2),
+                  m: (tempDate.getMonth() + 1).toString().padStart(2, "0"),
+                  d: tempDate.getDate().toString().padStart(2, "0"),
+                };
+                const tempDateFormat = data.PSC.dateformat.substring(0, 3);
+                const date = tempDateFormat
+                  .split("")
+                  .map((letter: string) => {
+                    return tempYMD[letter as keyof typeof tempYMD];
+                  })
+                  .join("/");
+                return accumulator + date;
+              case "datetime":
+              case "datetime-tz":
+                return accumulator + element[1];
+              case "logical":
+                return accumulator + (element[1] ? "yes" : "no");
+              default:
+                return accumulator.slice(0, -1);
+            }
+          }, "") +
+        "\r\n"
+      );
     }, "");
 
-    const trailerInfo = `\r
-PSC\r
-filename=${fileName}\r
-records=${String(data.rawData.length).padStart(13, "0")}\r
-ldbname=${dbName}\r
-timestamp=${data.PSC.timestamp}\r
-numformat=${data.PSC.numformat}\r
-dateformat=${data.PSC.dateformat}\r
-map=NO-MAP\r
-cpstream=${data.PSC.cpstream}\r
-.\r
-${String(dumpData.length + 3).padStart(10, "0")}\r
-`;
-    return dumpData + "." + trailerInfo;
+    const trailerInfo = `PSC\r\n`
+        + `filename=${fileName}\r\n`
+        + `records=${String(data.rawData.length).padStart(13, "0")}\r\n`
+        + `ldbname=${dbName}\r\n`
+        + `timestamp=${data.PSC.timestamp}\r\n`
+        + `numformat=${data.PSC.numformat}\r\n`
+        + `dateformat=${data.PSC.dateformat}\r\n`
+        + `map=NO-MAP\r\n`
+        + `cpstream=${data.PSC.cpstream}\r\n`
+        + `.\r\n`
+        + `${String(dumpData.length + 3).padStart(10, "0")}\r\n`;
+
+    return dumpData + ".\r\n" + trailerInfo;
   }
 
   public updateFields() {
-      this.panel?.webview.postMessage({
-        command: "columns",   
-        columns: this.tableNode.cache?.selectedColumns,
-      });
+    this.panel?.webview.postMessage({
+      command: "columns",
+      columns: this.tableNode.cache?.selectedColumns,
+    });
   }
 
   private getWebviewContent(tableData: IOETableData): string {
