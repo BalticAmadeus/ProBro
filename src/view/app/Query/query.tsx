@@ -61,6 +61,10 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
         []
     );
 
+    window.addEventListener('contextmenu', e => {
+      e.stopImmediatePropagation()
+  }, true);
+
     const [filters, _setFilters] = React.useState({
         columns: {},
         enabled: true,
