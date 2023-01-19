@@ -16,7 +16,7 @@ export class GroupListProvider implements vscode.TreeDataProvider<INode>, IRefre
   constructor(
     private context: vscode.ExtensionContext,
     private tables: vscode.TreeView<INode>
-  ) { }
+  ) {}
 
   onDidChangeSelection(
     e: vscode.TreeViewSelectionChangeEvent<INode>,
@@ -54,6 +54,7 @@ export class GroupListProvider implements vscode.TreeDataProvider<INode>, IRefre
   }
 
   private async getGroupNodes(): Promise<groupNode.GroupNode[]> {
+    
     const connections = this.context.globalState.get<{
       [key: string]: IConfig;
     }>(`${Constants.globalExtensionKey}.dbconfig`);

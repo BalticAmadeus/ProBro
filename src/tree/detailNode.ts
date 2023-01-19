@@ -1,8 +1,4 @@
-import * as fs from "fs";
-import * as path from "path";
 import * as vscode from "vscode";
-import { DetailListProvider } from "./DetailListProvider";
-import { InfoNode } from "./infoNode";
 import { INode } from "./INode";
 
 export class DetailNode implements INode {
