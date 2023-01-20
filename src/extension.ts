@@ -5,6 +5,7 @@ import { Constants } from "./db/constants";
 import { QueryEditor } from "./common/queryEditor";
 import { DbConnectionNode } from "./tree/dbConnectionNode";
 import { FieldsViewProvider } from "./tree/FieldsViewProvider";
+import { IndexesViewProvider } from "./tree/IndexesViewProvider";
 import { GroupListProvider } from "./tree/GroupListProvider";
 import { TableNode } from "./tree/tableNode";
 import { TablesListProvider } from "./tree/TablesListProvider";
@@ -25,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(fields);
 
-  const indexesProvider = new FieldsViewProvider(context, "indexes");
+  const indexesProvider = new IndexesViewProvider(context, "indexes");
   const indexes = vscode.window.registerWebviewViewProvider(
     `${Constants.globalExtensionKey}-indexes`,
     indexesProvider,
