@@ -68,6 +68,10 @@ function Fields({ initialData, vscode }) {
         setWindowHeight(window.innerHeight);
     };
 
+	window.addEventListener('contextmenu', e => {
+		e.stopImmediatePropagation()
+	}, true);
+
     React.useEffect(() => {
         window.addEventListener("resize", windowRezise);
         return () => {
