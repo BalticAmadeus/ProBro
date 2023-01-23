@@ -1,11 +1,6 @@
-import * as fs from "fs";
-import * as path from "path";
 import * as vscode from "vscode";
 import { TableDetails } from "../view/app/model";
-import { DatabaseListProvider } from "./DatabaseListProvider";
-import { InfoNode } from "./infoNode";
 import { INode } from "./INode";
-import { TablesListProvider } from "./TablesListProvider";
 
 export class TableNode implements INode {
     public tableName: string;

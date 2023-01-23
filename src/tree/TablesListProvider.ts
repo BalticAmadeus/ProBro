@@ -4,7 +4,7 @@ import * as tableNode from './tableNode';
 import { IConfig, TableCount } from '../view/app/model';
 import { DatabaseProcessor } from '../db/databaseProcessor';
 import { TableNode } from './tableNode';
-import { FieldsViewProvider } from './FieldsViewProvider';
+import { PanelViewProvider } from './panelViewProvider';
 
 
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
@@ -14,7 +14,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 	public filters: string[] | undefined = ["UserTable"];
 	public tableClicked: TableCount = {tableName: undefined, count: 0};
 
-	constructor(private context: vscode.ExtensionContext, private fieldsProvider: FieldsViewProvider, private indexesProvider: FieldsViewProvider) {
+	constructor(private context: vscode.ExtensionContext, private fieldsProvider: PanelViewProvider, private indexesProvider: PanelViewProvider) {
 	}
 
 	public displayData(node: TableNode) {
