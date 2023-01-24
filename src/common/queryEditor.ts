@@ -109,6 +109,7 @@ export class QueryEditor {
             }
           case CommandAction.Export:
             if (this.tableListProvider.config) {
+              const timestamp = Date.now();
               DatabaseProcessor.getInstance()
                 .getTableData(
                   this.tableListProvider.config,
@@ -116,7 +117,9 @@ export class QueryEditor {
                   command.params
                 )
                 .then((oe) => {
+                  console.log("DBprocessor time start: ", timestamp, "end: ", Date.now(), "Duration: ", Date.now() - timestamp);
                   if (this.panel) {
+                    const Dftimestamp = Date.now();
                     const exportData =
                       command.params?.exportType === "dumpFile"
                         ? this.formatDumpFile(
@@ -125,6 +128,7 @@ export class QueryEditor {
                             this.tableListProvider.config!.label
                           )
                         : oe;
+                    console.log("DF formatting start: ", Dftimestamp, "end: ", Date.now(), "Duration: ", Date.now() - Dftimestamp);
                     this.panel?.webview.postMessage({
                       id: command.id,
                       command: "export",
@@ -132,6 +136,7 @@ export class QueryEditor {
                       data: exportData,
                       format: command.params!.exportType,
                     });
+                    console.log("query start: ", timestamp, "Query editor end: ", Date.now(), "duration: ", Date.now() - timestamp);
                   }
                 });
             }

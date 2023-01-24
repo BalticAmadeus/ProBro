@@ -89,6 +89,7 @@ export class DatabaseProcessor implements IProcessor {
     }
 
     public getTableData(config: IConfig, tableName: string | undefined, inputParams: ITableData | undefined) {
+        console.log("database processor got export data request: ", Date.now());
         //        wherePhrase: string, start: number, pageLength: number, lastRowID: string, sortColumns: SortColumn[], filters: any, timeOut: number): Promise<IOETableData> {
         if (config && tableName && inputParams) {
             var params: IOEParams = {
@@ -100,6 +101,7 @@ export class DatabaseProcessor implements IProcessor {
         } else {
             return Promise.resolve({columns: [], data: []});
         }
+        
     }
 
     public submitTableData(config: IConfig, tableName: string | undefined, inputParams: ITableData | undefined) {

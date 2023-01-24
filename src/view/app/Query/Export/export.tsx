@@ -15,13 +15,12 @@ export default function ExportPopup({
 }) {
   const [exportFormat, setExportFormat] = React.useState("");
   const [radioSelection, setRadioSelection] = React.useState("");
+  let timestamp;
   
   function handleChange ({ currentTarget }:React.ChangeEvent<HTMLInputElement>) {
     setRadioSelection(currentTarget.value);
     console.log(currentTarget.value);
   };
-
-
 
   const exportList = ["json", "csv", "xls", "dumpFile"].concat("").reverse();
 
@@ -31,12 +30,13 @@ export default function ExportPopup({
       id: "GetData",
       action: CommandAction.Export,
     };
+
     switch (radioSelection) {
       case DataToExport[DataToExport.Table]:
        command.params = {
             wherePhrase: wherePhrase,
             start: 0,
-            pageLength: 100000,
+            pageLength: 1000000,
             lastRowID: "",
             sortColumns: sortColumns,
             exportType: exportFormat,
@@ -47,7 +47,7 @@ export default function ExportPopup({
           command.params = {
             wherePhrase: wherePhrase,
             start: 0,
-            pageLength: 100000,
+            pageLength: 1000000,
             lastRowID: "",
             sortColumns: sortColumns,
             filters: filters,
@@ -63,7 +63,7 @@ export default function ExportPopup({
           command.params = {
             wherePhrase: wherePhrase,
             start: 0,
-            pageLength: 100000,
+            pageLength: 1000000,
             lastRowID: "",
             sortColumns: sortColumns,
             filters: filters,
@@ -75,16 +75,18 @@ export default function ExportPopup({
       default:
         break;
     }
+    timestamp = Date.now();
+    console.log("timestamp: ", timestamp);
     vscode.postMessage(command);
   };
 
   const handleMessage = (event) => {
     const message = event.data;
+    
     switch (message.command) {
       case "export":
+        console.log("export start: ", timestamp, " end: ", Date.now(), "duration: ", Date.now() - timestamp);
         if (message.format === "dumpFile") {
-          console.log("dumpfile export got.");
-          console.log(message);
           exportFromJSON({
             data: message.data,
             fileName: message.tableName,

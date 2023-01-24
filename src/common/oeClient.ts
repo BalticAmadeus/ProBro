@@ -2,6 +2,7 @@ import * as Net from "net";
 import * as cp from "child_process";
 import * as vscode from "vscode";
 import { Constants } from "../db/constants";
+import { time, timeStamp } from "console";
 
 class OEClient {
     private port: number = 23456;
@@ -25,6 +26,7 @@ class OEClient {
                 console.log('TCP connection established with the server.');
             });
             // The client can also receive data from the server by reading from its socket.
+            console.log("receiving data start: ", new Date());
             this.client.on('data', (chunk) => {
                 console.log(`Data received from the server`);
                 this.data += chunk.toString();
@@ -32,8 +34,9 @@ class OEClient {
                     this.dataFinish(this.data);
                 }
             });
-
+            console.log("receiving data end: ", new Date());
             this.client.on('end', () => {
+                
                 console.log('Requested an end to the TCP connection');
             });
             return this;
