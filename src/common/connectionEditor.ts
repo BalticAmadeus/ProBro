@@ -31,6 +31,12 @@ export class ConnectionEditor {
                 ]
             }
         );
+
+        this.panel.iconPath = {
+            dark: vscode.Uri.file(path.join( this.extensionPath, "resources", "icon", "connection-icon-dark.svg")),
+            light: vscode.Uri.file(path.join( this.extensionPath, "resources", "icon", "connection-icon-light.svg"))
+        };
+
         this.panel.webview.html = this.getWebviewContent();
 
         this.panel.webview.onDidReceiveMessage(
