@@ -28,6 +28,18 @@
     ],
     "main": "./out/extension.js",
     "contributes": {
+        "configuration": {
+            "title": "ProBro",
+            "properties": {
+                "ProBro.batchSize":{
+                    "type": "number",
+                    "minimum": 100,
+                    "default": 1000,
+                    "markdownDescription": "Specifies number of records retrieved in one loading"
+                }
+            }
+
+        },
         "viewsContainers": {
             "activitybar": [
                 {
