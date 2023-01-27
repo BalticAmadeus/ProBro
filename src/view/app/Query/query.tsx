@@ -181,7 +181,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                   function handleKeyInputTimeout() {
                     clearTimeout(timer);
                     timer = setTimeout(() => {
-                      reloadData(100);
+                      reloadData(configuration.initialBatchSizeLoad);
                     }, 500);
                   }
 
@@ -338,11 +338,11 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     setFormattedRows([]);
     makeQuery(
       0,
-      100 /*number of records for first load*/,
+      configuration.initialBatchSizeLoad /*number of records for first load*/,
       "",
       sortColumns,
       filters,
-      500 /*ms for data retrieval*/
+      configuration.batchMaxTimeout /*ms for data retrieval*/
     );
   };
 
@@ -410,7 +410,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     }
     setScrollHeight(event.currentTarget.scrollTop);
     setIsLoading(true);
-    makeQuery(loaded, configuration.batchSize, rowID, sortColumns, filters, 100);
+    makeQuery(loaded, configuration.batchSize, rowID, sortColumns, filters, configuration.batchMaxTimeout);
   }
 
   function onSortClick(inputSortColumns: SortColumn[]) {
