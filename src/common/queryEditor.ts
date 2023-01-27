@@ -39,6 +39,11 @@ export class QueryEditor {
       }
     );
 
+    this.panel.iconPath = {
+      dark: vscode.Uri.file(path.join( this.extensionPath, "resources", "icon", "query-icon-dark.svg")),
+      light: vscode.Uri.file(path.join( this.extensionPath, "resources", "icon", "query-icon-light.svg"))
+    };
+
     if (this.panel) {
       this.panel.webview.html = this.getWebviewContent({
         columns: [],
