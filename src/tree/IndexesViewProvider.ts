@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { PanelViewProvider } from "./panelViewProvider";
+import { PanelViewProvider } from "./PanelViewProvider";
 
 export class IndexesViewProvider extends PanelViewProvider {
 

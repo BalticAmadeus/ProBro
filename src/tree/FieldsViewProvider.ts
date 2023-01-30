@@ -2,7 +2,7 @@ import path = require('path');
 import * as vscode from 'vscode';
 import { QueryEditor } from '../common/queryEditor';
 import { CommandAction, ICommand } from '../view/app/model';
-import { PanelViewProvider } from './panelViewProvider';
+import { PanelViewProvider } from './PanelViewProvider';
 
 export class FieldsViewProvider extends PanelViewProvider {
 
