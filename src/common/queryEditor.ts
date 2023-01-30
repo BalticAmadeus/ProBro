@@ -13,6 +13,7 @@ export class QueryEditor {
   private disposables: vscode.Disposable[] = [];
   public tableName: string;
   private fieldsProvider: FieldsViewProvider;
+  private readonly configuration = vscode.workspace.getConfiguration("ProBro");
 
   constructor(
     private context: vscode.ExtensionContext,
@@ -56,6 +57,7 @@ export class QueryEditor {
         switch (command.action) {
           case CommandAction.Query:
             if (this.tableListProvider.config) {
+
               DatabaseProcessor.getInstance()
                 .getTableData(
                   this.tableListProvider.config,
@@ -267,6 +269,7 @@ export class QueryEditor {
           window.acquireVsCodeApi = acquireVsCodeApi;
           window.tableData = ${JSON.stringify(tableData)};
           window.tableName = ${JSON.stringify(this.tableNode.tableName)};
+          window.configuration = ${JSON.stringify(this.configuration)};
         </script>
     </head>
     <body>

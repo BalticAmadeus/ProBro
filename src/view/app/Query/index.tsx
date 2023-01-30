@@ -10,6 +10,7 @@ declare global {
         acquireVsCodeApi(): any;
         tableData: IOETableData;
         tableName: string;
+        configuration: any;
     }
 }
 
@@ -21,5 +22,6 @@ root.render(
         vscode={vscode}
         tableData={window.tableData}
         tableName={window.tableName}
+        configuration={window.configuration}
     />
 );

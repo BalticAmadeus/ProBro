@@ -28,6 +28,30 @@
     ],
     "main": "./out/extension.js",
     "contributes": {
+        "configuration": {
+            "title": "ProBro",
+            "properties": {
+                "ProBro.batchSize":{
+                    "type": "number",
+                    "minimum": 100,
+                    "default": 1000,
+                    "markdownDescription": "Specifies number of records retrieved in one loading"
+                },
+                "ProBro.batchMaxTimeout": {
+                    "type": "number",
+                    "minimum": 10,
+                    "default": 100,
+                    "markdownDescription": "Specifies maximum time in milliseconds to retrieve batch of records"
+                },
+                "ProBro.initialBatchSizeLoad": {
+                    "type": "number",
+                    "minimum": 50,
+                    "default": 100,
+                    "markdownDescription": "Specifies the initial number of records retrieved when query is opened"
+                }
+            }
+
+        },
         "viewsContainers": {
             "activitybar": [
                 {

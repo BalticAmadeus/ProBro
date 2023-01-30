@@ -1,6 +1,6 @@
 import * as React from "react";
 import { IOETableData } from "../../../db/oe";
-import DataGrid, { SortColumn, SelectColumn, CopyEvent, PasteEvent } from "react-data-grid";
+import DataGrid, { SortColumn, SelectColumn, CopyEvent } from "react-data-grid";
 
 import { CommandAction, ICommand, ProcessAction } from "../model";
 import ExportData from "./Export";
@@ -20,6 +20,7 @@ interface IConfigProps {
   vscode: any;
   tableData: IOETableData;
   tableName: string;
+  configuration: any;
 }
 
 interface IErrorObject {
@@ -33,7 +34,7 @@ interface IStatisticsObject {
   connectTime: number;
 }
 
-function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
+function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState(false);
 
@@ -62,7 +63,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
     );
 
     window.addEventListener('contextmenu', e => {
-      e.stopImmediatePropagation()
+      e.stopImmediatePropagation();
   }, true);
 
     const [filters, _setFilters] = React.useState({
@@ -180,7 +181,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
                   function handleKeyInputTimeout() {
                     clearTimeout(timer);
                     timer = setTimeout(() => {
-                      reloadData(100);
+                      reloadData(configuration.initialBatchSizeLoad);
                     }, 500);
                   }
 
@@ -337,11 +338,11 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
     setFormattedRows([]);
     makeQuery(
       0,
-      100 /*number of records for first load*/,
+      configuration.initialBatchSizeLoad /*number of records for first load*/,
       "",
       sortColumns,
       filters,
-      500 /*ms for data retrieval*/
+      configuration.batchMaxTimeout /*ms for data retrieval*/
     );
   };
 
@@ -409,7 +410,7 @@ function QueryForm({ vscode, tableData, tableName, ...props }: IConfigProps) {
     }
     setScrollHeight(event.currentTarget.scrollTop);
     setIsLoading(true);
-    makeQuery(loaded, 1000, rowID, sortColumns, filters, 100);
+    makeQuery(loaded, configuration.batchSize, rowID, sortColumns, filters, configuration.batchMaxTimeout);
   }
 
   function onSortClick(inputSortColumns: SortColumn[]) {
