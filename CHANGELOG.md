@@ -1,5 +1,19 @@
 # Change Log
 
+## 1.2.0 (2023-01-30)
+### Added
+- D file export
+- Extension settings configuration
+
+## Changed
+- Fixed Fields explorer bugs
+- GUI improvements
+- Fixed various small bugs
+
+### Changed
+- Fixed various small bugs
+- Improved popup window design
+
 ## 1.1.0 (2022-12-23)
 ### Added
 - Support for Linux OS
