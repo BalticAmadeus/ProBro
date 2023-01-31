@@ -23,13 +23,7 @@ export default function ExportPopup({
 
 
 
-  const exportTypes = ["json", "csv", "xls"];
-
-  const exportList = Object.keys(exportFromJSON.types)
-    .filter((key) => isNaN(Number(key)))
-    .filter((key) => exportTypes.includes(key))
-    .concat("") //add empty option for default value
-    .reverse();
+  const exportList = ["json", "csv", "xls", "dumpFile"].concat("").reverse();
 
   const getData = () => {
     console.log("get data");
@@ -88,6 +82,17 @@ export default function ExportPopup({
     const message = event.data;
     switch (message.command) {
       case "export":
+        if (message.format === "dumpFile") {
+          console.log("dumpfile export got.");
+          console.log(message);
+          exportFromJSON({
+            data: message.data,
+            fileName: message.tableName,
+            exportType: exportFromJSON.types.txt,
+            extension: "d"
+          });
+          break;
+        }
         const exportData = message.data.rawData.map(({ ROWID, ...rest }) => {
           return rest;
         });

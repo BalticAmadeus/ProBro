@@ -68,6 +68,10 @@ function Fields({ initialData, vscode }) {
         setWindowHeight(window.innerHeight);
     };
 
+	window.addEventListener('contextmenu', e => {
+		e.stopImmediatePropagation()
+	}, true);
+
     React.useEffect(() => {
         window.addEventListener("resize", windowRezise);
         return () => {
@@ -124,8 +128,8 @@ function Fields({ initialData, vscode }) {
 				setFilteredRows(rows);
 			} else {
 				setFilteredRows(rows.filter( (row) => {
-					for (let [key, value] of Object.entries(filters.columns)) {
-						if(!row[key].toString().toLowerCase().includes(value)) {
+					for (let [key] of Object.entries(filters.columns)) {
+						if(!row[key].toString().toLowerCase().includes(filters.columns[key].toLowerCase())) {
 							return false;
 						}
 					}
@@ -195,6 +199,11 @@ function Fields({ initialData, vscode }) {
 			const message = event.data;
 			switch (message.command) {
 				case "data":
+					message.data.fields.forEach(field => {
+						if (field.mandatory !== null) {
+							field.mandatory = field.mandatory ? "yes" : "no";	
+						}						
+					});
 				setRows(message.data.fields);
 				setFilteredRows(message.data.fields);
 				setFilters({columns: {},

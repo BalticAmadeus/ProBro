@@ -36,7 +36,6 @@ export class DbConnectionNode implements INode {
 
   public async deleteConnection(context: vscode.ExtensionContext) {
     //TODO fix and move to someplace else
-    console.log("deleteConnection", this.config.label);
 
     let connections = context.globalState.get<{ [id: string]: IConfig }>(`pro-bro.dbconfig`);
     if (!connections) {

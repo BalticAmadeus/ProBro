@@ -3,7 +3,9 @@
 An extension for Progress DB browsing.
 
 ## Current status
-This open source project is in active development. Our goal is to simplify the access to Progress DB wen using VSCode as a development environment.
+This open source project is in active development. Our goal is to simplify the access to Progress DB wen using VS Code as a development environment.
+
+<img src="resources/images/multisorting.gif">
 
 ## Features
 - Connection to Progress DB:
@@ -12,14 +14,14 @@ This open source project is in active development. Our goal is to simplify the a
   - Custom connection groups
   - Deleting Connections
   - Edit Connections
-  - Connection status indicator *(new)*
+  - Connection status indicator
 - Tables
   - Hidden tables
   - Launch query
-  - Launch query on double click *(new)*
+  - Launch query on double click
 - Indexes
 - Fields
-  - Filtering *(new)*
+  - Filtering
   - Show only selected fields
 - Query data
   - Server-side multi-sorting
@@ -30,6 +32,7 @@ This open source project is in active development. Our goal is to simplify the a
   - View record on double-click
 - Export
   - Formats
+    - .D file (*new*)
     - JSON
     - Excel
     - CSV
@@ -41,13 +44,14 @@ This open source project is in active development. Our goal is to simplify the a
   - Delete multiple
   - Insert
   - Update
+- Extension settings configuration (*new*)
 - Supported OS
   - Windows
-  - Linux *(new)*
+  - Linux
 ## Guide
 - [Install and setup guide](resources/markdown/setup.md)
 - [User manual](resources/markdown/manual.md)
-- [Development setup guide](esources/markdown/dev_env_setup.md)
+- [Development setup guide](resources/markdown/dev_env_setup.md)
 
 ## Related work
 - [DataDigger](https://datadigger.wordpress.com/) developed by Patrick Tingen. A great source of features and examples when working on this project.

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill-rule:evenodd;clip-rule:evenodd;}
+</style>
+<g>
+	<path class="st0" d="M448,32H64c-17.7,0-32,14.3-32,32v384c0,17.7,14.3,32,32,32h384c17.7,0,32-14.3,32-32V64   C480,46.3,465.7,32,448,32z M64,0C28.6,0,0,28.6,0,64v384c0,35.4,28.6,64,64,64h384c35.4,0,64-28.6,64-64V64c0-35.4-28.6-64-64-64   H64z" fill="#ffffff"/>
+	<rect x="32" y="96" class="st0" width="448" height="32" fill="#ffffff"/>
+	<path class="st0" d="M160,496V48h32v448H160z M320,496V48h32v448H320z" fill="#ffffff"/>
+	<path class="st0" d="M480,256H32v-32h448V256z M480,384H32v-32h448V384z" fill="#ffffff"/>
+	<path d="M0,64C0,28.6,28.6,0,64,0h384c35.4,0,64,28.6,64,64v64H0V64z" fill="#ffffff"/>
+</g>
+</svg>

@@ -1,8 +1,15 @@
 {
     "name": "pro-bro",
     "displayName": "ProBro",
-    "description": "VSC extension for browsing Progress OpenEdge DB",
-    "version": "1.1.0",
+    "description": "VS Code extension for browsing Progress OpenEdge DataBases",
+    "keywords": [
+        "OpenEdge",
+        "Progress",
+        "DataBase",
+        "DB",
+        "Explorer"
+    ],
+    "version": "1.2.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -12,6 +19,8 @@
         "vscode": "^1.67.0"
     },
     "categories": [
+        "Programming Languages",
+        "Visualization",
         "Other"
     ],
     "icon": "resources/pB_logo.png",
@@ -28,6 +37,29 @@
     ],
     "main": "./out/extension.js",
     "contributes": {
+        "configuration": {
+            "title": "ProBro",
+            "properties": {
+                "ProBro.batchSize": {
+                    "type": "number",
+                    "minimum": 100,
+                    "default": 1000,
+                    "markdownDescription": "Specifies number of records retrieved in one loading"
+                },
+                "ProBro.batchMaxTimeout": {
+                    "type": "number",
+                    "minimum": 10,
+                    "default": 100,
+                    "markdownDescription": "Specifies maximum time in milliseconds to retrieve batch of records"
+                },
+                "ProBro.initialBatchSizeLoad": {
+                    "type": "number",
+                    "minimum": 50,
+                    "default": 100,
+                    "markdownDescription": "Specifies the initial number of records retrieved when query is opened"
+                }
+            }
+        },
         "viewsContainers": {
             "activitybar": [
                 {
@@ -197,6 +229,7 @@
         "@mui/icons-material": "^5.10.2",
         "@mui/material": "^5.10.2",
         "bootstrap": "^5.2.0",
+        "esbuild": "^0.17.5",
         "export-from-json": "^1.6.0",
         "faker": "^5.5.3",
         "react": "^18.1.0",
