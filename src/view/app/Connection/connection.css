@@ -17,7 +17,12 @@ body{
 .container .title{
   font-size: 25px;
   font-weight: 500;
-  position: relative;
+  position:relative;
+}
+.title {
+  display:inline-block;
+  margin:auto;
+  margin-left: 0;
 }
 .content form .connection-details{
   display: flex;
@@ -123,9 +128,19 @@ form .connection-details .input-box{
     flex-direction: column;
   }
 }
-
 Input[type="text"] {
   background-color: var(--vscode-input-background);
   color: var(--vscode-input-foreground);
   border-color: var(--vscode-editorBracketMatch-border);
-  }
+}
+.heading {
+  display:flex;
+  justify-content:space-evenly;
+}
+.importPf {
+ padding: 0;
+}
+
+
+
+
