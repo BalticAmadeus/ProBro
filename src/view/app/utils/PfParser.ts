@@ -16,35 +16,36 @@ export class PfParser {
     };
 
     pfFile
-      .split("\r\n")
-      .filter((param) => {
-        return param && param[0] !== "#";
+      .split("\n")
+      .filter((params) => {
+        return (
+          params && !new RegExp(`^(\r)$`).test(params) && params[0] !== "#"
+        );
       })
-      .join(" ")
-      .match(/(-[A-Za-z0-9]+)/g)
-        .forEach((key) => {
+      .forEach((param) => {
+        param.match(/(-[A-Za-z0-9]+)/g).forEach((key) => {
           let regexStr;
-          if (new RegExp(`(${key}\\s)(\'|\")`).test(pfFile)) {
+          if (new RegExp(`(${key}\\s)(\'|\")`).test(param)) {
             regexStr = `(${key}\\s)(\'|\")([^\'^\"]*)(\'|\")`;
           } else {
             regexStr = `(${key}\\s*)([\\S]+)*`;
           }
-          const keyVal = pfFile.match(new RegExp(regexStr));
+          const keyVal = param.match(new RegExp(regexStr));
           switch (key) {
             case "-db":
-              config.name = keyVal[0].substring(key.length);
+              config.name = keyVal[0].substring(key.length + 1);
               break;
             case "-U":
-              config.user = keyVal[0].substring(key.length);
+              config.user = keyVal[0].substring(key.length + 1);
               break;
             case "-P":
-              config.password = keyVal[0].substring(key.length);
+              config.password = keyVal[0].substring(key.length + 1);
               break;
             case "-H":
-              config.host = keyVal[0].substring(key.length);
+              config.host = keyVal[0].substring(key.length + 1);
               break;
             case "-S":
-              config.port = keyVal[0].substring(key.length);
+              config.port = keyVal[0].substring(key.length + 1);
               break;
             default:
               if (config.params) {
@@ -54,6 +55,7 @@ export class PfParser {
               break;
           }
         });
+      });
     return config;
   }
 }
