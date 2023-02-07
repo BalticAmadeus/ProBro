@@ -20,7 +20,7 @@ export class ConnectionEditor {
         }
 
         this.panel = vscode.window.createWebviewPanel(
-            'addOEConnection', // Identifies the type of the webview. Used internally
+            'OEConnectionEditor', // Identifies the type of the webview. Used internally
             action, // Title of the panel displayed to the user
             vscode.ViewColumn.One, // Editor column to show the new webview panel in.
             {
