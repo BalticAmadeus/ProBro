@@ -1,9 +1,9 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import { Constants } from '../db/constants';
+import { Constants } from '../common/constants';
 import { TableDetails } from '../view/app/model';
-import { TableNode } from './tableNode';
-import { TablesListProvider } from './TablesListProvider';
+import { TableNode } from '../treeview/TableNode';
+import { TablesListProvider } from '../treeview/TablesListProvider';
 
 export class PanelViewProvider implements vscode.WebviewViewProvider {
 

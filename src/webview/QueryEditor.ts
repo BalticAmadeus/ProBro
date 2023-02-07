@@ -3,9 +3,9 @@ import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
 import { DatabaseProcessor } from "../db/databaseProcessor";
 import { IOETableData } from "../db/oe";
-import { TableNode } from "../tree/tableNode";
-import { TablesListProvider } from "../tree/TablesListProvider";
-import { FieldsViewProvider } from "../tree/FieldsViewProvider";
+import { TableNode } from "../treeview/TableNode";
+import { TablesListProvider } from "../treeview/TablesListProvider";
+import { FieldsViewProvider } from "./FieldsViewProvider";
 
 export class QueryEditor {
   private readonly panel: vscode.WebviewPanel | undefined;

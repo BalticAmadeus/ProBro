@@ -1,7 +1,7 @@
 import path = require("path");
 import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
-import { Constants } from "../db/constants";
+import { Constants } from "../common/constants";
 import { DatabaseProcessor } from "../db/databaseProcessor";
 
 export class ConnectionEditor {
