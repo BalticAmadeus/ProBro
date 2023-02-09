@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import path = require("path");
 import { INode } from "./INode";
 import { IConfig } from "../view/app/model";
-import { ConnectionEditor } from "../common/connectionEditor";
+import { ConnectionEditor } from "../webview/connectionEditor";
 
 export class DbConnectionNode implements INode {
   public readonly id: string;

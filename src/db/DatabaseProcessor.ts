@@ -3,7 +3,7 @@ import { IConfig, ITableData, TableDetails } from "../view/app/model";
 import { IProcessor } from "./IProcessor";
 import * as cp from "child_process";
 import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
-import getOEClient from "../common/oeClient";
+import getOEClient from "./oeClient";
 import { SortColumn } from "react-data-grid";
 import { resolve } from "path";
 

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { DatabaseProcessor } from "../db/databaseProcessor";
+import { DatabaseProcessor } from "../db/DatabaseProcessor";
 import { IConfig } from "../view/app/model";
 import { IRefreshCallback, RefreshWithoutCallback } from "./IRefreshCallback";
 
