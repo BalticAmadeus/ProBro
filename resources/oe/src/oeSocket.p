@@ -610,7 +610,7 @@ MESSAGE "MODE:" cMode.
 			PSC:Add("numformat", SUBSTITUTE("&1,&2", ASC(SESSION:NUMERIC-SEPARATOR), ASC(SESSION:NUMERIC-DECIMAL-POINT))).
 			PSC:Add("dateformat", SUBSTITUTE("&1-&2", SESSION:DATE-FORMAT, SESSION:YEAR-OFFSET)).
 			PSC:Add("cpstream", SESSION:CPSTREAM).
-			JsonObject:Add("PSC", PSC).
+			JsonObject:Add("psc", PSC).
 		END.
 	
 		IF inputObject:GetJsonObject("params"):GetCharacter("lastRowID") > "" AND

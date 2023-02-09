@@ -6,13 +6,15 @@
     align-items:center;
     font-size: inherit;
     font-style: inherit;
-    max-height: 70%;
+    max-height: 85%;
     height: fit-content;
     width:auto;
     box-sizing: border-box;
     display: flex;
      flex-direction: column;
-     overflow: hidden;  
+     overflow: hidden;
+     align-self: center; 
+     position: fixed; 
     
   }
 
@@ -46,4 +48,9 @@
 
 .popup-overlay {
   background: rgba(0, 0, 0, 0.3);
+}
+
+.popup-content {
+  display: flex;
+  justify-content: center;
 }

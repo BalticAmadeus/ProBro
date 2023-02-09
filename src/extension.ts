@@ -1,15 +1,15 @@
 import * as vscode from "vscode";
 import { QuickPickItem } from "vscode";
-import { ConnectionEditor } from "./common/connectionEditor";
-import { Constants } from "./db/constants";
-import { QueryEditor } from "./common/queryEditor";
-import { DbConnectionNode } from "./tree/dbConnectionNode";
-import { FieldsViewProvider } from "./tree/FieldsViewProvider";
-import { IndexesViewProvider } from "./tree/IndexesViewProvider";
-import { GroupListProvider } from "./tree/GroupListProvider";
-import { TableNode } from "./tree/tableNode";
-import { TablesListProvider } from "./tree/TablesListProvider";
-import { DbConnectionUpdater } from "./tree/DbConnectionUpdater";
+import { ConnectionEditor } from "./webview/connectionEditor";
+import { Constants } from "./common/constants";
+import { QueryEditor } from "./webview/queryEditor";
+import { DbConnectionNode } from "./treeview/dbConnectionNode";
+import { FieldsViewProvider } from "./webview/FieldsViewProvider";
+import { IndexesViewProvider } from "./webview/IndexesViewProvider";
+import { GroupListProvider } from "./treeview/GroupListProvider";
+import { TableNode } from "./treeview/tableNode";
+import { TablesListProvider } from "./treeview/TablesListProvider";
+import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
 
 export function activate(context: vscode.ExtensionContext) {
 
