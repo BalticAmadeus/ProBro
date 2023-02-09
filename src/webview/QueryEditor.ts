@@ -125,14 +125,16 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    const exportData =
-                      command.params?.exportType === "dumpFile"
-                        ? new DumpFileFormatter().formatDumpFile(
-                            oe,
-                            this.tableNode.tableName,
-                            this.tableListProvider.config!.label
-                          )
-                        : oe;
+                    let exportData = oe;
+                    if (command.params?.exportType === "dumpFile") {
+                      const dumpFileFormatter = new DumpFileFormatter();
+                      dumpFileFormatter.formatDumpFile(
+                        oe,
+                        this.tableNode.tableName,
+                        this.tableListProvider.config!.label
+                      );
+                      exportData = dumpFileFormatter.getDumpFile();
+                    }
                     this.panel?.webview.postMessage({
                       id: command.id,
                       command: "export",

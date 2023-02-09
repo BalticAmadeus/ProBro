@@ -1,22 +1,34 @@
+import { IExportDumpData } from "../db/oe";
 
 export class DumpFileFormatter {
 
-    constructor() {
+    private dumpData: string = "";
+    private trailerInfo: string = "";
+    private dumpFile: string = "";
 
+    constructor() {
     }
 
-    public formatDumpFile (data: any, fileName: string, dbName: string) {
-        const dumpData = this.formatDumpData(data);
-        const trailerInfo = this.formatTrailerInfo(data.PSC, fileName, dbName, data.rawData.length);
-        return dumpData 
-            + `.\r\n` 
-            + trailerInfo
-            + `.\r\n` 
-            + `${String(dumpData.length + 3).padStart(10, "0")}\r\n`;
+    public formatDumpFile (data: IExportDumpData, fileName: string, dbName: string): void {
+      this.formatDumpData(data);
+      this.formatTrailerInfo(data.psc, fileName, dbName, data.rawData.length);
+      this.combineDumpFile();
     };
+    
+    public getDumpFile(): string {
+      return this.dumpFile;
+    }
 
-    private formatDumpData (data: any): string {
-        return data.rawData.reduce((accumulator: string, row: any) => {
+    private combineDumpFile (): void {
+        this.dumpFile = this.dumpData 
+        + `.\r\n` 
+        + this.trailerInfo
+        + `.\r\n` 
+        + `${String(this.dumpData.length + 3).padStart(10, "0")}\r\n`;
+    }
+
+    private formatDumpData (data: IExportDumpData): void {
+        this.dumpData = data.rawData.reduce((accumulator: string, row: any) => {
             return (
               accumulator +
               Object.entries(row)
@@ -30,9 +42,9 @@ export class DumpFileFormatter {
                     return accumulator + "?";
                   }
                   const column = data.columns.find(
-                    (column: { name: string }) => column.name === element[0]
+                    (column) => column.name === element[0]
                   );
-                  switch (column.type) {
+                  switch (column!.type) {
                     case "decimal":
                       if (element[1] < 1 && element[1] > 0) {
                         return accumulator + element[1].toString().slice(1);
@@ -51,7 +63,7 @@ export class DumpFileFormatter {
                         m: (tempDate.getMonth() + 1).toString().padStart(2, "0"),
                         d: tempDate.getDate().toString().padStart(2, "0"),
                       };
-                      const tempDateFormat = data.PSC.dateformat.substring(0, 3);
+                      const tempDateFormat = data.psc.dateformat.substring(0, 3);
                       const date = tempDateFormat
                         .split("")
                         .map((letter: string) => {
@@ -73,8 +85,8 @@ export class DumpFileFormatter {
           }, "");
     }
 
-    private formatTrailerInfo (data: any, fileName: string, dbName: string, recordNum: number): string {
-        return `PSC\r\n`
+    private formatTrailerInfo (data: any, fileName: string, dbName: string, recordNum: number): void {
+        this.trailerInfo = `PSC\r\n`
         + `filename=${fileName}\r\n`
         + `records=${String(recordNum).padStart(13, "0")}\r\n`
         + `ldbname=${dbName}\r\n`
