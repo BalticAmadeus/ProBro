@@ -4,7 +4,7 @@ import { CommandAction, ICommand, ProcessAction } from "../../model";
 import AddIcon from "@mui/icons-material/AddTwoTone";
 import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
 import EditIcon from "@mui/icons-material/EditTwoTone";
-import { ProBroButton } from "../Components/button";
+import { ProBroButton } from "../../assets/button";
 import "./update.css";
 
 export default function UpdatePopup({
