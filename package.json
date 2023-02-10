@@ -57,6 +57,11 @@
                     "minimum": 50,
                     "default": 100,
                     "markdownDescription": "Specifies the initial number of records retrieved when query is opened"
+                },
+                "ProBro.possiblePortsList": {
+                    "type": "array",
+                    "default": [12321, 12322, 12323],
+                    "markdownDescription": "Bla Bla Bla"
                 }
             }
         },
