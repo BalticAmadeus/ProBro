@@ -1,13 +1,10 @@
 import * as vscode from "vscode";
 import { IConfig, ITableData, TableDetails } from "../view/app/model";
-import { IProcessor } from "./IProcessor";
-import * as cp from "child_process";
-import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
+import { IDbProcessor } from "./IDbProcessor";
+import { IOEParams } from "./oe";
 import getOEClient from "./oeClient";
-import { SortColumn } from "react-data-grid";
-import { resolve } from "path";
 
-export class DatabaseProcessor implements IProcessor {
+export class DatabaseProcessor implements IDbProcessor {
 
     private static instance: DatabaseProcessor;
     private static isProcessRunning: boolean = false;
@@ -66,7 +63,7 @@ export class DatabaseProcessor implements IProcessor {
 
     }
 
-    private getConnectionString(config: IConfig) {
+    private getConnectionString(config: IConfig): string {
         var connectionString = `-db ${config.name} ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''}`;
         return connectionString;
     }
