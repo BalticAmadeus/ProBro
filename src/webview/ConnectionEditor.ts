@@ -1,4 +1,4 @@
-import path = require("path");
+import * as path from "path";
 import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
 import { Constants } from "../common/constants";
@@ -41,34 +41,7 @@ export class ConnectionEditor {
 
         this.panel.webview.onDidReceiveMessage(
             (command: ICommand) => {
-                switch (command.action) {
-                    case CommandAction.Save:
-                        if (!this.isTestedSuccesfully) {
-                            vscode.window.showInformationMessage("Connection should be tested before saving.");
-                            return;
-                        }
-                        let connections = this.context.globalState.get<{ [id: string]: IConfig }>(`${Constants.globalExtensionKey}.dbconfig`);
-                        if (!connections) {
-                            connections = {};
-                        }
-                        connections[command.content!.id] = command.content!;
-                        this.context.globalState.update(`${Constants.globalExtensionKey}.dbconfig`, connections);
-                        vscode.window.showInformationMessage("Connection saved succesfully.");
-                        this.panel?.dispose();
-                        vscode.commands.executeCommand(`${Constants.globalExtensionKey}.refreshList`);
-                        return;
-                    case CommandAction.Test:
-                        DatabaseProcessor.getInstance().getDBVersion(command.content!).then((oe) => {
-                            if (oe.error) {
-                                vscode.window.showErrorMessage(`Error connecting DB: ${oe.description} (${oe.error})`);
-                            } else {
-                                console.log(`Requested version of DB: ${oe.dbversion}`);
-                                vscode.window.showInformationMessage("Connection OK");
-                                this.isTestedSuccesfully = true;
-                            }
-                        });
-                        return;
-                }
+                this.formAction(command);
             },
             undefined,
             context.subscriptions
@@ -81,6 +54,46 @@ export class ConnectionEditor {
             null,
             context.subscriptions
         );
+    }
+
+    public formAction(command: ICommand): void {
+        switch (command.action) {
+            case CommandAction.Save:
+                this.actionSave(command);
+                return;
+            case CommandAction.Test:
+                this.actionTest(command);
+                return;
+        }
+    }
+
+
+    public actionSave(command: ICommand): void {
+        if (!this.isTestedSuccesfully) {
+            vscode.window.showInformationMessage("Connection should be tested before saving.");
+            return;
+        }
+        let connections = this.context.globalState.get<{ [id: string]: IConfig }>(`${Constants.globalExtensionKey}.dbconfig`);
+        if (!connections) {
+            connections = {};
+        }
+        connections[command.content!.id] = command.content!;
+        this.context.globalState.update(`${Constants.globalExtensionKey}.dbconfig`, connections);
+        vscode.window.showInformationMessage("Connection saved succesfully.");
+        this.panel?.dispose();
+        vscode.commands.executeCommand(`${Constants.globalExtensionKey}.refreshList`);
+    }
+
+    public actionTest(command: ICommand): void {
+        DatabaseProcessor.getInstance().getDBVersion(command.content!).then((oe) => {
+            if (oe.error) {
+                vscode.window.showErrorMessage(`Error connecting DB: ${oe.description} (${oe.error})`);
+            } else {
+                console.log(`Requested version of DB: ${oe.dbversion}`);
+                vscode.window.showInformationMessage("Connection OK");
+                this.isTestedSuccesfully = true;
+            }
+        });
     }
 
     private getWebviewContent(): string {
