@@ -14,7 +14,7 @@ export default function ExportPopup({
   selectedRows
 }) {
   const [exportFormat, setExportFormat] = React.useState("");
-  const [radioSelection, setRadioSelection] = React.useState(DataToExport[DataToExport.Table]);
+  const [radioSelection, setRadioSelection] = React.useState("");
   
   function handleChange ({ currentTarget }:React.ChangeEvent<HTMLInputElement>) {
     setRadioSelection(currentTarget.value);
@@ -23,7 +23,7 @@ export default function ExportPopup({
 
 
 
-  const exportList = ["dumpFile", "json", "csv", "xls"];
+  const exportList = ["json", "csv", "xls", "dumpFile"].concat("").reverse();
 
   const getData = () => {
     console.log("get data");
@@ -149,7 +149,6 @@ export default function ExportPopup({
                   <input type="radio" 
                   name="exportdata"
                   onChange={(e)=> handleChange(e)}
-                  checked={radioSelection === key}
                   value={key}
                   />
                   {key}
