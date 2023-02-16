@@ -1,8 +1,8 @@
 import path = require("path");
 import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
-import { DatabaseProcessor } from "../db/databaseProcessor";
-import { IOETableData } from "../db/oe";
+import { DatabaseProcessor } from "../db/DatabaseProcessor";
+import { IOETableData } from "../db/Oe";
 import { TableNode } from "../treeview/TableNode";
 import { TablesListProvider } from "../treeview/TablesListProvider";
 import { FieldsViewProvider } from "./FieldsViewProvider";
