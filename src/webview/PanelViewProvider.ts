@@ -11,6 +11,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
     public _view?: vscode.WebviewView;
     public tableNode?: TableNode;
     public tableListProvider?: TablesListProvider;
+    public readonly configuration = vscode.workspace.getConfiguration("ProBro");
 
     constructor(
         private context: vscode.ExtensionContext, private _type: string) {
@@ -59,6 +60,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
           window.initialData = ${JSON.stringify(data)};
+          window.configuration = ${JSON.stringify(this.configuration)}
         </script>
     </head>
     <body>

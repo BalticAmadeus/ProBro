@@ -5,15 +5,15 @@ import { IConfig } from "../model";
 import "./indexes.css";
 import Indexes from "./indexes";
 
-
 declare global {
-    interface Window {
-        acquireVsCodeApi(): any;
-        initialData: IConfig;
-    }
-};
+  interface Window {
+    acquireVsCodeApi(): any;
+    initialData: IConfig;
+    configuration: any;
+  }
+}
 
 const vscode = window.acquireVsCodeApi();
 
 const root = createRoot(document.getElementById("root"));
-root.render(<Indexes initialData={window.initialData} vscode={vscode} />);
+root.render(<Indexes initialData={window.initialData} configuration={window.configuration} vscode={vscode} />);

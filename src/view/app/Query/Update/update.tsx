@@ -6,6 +6,8 @@ import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
 import EditIcon from "@mui/icons-material/EditTwoTone";
 import { ProBroButton } from "../../assets/button";
 import "./update.css";
+import { Logger } from "../../../../common/Logger";
+
 
 export default function UpdatePopup({
   vscode,
@@ -21,6 +23,7 @@ export default function UpdatePopup({
   action,
   readRow
 }) {
+  const logger = new Logger("react");
   const table = [];
   const inputs: {
     key: string;
@@ -28,6 +31,7 @@ export default function UpdatePopup({
     valueType: string;
   }[] = [];
 
+  logger.log("crud action", action);
   if (action !== ProcessAction.Delete) {
     switch (action) {
       case ProcessAction.Update:
@@ -127,7 +131,7 @@ export default function UpdatePopup({
         mode: ProcessAction[action],
       },
     };
-    console.log(command);
+    logger.log("crud submit data", command);
     vscode.postMessage(command);
   };
 

@@ -3,18 +3,20 @@ import { CommandAction, ICommand, IConfig } from "../model";
 import { ProBroButton } from "../assets/button";
 import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import { PfParser } from "../utils/PfParser";
+import { Logger } from "../../../common/Logger";
 
 
 interface IConfigProps {
     vscode: any;
     initialData: IConfig;
+    configuration: any;
 }
 
 interface IConfigState {
     config: IConfig;
 }
 
-function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
+function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfigProps) {
     const oldState = vscode.getState();
     const initState = oldState ? oldState : { config: initialData };
     const [vsState, _] = React.useState<IConfigState>(initState);
@@ -28,6 +30,8 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
     const [group, setGroup] = React.useState(vsState.config.group);
     const [label, setLabel] = React.useState(vsState.config.label);
     const [params, setParams] = React.useState(vsState.config.params);
+
+    const logger = new Logger(configuration.logging.react);
 
     const onSaveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -49,6 +53,7 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
             action: CommandAction.Save,
             content: config,
         };
+        logger.log("onSaveClick command", command);
         vscode.postMessage(command);
     };
 
@@ -72,6 +77,7 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
             action: CommandAction.Test,
             content: config,
         };
+        logger.log("onTestClick command", command);
         vscode.postMessage(command);
     };
 

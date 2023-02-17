@@ -128,6 +128,7 @@ export class ConnectionEditor {
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
           window.initialData = ${JSON.stringify(config)};
+          window.configuration = ${JSON.stringify(this.configuration)};
         </script>
     </head>
     <body>

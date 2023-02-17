@@ -9,6 +9,7 @@ import { ProBroButton } from "../assets/button";
 import RawOnTwoToneIcon from "@mui/icons-material/RawOnTwoTone";
 import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
 import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
+import { Logger } from "../../../common/Logger";
 
 const filterCSS: React.CSSProperties = {
   inlineSize: "100%",
@@ -61,6 +62,8 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
         []
     );
+    const logger = new Logger(configuration.logging.react);
+
 
     window.addEventListener('contextmenu', e => {
       e.stopImmediatePropagation();
@@ -105,6 +108,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
 
   const messageEvent = (event) => {
     const message = event.data;
+    logger.log("got query data", message);
     switch (message.command) {
       case "columns":
         setSelectedColumns([...message.columns]);
@@ -386,6 +390,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         timeOut: timeOut,
       },
     };
+    logger.log("make query", command);
     vscode.postMessage(command);
   }
 
@@ -488,6 +493,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
         mode: ProcessAction[mode],
       },
     };
+    logger.log("crud data request", command);
     vscode.postMessage(command);
   }; 
   

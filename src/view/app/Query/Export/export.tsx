@@ -5,6 +5,8 @@ import { CommandAction, DataToExport, ICommand } from "../../model";
 import ExportIcon from "@mui/icons-material/FileDownloadTwoTone";
 import "./export.css";
 import { ProBroButton } from "../../assets/button";
+import { Logger } from "../../../../common/Logger";
+
 
 export default function ExportPopup({
   wherePhrase,
@@ -15,6 +17,7 @@ export default function ExportPopup({
 }) {
   const [exportFormat, setExportFormat] = React.useState("");
   const [radioSelection, setRadioSelection] = React.useState("");
+  const logger = new Logger("react");
   
   function handleChange ({ currentTarget }:React.ChangeEvent<HTMLInputElement>) {
     setRadioSelection(currentTarget.value);
@@ -75,16 +78,17 @@ export default function ExportPopup({
       default:
         break;
     }
+    logger.log("export request", command);
     vscode.postMessage(command);
   };
 
   const handleMessage = (event) => {
     const message = event.data;
+    logger.log("got export data", message);
     switch (message.command) {
       case "export":
         if (message.format === "dumpFile") {
-          console.log("dumpfile export got.");
-          console.log(message);
+          logger.log("dumpfile export got.");
           exportFromJSON({
             data: message.data,
             fileName: message.tableName,
