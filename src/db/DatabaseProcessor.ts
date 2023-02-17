@@ -6,11 +6,13 @@ import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./
 import getOEClient from "./oeClient";
 import { SortColumn } from "react-data-grid";
 import { resolve } from "path";
+import { Logger } from "../common/Logger";
 
 export class DatabaseProcessor implements IProcessor {
 
     private static instance: DatabaseProcessor;
     private static isProcessRunning: boolean = false;
+    private myLogger = new Logger();
 
     private constructor() { }
 
@@ -30,8 +32,7 @@ export class DatabaseProcessor implements IProcessor {
         }
 
         DatabaseProcessor.isProcessRunning = true;
-
-        console.log(cmd);
+        this.myLogger.log("execShell command:", cmd);
         var timeInMs = Date.now();
 
         return getOEClient()
@@ -42,6 +43,7 @@ export class DatabaseProcessor implements IProcessor {
                 var json = JSON.parse(data);
                 console.log(`Process time: ${Date.now() - timeInMs}, OE time: ${json.debug.time}, Connect time: ${json.debug.timeConnect}`);
                 console.log(JSON.stringify(json.debug));
+                this.myLogger.log("getOEClient returns :", JSON.stringify(json));
                 DatabaseProcessor.isProcessRunning = false;
                 return json;
             });

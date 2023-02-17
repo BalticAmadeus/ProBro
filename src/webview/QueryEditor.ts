@@ -7,6 +7,7 @@ import { TableNode } from "../treeview/TableNode";
 import { TablesListProvider } from "../treeview/TablesListProvider";
 import { FieldsViewProvider } from "./FieldsViewProvider";
 import { DumpFileFormatter } from "./DumpFileFormatter";
+import { Logger } from "../common/Logger";
 
 export class QueryEditor {
   private readonly panel: vscode.WebviewPanel | undefined;
@@ -15,6 +16,7 @@ export class QueryEditor {
   public tableName: string;
   private fieldsProvider: FieldsViewProvider;
   private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private myLogger = new Logger();
 
   constructor(
     private context: vscode.ExtensionContext,
@@ -55,6 +57,7 @@ export class QueryEditor {
 
     this.panel.webview.onDidReceiveMessage(
       (command: ICommand) => {
+        this.myLogger.log("command:", command);
         switch (command.action) {
           case CommandAction.Query:
             if (this.tableListProvider.config) {
@@ -67,13 +70,15 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    this.panel?.webview.postMessage({
+                    const obj = {
                       id: command.id,
                       command: "data",
                       columns: tableNode.cache?.selectedColumns,
                       data: oe,
-                    });
-                  }
+                    };
+                    this.myLogger.log("data:", obj);
+                    this.panel?.webview.postMessage(obj);
+                  } 
                 });
               break;
             }
@@ -87,12 +92,15 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    this.panel?.webview.postMessage({
+                    let obj = {
                       id: command.id,
                       command: "crud",
                       data: oe,
-                    });
+                    };
+                    this.myLogger.log("data:", obj);
+                    this.panel?.webview.postMessage(obj);
                   }
+                    
                 });
               break;
             }
@@ -106,12 +114,15 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    this.panel?.webview.postMessage({
+                    let obj = {
                       id: command.id,
                       command: "submit",
                       data: oe,
-                    });
+                    };
+                    this.myLogger.log("data:", obj);
+                    this.panel?.webview.postMessage(obj);
                   }
+                    
                 });
               break;
             }
@@ -135,13 +146,15 @@ export class QueryEditor {
                       );
                       exportData = dumpFileFormatter.getDumpFile();
                     }
-                    this.panel?.webview.postMessage({
+                    let obj = {
                       id: command.id,
                       command: "export",
                       tableName: this.tableNode.tableName,
                       data: exportData,
                       format: command.params!.exportType,
-                    });
+                    };
+                    this.myLogger.log("data:", obj);
+                    this.panel?.webview.postMessage(obj);
                   }
                 });
             }
@@ -165,10 +178,12 @@ export class QueryEditor {
   }
 
   public updateFields() {
-    this.panel?.webview.postMessage({
+    let obj = {
       command: "columns",
       columns: this.tableNode.cache?.selectedColumns,
-    });
+    };
+    this.myLogger.log("updateFields:", obj);
+    this.panel?.webview.postMessage(obj);
   }
 
   private getWebviewContent(tableData: IOETableData): string {

@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
 import { Constants } from "../common/constants";
 import { DatabaseProcessor } from "../db/databaseProcessor";
+import { Logger } from "../common/Logger";
 
 export class ConnectionEditor {
     private readonly panel: vscode.WebviewPanel | undefined;
@@ -10,7 +11,7 @@ export class ConnectionEditor {
     private disposables: vscode.Disposable[] = [];
     private isTestedSuccesfully: boolean = false;
     private readonly id?: string;
-
+    private myLogger = new Logger();
 
     constructor(private context: vscode.ExtensionContext, action: string, id?: string,) {
         this.extensionPath = context.asAbsolutePath('');
@@ -41,6 +42,7 @@ export class ConnectionEditor {
 
         this.panel.webview.onDidReceiveMessage(
             (command: ICommand) => {
+                this.myLogger.log("command:", command);
                 switch (command.action) {
                     case CommandAction.Save:
                         if (!this.isTestedSuccesfully) {
