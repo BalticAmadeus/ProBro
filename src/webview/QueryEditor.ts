@@ -60,7 +60,6 @@ export class QueryEditor {
         this.myLogger.log("command:", command);
         switch (command.action) {
           case CommandAction.Query:
-            this.myLogger.log("CommandAction:", command.action);
             if (this.tableListProvider.config) {
 
               DatabaseProcessor.getInstance()
@@ -71,22 +70,19 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    this.panel?.webview.postMessage({
+                    const obj = {
                       id: command.id,
                       command: "data",
                       columns: tableNode.cache?.selectedColumns,
                       data: oe,
-                    });
-                  }
-                    this.myLogger.log("id:", command.id);
-                    this.myLogger.log("command:", command);
-                    this.myLogger.log("columns:", tableNode.cache?.selectedColumns);
-                    this.myLogger.log("data:", oe);
+                    };
+                    this.myLogger.log("data:", obj);
+                    this.panel?.webview.postMessage(obj);
+                  } 
                 });
               break;
             }
           case CommandAction.CRUD:
-            this.myLogger.log("CommandAction:", command.action);
             if (this.tableListProvider.config) {
               DatabaseProcessor.getInstance()
                 .getTableData(
@@ -96,20 +92,19 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    this.panel?.webview.postMessage({
+                    let obj = {
                       id: command.id,
                       command: "crud",
                       data: oe,
-                    });
+                    };
+                    this.myLogger.log("data:", obj);
+                    this.panel?.webview.postMessage(obj);
                   }
-                    this.myLogger.log("id:", command.id);
-                    this.myLogger.log("command:", command);
-                    this.myLogger.log("data:", oe);
+                    
                 });
               break;
             }
           case CommandAction.Submit:
-            this.myLogger.log("CommandAction:", command.action);
             if (this.tableListProvider.config) {
               DatabaseProcessor.getInstance()
                 .submitTableData(
@@ -119,20 +114,19 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    this.panel?.webview.postMessage({
+                    let obj = {
                       id: command.id,
                       command: "submit",
                       data: oe,
-                    });
+                    };
+                    this.myLogger.log("data:", obj);
+                    this.panel?.webview.postMessage(obj);
                   }
-                    this.myLogger.log("id:", command.id);
-                    this.myLogger.log("command:", command);
-                    this.myLogger.log("data:", oe);
+                    
                 });
               break;
             }
           case CommandAction.Export:
-            this.myLogger.log("CommandAction:", command.action);
             if (this.tableListProvider.config) {
               DatabaseProcessor.getInstance()
                 .getTableData(
@@ -152,18 +146,15 @@ export class QueryEditor {
                       );
                       exportData = dumpFileFormatter.getDumpFile();
                     }
-                    this.panel?.webview.postMessage({
+                    let obj = {
                       id: command.id,
                       command: "export",
                       tableName: this.tableNode.tableName,
                       data: exportData,
                       format: command.params!.exportType,
-                    });
-                      this.myLogger.log("id:", command.id);
-                      this.myLogger.log("command:", command);
-                      this.myLogger.log("tableName:", this.tableNode.tableName);
-                      this.myLogger.log("data:", exportData);
-                      this.myLogger.log("format:", command.params!.exportType);
+                    };
+                    this.myLogger.log("data:", obj);
+                    this.panel?.webview.postMessage(obj);
                   }
                 });
             }
@@ -187,10 +178,12 @@ export class QueryEditor {
   }
 
   public updateFields() {
-    this.panel?.webview.postMessage({
+    let obj = {
       command: "columns",
       columns: this.tableNode.cache?.selectedColumns,
-    });
+    };
+    this.myLogger.log("updateFields:", obj);
+    this.panel?.webview.postMessage(obj);
   }
 
   private getWebviewContent(tableData: IOETableData): string {
