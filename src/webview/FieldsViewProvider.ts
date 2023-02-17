@@ -3,10 +3,12 @@ import * as vscode from 'vscode';
 import { QueryEditor } from './QueryEditor';
 import { CommandAction, ICommand } from '../view/app/model';
 import { PanelViewProvider } from './PanelViewProvider';
+import { Logger } from "../common/Logger";
 
 export class FieldsViewProvider extends PanelViewProvider {
 
     private queryEditors : QueryEditor[] = [];
+    private myLogger = new Logger(true);
 
     constructor (context: vscode.ExtensionContext, _type: string) {
         super(context, _type);
@@ -34,11 +36,14 @@ export class FieldsViewProvider extends PanelViewProvider {
         
         this._view!.webview.onDidReceiveMessage(
             (command: ICommand) => {
+                this.myLogger.log("Command:" , command);
                 switch (command.action) {
                     case CommandAction.UpdateColumns:
+                        this.myLogger.log("CommandAction:" , command.action);
                         if (this.tableNode !== undefined && this.tableNode.cache !== undefined) {
                             this.tableNode.cache.selectedColumns = command.columns;
                         }
+                        this.myLogger.log("this.tableNode.cache.selectedColumns:" , command.columns);
                         this.notifyQueryEditors();
                         break; 
                 }
