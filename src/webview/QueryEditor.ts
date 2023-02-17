@@ -7,6 +7,7 @@ import { TableNode } from "../treeview/TableNode";
 import { TablesListProvider } from "../treeview/TablesListProvider";
 import { FieldsViewProvider } from "./FieldsViewProvider";
 import { DumpFileFormatter } from "./DumpFileFormatter";
+import { Logger } from "../common/Logger";
 
 export class QueryEditor {
   private readonly panel: vscode.WebviewPanel | undefined;
@@ -15,6 +16,7 @@ export class QueryEditor {
   public tableName: string;
   private fieldsProvider: FieldsViewProvider;
   private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private myLogger = new Logger(true);
 
   constructor(
     private context: vscode.ExtensionContext,
@@ -55,8 +57,10 @@ export class QueryEditor {
 
     this.panel.webview.onDidReceiveMessage(
       (command: ICommand) => {
+        this.myLogger.log("command:", command);
         switch (command.action) {
           case CommandAction.Query:
+            this.myLogger.log("CommandAction:", command.action);
             if (this.tableListProvider.config) {
 
               DatabaseProcessor.getInstance()
@@ -74,10 +78,15 @@ export class QueryEditor {
                       data: oe,
                     });
                   }
+                    this.myLogger.log("id:", command.id);
+                    this.myLogger.log("command:", command);
+                    this.myLogger.log("columns:", tableNode.cache?.selectedColumns);
+                    this.myLogger.log("data:", oe);
                 });
               break;
             }
           case CommandAction.CRUD:
+            this.myLogger.log("CommandAction:", command.action);
             if (this.tableListProvider.config) {
               DatabaseProcessor.getInstance()
                 .getTableData(
@@ -93,10 +102,14 @@ export class QueryEditor {
                       data: oe,
                     });
                   }
+                    this.myLogger.log("id:", command.id);
+                    this.myLogger.log("command:", command);
+                    this.myLogger.log("data:", oe);
                 });
               break;
             }
           case CommandAction.Submit:
+            this.myLogger.log("CommandAction:", command.action);
             if (this.tableListProvider.config) {
               DatabaseProcessor.getInstance()
                 .submitTableData(
@@ -112,10 +125,14 @@ export class QueryEditor {
                       data: oe,
                     });
                   }
+                    this.myLogger.log("id:", command.id);
+                    this.myLogger.log("command:", command);
+                    this.myLogger.log("data:", oe);
                 });
               break;
             }
           case CommandAction.Export:
+            this.myLogger.log("CommandAction:", command.action);
             if (this.tableListProvider.config) {
               DatabaseProcessor.getInstance()
                 .getTableData(
@@ -142,6 +159,11 @@ export class QueryEditor {
                       data: exportData,
                       format: command.params!.exportType,
                     });
+                      this.myLogger.log("id:", command.id);
+                      this.myLogger.log("command:", command);
+                      this.myLogger.log("tableName:", this.tableNode.tableName);
+                      this.myLogger.log("data:", exportData);
+                      this.myLogger.log("format:", command.params!.exportType);
                   }
                 });
             }
