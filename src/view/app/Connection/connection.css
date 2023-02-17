@@ -17,6 +17,7 @@ body{
 .container .title{
   font-size: 25px;
   font-weight: 500;
+  position: relative;
 }
 .content form .connection-details{
   display: flex;
@@ -127,6 +128,3 @@ Input[type="text"] {
   color: var(--vscode-input-foreground);
   border-color: var(--vscode-editorBracketMatch-border);
 }
-
-
-
