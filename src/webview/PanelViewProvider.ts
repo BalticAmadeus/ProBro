@@ -1,6 +1,6 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import { Constants } from '../common/constants';
+import { Constants } from '../common/Constants';
 import { TableDetails } from '../view/app/model';
 import { TableNode } from '../treeview/TableNode';
 import { TablesListProvider } from '../treeview/TablesListProvider';

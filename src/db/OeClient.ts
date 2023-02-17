@@ -1,7 +1,7 @@
 import * as Net from "net";
 import * as cp from "child_process";
 import * as vscode from "vscode";
-import { Constants } from "../common/constants";
+import { Constants } from "../common/Constants";
 
 class OEClient {
     private port: number = 23456;
