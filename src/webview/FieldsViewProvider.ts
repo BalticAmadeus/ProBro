@@ -8,7 +8,7 @@ import { Logger } from "../common/Logger";
 export class FieldsViewProvider extends PanelViewProvider {
 
     private queryEditors : QueryEditor[] = [];
-    private myLogger = new Logger(true);
+    private myLogger = new Logger("node");
 
     constructor (context: vscode.ExtensionContext, _type: string) {
         super(context, _type);

@@ -9,6 +9,7 @@ declare global {
     interface Window {
         acquireVsCodeApi(): any;
         initialData: IConfig;
+        configuration: any;
     }
 }
 

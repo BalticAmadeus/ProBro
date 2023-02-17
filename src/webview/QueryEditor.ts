@@ -16,7 +16,7 @@ export class QueryEditor {
   public tableName: string;
   private fieldsProvider: FieldsViewProvider;
   private readonly configuration = vscode.workspace.getConfiguration("ProBro");
-  private myLogger = new Logger(true);
+  private myLogger = new Logger("node");
 
   constructor(
     private context: vscode.ExtensionContext,
