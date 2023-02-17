@@ -27,7 +27,7 @@ export default function ExportPopup({
 
 
 
-  const exportList = ["json", "csv", "xls", "dumpFile"].concat("").reverse();
+  const exportList = ["dumpFile", "json", "csv", "xls"];
 
   const getData = () => {
     console.log("get data");

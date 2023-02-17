@@ -1,13 +1,13 @@
 export class Logger{
 
-    private readonly doLog: boolean;
+    private readonly isLoggingEnabled: boolean;
 
     constructor (doLog: boolean){
-        this.doLog = doLog;
+        this.isLoggingEnabled = doLog;
     }
 
     log(message: string, additionalData?: any): void{
-        if (this.doLog){
+        if (this.isLoggingEnabled){
             console.log(message, ": ", additionalData);
         }
     }
