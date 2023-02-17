@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.2.1 (2023-02-17)
+### Changed
+- Fixed critical issue for Linux
+- Fixed various small bugs
+
+### Added
+- Extension settings configuration for logging
+
 ## 1.2.0 (2023-01-30)
 ### Added
 - D file export
