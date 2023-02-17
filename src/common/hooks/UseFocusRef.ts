@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useLayoutEffect } from './useLayoutEffect';
+import { useLayoutEffect } from './UseLayoutEffect';
 
 export function useFocusRef<T extends HTMLOrSVGElement>(isSelected: boolean) {
     const ref = useRef<T>(null);

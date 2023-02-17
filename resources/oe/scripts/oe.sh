@@ -5,6 +5,11 @@ export PROWD254=/usr/dlc/proword.254
 export TERM=xterm
 export PROPATH=$PROPATH:$(dirname "$PWD")
 
+called_path=${0%/*}
+parent_path=$(dirname $called_path)
+
+export PROPATH=$PROPATH:$parent_path
+
 PROEXE=${PROEXE-$DLC/bin/_progres}
 
 # set the Progress shared lib  environment

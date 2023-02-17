@@ -2,8 +2,8 @@ import * as vscode from "vscode";
 import { IConfig, ITableData, TableDetails } from "../view/app/model";
 import { IProcessor } from "./IProcessor";
 import * as cp from "child_process";
-import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
-import getOEClient from "./oeClient";
+import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./Oe";
+import getOEClient from "./OeClient";
 import { SortColumn } from "react-data-grid";
 import { resolve } from "path";
 import { Logger } from "../common/Logger";
@@ -39,6 +39,7 @@ export class DatabaseProcessor implements IProcessor {
 
         return getOEClient()
             .then((client) => {
+                console.log(cmd);
                 return client.sendCommand(cmd);
             })
             .then((data) => {
