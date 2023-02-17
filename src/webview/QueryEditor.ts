@@ -92,7 +92,7 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    let obj = {
+                    const obj = {
                       id: command.id,
                       command: "crud",
                       data: oe,
@@ -114,7 +114,7 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    let obj = {
+                    const obj = {
                       id: command.id,
                       command: "submit",
                       data: oe,
@@ -146,7 +146,7 @@ export class QueryEditor {
                       );
                       exportData = dumpFileFormatter.getDumpFile();
                     }
-                    let obj = {
+                    const obj = {
                       id: command.id,
                       command: "export",
                       tableName: this.tableNode.tableName,
@@ -178,7 +178,7 @@ export class QueryEditor {
   }
 
   public updateFields() {
-    let obj = {
+    const obj = {
       command: "columns",
       columns: this.tableNode.cache?.selectedColumns,
     };
