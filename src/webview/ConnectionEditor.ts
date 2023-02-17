@@ -1,8 +1,9 @@
 import path = require("path");
 import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
-import { Constants } from "../common/Constants";
-import { DatabaseProcessor } from "../db/DatabaseProcessor";
+import { Constants } from "../common/constants";
+import { DatabaseProcessor } from "../db/databaseProcessor";
+import { Logger } from "../common/Logger";
 
 export class ConnectionEditor {
     private readonly panel: vscode.WebviewPanel | undefined;
@@ -10,7 +11,8 @@ export class ConnectionEditor {
     private disposables: vscode.Disposable[] = [];
     private isTestedSuccesfully: boolean = false;
     private readonly id?: string;
-
+    private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+    private logger = new Logger(this.configuration.get("logging.node")!);
 
     constructor(private context: vscode.ExtensionContext, action: string, id?: string,) {
         this.extensionPath = context.asAbsolutePath('');
@@ -41,6 +43,7 @@ export class ConnectionEditor {
 
         this.panel.webview.onDidReceiveMessage(
             (command: ICommand) => {
+                this.logger.log("command:", command);
                 switch (command.action) {
                     case CommandAction.Save:
                         if (!this.isTestedSuccesfully) {
@@ -62,7 +65,7 @@ export class ConnectionEditor {
                             if (oe.error) {
                                 vscode.window.showErrorMessage(`Error connecting DB: ${oe.description} (${oe.error})`);
                             } else {
-                                console.log(`Requested version of DB: ${oe.dbversion}`);
+                                this.logger.log("Requested version of DB", oe.dbversion);
                                 vscode.window.showInformationMessage("Connection OK");
                                 this.isTestedSuccesfully = true;
                             }
@@ -125,6 +128,7 @@ export class ConnectionEditor {
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
           window.initialData = ${JSON.stringify(config)};
+          window.configuration = ${JSON.stringify(this.configuration)};
         </script>
     </head>
     <body>

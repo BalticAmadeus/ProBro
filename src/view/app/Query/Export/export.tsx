@@ -4,17 +4,21 @@ import exportFromJSON from "export-from-json";
 import { CommandAction, DataToExport, ICommand } from "../../model";
 import ExportIcon from "@mui/icons-material/FileDownloadTwoTone";
 import "./export.css";
-import { ProBroButton } from "../Components/button";
+import { ProBroButton } from "../components/button";
+import { Logger } from "../../../../common/Logger";
+
 
 export default function ExportPopup({
   wherePhrase,
   vscode,
   sortColumns,
   filters,
-  selectedRows
+  selectedRows,
+  logValue
 }) {
   const [exportFormat, setExportFormat] = React.useState("");
-  const [radioSelection, setRadioSelection] = React.useState(DataToExport[DataToExport.Table]);
+  const [radioSelection, setRadioSelection] = React.useState("");
+  const logger = new Logger(logValue);
   
   function handleChange ({ currentTarget }:React.ChangeEvent<HTMLInputElement>) {
     setRadioSelection(currentTarget.value);
@@ -75,16 +79,17 @@ export default function ExportPopup({
       default:
         break;
     }
+    logger.log("export request", command);
     vscode.postMessage(command);
   };
 
   const handleMessage = (event) => {
     const message = event.data;
+    logger.log("got export data", message);
     switch (message.command) {
       case "export":
         if (message.format === "dumpFile") {
-          console.log("dumpfile export got.");
-          console.log(message);
+          logger.log("dumpfile export got.");
           exportFromJSON({
             data: message.data,
             fileName: message.tableName,
@@ -149,7 +154,6 @@ export default function ExportPopup({
                   <input type="radio" 
                   name="exportdata"
                   onChange={(e)=> handleChange(e)}
-                  checked={radioSelection === key}
                   value={key}
                   />
                   {key}

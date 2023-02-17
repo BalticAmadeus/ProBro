@@ -57,6 +57,18 @@
                     "minimum": 50,
                     "default": 100,
                     "markdownDescription": "Specifies the initial number of records retrieved when query is opened"
+                },
+                "ProBro.logging.react": {
+                    "type": "boolean",
+                    "markdownDescription": "Log input and output in React part to console"
+                },
+                "ProBro.logging.node": {
+                    "type": "boolean",
+                    "markdownDescription": "Log input and output in Node part to console"
+                },
+                "ProBro.logging.openEdge": {
+                    "type": "string",
+                    "markdownDescription": "Specify one or more log entry types (-logentrytypes) for custom OpenEdge part logging. Reload required."
                 }
             }
         },
