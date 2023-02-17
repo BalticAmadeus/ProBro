@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import { INode } from './INode';
-import * as tableNode from './tableNode';
+import * as tableNode from './TableNode';
 import { IConfig, TableCount } from '../view/app/model';
-import { DatabaseProcessor } from '../db/databaseProcessor';
-import { TableNode } from './tableNode';
-import { PanelViewProvider } from './panelViewProvider';
+import { DatabaseProcessor } from '../db/DatabaseProcessor';
+import { TableNode } from './TableNode';
+import { PanelViewProvider } from '../webview/PanelViewProvider';
 
 
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {

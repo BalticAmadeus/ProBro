@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
-import { Constants } from "../db/constants";
+import { Constants } from "../common/Constants";
 import { INode } from "./INode";
-import * as groupNode from "./groupNode";
+import * as groupNode from "./GroupNode";
 import { IConfig } from "../view/app/model";
 import { TablesListProvider } from "./TablesListProvider";
-import { DbConnectionNode } from "./dbConnectionNode";
+import { DbConnectionNode } from "./DbConnectionNode";
 import { IRefreshCallback } from "./IRefreshCallback";
 
 export class GroupListProvider implements vscode.TreeDataProvider<INode>, IRefreshCallback {

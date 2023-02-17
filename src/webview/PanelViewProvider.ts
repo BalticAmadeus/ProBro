@@ -1,9 +1,9 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import { Constants } from '../db/constants';
+import { Constants } from '../common/Constants';
 import { TableDetails } from '../view/app/model';
-import { TableNode } from './tableNode';
-import { TablesListProvider } from './TablesListProvider';
+import { TableNode } from '../treeview/TableNode';
+import { TablesListProvider } from '../treeview/TablesListProvider';
 
 export class PanelViewProvider implements vscode.WebviewViewProvider {
 
@@ -11,6 +11,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
     public _view?: vscode.WebviewView;
     public tableNode?: TableNode;
     public tableListProvider?: TablesListProvider;
+    public readonly configuration = vscode.workspace.getConfiguration("ProBro");
 
     constructor(
         private context: vscode.ExtensionContext, private _type: string) {
@@ -59,6 +60,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
           window.initialData = ${JSON.stringify(data)};
+          window.configuration = ${JSON.stringify(this.configuration)}
         </script>
     </head>
     <body>

@@ -123,9 +123,8 @@ form .connection-details .input-box{
     flex-direction: column;
   }
 }
-
 Input[type="text"] {
   background-color: var(--vscode-input-background);
   color: var(--vscode-input-foreground);
   border-color: var(--vscode-editorBracketMatch-border);
-  }
+}

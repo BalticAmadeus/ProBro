@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import { Constants } from '../db/constants';
+import { Constants } from '../common/Constants';
 import { IConfig } from '../view/app/model';
 import { INode } from './INode';
-import * as connectionNode from './dbConnectionNode';
+import * as connectionNode from './DbConnectionNode';
 
 export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
 

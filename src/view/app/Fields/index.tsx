@@ -5,13 +5,20 @@ import Fields from "./fields";
 import { IConfig } from "../model";
 
 declare global {
-    interface Window {
-        acquireVsCodeApi(): any;
-        initialData: IConfig;
-    }
-};
+  interface Window {
+    acquireVsCodeApi(): any;
+    initialData: IConfig;
+    configuration: any;
+  }
+}
 
 const vscode = window.acquireVsCodeApi();
 
 const root = createRoot(document.getElementById("root"));
-root.render(<Fields initialData={window.initialData} vscode={vscode} />);
+root.render(
+  <Fields
+    initialData={window.initialData}
+    configuration={window.configuration}
+    vscode={vscode}
+  />
+);
