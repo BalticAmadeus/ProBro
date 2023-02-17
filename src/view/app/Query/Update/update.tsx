@@ -4,7 +4,7 @@ import { CommandAction, ICommand, ProcessAction } from "../../model";
 import AddIcon from "@mui/icons-material/AddTwoTone";
 import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
 import EditIcon from "@mui/icons-material/EditTwoTone";
-import { ProBroButton } from "../../assets/button";
+import { ProBroButton } from "../components/button";
 import "./update.css";
 import { Logger } from "../../../../common/Logger";
 
@@ -21,9 +21,10 @@ export default function UpdatePopup({
   open,
   setOpen,
   action,
-  readRow
+  readRow,
+  logValue
 }) {
-  const logger = new Logger("react");
+  const logger = new Logger(logValue);
   const table = [];
   const inputs: {
     key: string;

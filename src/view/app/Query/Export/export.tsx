@@ -4,7 +4,7 @@ import exportFromJSON from "export-from-json";
 import { CommandAction, DataToExport, ICommand } from "../../model";
 import ExportIcon from "@mui/icons-material/FileDownloadTwoTone";
 import "./export.css";
-import { ProBroButton } from "../../assets/button";
+import { ProBroButton } from "../components/button";
 import { Logger } from "../../../../common/Logger";
 
 
@@ -13,11 +13,12 @@ export default function ExportPopup({
   vscode,
   sortColumns,
   filters,
-  selectedRows
+  selectedRows,
+  logValue
 }) {
   const [exportFormat, setExportFormat] = React.useState("");
   const [radioSelection, setRadioSelection] = React.useState("");
-  const logger = new Logger("react");
+  const logger = new Logger(logValue);
   
   function handleChange ({ currentTarget }:React.ChangeEvent<HTMLInputElement>) {
     setRadioSelection(currentTarget.value);

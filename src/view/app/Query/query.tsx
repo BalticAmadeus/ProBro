@@ -5,7 +5,7 @@ import DataGrid, { SortColumn, SelectColumn, CopyEvent } from "react-data-grid";
 import { CommandAction, ICommand, ProcessAction } from "../model";
 import ExportData from "./Export";
 import UpdatePopup from "./Update";
-import { ProBroButton } from "../assets/button";
+import { ProBroButton } from "./components/button";
 import RawOnTwoToneIcon from "@mui/icons-material/RawOnTwoTone";
 import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
 import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
@@ -553,6 +553,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                             sortColumns={sortColumns}
                             filters={filters}
                             selectedRows={selectedRows}
+                            logValue={configuration.logging.react}
                         />
                         <ProBroButton
                             onClick={getDataFormat}
@@ -573,6 +574,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                             updateRecord={updateRecord}
                             deleteRecord={deleteRecord}
                             readRow={readRow}
+                            logValue={configuration.logging.react}
                         ></UpdatePopup>
                     </div>
                 </div>

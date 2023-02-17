@@ -1,8 +1,5 @@
 import * as React from "react";
 import { CommandAction, ICommand, IConfig } from "../model";
-import { ProBroButton } from "../assets/button";
-import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
-import { PfParser } from "../utils/PfParser";
 import { Logger } from "../../../common/Logger";
 
 
@@ -81,45 +78,10 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
         vscode.postMessage(command);
     };
 
-    const importPf = ()  => {
-        let input = document.createElement("input");
-        input.id = "inputVal";
-        input.type = "file";
-        input.accept = ".pf";
-        input.onchange = ev => {
-            let [file] =   Array.from(input.files);
-            const reader = new FileReader();
-            reader.addEventListener("load", () => {
-                const pfParser = new PfParser();
-                const pfConfig = pfParser.parse(reader.result as string);
-                console.log("pfConfig: ", pfConfig);
-                setName(pfConfig.name);
-                setHost(pfConfig.host);
-                setPort(pfConfig.port);
-                setUser(pfConfig.user);
-                setPassword(pfConfig.password);
-                setLabel(file.name.split(".", 1)[0]);
-                setParams(pfConfig.params);
-            });
-            if (file) {
-                reader.readAsText(file);
-            }
-        };
-        input.click();
-    };
-
     return (
         <React.Fragment>
             <div className="container">
-                <div className="heading">
-                    <div className="title">Connect to server</div>
-                    <ProBroButton 
-                    className="importPf"
-                    onClick={importPf}
-                    startIcon={<FileUploadRoundedIcon />}
-                    >Import .pf</ProBroButton>
-                </div>
-                
+                <div className="title">Connect to server</div>
                 <div className="content">
                     <form action="#">
                         <div className="connection-details">
