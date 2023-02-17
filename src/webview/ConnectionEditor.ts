@@ -11,7 +11,8 @@ export class ConnectionEditor {
     private disposables: vscode.Disposable[] = [];
     private isTestedSuccesfully: boolean = false;
     private readonly id?: string;
-    private myLogger = new Logger("node");
+    private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+    private logger = new Logger(this.configuration.get("logging.node")!);
 
     constructor(private context: vscode.ExtensionContext, action: string, id?: string,) {
         this.extensionPath = context.asAbsolutePath('');
@@ -42,7 +43,7 @@ export class ConnectionEditor {
 
         this.panel.webview.onDidReceiveMessage(
             (command: ICommand) => {
-                this.myLogger.log("command:", command);
+                this.logger.log("command:", command);
                 switch (command.action) {
                     case CommandAction.Save:
                         if (!this.isTestedSuccesfully) {
@@ -64,7 +65,7 @@ export class ConnectionEditor {
                             if (oe.error) {
                                 vscode.window.showErrorMessage(`Error connecting DB: ${oe.description} (${oe.error})`);
                             } else {
-                                console.log(`Requested version of DB: ${oe.dbversion}`);
+                                this.logger.log("Requested version of DB", oe.dbversion);
                                 vscode.window.showInformationMessage("Connection OK");
                                 this.isTestedSuccesfully = true;
                             }

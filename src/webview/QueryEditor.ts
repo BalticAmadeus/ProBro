@@ -16,7 +16,7 @@ export class QueryEditor {
   public tableName: string;
   private fieldsProvider: FieldsViewProvider;
   private readonly configuration = vscode.workspace.getConfiguration("ProBro");
-  private myLogger = new Logger("node");
+  private logger = new Logger(this.configuration.get("logging.node")!);
 
   constructor(
     private context: vscode.ExtensionContext,
@@ -57,7 +57,7 @@ export class QueryEditor {
 
     this.panel.webview.onDidReceiveMessage(
       (command: ICommand) => {
-        this.myLogger.log("command:", command);
+        this.logger.log("command:", command);
         switch (command.action) {
           case CommandAction.Query:
             if (this.tableListProvider.config) {
@@ -76,7 +76,7 @@ export class QueryEditor {
                       columns: tableNode.cache?.selectedColumns,
                       data: oe,
                     };
-                    this.myLogger.log("data:", obj);
+                    this.logger.log("data:", obj);
                     this.panel?.webview.postMessage(obj);
                   } 
                 });
@@ -97,7 +97,7 @@ export class QueryEditor {
                       command: "crud",
                       data: oe,
                     };
-                    this.myLogger.log("data:", obj);
+                    this.logger.log("data:", obj);
                     this.panel?.webview.postMessage(obj);
                   }
                     
@@ -119,7 +119,7 @@ export class QueryEditor {
                       command: "submit",
                       data: oe,
                     };
-                    this.myLogger.log("data:", obj);
+                    this.logger.log("data:", obj);
                     this.panel?.webview.postMessage(obj);
                   }
                     
@@ -153,7 +153,7 @@ export class QueryEditor {
                       data: exportData,
                       format: command.params!.exportType,
                     };
-                    this.myLogger.log("data:", obj);
+                    this.logger.log("data:", obj);
                     this.panel?.webview.postMessage(obj);
                   }
                 });
@@ -182,7 +182,7 @@ export class QueryEditor {
       command: "columns",
       columns: this.tableNode.cache?.selectedColumns,
     };
-    this.myLogger.log("updateFields:", obj);
+    this.logger.log("updateFields:", obj);
     this.panel?.webview.postMessage(obj);
   }
 
