@@ -13,6 +13,7 @@ class OEClient {
     private pclientFinish!: any;
     private proc!: cp.ChildProcessWithoutNullStreams;
     private enc = new TextDecoder("utf-8");
+    private readonly configuration = vscode.workspace.getConfiguration("ProBro");
 
     constructor() {
     }
@@ -43,7 +44,9 @@ class OEClient {
     private runProc(): Promise<any> {
         return new Promise((resolve) => {
 
-            const cmd = `${Constants.context.extensionPath}/resources/oe/scripts/oe.bat -b -debugalert -p "${Constants.context.extensionPath}/resources/oe/src/oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}"`;
+            const logentrytypes: string = this.configuration.get("logging.openEdge")!;
+
+            const cmd = `${Constants.context.extensionPath}/resources/oe/scripts/oe.bat -b -debugalert -p "${Constants.context.extensionPath}/resources/oe/src/oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}" `;
 
             if (process.platform === 'linux') {
                 this.proc = cp.spawn('bash', ['-c',
@@ -53,18 +56,20 @@ class OEClient {
                     `"${Constants.context.extensionPath}/resources/oe/src/oeSocket.p"`,
                         '-debugalert',
                         '-clientlog',
-                    `"${Constants.context.extensionPath}/resources/oe/oeSocket.pro"`
+                    `"${Constants.context.extensionPath}/resources/oe/oeSocket.pro"`,
+                    logentrytypes.length !== 0 ? `-logentrytypes ${logentrytypes}` : ""
                     ].join(' ')]);
             } else if (process.platform === 'win32') {
                 this.proc = cp.spawn('cmd.exe', ['/c',
-                    `${Constants.context.extensionPath}/resources/oe/scripts/oe.bat`,
+                    [`${Constants.context.extensionPath}/resources/oe/scripts/oe.bat`,
                     '-b',
                     '-p',
                     `${Constants.context.extensionPath}/resources/oe/src/oeSocket.p`,
                     '-debugalert',
                     '-clientlog',
-                    `${Constants.context.extensionPath}/resources/oe/oeSocket.pro`
-                ]);
+                    `${Constants.context.extensionPath}/resources/oe/oeSocket.pro`,
+                    logentrytypes.length !== 0 ? `-logentrytypes ${logentrytypes}` : ""
+                ].join(" ")]);
             } else {
                 // should be error here
             }
