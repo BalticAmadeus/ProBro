@@ -8,10 +8,6 @@ const config = {
     globals: {
         __DEV__: true
       },
-    testEnvironment: "./test/nodeTest/vscode-environment.js",
-    moduleNameMapper: {
-        vscode: path.join(__dirname, 'test-jest', 'vscode.js')  // <----- most important line
-      }
     };
 
     module.exports = config;
