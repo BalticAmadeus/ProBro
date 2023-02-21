@@ -3,12 +3,13 @@ import { createRoot } from "react-dom/client";
 import "./fields.css";
 import Fields from "./fields";
 import { IConfig } from "../model";
+import { ISettings } from "../../../common/IExtensionSettings";
 
 declare global {
   interface Window {
     acquireVsCodeApi(): any;
     initialData: IConfig;
-    configuration: any;
+    configuration: ISettings;
   }
 }
 

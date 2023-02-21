@@ -10,6 +10,7 @@ import RawOnTwoToneIcon from "@mui/icons-material/RawOnTwoTone";
 import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
 import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
 import { Logger } from "../../../common/Logger";
+import { ISettings } from "../../../common/IExtensionSettings";
 
 const filterCSS: React.CSSProperties = {
   inlineSize: "100%",
@@ -21,7 +22,7 @@ interface IConfigProps {
   vscode: any;
   tableData: IOETableData;
   tableName: string;
-  configuration: any;
+  configuration: ISettings;
 }
 
 interface IErrorObject {

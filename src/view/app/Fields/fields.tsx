@@ -7,6 +7,13 @@ import type { SortColumn } from "react-data-grid";
 import { Logger } from "../../../common/Logger";
 
 import * as columnName from "./column.json";
+import { ISettings } from "../../../common/IExtensionSettings";
+
+interface IConfigProps {
+    vscode: any;
+    initialData: FieldRow[];
+    configuration: ISettings;
+}
 
 const filterCSS: React.CSSProperties = {
   inlineSize: "100%",
@@ -48,13 +55,12 @@ function rowKeyGetter(row: FieldRow) {
     return row.order;
 }
 
-function Fields({ initialData, configuration, vscode }) {
-    const [rows, setRows] = useState(initialData.fields as FieldRow[]);
+function Fields({ initialData, configuration, vscode }: IConfigProps) {
+    const [rows, setRows] = useState(initialData);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [filteredRows, setFilteredRows] = useState(rows);
-
 	const logger = new Logger(configuration.logging.react);
 
     const [filters, _setFilters] = React.useState({

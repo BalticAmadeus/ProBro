@@ -5,6 +5,13 @@ import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 import * as columnName from "./column.json";
 import { Logger } from "../../../common/Logger";
+import { ISettings } from "../../../common/IExtensionSettings";
+
+interface IConfigProps {
+    vscode: any;
+    indexes: IndexRow[];
+    configuration: ISettings;
+}
 
 type Comparator = (a: IndexRow, b: IndexRow) => number;
 function getComparator(sortColumn: string): Comparator {
@@ -24,8 +31,8 @@ function rowKeyGetter(row: IndexRow) {
     return row.cName;
 }
 
-function Indexes({ initialData, configuration, vscode }) {
-    const [rows, setRows] = useState(initialData.indexes as IndexRow[]);
+function Indexes({ indexes, configuration, vscode }: IConfigProps) {
+    const [rows, setRows] = useState(indexes);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
         () => new Set()
