@@ -1,4 +1,4 @@
-import { IExportDumpData } from "../../db/oe";
+import { IExportDumpData } from "../../db/Oe";
 
 export const testObjInput: IExportDumpData = {
   columns: [
