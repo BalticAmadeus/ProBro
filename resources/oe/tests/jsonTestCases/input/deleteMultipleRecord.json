@@ -1,5 +1,4 @@
 {
-    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
     "command": "submit_table_data",
     "params": {
         "tableName": "Department",
@@ -9,7 +8,7 @@
         "lastRowID": "",
         "crud": [
             "0x0000000000002c01",
-            "0x0000000000002c02", 
+            "0x0000000000002c02",
             "0x0000000000002c03"
         ],
         "data": [],
