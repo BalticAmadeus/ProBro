@@ -72,7 +72,13 @@ export class DatabaseProcessor implements IProcessor {
     }
 
     private getConnectionString(config: IConfig) {
-        var connectionString = `-db ${config.name} ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''}`;
+        if (!config.params.includes("-ct"))
+            if (config.params == "")
+                config.params += "-ct 1"
+            else
+                config.params += " -ct 1"
+                
+        var connectionString = `-db ${config.name} ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''} ${config.params}`;
         return connectionString;
     }
 

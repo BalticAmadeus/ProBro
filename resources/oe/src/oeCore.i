@@ -36,7 +36,7 @@ PROCEDURE LOCAL_CONNECT:
 	DEFINE VARIABLE jsonDebug AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 
 	tmpDate = NOW.
-	CONNECT VALUE(SUBSTITUTE("&1 &2", inputObject:GetCharacter("connectionString"), "-ct 1")) NO-ERROR.
+	CONNECT VALUE(inputObject:GetCharacter("connectionString")) NO-ERROR.
 	IF ERROR-STATUS:ERROR THEN DO:
 		UNDO, THROW NEW Progress.Lang.AppError(ERROR-STATUS:GET-MESSAGE(1), ERROR-STATUS:GET-NUMBER(1)).
 	END.
