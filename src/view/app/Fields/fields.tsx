@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useState, useMemo } from "react";
 
-import { FieldRow, CommandAction} from "../model";
-import DataGrid, { SelectColumn }from "react-data-grid";
+import { FieldRow, CommandAction, TableDetails } from "../model";
+import DataGrid, { SelectColumn } from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 import { Logger } from "../../../common/Logger";
 
@@ -11,7 +11,7 @@ import { ISettings } from "../../../common/IExtensionSettings";
 
 interface IConfigProps {
     vscode: any;
-    initialData: FieldRow[];
+    initialData: TableDetails;
     configuration: ISettings;
 }
 
@@ -55,8 +55,9 @@ function rowKeyGetter(row: FieldRow) {
     return row.order;
 }
 
+
 function Fields({ initialData, configuration, vscode }: IConfigProps) {
-    const [rows, setRows] = useState(initialData);
+    const [rows, setRows] = useState(initialData.fields);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);

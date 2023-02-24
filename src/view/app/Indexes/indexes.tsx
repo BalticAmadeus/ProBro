@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useMemo } from "react";
-import { IndexRow } from "../model";
+import { IndexRow, TableDetails } from "../model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 import * as columnName from "./column.json";
@@ -8,8 +8,7 @@ import { Logger } from "../../../common/Logger";
 import { ISettings } from "../../../common/IExtensionSettings";
 
 interface IConfigProps {
-    vscode: any;
-    indexes: IndexRow[];
+    initialData: TableDetails;
     configuration: ISettings;
 }
 
@@ -31,8 +30,8 @@ function rowKeyGetter(row: IndexRow) {
     return row.cName;
 }
 
-function Indexes({ indexes, configuration, vscode }: IConfigProps) {
-    const [rows, setRows] = useState(indexes);
+function Indexes({ initialData, configuration }: IConfigProps) {
+    const [rows, setRows] = useState(initialData.indexes);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
         () => new Set()

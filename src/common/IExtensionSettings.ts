@@ -1,4 +1,4 @@
-export interface ISettings{
+export interface ISettings {
     batchSize: number;
     batchMaxTimeout: number;
     initialBatchSizeLoad: number;
@@ -8,4 +8,5 @@ export interface ISettings{
 export interface ILogging {
     react: boolean,
     node: boolean,
-    openEdge: string}
+    openEdge: string
+}
