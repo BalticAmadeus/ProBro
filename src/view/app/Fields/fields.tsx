@@ -11,7 +11,7 @@ import { ISettings } from "../../../common/IExtensionSettings";
 
 interface IConfigProps {
     vscode: any;
-    initialData: TableDetails;
+    tableDetails: TableDetails
     configuration: ISettings;
 }
 
@@ -56,8 +56,8 @@ function rowKeyGetter(row: FieldRow) {
 }
 
 
-function Fields({ initialData, configuration, vscode }: IConfigProps) {
-    const [rows, setRows] = useState(initialData.fields);
+function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
+    const [rows, setRows] = useState(tableDetails.fields);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);

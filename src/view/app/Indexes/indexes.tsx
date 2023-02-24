@@ -8,7 +8,7 @@ import { Logger } from "../../../common/Logger";
 import { ISettings } from "../../../common/IExtensionSettings";
 
 interface IConfigProps {
-    initialData: TableDetails;
+    tableDetails: TableDetails
     configuration: ISettings;
 }
 
@@ -30,8 +30,8 @@ function rowKeyGetter(row: IndexRow) {
     return row.cName;
 }
 
-function Indexes({ initialData, configuration }: IConfigProps) {
-    const [rows, setRows] = useState(initialData.indexes);
+function Indexes({ tableDetails, configuration }: IConfigProps) {
+    const [rows, setRows] = useState(tableDetails.indexes);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
         () => new Set()

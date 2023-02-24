@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { createRoot } from "react-dom/client";
-import { IConfig } from "../model";
+import { TableDetails } from "../model";
 import "./indexes.css";
 import Indexes from "./indexes";
 import { ISettings } from "../../../common/IExtensionSettings";
@@ -9,12 +9,10 @@ import { ISettings } from "../../../common/IExtensionSettings";
 declare global {
   interface Window {
     acquireVsCodeApi(): any;
-    initialData: IConfig;
+    tableDetails: TableDetails;
     configuration: ISettings;
   }
 }
 
-const vscode = window.acquireVsCodeApi();
-
 const root = createRoot(document.getElementById("root"));
-root.render(<Indexes initialData={window.initialData} configuration={window.configuration} vscode={vscode} />);
+root.render(<Indexes tableDetails={window.tableDetails} configuration={window.configuration}/>);
