@@ -1,9 +1,10 @@
 import * as Net from "net";
 import * as cp from "child_process";
 import { Constants } from "../common/constants";
+import * as vscode from "vscode";
 
 class OEClient {
-  private port: number = 11115; //TODO get one from config, lock it somehow
+  private port: number = 23456; //TODO get one from config, lock it somehow
   private host: string = "localhost";
   private client!: Net.Socket;
   private data!: string;
@@ -12,7 +13,13 @@ class OEClient {
   private proc!: cp.ChildProcessWithoutNullStreams;
   private enc = new TextDecoder("utf-8");
 
-  constructor() {}
+  constructor() {
+    vscode.commands.executeCommand(`pro-bro.getPort`).then( (port: any) => {
+      console.log("OeClient port: ", port);
+      this.port = port;
+    });
+    console.log("constructor port: ", this.port);
+  }
 
   public init(): Promise<any> {
     return this.runProc().then((resolve) => {
@@ -32,6 +39,7 @@ class OEClient {
       this.client.on("end", () => {
         console.log("Requested an end to the TCP connection");
       });
+
       return this;
     });
   }
@@ -79,6 +87,7 @@ class OEClient {
       }
 
       this.proc.on("exit", (code, signal) => {
+        vscode.commands.executeCommand(`${Constants.globalExtensionKey}.releasePort`);
         console.log(
           "child process exited with " + `code ${code} and signal ${signal}`
         );

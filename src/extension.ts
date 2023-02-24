@@ -10,11 +10,29 @@ import { GroupListProvider } from "./treeview/GroupListProvider";
 import { TableNode } from "./treeview/tableNode";
 import { TablesListProvider } from "./treeview/TablesListProvider";
 import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
+import { IPort } from "./view/app/model";
 
 export function activate(context: vscode.ExtensionContext) {
 
   Constants.context = context;
+  let extensionPort: number; 
 
+  vscode.workspace.onDidChangeConfiguration( event => {
+    const affected = event.affectsConfiguration("ProBro.possiblePortsList");
+    if (affected) {
+      const portList: IPort[] | undefined = vscode.workspace.getConfiguration("ProBro").get("possiblePortsList");
+      console.log("portList settings:", portList);
+      if(portList?.length === 0) {
+        vscode.window.showErrorMessage("Please provide port number @pridet mygtuka");
+        return;
+      }
+      context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
+      console.log("portList changed: ", portList);
+
+    }
+    console.log("changed settings");
+  });
+    
   const connectionUpdater = new DbConnectionUpdater();
   connectionUpdater.updateConnectionStatuses(context);
 
@@ -101,43 +119,84 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  vscode.commands.registerCommand( `${Constants.globalExtensionKey}.list-filter`, async () => {
-    const options:QuickPickItem[] = [...new Set([...tablesListProvider.tableNodes.map(table => table.tableType)])].map(label => ({label}));
-    options.forEach((option) => {
-      if (tablesListProvider.filters?.includes(option.label)) {
-        option.picked = true; 
+  vscode.commands.registerCommand( 
+    `${Constants.globalExtensionKey}.list-filter`, async () => {
+      const options:QuickPickItem[] = [...new Set([...tablesListProvider.tableNodes.map(table => table.tableType)])].map(label => ({label}));
+      options.forEach((option) => {
+        if (tablesListProvider.filters?.includes(option.label)) {
+          option.picked = true; 
+        }
+      });
+      const quickPick = vscode.window.createQuickPick();
+      quickPick.items = options;
+      quickPick.canSelectMany = true;
+      quickPick.onDidAccept(() => quickPick.dispose());
+
+      if (tablesListProvider.filters) {  
+        quickPick.selectedItems = options.filter((option) => option.picked);
       }
-    });
-    const quickPick = vscode.window.createQuickPick();
-    quickPick.items = options;
-    quickPick.canSelectMany = true;
-    quickPick.onDidAccept(() => quickPick.dispose());
+    
+      quickPick.onDidChangeSelection(async selection => {
+        const filters = selection.map((type) => type.label);
+        tablesListProvider.refreshList(filters);
+      });
 
-    if (tablesListProvider.filters) {  
-      quickPick.selectedItems = options.filter((option) => option.picked);
+      quickPick.onDidHide(() => quickPick.dispose());
+      quickPick.show();
     }
-  
-    quickPick.onDidChangeSelection(async selection => {
-      const filters = selection.map((type) => type.label);
-      tablesListProvider.refreshList(filters);
-    });
+  );
 
-    quickPick.onDidHide(() => quickPick.dispose());
-    quickPick.show();
-  
-});
+  vscode.commands.registerCommand(
+    `${Constants.globalExtensionKey}.dblClickQuery`,(_) => {
+      tablesListProvider.countClick();
+      if (tablesListProvider.tableClicked.count === 2) {
+        new QueryEditor(
+                context,
+                tablesListProvider.node as TableNode,
+                tablesListProvider,
+                fieldsProvider
+              );
+      }
+    } 
+  );
 
-vscode.commands.registerCommand(
-  `${Constants.globalExtensionKey}.dblClickQuery`,(_) => {
-    tablesListProvider.countClick();
-    if (tablesListProvider.tableClicked.count === 2) {
-      new QueryEditor(
-              context,
-              tablesListProvider.node as TableNode,
-              tablesListProvider,
-              fieldsProvider
-            );
+  vscode.commands.registerCommand( 
+    `${Constants.globalExtensionKey}.getPort`, (): number => {
+      const portList = context.globalState.get<{[id: string]:IPort}>(`${Constants.globalExtensionKey}.portList`);
+
+      console.log(" portList", portList);
+      if (!portList) {
+
+        console.log("empty port list");
+      } else {
+        for (const id of Object.keys(portList)) {
+          if (!portList[id].isInUse) {
+            extensionPort = portList[id].port;
+            portList[id].isInUse = true;
+            context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
+            break;
+          }
+        };
+      };
+      return extensionPort;
+    } 
+  );
+
+  vscode.commands.registerCommand(
+    `${Constants.globalExtensionKey}.releasePort`, () => {
+      const portList = context.globalState.get<{[id: string]:IPort}>(`${Constants.globalExtensionKey}.portList`);
+
+      if (!portList) {
+        return;
+      } else {
+        for (const id of Object.keys(portList)) {
+          if (portList[id].isInUse && extensionPort === portList[id].port) {
+            portList[id].isInUse = false;
+            context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
+            break;
+          }
+        };
+      }
     }
-  } 
-);
+  );
 }
