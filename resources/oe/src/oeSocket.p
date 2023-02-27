@@ -136,10 +136,10 @@ PROCEDURE SocketIO:
             RUN LOCAL_GET_DEBUG.
             tmpJson = jsonObject:GetJsonText() + chr(10).
             SET-SIZE(mData) = 0.
-            SET-SIZE(mData) = LENGTH(tmpJson) + 100.
+            SET-SIZE(mData) = LENGTH(tmpJson, 'RAW') + 1.
             PUT-STRING(mData,1) = tmpJson.
-            lRC = SELF:WRITE(mData,1,LENGTH(tmpJson)) NO-ERROR.
-            iDatASize = 0.    
+            lRC = SELF:WRITE(mData,1,LENGTH(tmpJson, 'RAW')) NO-ERROR.
+            iDatASize = 0.
             SET-SIZE(mData) = 0.
         END FINALLY.
     END.
