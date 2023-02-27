@@ -69,6 +69,10 @@
                 "ProBro.logging.openEdge": {
                     "type": "string",
                     "markdownDescription": "Specify one or more log entry types (-logentrytypes) for custom OpenEdge part logging. Reload required."
+                },
+                "ProBro.temp.tempfiles": {
+                    "type": "string",
+                    "markdownDescription": "Specifies path where temporary files are created."
                 }
             }
         },
