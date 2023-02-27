@@ -1,12 +1,12 @@
 import * as React from "react";
 import { CommandAction, ICommand, IConfig } from "../model";
 import { Logger } from "../../../common/Logger";
-
+import { ISettings } from "../../../common/IExtensionSettings";
 
 interface IConfigProps {
     vscode: any;
     initialData: IConfig;
-    configuration: any;
+    configuration: ISettings;
 }
 
 interface IConfigState {
