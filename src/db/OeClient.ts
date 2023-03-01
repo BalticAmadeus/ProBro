@@ -45,12 +45,15 @@ class OEClient {
         return new Promise((resolve) => {
 
             const logentrytypes: string = this.configuration.get("logging.openEdge")!;
+            const tempFilesPath: string = this.configuration.get("tempfiles")!;
+            const tempFileParameter: string = tempFilesPath === "" ? "" : '-T ' + tempFilesPath;
 
             const cmd = `${Constants.context.extensionPath}/resources/oe/scripts/oe.bat -b -debugalert -p "${Constants.context.extensionPath}/resources/oe/src/oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}" `;
 
             if (process.platform === 'linux') {
                 this.proc = cp.spawn('bash', ['-c',
                     [`"${Constants.context.extensionPath}/resources/oe/scripts/oe.sh"`,
+                        tempFileParameter,
                         '-b',
                         '-p',
                     `"${Constants.context.extensionPath}/resources/oe/src/oeSocket.p"`,
@@ -62,6 +65,7 @@ class OEClient {
             } else if (process.platform === 'win32') {
                 this.proc = cp.spawn('cmd.exe', ['/c',
                     [`${Constants.context.extensionPath}/resources/oe/scripts/oe.bat`,
+                    tempFileParameter,
                     '-b',
                     '-p',
                     `${Constants.context.extensionPath}/resources/oe/src/oeSocket.p`,
