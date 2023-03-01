@@ -45,7 +45,7 @@ class OEClient {
         return new Promise((resolve) => {
 
             const logentrytypes: string = this.configuration.get("logging.openEdge")!;
-            const tempFilesPath: string = this.configuration.get("temp.tempfiles")!;
+            const tempFilesPath: string = this.configuration.get("tempfiles")!;
             const tempFileParameter: string = tempFilesPath === "" ? "" : '-T ' + tempFilesPath;
 
             const cmd = `${Constants.context.extensionPath}/resources/oe/scripts/oe.bat -b -debugalert -p "${Constants.context.extensionPath}/resources/oe/src/oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}" `;
