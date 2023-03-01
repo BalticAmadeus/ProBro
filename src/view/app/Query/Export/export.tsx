@@ -138,7 +138,7 @@ export default function ExportPopup({
               onChange={(val) => setExportFormat(val.target.value)}
             >
               {exportList.map((val) => (
-                <option value={val}>{val}</option>
+                <option key={val} value={val}>{val}</option>
               ))}
             </select>
             <br />
@@ -150,7 +150,7 @@ export default function ExportPopup({
               <br/>
               <br/>
               {Object.keys(DataToExport).filter(key => Number.isNaN(+key)).map((key) => (
-                <label className="radioBtn">
+                <label className="radioBtn" key={key}>
                   <input type="radio" 
                   name="exportdata"
                   onChange={(e)=> handleChange(e)}
@@ -158,7 +158,7 @@ export default function ExportPopup({
                   />
                   {key}
                 </label>
-              ))} 
+              ))}
            </div>
           </div>
           <div className="btn-container">
