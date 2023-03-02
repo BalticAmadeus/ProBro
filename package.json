@@ -60,26 +60,15 @@
                 },
                 "ProBro.possiblePortsList": {
                     "type": "array",
+                    "minItems": 1,
                     "items": {
-                        "type": "object",
-                        "title": "List of available ports",
-                        "properties": {
-                            "port": {
                                 "type": "number",
-                                "default": 23456,
+                                "minimum": 0,
+                                "maximum": 65536,
                                 "description": "Port number"
                             },
-                            "isInUse": {
-                                "type": "boolean",
-                                "default": "false",
-                                "description": "automatically changes when ProBro in opened in vsCode"
-                            }
-                        }
-                    },
-                    "default": [{
-                        "port": 23456,
-                        "isInUse": false
-                    }],
+            
+                    "default": [23456],
                     "markdownDescription": "Provide free ports for local ProBro communication. Additional ports are used for additional vsCode instances using ProBro extension. The default ProBro extension port is 23456"
                 }
             }

@@ -11,26 +11,62 @@ import { TableNode } from "./treeview/tableNode";
 import { TablesListProvider } from "./treeview/TablesListProvider";
 import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
 import { IPort } from "./view/app/model";
+import { writeFile } from "fs";
+import path = require("path");
+
+let extensionPort: number;
 
 export function activate(context: vscode.ExtensionContext) {
 
   Constants.context = context;
-  let extensionPort: number; 
 
-  vscode.workspace.onDidChangeConfiguration( event => {
+  vscode.workspace.onDidChangeConfiguration((event) => {
     const affected = event.affectsConfiguration("ProBro.possiblePortsList");
-    if (affected) {
-      const portList: IPort[] | undefined = vscode.workspace.getConfiguration("ProBro").get("possiblePortsList");
-      console.log("portList settings:", portList);
-      if(portList?.length === 0) {
-        vscode.window.showErrorMessage("Please provide port number @pridet mygtuka");
-        return;
-      }
-      context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
-      console.log("portList changed: ", portList);
-
+    if (!affected) {
+      return;
     }
-    console.log("changed settings");
+
+    const settingsPorts: number[] = vscode.workspace
+      .getConfiguration("ProBro")
+      .get("possiblePortsList")!;
+    if (settingsPorts.length === 0) {
+      context.globalState.update(
+        `${Constants.globalExtensionKey}.portList`,
+        undefined
+      );
+      return;
+    }
+    let newGlobalStatePortList: IPort[] = [];
+    const globalStatePorts = context.globalState.get<{ [id: string]: IPort }>(
+      `${Constants.globalExtensionKey}.portList`
+    )!;
+    if (globalStatePorts) {
+      newGlobalStatePortList = Object.values(globalStatePorts).filter(
+        (gPort) => {
+          const portIndex: number = settingsPorts.indexOf(gPort.port);
+          if (portIndex < 0) {
+            return false;
+          } else {
+            settingsPorts.splice(portIndex, 1);
+            return true;
+          }
+        }
+      );
+    }
+
+    newGlobalStatePortList = [
+      ...newGlobalStatePortList,
+      ...settingsPorts.map((sPort: number): IPort => {
+        return { port: sPort, isInUse: false };
+      }),
+    ];
+
+    console.log("new GS ports: ", newGlobalStatePortList);
+
+    context.globalState.update(
+      `${Constants.globalExtensionKey}.portList`,
+      newGlobalStatePortList
+    );
   });
     
   const connectionUpdater = new DbConnectionUpdater();
@@ -160,26 +196,38 @@ export function activate(context: vscode.ExtensionContext) {
     } 
   );
 
-  vscode.commands.registerCommand( 
-    `${Constants.globalExtensionKey}.getPort`, (): number => {
-      const portList = context.globalState.get<{[id: string]:IPort}>(`${Constants.globalExtensionKey}.portList`);
-
-      console.log(" portList", portList);
+  vscode.commands.registerCommand(
+    `${Constants.globalExtensionKey}.getPort`,
+    async (): Promise<number> => {
+      const portList = context.globalState.get<{ [id: string]: IPort }>(
+        `${Constants.globalExtensionKey}.portList`
+      )!;
       if (!portList) {
-
-        console.log("empty port list");
+        await vscode.window
+          .showErrorMessage(
+            "No port provided for connection. Provide port and restart. You can use default port number.",
+            "default",
+            "settings"
+          )
+          .then((selection) => {
+            if (selection === "default") {
+              extensionPort = 23456;
+            } else if (selection === "settings") {
+              vscode.commands.executeCommand("workbench.action.openSettings");
+            }
+          });
       } else {
         for (const id of Object.keys(portList)) {
           if (!portList[id].isInUse) {
-            extensionPort = portList[id].port;
-            portList[id].isInUse = true;
-            context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
-            break;
+          extensionPort = portList[id].port;
+          portList[id].isInUse = true;
+          context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
+          break;
           }
-        };
-      };
+        }
+      }
       return extensionPort;
-    } 
+    }
   );
 
   vscode.commands.registerCommand(

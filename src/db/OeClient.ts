@@ -13,11 +13,9 @@ class OEClient {
   private proc!: cp.ChildProcessWithoutNullStreams;
   private enc = new TextDecoder("utf-8");
 
-  constructor() {
-    vscode.commands.executeCommand(`pro-bro.getPort`).then( (port: any) => {
-      console.log("OeClient port: ", port);
-      this.port = port;
-    });
+  constructor(port: number, host: string) {
+     this.port = port;
+     this.host = host;
     console.log("constructor port: ", this.port);
   }
 
@@ -122,11 +120,18 @@ class OEClient {
   }
 }
 
-var client: OEClient;
+let client: OEClient;
 
-function getOEClient(): Promise<any> {
+async function getOEClient(): Promise<any> {
+  let port: number;
+  let host: string = "localhost";
   if (!client) {
-    client = new OEClient();
+    await vscode.commands.executeCommand(`pro-bro.getPort`).then((portVal: any) => {
+      console.log("getOEclient:", portVal);
+      port = portVal;
+    });
+
+    client = new OEClient(port!, host);
     return client.init();
   }
   return new Promise((resolve) => {
