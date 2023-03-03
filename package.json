@@ -58,6 +58,21 @@
                     "default": 100,
                     "markdownDescription": "Specifies the initial number of records retrieved when query is opened"
                 },
+                "ProBro.tempfiles": {
+                    "type": "string",
+                    "markdownDescription": "Specifies path where temporary files are created."
+                },
+                "ProBro.envVariables": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Environment variables",
+                    "default": {
+                        "DLC": "<enter your DLC>"
+                    },
+                    "scope": "machine-overridable"
+                },
                 "ProBro.logging.react": {
                     "type": "boolean",
                     "markdownDescription": "Log input and output in React part to console"
@@ -69,10 +84,6 @@
                 "ProBro.logging.openEdge": {
                     "type": "string",
                     "markdownDescription": "Specify one or more log entry types (-logentrytypes) for custom OpenEdge part logging. Reload required."
-                },
-                "ProBro.tempfiles": {
-                    "type": "string",
-                    "markdownDescription": "Specifies path where temporary files are created."
                 }
             }
         },
