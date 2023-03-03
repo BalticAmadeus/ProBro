@@ -9,7 +9,7 @@
         "DB",
         "Explorer"
     ],
-    "version": "1.2.0",
+    "version": "1.2.2",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -57,6 +57,22 @@
                     "minimum": 50,
                     "default": 100,
                     "markdownDescription": "Specifies the initial number of records retrieved when query is opened"
+                },
+                "ProBro.tempfiles": {
+                    "type": "string",
+                    "markdownDescription": "Specifies path where temporary files are created."
+                },
+                "ProBro.logging.react": {
+                    "type": "boolean",
+                    "markdownDescription": "Log input and output in React part to console"
+                },
+                "ProBro.logging.node": {
+                    "type": "boolean",
+                    "markdownDescription": "Log input and output in Node part to console"
+                },
+                "ProBro.logging.openEdge": {
+                    "type": "string",
+                    "markdownDescription": "Specify one or more log entry types (-logentrytypes) for custom OpenEdge part logging. Reload required."
                 }
             }
         },
@@ -200,9 +216,13 @@
         "compile:views": "webpack --mode development",
         "watch:extension": "tsc -watch -p ./",
         "watch:views": "webpack --watch --mode development",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+        "test": "npm run compile && node ./node_modules/vscode/bin/test",
+        "jestTest": "jest"
     },
     "devDependencies": {
+        "@babel/core": "^7.21.0",
+        "@babel/preset-env": "^7.20.2",
+        "@babel/preset-typescript": "^7.21.0",
         "@types/glob": "^7.2.0",
         "@types/mocha": "^9.1.1",
         "@types/node": "14.x",
@@ -212,9 +232,11 @@
         "@typescript-eslint/eslint-plugin": "^5.21.0",
         "@typescript-eslint/parser": "^5.21.0",
         "@vscode/test-electron": "^2.1.3",
+        "babel-jest": "^29.4.3",
         "css-loader": "^6.7.1",
         "eslint": "^8.14.0",
         "glob": "^8.0.1",
+        "jest": "^29.4.3",
         "mocha": "^9.2.2",
         "npm-run-all": "^4.1.5",
         "style-loader": "^3.3.1",

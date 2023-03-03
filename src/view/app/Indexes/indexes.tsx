@@ -1,9 +1,16 @@
 import * as React from "react";
 import { useState, useMemo } from "react";
-import { IndexRow } from "../model";
+import { IndexRow, TableDetails } from "../model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 import * as columnName from "./column.json";
+import { Logger } from "../../../common/Logger";
+import { ISettings } from "../../../common/IExtensionSettings";
+
+interface IConfigProps {
+    tableDetails: TableDetails
+    configuration: ISettings;
+}
 
 type Comparator = (a: IndexRow, b: IndexRow) => number;
 function getComparator(sortColumn: string): Comparator {
@@ -23,13 +30,14 @@ function rowKeyGetter(row: IndexRow) {
     return row.cName;
 }
 
-function Indexes({ initialData, vscode }) {
-    const [rows, setRows] = useState(initialData.indexes as IndexRow[]);
+function Indexes({ tableDetails, configuration }: IConfigProps) {
+    const [rows, setRows] = useState(tableDetails.indexes);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
         () => new Set()
     );
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
+    const logger = new Logger(configuration.logging.react);
 
     const windowRezise = () => {
         setWindowHeight(window.innerHeight);
@@ -67,6 +75,7 @@ function Indexes({ initialData, vscode }) {
     React.useLayoutEffect(() => {
         window.addEventListener("message", (event) => {
             const message = event.data;
+            logger.log("indexes explorer data", message);
             switch (message.command) {
                 case "data":
                     setRows(message.data.indexes);

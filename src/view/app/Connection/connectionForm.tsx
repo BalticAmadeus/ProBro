@@ -1,20 +1,19 @@
 import * as React from "react";
 import { CommandAction, ICommand, IConfig } from "../model";
-import { ProBroButton } from "../assets/button";
-import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
-import { PfParser } from "../utils/PfParser";
-
+import { Logger } from "../../../common/Logger";
+import { ISettings } from "../../../common/IExtensionSettings";
 
 interface IConfigProps {
     vscode: any;
     initialData: IConfig;
+    configuration: ISettings;
 }
 
 interface IConfigState {
     config: IConfig;
 }
 
-function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
+function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfigProps) {
     const oldState = vscode.getState();
     const initState = oldState ? oldState : { config: initialData };
     const [vsState, _] = React.useState<IConfigState>(initState);
@@ -28,6 +27,8 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
     const [group, setGroup] = React.useState(vsState.config.group);
     const [label, setLabel] = React.useState(vsState.config.label);
     const [params, setParams] = React.useState(vsState.config.params);
+
+    const logger = new Logger(configuration.logging.react);
 
     const onSaveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -49,6 +50,7 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
             action: CommandAction.Save,
             content: config,
         };
+        logger.log("onSaveClick command", command);
         vscode.postMessage(command);
     };
 
@@ -72,48 +74,14 @@ function ConnectionForm({ vscode, initialData, ...props }: IConfigProps) {
             action: CommandAction.Test,
             content: config,
         };
+        logger.log("onTestClick command", command);
         vscode.postMessage(command);
-    };
-
-    const importPf = ()  => {
-        let input = document.createElement("input");
-        input.id = "inputVal";
-        input.type = "file";
-        input.accept = ".pf";
-        input.onchange = ev => {
-            let [file] =   Array.from(input.files);
-            const reader = new FileReader();
-            reader.addEventListener("load", () => {
-                const pfParser = new PfParser();
-                const pfConfig = pfParser.parse(reader.result as string);
-                console.log("pfConfig: ", pfConfig);
-                setName(pfConfig.name);
-                setHost(pfConfig.host);
-                setPort(pfConfig.port);
-                setUser(pfConfig.user);
-                setPassword(pfConfig.password);
-                setLabel(file.name.split(".", 1)[0]);
-                setParams(pfConfig.params);
-            });
-            if (file) {
-                reader.readAsText(file);
-            }
-        };
-        input.click();
     };
 
     return (
         <React.Fragment>
             <div className="container">
-                <div className="heading">
-                    <div className="title">Connect to server</div>
-                    <ProBroButton 
-                    className="importPf"
-                    onClick={importPf}
-                    startIcon={<FileUploadRoundedIcon />}
-                    >Import .pf</ProBroButton>
-                </div>
-                
+                <div className="title">Connect to server</div>
                 <div className="content">
                     <form action="#">
                         <div className="connection-details">
