@@ -59,7 +59,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
 
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
-          window.initialData = ${JSON.stringify(data)};
+          window.tableDetails = ${JSON.stringify(data)};
           window.configuration = ${JSON.stringify(this.configuration)}
         </script>
     </head>
