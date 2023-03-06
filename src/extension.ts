@@ -11,13 +11,9 @@ import { TableNode } from "./treeview/tableNode";
 import { TablesListProvider } from "./treeview/TablesListProvider";
 import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
 import { IPort } from "./view/app/model";
-import { writeFile } from "fs";
-import path = require("path");
-
-let extensionPort: number;
 
 export function activate(context: vscode.ExtensionContext) {
-
+  let extensionPort: number;
   Constants.context = context;
 
   vscode.workspace.onDidChangeConfiguration((event) => {
@@ -57,17 +53,35 @@ export function activate(context: vscode.ExtensionContext) {
     newGlobalStatePortList = [
       ...newGlobalStatePortList,
       ...settingsPorts.map((sPort: number): IPort => {
-        return { port: sPort, isInUse: false };
+        return { port: sPort, isInUse: false, timestamp: undefined };
       }),
     ];
-
-    console.log("new GS ports: ", newGlobalStatePortList);
 
     context.globalState.update(
       `${Constants.globalExtensionKey}.portList`,
       newGlobalStatePortList
     );
   });
+
+  const updatePortList = () => {
+    if (!extensionPort) {
+      return;
+    };
+    const portList = context.globalState.get<{[id: string]:IPort}>(`${Constants.globalExtensionKey}.portList`);
+    if(!portList) {
+      return;
+    }
+    for (const id of Object.keys(portList)) {
+      if (portList[id].port === extensionPort) {
+        portList[id].timestamp = Date.now();
+        break;
+      }
+    };
+    context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
+  };
+  
+  setInterval(updatePortList, 30000);
+  
     
   const connectionUpdater = new DbConnectionUpdater();
   connectionUpdater.updateConnectionStatuses(context);
@@ -219,10 +233,12 @@ export function activate(context: vscode.ExtensionContext) {
       } else {
         for (const id of Object.keys(portList)) {
           if (!portList[id].isInUse) {
-          extensionPort = portList[id].port;
-          portList[id].isInUse = true;
-          context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
-          break;
+  
+            extensionPort = portList[id].port;
+            portList[id].isInUse = true;
+            portList[id].timestamp = Date.now();
+            context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
+            break;
           }
         }
       }
@@ -234,17 +250,16 @@ export function activate(context: vscode.ExtensionContext) {
     `${Constants.globalExtensionKey}.releasePort`, () => {
       const portList = context.globalState.get<{[id: string]:IPort}>(`${Constants.globalExtensionKey}.portList`);
 
-      if (!portList) {
+      if(!portList) {
         return;
-      } else {
-        for (const id of Object.keys(portList)) {
-          if (portList[id].isInUse && extensionPort === portList[id].port) {
-            portList[id].isInUse = false;
-            context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
-            break;
-          }
-        };
       }
-    }
-  );
+
+      for (const id of Object.keys(portList)) {
+        if (portList[id].isInUse && (Date.now() - portList[id].timestamp!) > 35000) {
+          portList[id].isInUse = false;
+          portList[id].timestamp = undefined;
+          context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
+        }
+      };
+    });
 }

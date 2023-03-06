@@ -104,5 +104,6 @@ export interface TableCount {
 
 export interface IPort {
     port: number,
-    isInUse: boolean
+    isInUse: boolean,
+    timestamp: number | undefined
 }

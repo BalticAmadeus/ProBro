@@ -16,7 +16,6 @@ class OEClient {
   constructor(port: number, host: string) {
      this.port = port;
      this.host = host;
-    console.log("constructor port: ", this.port);
   }
 
   public init(): Promise<any> {
@@ -85,7 +84,6 @@ class OEClient {
       }
 
       this.proc.on("exit", (code, signal) => {
-        vscode.commands.executeCommand(`${Constants.globalExtensionKey}.releasePort`);
         console.log(
           "child process exited with " + `code ${code} and signal ${signal}`
         );
@@ -126,10 +124,15 @@ async function getOEClient(): Promise<any> {
   let port: number;
   let host: string = "localhost";
   if (!client) {
-    await vscode.commands.executeCommand(`pro-bro.getPort`).then((portVal: any) => {
-      console.log("getOEclient:", portVal);
-      port = portVal;
-    });
+    await vscode.commands.executeCommand(
+      `${Constants.globalExtensionKey}.releasePort`
+    );
+    await vscode.commands
+      .executeCommand(`${Constants.globalExtensionKey}.getPort`)
+      .then((portVal: any) => {
+        console.log("getOEclient:", portVal);
+        port = portVal;
+      });
 
     client = new OEClient(port!, host);
     return client.init();
