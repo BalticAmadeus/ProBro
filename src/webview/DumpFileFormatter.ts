@@ -1,10 +1,10 @@
-import { IExportDumpData } from "../db/oe";
+import { IExportDumpData, IOePsc } from "../db/Oe";
 
 export class DumpFileFormatter {
 
-    private dumpData: string = "";
-    private trailerInfo: string = "";
-    private dumpFile: string = "";
+    protected dumpData: string = "";
+    protected trailerInfo: string = "";
+    protected dumpFile: string = "";
 
     constructor() {
     }
@@ -19,7 +19,7 @@ export class DumpFileFormatter {
       return this.dumpFile;
     }
 
-    private combineDumpFile (): void {
+    protected combineDumpFile (): void {
         this.dumpFile = this.dumpData 
         + `.\r\n` 
         + this.trailerInfo
@@ -27,7 +27,7 @@ export class DumpFileFormatter {
         + `${String(this.dumpData.length + 3).padStart(10, "0")}\r\n`;
     }
 
-    private formatDumpData (data: IExportDumpData): void {
+    protected formatDumpData (data: IExportDumpData): void {
         this.dumpData = data.rawData.reduce((accumulator: string, row: any) => {
             return (
               accumulator +
@@ -85,7 +85,7 @@ export class DumpFileFormatter {
           }, "");
     }
 
-    private formatTrailerInfo (data: any, fileName: string, dbName: string, recordNum: number): void {
+    protected formatTrailerInfo (data: IOePsc, fileName: string, dbName: string, recordNum: number): void {
         this.trailerInfo = `PSC\r\n`
         + `filename=${fileName}\r\n`
         + `records=${String(recordNum).padStart(13, "0")}\r\n`

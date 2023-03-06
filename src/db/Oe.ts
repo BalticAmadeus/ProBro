@@ -44,7 +44,7 @@ interface IOeColumn {
     type: string,
     format: string | null
 }
-interface IOePsc {
+export interface IOePsc {
     cpstream: string,
     dateformat: string,
     numformat: string,

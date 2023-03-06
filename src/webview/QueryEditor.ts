@@ -1,12 +1,13 @@
 import path = require("path");
 import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
-import { DatabaseProcessor } from "../db/databaseProcessor";
-import { IOETableData } from "../db/oe";
+import { DatabaseProcessor } from "../db/DatabaseProcessor";
+import { IOETableData } from "../db/Oe";
 import { TableNode } from "../treeview/TableNode";
 import { TablesListProvider } from "../treeview/TablesListProvider";
 import { FieldsViewProvider } from "./FieldsViewProvider";
 import { DumpFileFormatter } from "./DumpFileFormatter";
+import { Logger } from "../common/Logger";
 
 export class QueryEditor {
   private readonly panel: vscode.WebviewPanel | undefined;
@@ -15,6 +16,7 @@ export class QueryEditor {
   public tableName: string;
   private fieldsProvider: FieldsViewProvider;
   private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private logger = new Logger(this.configuration.get("logging.node")!);
 
   constructor(
     private context: vscode.ExtensionContext,
@@ -55,6 +57,7 @@ export class QueryEditor {
 
     this.panel.webview.onDidReceiveMessage(
       (command: ICommand) => {
+        this.logger.log("command:", command);
         switch (command.action) {
           case CommandAction.Query:
             if (this.tableListProvider.config) {
@@ -67,13 +70,15 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    this.panel?.webview.postMessage({
+                    const obj = {
                       id: command.id,
                       command: "data",
                       columns: tableNode.cache?.selectedColumns,
                       data: oe,
-                    });
-                  }
+                    };
+                    this.logger.log("data:", obj);
+                    this.panel?.webview.postMessage(obj);
+                  } 
                 });
               break;
             }
@@ -87,12 +92,15 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    this.panel?.webview.postMessage({
+                    const obj = {
                       id: command.id,
                       command: "crud",
                       data: oe,
-                    });
+                    };
+                    this.logger.log("data:", obj);
+                    this.panel?.webview.postMessage(obj);
                   }
+                    
                 });
               break;
             }
@@ -106,12 +114,24 @@ export class QueryEditor {
                 )
                 .then((oe) => {
                   if (this.panel) {
-                    this.panel?.webview.postMessage({
+                    const obj = {
                       id: command.id,
                       command: "submit",
                       data: oe,
-                    });
+                    };
+                    this.logger.log("data:", obj);
+                    if (obj.data.description != null){
+                      if (obj.data.description == "")
+                        vscode.window.showErrorMessage("Database Error: Trigger canceled action");
+                      else
+                        vscode.window.showErrorMessage("Database Error: " + obj.data.description);
+                    }
+                    else{
+                      vscode.window.showInformationMessage("Action was successful");
+                    }
+                    this.panel?.webview.postMessage(obj);
                   }
+                    
                 });
               break;
             }
@@ -135,13 +155,15 @@ export class QueryEditor {
                       );
                       exportData = dumpFileFormatter.getDumpFile();
                     }
-                    this.panel?.webview.postMessage({
+                    const obj = {
                       id: command.id,
                       command: "export",
                       tableName: this.tableNode.tableName,
                       data: exportData,
                       format: command.params!.exportType,
-                    });
+                    };
+                    this.logger.log("data:", obj);
+                    this.panel?.webview.postMessage(obj);
                   }
                 });
             }
@@ -165,10 +187,12 @@ export class QueryEditor {
   }
 
   public updateFields() {
-    this.panel?.webview.postMessage({
+    const obj = {
       command: "columns",
       columns: this.tableNode.cache?.selectedColumns,
-    });
+    };
+    this.logger.log("updateFields:", obj);
+    this.panel?.webview.postMessage(obj);
   }
 
   private getWebviewContent(tableData: IOETableData): string {

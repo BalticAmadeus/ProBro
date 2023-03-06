@@ -1,6 +1,6 @@
 USING OpenEdge.Core.Assert.
 USING Progress.Json.ObjectModel.ObjectModelParser.
-USING Progress.Json.ObjectModel.JsonObject. 
+USING Progress.Json.ObjectModel.JsonObject.
 USING Progress.Json.ObjectModel.JsonArray.
 
 DEFINE TEMP-TABLE ttIndex NO-UNDO
@@ -15,23 +15,23 @@ DEFINE TEMP-TABLE ttColumn NO-UNDO
     FIELD cLabel  AS CHARACTER SERIALIZE-NAME "label"
     FIELD cType   AS CHARACTER SERIALIZE-NAME "type"
     FIELD cFormat AS CHARACTER SERIALIZE-NAME "format"
-    FIELD iExtent AS INTEGER 
+    FIELD iExtent AS INTEGER
     .
-    
+
 DEFINE VARIABLE connectionString AS CHARACTER   NO-UNDO.
 DEFINE VARIABLE command AS CHARACTER   NO-UNDO.
 DEFINE VARIABLE tmpVar  AS CHARACTER   NO-UNDO.
 DEFINE VARIABLE tmpJson AS LONGCHAR    NO-UNDO.
 DEFINE VARIABLE tmpInt  AS INTEGER     NO-UNDO.
 DEFINE VARIABLE tmpDate AS DATETIME-TZ NO-UNDO.
-    
+
 DEFINE VARIABLE inputObject AS JsonObject NO-UNDO.
 DEFINE VARIABLE jsonObject AS JsonObject NO-UNDO.
 DEFINE VARIABLE cTestCase AS CHARACTER NO-UNDO.
 
 @Setup.
 PROCEDURE SETUP:
-    inputObject = NEW JsonObject().        
+    inputObject = NEW JsonObject().
     jsonObject = NEW JsonObject().
     jsonObject:Add("debug", NEW JsonObject()).
 END.
@@ -160,8 +160,8 @@ PROCEDURE testIsOneRecordDeleted:
     DEFINE VARIABLE cRowId AS CHARACTER NO-UNDO INITIAL "0x000000000000c403".
     cTestCase = "deleteOneRecord".
     RUN GetJsonInputObject(cTestCase).
-    
-    DO TRANSACTION: 
+
+    DO TRANSACTION:
         RUN LOCAL_SUBMIT_TABLE_DATA.
         DEFINE BUFFER bVac FOR Vacation.
         Assert:IsFalse(CAN-FIND( bVac WHERE ROWID(bVac) = TO-ROWID(cRowId))).
@@ -175,17 +175,17 @@ PROCEDURE testIsMultipleRecordsDeleted:
     DEFINE VARIABLE cRowIds AS CHARACTER NO-UNDO EXTENT INITIAL [ "0x0000000000002c01","0x0000000000002c02", "0x0000000000002c03" ].
     cTestCase = "deleteMultipleRecord".
     RUN GetJsonInputObject(cTestCase).
-    
+
     DEFINE BUFFER bDep FOR Department.
-    
-    DO TRANSACTION: 
+
+    DO TRANSACTION:
         RUN LOCAL_SUBMIT_TABLE_DATA.
         DO i = 1 TO EXTENT(cRowIds):
             Assert:IsFalse(CAN-FIND( bDep WHERE ROWID(bDep) = TO-ROWID(cRowIds[i]))).
         END.
         UNDO, LEAVE.
     END.
-  
+
 END.
 
 @Test.
@@ -193,17 +193,17 @@ PROCEDURE testIsRecordLockedForDeleting:
     DEFINE VARIABLE cRowId AS CHARACTER NO-UNDO INITIAL "0x0000000000003c1a".
     cTestCase = "deleteRecordLocked".
     RUN GetJsonInputObject(cTestCase).
-    
+
     DEFINE BUFFER bFamily FOR Family.
-    
-    DO TRANSACTION: 
+
+    DO TRANSACTION:
         FIND bFamily EXCLUSIVE-LOCK WHERE ROWID(bFamily) = TO-ROWID(cRowId).
         RUN LOCAL_SUBMIT_TABLE_DATA.
         UNDO, LEAVE.
     END.
     CATCH err AS Progress.Lang.Error:
         Assert:Equals("Record is locked", err:GetMessage(1)).
-        Assert:Equals(503, err:GetMessageNum(1)).              
+        Assert:Equals(503, err:GetMessageNum(1)).
     END CATCH.
 END.
 
@@ -212,10 +212,10 @@ PROCEDURE testIsRecordNotFoundForDeleting:
     DEFINE VARIABLE cRowId AS CHARACTER NO-UNDO INITIAL "0x0000000000000c04".
     cTestCase = "deleteRecordNotFound".
     RUN GetJsonInputObject(cTestCase).
-    
+
     DEFINE BUFFER bBen FOR Benefits.
-    
-    DO TRANSACTION: 
+
+    DO TRANSACTION:
         FIND bBen EXCLUSIVE-LOCK WHERE ROWID(bBen) = TO-ROWID(cRowId).
         DELETE bBen.
         RUN LOCAL_SUBMIT_TABLE_DATA.
@@ -223,7 +223,7 @@ PROCEDURE testIsRecordNotFoundForDeleting:
     END.
     CATCH err AS Progress.Lang.Error:
         Assert:Equals("Record not found", err:GetMessage(1)).
-        Assert:Equals(505, err:GetMessageNum(1)).              
+        Assert:Equals(505, err:GetMessageNum(1)).
     END CATCH.
 END.
 
@@ -235,8 +235,8 @@ PROCEDURE testIsRecordUpdatedNoExtentType:
     RUN GetJsonInputObject(cTestCase).
 
     DEFINE BUFFER bCust FOR Customer.
-    
-    DO TRANSACTION: 
+
+    DO TRANSACTION:
         RUN LOCAL_SUBMIT_TABLE_DATA.
         FIND bCust WHERE ROWID(bCust) = TO-ROWID(cRowId).
         Assert:Equals(bCust.Country, cChangedCustCountry).
@@ -251,7 +251,7 @@ PROCEDURE testIsRecordUpdatedWithExtentType:
     cTestCase = "updateRecordWithExtent".
     RUN GetJsonInputObject(cTestCase).
 
-    DO TRANSACTION: 
+    DO TRANSACTION:
         RUN LOCAL_SUBMIT_TABLE_DATA.
         DEFINE BUFFER bSalesRep FOR SalesRep.
         FIND bSalesRep WHERE ROWID(bSalesRep) = TO-ROWID(cRowId).
@@ -265,17 +265,17 @@ PROCEDURE testIsRecordLockedForUpdating:
     DEFINE VARIABLE cRowId AS CHARACTER NO-UNDO INITIAL "0x000000000000742a".
     cTestCase = "updateRecordLocked".
     RUN GetJsonInputObject(cTestCase).
-    
+
     DEFINE BUFFER bOrderline FOR Orderline.
-    
-    DO TRANSACTION: 
+
+    DO TRANSACTION:
         FIND bOrderline EXCLUSIVE-LOCK WHERE ROWID(bOrderline) = TO-ROWID(cRowId).
         RUN LOCAL_SUBMIT_TABLE_DATA.
         UNDO, LEAVE.
     END.
     CATCH err AS Progress.Lang.Error:
         Assert:Equals("Record is locked", err:GetMessage(1)).
-        Assert:Equals(501, err:GetMessageNum(1)).              
+        Assert:Equals(501, err:GetMessageNum(1)).
     END CATCH.
 END.
 
@@ -284,10 +284,10 @@ PROCEDURE testIsRecordNotFoundForUpdating:
     DEFINE VARIABLE cRowId AS CHARACTER NO-UNDO INITIAL "0x0000000000002c08".
     cTestCase = "updateRecordNotFound".
     RUN GetJsonInputObject(cTestCase).
-        
-    DEFINE BUFFER bDep FOR Department. 
-    
-    DO TRANSACTION: 
+
+    DEFINE BUFFER bDep FOR Department.
+
+    DO TRANSACTION:
         FIND bDep EXCLUSIVE-LOCK WHERE ROWID(bDep) = TO-ROWID(cRowId).
         DELETE bDep.
         RUN LOCAL_SUBMIT_TABLE_DATA.
@@ -295,7 +295,7 @@ PROCEDURE testIsRecordNotFoundForUpdating:
     END.
     CATCH err AS Progress.Lang.Error:
         Assert:Equals("Record not found", err:GetMessage(1)).
-        Assert:Equals(502, err:GetMessageNum(1)).              
+        Assert:Equals(502, err:GetMessageNum(1)).
     END CATCH.
 END.
 
@@ -305,7 +305,7 @@ PROCEDURE testIsRecordCreated:
     cTestCase = "createRecord".
     RUN GetJsonInputObject(cTestCase).
 
-    DO TRANSACTION: 
+    DO TRANSACTION:
         RUN LOCAL_SUBMIT_TABLE_DATA.
         DEFINE BUFFER bDep FOR Department.
         Assert:isTrue(CAN-FIND( bDep WHERE bDep.DeptName = cTestDepName)).
@@ -318,13 +318,13 @@ PROCEDURE CLEAN_ENVIRONMENT:
     DELETE OBJECT inputObject NO-ERROR.
     DELETE OBJECT jsonObject NO-ERROR.
 END.
-		
+
 PROCEDURE GetJsonInputObject:
     DEFINE INPUT PARAMETER cJsonInputTableName AS CHARACTER NO-UNDO.
     DEFINE VARIABLE oParser      AS ObjectModelParser NO-UNDO.
 
     oParser = NEW ObjectModelParser().
-    inputObject = CAST(oParser:ParseFile(SUBSTITUTE("C:\workspaces\ProBro\resources\oe\tests\jsonTestCases\input\&1.json", cJsonInputTableName)), JsonObject).	
+    inputObject = CAST(oParser:ParseFile(SUBSTITUTE("..\tests\jsonTestCases\input\&1.json", cJsonInputTableName)), JsonObject).
 END PROCEDURE.
 
 PROCEDURE AssertOutputJson:
@@ -339,7 +339,7 @@ PROCEDURE AssertOutputJson:
     DEFINE VARIABLE oOutputObject AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 
     oParser = NEW ObjectModelParser().
-    oOutputObject = CAST(oParser:ParseFile(SUBSTITUTE("C:\workspaces\ProBro\resources\oe\tests\jsonTestCases\output\&1.json", cJsonOutputTableName)), JsonObject).
+    oOutputObject = CAST(oParser:ParseFile(SUBSTITUTE("..\tests\jsonTestCases\output\&1.json", cJsonOutputTableName)), JsonObject).
 
     cObjectNames = oOutputObject:GetNames().
 

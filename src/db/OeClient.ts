@@ -1,17 +1,19 @@
 import * as Net from "net";
 import * as cp from "child_process";
-import { Constants } from "../common/constants";
+import { Constants } from "../common/Constants";
 import * as vscode from "vscode";
 
 class OEClient {
-  private port: number = 23456; //TODO get one from config, lock it somehow
-  private host: string = "localhost";
-  private client!: Net.Socket;
-  private data!: string;
-  private dataFinish!: any;
-  private procFinish!: any;
-  private proc!: cp.ChildProcessWithoutNullStreams;
-  private enc = new TextDecoder("utf-8");
+    private port: number;
+    private host: string;
+    private client!: Net.Socket;
+    private data!: string;
+    private dataFinish!: any;
+    private procFinish!: any;
+    private pclientFinish!: any;
+    private proc!: cp.ChildProcessWithoutNullStreams;
+    private enc = new TextDecoder("utf-8");
+    private readonly configuration = vscode.workspace.getConfiguration("ProBro");
 
   constructor(port: number, host: string) {
      this.port = port;
@@ -43,45 +45,41 @@ class OEClient {
 
   private runProc(): Promise<any> {
     return new Promise((resolve) => {
-      const cmd = `${
-        Constants.context.extensionPath
-      }/resources/oe/scripts/oe.bat -b -debugalert -p "${
-        Constants.context.extensionPath
-      }/resources/oe/src/oeSocket.p" -param "${Buffer.from("PARAM").toString(
-        "base64"
-      )}"`;
+            const logentrytypes: string = this.configuration.get("logging.openEdge")!;
+            const tempFilesPath: string = this.configuration.get("tempfiles")!;
+            const tempFileParameter: string = tempFilesPath === "" ? "" : '-T ' + tempFilesPath;
+            const cmd = `${Constants.context.extensionPath}/resources/oe/scripts/oe.bat -b -debugalert -p "${Constants.context.extensionPath}/resources/oe/src/oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}" `;
 
-      if (process.platform === "linux") {
-        this.proc = cp.spawn("bash", [
-          "-c",
-          [
-            `"${Constants.context.extensionPath}/resources/oe/scripts/oe.sh"`,
-            "-b",
-            "-p",
-            `"${Constants.context.extensionPath}/resources/oe/src/oeSocket.p"`,
-            "-param " + this.port.toString(),
-            "-debugalert",
-            "-clientlog",
-            `"${Constants.context.extensionPath}/resources/oe/oeSocket.pro"`,
-          ].join(" "),
-        ]);
-      } else if (process.platform === "win32") {
-        this.proc = cp.spawn("cmd.exe", [
-          "/c",
-          [
-            `${Constants.context.extensionPath}/resources/oe/scripts/oe.bat`,
-            "-b",
-            "-p",
-            `${Constants.context.extensionPath}/resources/oe/src/oeSocket.p`,
-            "-param " + this.port.toString(),
-            "-debugalert",
-            "-clientlog",
-            `${Constants.context.extensionPath}/resources/oe/oeSocket.pro`,
-          ].join(" "),
-        ]);
-      } else {
-        // should be error here
-      }
+            if (process.platform === 'linux') {
+                this.proc = cp.spawn('bash', ['-c',
+                    [`"${Constants.context.extensionPath}/resources/oe/scripts/oe.sh"`,
+                        tempFileParameter,
+                        '-b',
+                        '-p',
+                    `"${Constants.context.extensionPath}/resources/oe/src/oeSocket.p"`,
+                    "-param " + this.port.toString(),
+                        '-debugalert',
+                        '-clientlog',
+                    `"${Constants.context.extensionPath}/resources/oe/oeSocket.pro"`,
+                    logentrytypes.length !== 0 ? `-logentrytypes ${logentrytypes}` : ""
+                    ].join(' ')]);
+            } else if (process.platform === 'win32') {
+                this.proc = cp.spawn('cmd.exe', ['/c',
+                    [`${Constants.context.extensionPath}/resources/oe/scripts/oe.bat`,
+                    tempFileParameter,
+                    '-b',
+                    '-p',
+                    `${Constants.context.extensionPath}/resources/oe/src/oeSocket.p`,
+                    "-param " + this.port.toString(),
+                    '-debugalert',
+                    '-clientlog',
+                    `${Constants.context.extensionPath}/resources/oe/oeSocket.pro`,
+                    logentrytypes.length !== 0 ? `-logentrytypes ${logentrytypes}` : ""
+                    
+                    ].join(" ")]);
+            } else {
+                // should be error here
+            }
 
       this.proc.on("exit", (code, signal) => {
         console.log(

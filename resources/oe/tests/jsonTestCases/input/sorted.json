@@ -1,5 +1,4 @@
 {
-    "connectionString": "-db \"C:\\workspaces\\dbs\\SportsTest\"   -H localhost -S 5001",
     "command": "get_table_data",
     "params": {
         "tableName": "Item",

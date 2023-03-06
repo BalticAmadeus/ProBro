@@ -2,15 +2,19 @@ import * as vscode from "vscode";
 import { IConfig, ITableData, TableDetails } from "../view/app/model";
 import { IProcessor } from "./IProcessor";
 import * as cp from "child_process";
-import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./oe";
-import getOEClient from "./oeClient";
+import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./Oe";
+import getOEClient from "./OeClient";
 import { SortColumn } from "react-data-grid";
 import { resolve } from "path";
+import { Logger } from "../common/Logger";
 
 export class DatabaseProcessor implements IProcessor {
 
     private static instance: DatabaseProcessor;
     private static isProcessRunning: boolean = false;
+    
+    private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+    private logger = new Logger(this.configuration.get("logging.node")!);
 
     private constructor() { }
 
@@ -30,18 +34,19 @@ export class DatabaseProcessor implements IProcessor {
         }
 
         DatabaseProcessor.isProcessRunning = true;
-
-        console.log(cmd);
+        this.logger.log("execShell params:", params);
         var timeInMs = Date.now();
 
         return getOEClient()
             .then((client) => {
+                console.log(cmd);
                 return client.sendCommand(cmd);
             })
             .then((data) => {
                 var json = JSON.parse(data);
                 console.log(`Process time: ${Date.now() - timeInMs}, OE time: ${json.debug.time}, Connect time: ${json.debug.timeConnect}`);
-                console.log(JSON.stringify(json.debug));
+                console.log(json.debug);
+                this.logger.log("getOEClient returns :", json);
                 DatabaseProcessor.isProcessRunning = false;
                 return json;
             });
@@ -67,7 +72,13 @@ export class DatabaseProcessor implements IProcessor {
     }
 
     private getConnectionString(config: IConfig) {
-        var connectionString = `-db ${config.name} ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''}`;
+        if (!config.params.includes("-ct"))
+            if (config.params == "")
+                config.params += "-ct 1"
+            else
+                config.params += " -ct 1"
+                
+        var connectionString = `-db ${config.name} ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''} ${config.params}`;
         return connectionString;
     }
 
