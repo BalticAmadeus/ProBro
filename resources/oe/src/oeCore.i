@@ -305,6 +305,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	DEFINE VARIABLE dtl AS DATETIME-TZ NO-UNDO.
 	DEFINE VARIABLE iPageLength AS INTEGER NO-UNDO.
 	DEFINE VARIABLE iTimeOut AS INTEGER NO-UNDO.
+	DEFINE VARIABLE iMinTime AS INTEGER NO-UNDO.
 	DEFINE VARIABLE cWherePhrase AS CHARACTER NO-UNDO.
 	DEFINE VARIABLE cOrderPhrase AS CHARACTER NO-UNDO.
 	DEFINE VARIABLE cFilterNames AS CHARACTER EXTENT NO-UNDO.
@@ -477,6 +478,7 @@ MESSAGE "MODE:" cMode.
 
 		iPageLength = inputObject:GetJsonObject("params"):GetInteger("pageLength").
 		iTimeOut = inputObject:GetJsonObject("params"):GetInteger("timeOut").
+		iMinTime = inputObject:GetJsonObject("params"):GetInteger("minTime").
 		dt = NOW.
 
 		IF jsonCrud = ? THEN DO:
@@ -492,7 +494,7 @@ MESSAGE "MODE:" cMode.
 				jsonRaw:Add(jsonRawRow).
 				jsonFormatted:Add(jsonFormattedRow).			
 				iPageLength = iPageLength - 1.
-				IF iPageLength <= 0 THEN LEAVE. 
+				IF iPageLength <= 0 AND NOW - dt >= iMinTime THEN LEAVE. 
 				IF iTimeOut > 0 AND NOW - dt >= iTimeOut THEN LEAVE.
 			END.
 		END.
