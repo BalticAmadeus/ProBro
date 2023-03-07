@@ -256,6 +256,7 @@
         "@emotion/styled": "^11.10.0",
         "@mui/icons-material": "^5.10.2",
         "@mui/material": "^5.10.2",
+        "@types/uuid": "^9.0.1",
         "bootstrap": "^5.2.0",
         "esbuild": "^0.17.5",
         "export-from-json": "^1.6.0",
@@ -264,6 +265,7 @@
         "react-data-grid": "7.0.0-beta.13",
         "react-dom": "^18.1.0",
         "react-table": "^7.8.0",
-        "reactjs-popup": "^2.0.5"
+        "reactjs-popup": "^2.0.5",
+        "uuid": "^9.0.0"
     }
 }
