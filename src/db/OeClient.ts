@@ -2,6 +2,8 @@ import * as Net from "net";
 import * as cp from "child_process";
 import { Constants } from "../common/Constants";
 import * as vscode from "vscode";
+import * as fs from "fs";
+import path = require("path");
 
 class OEClient {
     private port: number;
@@ -14,6 +16,9 @@ class OEClient {
     private proc!: cp.ChildProcessWithoutNullStreams;
     private enc = new TextDecoder("utf-8");
     private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+    private logentrytypes: string = this.configuration.get("logging.openEdge")!;
+    private tempFilesPath: string = this.configuration.get("tempfiles")!;
+    private pfFilePath: string = path.join(Constants.context.extensionPath, "resources", "oe", "connectionPf.pf");
 
   constructor(port: number, host: string) {
      this.port = port;
@@ -45,41 +50,49 @@ class OEClient {
 
   private runProc(): Promise<any> {
     return new Promise((resolve) => {
-            const logentrytypes: string = this.configuration.get("logging.openEdge")!;
-            const tempFilesPath: string = this.configuration.get("tempfiles")!;
-            const tempFileParameter: string = tempFilesPath === "" ? "" : '-T ' + tempFilesPath;
-            const cmd = `${Constants.context.extensionPath}/resources/oe/scripts/oe.bat -b -debugalert -p "${Constants.context.extensionPath}/resources/oe/src/oeSocket.p" -param "${Buffer.from('PARAM').toString('base64')}" `;
-
-            if (process.platform === 'linux') {
-                this.proc = cp.spawn('bash', ['-c',
-                    [`"${Constants.context.extensionPath}/resources/oe/scripts/oe.sh"`,
-                        tempFileParameter,
-                        '-b',
-                        '-p',
-                    `"${Constants.context.extensionPath}/resources/oe/src/oeSocket.p"`,
-                    "-param " + this.port.toString(),
-                        '-debugalert',
-                        '-clientlog',
-                    `"${Constants.context.extensionPath}/resources/oe/oeSocket.pro"`,
-                    logentrytypes.length !== 0 ? `-logentrytypes ${logentrytypes}` : ""
-                    ].join(' ')]);
-            } else if (process.platform === 'win32') {
-                this.proc = cp.spawn('cmd.exe', ['/c',
-                    [`${Constants.context.extensionPath}/resources/oe/scripts/oe.bat`,
-                    tempFileParameter,
-                    '-b',
-                    '-p',
-                    `${Constants.context.extensionPath}/resources/oe/src/oeSocket.p`,
-                    "-param " + this.port.toString(),
-                    '-debugalert',
-                    '-clientlog',
-                    `${Constants.context.extensionPath}/resources/oe/oeSocket.pro`,
-                    logentrytypes.length !== 0 ? `-logentrytypes ${logentrytypes}` : ""
-                    
-                    ].join(" ")]);
-            } else {
-                // should be error here
-            }
+      const cmd = `${
+        Constants.context.extensionPath
+      }/resources/oe/scripts/oe.bat -b -debugalert -p "${
+        Constants.context.extensionPath
+      }/resources/oe/src/oeSocket.p" -param "${Buffer.from("PARAM").toString(
+        "base64"
+      )}" `;
+      
+      if (process.platform === "linux") {
+        this.createPfFile();
+        this.proc = cp.spawn("bash", [
+          "-c ",
+          [
+            `"${path.join(
+              Constants.context.extensionPath,
+              "resources",
+              "oe",
+              "scripts",
+              "oe.sh"          
+            )}"`,
+            "-pf",
+            `"${this.pfFilePath}"`,
+          ].join(" "),
+        ]);
+      } else if (process.platform === "win32") {
+        this.createPfFile();
+        this.proc = cp.spawn("cmd.exe", [
+          "/c",
+          [
+            path.join(
+              Constants.context.extensionPath,
+              "resources",
+              "oe",
+              "scripts",
+              "oe.bat"
+            ),
+            "-pf",
+            this.pfFilePath,
+          ].join(" "),
+        ]);
+      } else {
+        // should be error here
+      }
 
       this.proc.on("exit", (code, signal) => {
         console.log(
@@ -94,7 +107,9 @@ class OEClient {
       this.proc.stdout.on("data", (data) => {
         console.log(`child stdout:\n${data}`);
         const dataString = this.enc.decode(data);
-        if (dataString.startsWith("SERVER STARTED AT " + this.port.toString())) {
+        if (
+          dataString.startsWith("SERVER STARTED AT " + this.port.toString())
+        ) {
           this.procFinish(dataString);
         }
       });
@@ -114,12 +129,29 @@ class OEClient {
       this.dataFinish = resolve;
     });
   }
+
+  public createPfFile():void {
+    const pfContent = [
+       this.tempFilesPath.length !== 0 ? `-T ${this.tempFilesPath}` : null,
+      "-b",
+      "-p",
+      `"${path.join(Constants.context.extensionPath,"resources","oe","src","oeSocket.p")}"`,
+      "-param",
+      this.port.toString(),
+      "-debugalert",
+      "-clientlog",
+      `"${path.join(Constants.context.extensionPath,"resources", "oe", "oeSocket.pro")}"`,
+      this.logentrytypes.length !== 0 ? `-logentrytypes ${this.logentrytypes}` : null
+    ].join(" ");
+
+    fs.writeFile(this.pfFilePath, pfContent, () => {},);
+  }
 }
 
 let client: OEClient;
 
 async function getOEClient(): Promise<any> {
-  let port: number;
+  let port: number | undefined;
   let host: string = "localhost";
   if (!client) {
     await vscode.commands.executeCommand(
@@ -128,11 +160,14 @@ async function getOEClient(): Promise<any> {
     await vscode.commands
       .executeCommand(`${Constants.globalExtensionKey}.getPort`)
       .then((portVal: any) => {
-        console.log("getOEclient:", portVal);
         port = portVal;
       });
-
-    client = new OEClient(port!, host);
+    
+    if(!port) {
+      return new Promise(() =>{ throw new Error("No port provided. Unable to start connection");
+      });
+    }
+    client = new OEClient(port, host);
     return client.init();
   }
   return new Promise((resolve) => {

@@ -212,7 +212,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   vscode.commands.registerCommand(
     `${Constants.globalExtensionKey}.getPort`,
-    async (): Promise<number> => {
+    async (): Promise<number | undefined> => {
       const portList = context.globalState.get<{ [id: string]: IPort }>(
         `${Constants.globalExtensionKey}.portList`
       )!;
