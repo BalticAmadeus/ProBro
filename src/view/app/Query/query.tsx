@@ -11,6 +11,7 @@ import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
 import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
 import { Logger } from "../../../common/Logger";
 import { ISettings } from "../../../common/IExtensionSettings";
+import { Color } from "vscode";
 
 const filterCSS: React.CSSProperties = {
   inlineSize: "100%",
@@ -348,7 +349,6 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
       sortColumns,
       filters,
       configuration.batchMaxTimeout /*ms for data retrieval*/,
-      configuration.batchMinTimeout
     );
   };
 
@@ -368,7 +368,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     setLoaded(0);
     setRawRows([]);
     setFormattedRows([]);
-    makeQuery(0, loaded, "", sortColumns, filters, 0, 0);
+    makeQuery(0, loaded, "", sortColumns, filters, 0);
   }
 
   function makeQuery(
@@ -378,7 +378,6 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     sortColumns,
     inputFilters,
     timeOut,
-    minTime
   ) {
     const command: ICommand = {
       id: "Query",
@@ -390,8 +389,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         lastRowID: lastRowID,
         sortColumns: sortColumns,
         filters: inputFilters,
-        timeOut: timeOut,
-        minTime: minTime
+        timeOut: timeOut
       },
     };
     logger.log("make query", command);
@@ -419,7 +417,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     }
     setScrollHeight(event.currentTarget.scrollTop);
     setIsLoading(true);
-    makeQuery(loaded, configuration.batchSize, rowID, sortColumns, filters, configuration.batchMaxTimeout, configuration.batchMinTimeout);
+    makeQuery(loaded, configuration.batchSize, rowID, sortColumns, filters, configuration.batchMaxTimeout);
   }
 
   function onSortClick(inputSortColumns: SortColumn[]) {
@@ -430,7 +428,11 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     setLoaded(0);
     setRawRows([]);
     setFormattedRows([]);
-    makeQuery(0, loaded, "", inputSortColumns, filters, 0, 0);
+    makeQuery(0, loaded, "", inputSortColumns, filters, 0);
+  }
+
+  function allRecordsRetrieved(recentRecords: number, recentRetrievalTime: number): string {
+    return recentRecords < configuration.batchSize && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red"; 
   }
 
   function getFooterTag() {
@@ -444,9 +446,11 @@ Description: ${errorObject.description}`}</pre>
     } else if (isDataRetrieved) {
       return (
         <div>
-          <pre>{`Records in grid: ${loaded}
-Recent records numbers: ${statisticsObject.recordsRetrieved}
-Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
+          <pre>{`Records in grid: `}
+            <span style={{ color: allRecordsRetrieved(statisticsObject.recordsRetrieved, statisticsObject.recordsRetrievalTime)}}>{loaded}</span>
+          </pre>
+          <pre>{`Recent records numbers: ${statisticsObject.recordsRetrieved}`}</pre>
+          <pre>{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
         </div>
       );
     } else {
@@ -492,7 +496,6 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
         start: 0,
         pageLength: selectedRows.size,
         timeOut: 1000,
-        minTime: 1000,
         lastRowID: selectedRows.values().next().value,
         crud: rowids,
         mode: ProcessAction[mode],
