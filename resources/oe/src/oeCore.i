@@ -98,14 +98,12 @@ PROCEDURE LOCAL_GET_TABLES:
 	jsonTableRow = NEW Progress.Json.ObjectModel.JsonObject().
 	jsonTables = NEW Progress.Json.ObjectModel.JsonArray().
 
-    // create query for table
 	CREATE BUFFER bhFile FOR TABLE "_file".
 	CREATE QUERY qhFile.
 	qhFile:SET-BUFFERS(bhFile).
 	qhFile:QUERY-PREPARE("FOR EACH _file NO-LOCK BY _file._file-name").
 	qhFile:QUERY-OPEN.
 
-    //do while for query qhFile  do while logic move to func(qhFile) retrun string(jsonTableRow)
 	DO WHILE qhFile:GET-NEXT():
 		jsonTableRow = NEW Progress.Json.ObjectModel.JsonObject().
 		jsonTableRow:Add("name", qhFile:GET-BUFFER-HANDLE(1)::_file-name).
@@ -136,8 +134,6 @@ FUNCTION ADD_FIELD_INFORMATION RETURNS Progress.Json.ObjectModel.JsonArray ():
     DEFINE VARIABLE cFieldQuery AS CHARACTER NO-UNDO.
 
 	jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
-
-	// get fields table details
 
 	CREATE BUFFER bhFile FOR TABLE "_file".
 	CREATE BUFFER bhField FOR TABLE "_field".
@@ -191,7 +187,6 @@ FUNCTION ADD_INDEX_INFORMATION RETURNS Progress.Json.ObjectModel.JsonArray ():
 	CREATE BUFFER bhIndexField FOR TABLE "_Index-Field".
 	CREATE BUFFER bhField FOR TABLE "_Field".
 
-    // other procedure for bttIndex two difrence func called by one
 	DEFINE BUFFER bttIndex FOR ttIndex.
 
 	EMPTY TEMP-TABLE bttIndex.
@@ -215,10 +210,8 @@ FUNCTION ADD_INDEX_INFORMATION RETURNS Progress.Json.ObjectModel.JsonArray ():
 		IF NOT AVAILABLE bttIndex THEN DO:
 			CREATE bttIndex.
 
-			//index name
 			bttIndex.cName = bhIndex::_Index-name.
 
-			//index flags
 			cFlags = SUBSTITUTE("&1 &2 &3",
                                 STRING(bhFile::_prime-index = bhIndex:RECID, "P/"),
                                 STRING(bhIndex::_unique, "U/"),
@@ -228,7 +221,6 @@ FUNCTION ADD_INDEX_INFORMATION RETURNS Progress.Json.ObjectModel.JsonArray ():
 			bttIndex.cFlags = cFlags.
 		END.
 
-		//index field
 		cFields = SUBSTITUTE("&1 &2&3",
 							bttIndex.cFields,
 							bhField::_Field-name,
@@ -332,7 +324,6 @@ FUNCTION GET_COLUMNS RETURNS Progress.Json.ObjectModel.JsonArray (lExport AS LOG
 
     jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
 
-    //creates query
 	CREATE BUFFER bhFile FOR TABLE "_file".
 	CREATE QUERY qhFile.
 	qhFile:SET-BUFFERS(bhFile).
@@ -420,7 +411,7 @@ FUNCTION GET_WHERE_PHRASE RETURNS CHARACTER ():
             cWherePhrase = SUBSTITUTE("WHERE (&1) ", inputObject:GetJsonObject("params"):GetCharacter("wherePhrase")).
         END.
     END.
-    //constructs filter part
+
     IF inputObject:GetJsonObject("params"):Has("filters") AND
        inputObject:GetJsonObject("params"):GetJsonObject("filters"):GetLogical("enabled") = TRUE THEN DO:
 
@@ -508,10 +499,8 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 	jsonFormatted = NEW Progress.Json.ObjectModel.JsonArray().
 	jsonDebug = jsonObject:GetJsonObject("debug").
 
-	 //checks export type
      lExport = CHECK_IF_EXPORT().
 
-     //cheks if export type dumpFile
      lDumpFile = CHECK_IF_DUMPFILE(lExport).
 
 	jsonObject:ADD("columns", GET_COLUMNS(lExport, lDumpFile)).
@@ -774,7 +763,7 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
 				UNDO, THROW NEW Progress.Lang.AppError("Record not found", 502).
 			END.
 		END.
-        //GIVE fhKey:BUFFER-VALUE TO JOIN THESE PARTS TOGETHER
+
 		DO i = 1 TO jsonData:Length:
 			fhKey = ?.
 			ASSIGN fhKey = bh:BUFFER-FIELD(ENTRY(1, jsonData:GetJsonObject(i):GetCharacter("key"), "[")) NO-ERROR.
