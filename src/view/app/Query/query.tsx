@@ -11,7 +11,6 @@ import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
 import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
 import { Logger } from "../../../common/Logger";
 import { ISettings } from "../../../common/IExtensionSettings";
-import { Color } from "vscode";
 
 const filterCSS: React.CSSProperties = {
   inlineSize: "100%",
@@ -36,6 +35,8 @@ interface IStatisticsObject {
   recordsRetrievalTime: number;
   connectTime: number;
 }
+
+let initialDataLoad : boolean = true;
 
 function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
@@ -432,7 +433,10 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
   }
 
   function allRecordsRetrieved(recentRecords: number, recentRetrievalTime: number): string {
-    return recentRecords < configuration.batchSize && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red"; 
+    let currentBatchSize: number;
+    initialDataLoad === true ? currentBatchSize = configuration.initialBatchSizeLoad : currentBatchSize = configuration.batchSize;
+    initialDataLoad = false;
+    return recentRecords < currentBatchSize && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red"; 
   }
 
   function getFooterTag() {
