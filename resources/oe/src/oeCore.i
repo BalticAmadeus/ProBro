@@ -1,16 +1,25 @@
-FUNCTION GET_TABLE_TYPE RETURNS CHARACTER (cFileName AS CHARACTER, iFileNumber AS INTEGER):
+FUNCTION GET_TABLE_ROW RETURNS Progress.Json.ObjectModel.JsonObject (cFileName AS CHARACTER, iFileNumber AS INTEGER):
+    DEFINE VARIABLE jsonTableRow AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+    DEFINE VARIABLE cTableType AS CHARACTER NO-UNDO.
+
+    jsonTableRow = NEW Progress.Json.ObjectModel.JsonObject().
+
+    jsonTableRow:Add("name", cFileName).
 
     IF cFileName BEGINS "_sys"
-    THEN RETURN "SQLCatalog".
+    THEN cTableType = "SQLCatalog".
     ELSE IF iFileNumber > 0 AND iFileNumber < 32000
-    THEN RETURN "UserTable".
+    THEN cTableType = "UserTable".
     ELSE IF iFileNumber > -80 AND iFileNumber < 0
-    THEN RETURN "SchemaTable".
+    THEN cTableType = "SchemaTable".
     ELSE IF iFileNumber < -16384
-    THEN RETURN "VirtualSystem".
+    THEN cTableType = "VirtualSystem".
     ELSE IF iFileNumber >= -16384 AND iFileNumber <= -80
-    THEN RETURN "OtherTables".
-    ELSE RETURN "".
+    THEN cTableType = "OtherTables".
+
+    jsonTableRow:Add("tableType", cTableType).
+
+    RETURN jsonTableRow.
 
 END FUNCTION.
 
@@ -108,13 +117,11 @@ PROCEDURE LOCAL_GET_TABLES:
         jsonTableRow = NEW Progress.Json.ObjectModel.JsonObject().
         jsonTableRow:Add("name", qhFile:GET-BUFFER-HANDLE(1)::_file-name).
 
-        IF qhFile:GET-BUFFER-HANDLE(1)::_file-name BEGINS "_sys" OR
+        IF NOT qhFile:GET-BUFFER-HANDLE(1)::_file-name BEGINS "_sys" AND
         qhFile:GET-BUFFER-HANDLE(1)::_file-number = 0 OR
         qhFile:GET-BUFFER-HANDLE(1)::_file-number > 32000
             THEN NEXT.
-        ELSE jsonTableRow:Add("tableType", GET_TABLE_TYPE(qhFile:GET-BUFFER-HANDLE(1)::_file-name, qhFile:GET-BUFFER-HANDLE(1)::_file-number)).
-
-        jsonTables:Add(jsonTableRow).
+        ELSE jsonTables:Add(GET_TABLE_ROW(qhFile:GET-BUFFER-HANDLE(1)::_file-name, qhFile:GET-BUFFER-HANDLE(1)::_file-number)).
     END.
 
     qhFile:QUERY-CLOSE().
