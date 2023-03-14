@@ -15,6 +15,9 @@ export function activate(context: vscode.ExtensionContext) {
 
   Constants.context = context;
 
+  const connectionUpdater = new DbConnectionUpdater();
+  connectionUpdater.updateConnectionStatuses(context);
+
   const fieldsProvider = new FieldsViewProvider(context, "fields");
   const fields = vscode.window.registerWebviewViewProvider(
     `${Constants.globalExtensionKey}-fields`,
@@ -47,10 +50,6 @@ export function activate(context: vscode.ExtensionContext) {
     `${Constants.globalExtensionKey}-databases`,
     { treeDataProvider: groupListProvider }
   );
-
-  const connectionUpdater = new DbConnectionUpdater();
-  connectionUpdater.updateConnectionStatusesWithRefreshCallback(context,groupListProvider);
-
   groups.onDidChangeSelection((e) =>
     groupListProvider.onDidChangeSelection(e, tablesListProvider)
   );
