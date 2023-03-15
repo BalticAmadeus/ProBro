@@ -36,6 +36,8 @@ interface IStatisticsObject {
   connectTime: number;
 }
 
+let initialDataLoad : boolean = true;
+
 function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState(false);
@@ -388,7 +390,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         lastRowID: lastRowID,
         sortColumns: sortColumns,
         filters: inputFilters,
-        timeOut: timeOut,
+        timeOut: timeOut
       },
     };
     logger.log("make query", command);
@@ -430,6 +432,13 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     makeQuery(0, loaded, "", inputSortColumns, filters, 0);
   }
 
+  function allRecordsRetrieved(recentRecords: number, recentRetrievalTime: number): string {
+    let currentBatchSize: number;
+    initialDataLoad === true ? currentBatchSize = configuration.initialBatchSizeLoad : currentBatchSize = configuration.batchSize;
+    initialDataLoad = false;
+    return recentRecords < currentBatchSize && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red"; 
+  }
+
   function getFooterTag() {
     if (isError) {
       return (
@@ -441,9 +450,11 @@ Description: ${errorObject.description}`}</pre>
     } else if (isDataRetrieved) {
       return (
         <div>
-          <pre>{`Records in grid: ${loaded}
-Recent records numbers: ${statisticsObject.recordsRetrieved}
-Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
+          <pre>{`Records in grid: `}
+            <span style={{ color: allRecordsRetrieved(statisticsObject.recordsRetrieved, statisticsObject.recordsRetrievalTime)}}>{loaded}</span>
+          </pre>
+          <pre>{`Recent records numbers: ${statisticsObject.recordsRetrieved}`}</pre>
+          <pre>{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
         </div>
       );
     } else {
