@@ -11,7 +11,13 @@ export interface IConfig {
     password: string;
     group: string;
     params: string;
-    conStatus?: boolean;
+    conStatus?: ConnectionStatus;
+}
+
+export enum ConnectionStatus{
+    Connected,
+    Connecting,
+    NotConnected
 }
 
 export interface ICommand {
