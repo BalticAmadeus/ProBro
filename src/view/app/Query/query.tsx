@@ -11,6 +11,7 @@ import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
 import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
 import { Logger } from "../../../common/Logger";
 import { ISettings } from "../../../common/IExtensionSettings";
+import { Color } from "vscode";
 
 const filterCSS: React.CSSProperties = {
   inlineSize: "100%",
