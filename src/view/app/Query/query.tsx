@@ -11,7 +11,6 @@ import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
 import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
 import { Logger } from "../../../common/Logger";
 import { ISettings } from "../../../common/IExtensionSettings";
-import { Color } from "vscode";
 
 const filterCSS: React.CSSProperties = {
   inlineSize: "100%",
@@ -36,8 +35,6 @@ interface IStatisticsObject {
   recordsRetrievalTime: number;
   connectTime: number;
 }
-
-let initialDataLoad : boolean = true;
 
 function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
@@ -66,8 +63,12 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
         []
     );
+    const [sortAction, setSortAction] = React.useState(false);
+    const [initialDataLoad, setInitialDataLoad] = React.useState(true);
+    const [recordColor, setRecordColor] = React.useState("red");
+    
     const logger = new Logger(configuration.logging.react);
-
+    const mySpanId = 'my-span-id';
 
     window.addEventListener('contextmenu', e => {
       e.stopImmediatePropagation();
@@ -97,9 +98,9 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
 
     var inputQuery: HTMLButtonElement = undefined;
     React.useEffect(() => {
-     if (inputQuery) {
-       inputQuery.click();
-       }    
+      if (inputQuery) {
+        inputQuery.click();
+      }    
     }, []);
 
   React.useEffect(() => {
@@ -324,6 +325,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
             recordsRetrievalTime: message.data.debug.recordsRetrievalTime,
             connectTime: message.data.debug.timeConnect,
           });
+          allRecordsRetrieved(message.data.debug.recordsRetrieved, message.data.debug.recordsRetrievalTime);
         }
     }
     setIsLoading(false);
@@ -426,6 +428,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     if (isLoading) {
       return;
     }
+    setSortAction(true);
     setSortColumns(inputSortColumns);
     setLoaded(0);
     setRawRows([]);
@@ -433,11 +436,27 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     makeQuery(0, loaded, "", inputSortColumns, filters, 0);
   }
 
-  function allRecordsRetrieved(recentRecords: number, recentRetrievalTime: number): string {
-    let currentBatchSize: number;
-    initialDataLoad === true ? currentBatchSize = configuration.initialBatchSizeLoad : currentBatchSize = configuration.batchSize;
-    initialDataLoad = false;
-    return recentRecords < currentBatchSize && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red"; 
+  function allRecordsRetrieved(recentRecords: number, recentRetrievalTime: number) {
+    if (sortAction){
+      let color: string = getColorById(mySpanId);
+      setSortAction(false);
+      setRecordColor(color === "rgb(0, 128, 0)" && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red");
+    }
+    else{
+      let currentBatchSize: number;
+      initialDataLoad === true ? currentBatchSize = configuration.initialBatchSizeLoad : currentBatchSize = configuration.batchSize;
+      setInitialDataLoad(false);
+      setRecordColor(recentRecords < currentBatchSize && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red");
+    }
+  }
+
+  function getColorById(spanId: string): string | null {
+    const spanEl = document.getElementById(spanId);
+    if (spanEl instanceof HTMLSpanElement) {
+      const color = window.getComputedStyle(spanEl).color;
+      return color;
+    }
+    return null;
   }
 
   function getFooterTag() {
@@ -452,7 +471,7 @@ Description: ${errorObject.description}`}</pre>
       return (
         <div>
           <pre>{`Records in grid: `}
-            <span style={{ color: allRecordsRetrieved(statisticsObject.recordsRetrieved, statisticsObject.recordsRetrievalTime)}}>{loaded}</span>
+            <span id={mySpanId} style={{ color: recordColor }}>{loaded}</span> 
           </pre>
           <pre>{`Recent records numbers: ${statisticsObject.recordsRetrieved}`}</pre>
           <pre>{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
@@ -510,7 +529,7 @@ Description: ${errorObject.description}`}</pre>
     vscode.postMessage(command);
   }; 
   
-   function filterColumns() {
+    function filterColumns() {
         if (selectedColumns.length !== 0) {
           const selection = columns.filter((column) => {
             let testColumn = column.key;
