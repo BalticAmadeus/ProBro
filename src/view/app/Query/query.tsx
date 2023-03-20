@@ -68,7 +68,6 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     const [recordColor, setRecordColor] = React.useState("red");
     
     const logger = new Logger(configuration.logging.react);
-    const mySpanId = 'my-span-id';
 
     window.addEventListener('contextmenu', e => {
       e.stopImmediatePropagation();
@@ -437,26 +436,15 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
   }
 
   function allRecordsRetrieved(recentRecords: number, recentRetrievalTime: number) {
-    if (sortAction){
-      let color: string = getColorById(mySpanId);
-      setSortAction(false);
-      setRecordColor(color === "rgb(0, 128, 0)" && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red");
-    }
-    else{
+    if (!sortAction){
       let currentBatchSize: number;
       initialDataLoad === true ? currentBatchSize = configuration.initialBatchSizeLoad : currentBatchSize = configuration.batchSize;
       setInitialDataLoad(false);
       setRecordColor(recentRecords < currentBatchSize && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red");
     }
-  }
-
-  function getColorById(spanId: string): string | null {
-    const spanEl = document.getElementById(spanId);
-    if (spanEl instanceof HTMLSpanElement) {
-      const color = window.getComputedStyle(spanEl).color;
-      return color;
+    else{
+      setSortAction(false);
     }
-    return null;
   }
 
   function getFooterTag() {
@@ -471,7 +459,7 @@ Description: ${errorObject.description}`}</pre>
       return (
         <div>
           <pre>{`Records in grid: `}
-            <span id={mySpanId} style={{ color: recordColor }}>{loaded}</span> 
+            <span style={{ color: recordColor }}>{loaded}</span> 
           </pre>
           <pre>{`Recent records numbers: ${statisticsObject.recordsRetrieved}`}</pre>
           <pre>{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
