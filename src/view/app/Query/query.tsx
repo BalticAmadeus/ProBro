@@ -356,12 +356,14 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
   };
 
   const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setInitialDataLoad(true);
     event.preventDefault();
     prepareQuery();
   };
 
   const handleKeyDown = (event) => {
     if(event.key === "Enter") {
+      setInitialDataLoad(true);
       event.preventDefault();
       prepareQuery();
     }
@@ -437,8 +439,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
 
   function allRecordsRetrieved(recentRecords: number, recentRetrievalTime: number) {
     if (!sortAction){
-      let currentBatchSize: number;
-      initialDataLoad === true ? currentBatchSize = configuration.initialBatchSizeLoad : currentBatchSize = configuration.batchSize;
+      const currentBatchSize: number = initialDataLoad ? configuration.initialBatchSizeLoad : configuration.batchSize;
       setInitialDataLoad(false);
       setRecordColor(recentRecords < currentBatchSize && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red");
     }
