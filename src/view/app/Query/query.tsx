@@ -467,6 +467,7 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
     };
 
     const insertRecord = () => {
+        ProcessAction
         processRecord(ProcessAction.Insert);
     };
     const updateRecord = () => {

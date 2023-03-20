@@ -38,6 +38,7 @@ export default function UpdatePopup({
         switch (action) {
             case ProcessAction.Update:
             case ProcessAction.Insert:
+            case ProcessAction.Copy:
                 columns.forEach((column) => {
                     if (action === ProcessAction.Update && rows !== undefined && rows[0][column.key] === null) {
                         rows[0][column.key] = "?";
