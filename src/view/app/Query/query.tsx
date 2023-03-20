@@ -345,6 +345,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     setLoaded(0);
     setRawRows([]);
     setFormattedRows([]);
+    setInitialDataLoad(true);
     makeQuery(
       0,
       configuration.initialBatchSizeLoad /*number of records for first load*/,
