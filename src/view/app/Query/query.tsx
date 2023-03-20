@@ -345,6 +345,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     setLoaded(0);
     setRawRows([]);
     setFormattedRows([]);
+    setInitialDataLoad(true);
     makeQuery(
       0,
       configuration.initialBatchSizeLoad /*number of records for first load*/,
@@ -437,8 +438,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
 
   function allRecordsRetrieved(recentRecords: number, recentRetrievalTime: number) {
     if (!sortAction){
-      let currentBatchSize: number;
-      initialDataLoad === true ? currentBatchSize = configuration.initialBatchSizeLoad : currentBatchSize = configuration.batchSize;
+      const currentBatchSize: number = initialDataLoad ? configuration.initialBatchSizeLoad : configuration.batchSize;
       setInitialDataLoad(false);
       setRecordColor(recentRecords < currentBatchSize && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red");
     }
