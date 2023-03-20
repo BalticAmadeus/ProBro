@@ -357,14 +357,12 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
   };
 
   const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setInitialDataLoad(true);
     event.preventDefault();
     prepareQuery();
   };
 
   const handleKeyDown = (event) => {
     if(event.key === "Enter") {
-      setInitialDataLoad(true);
       event.preventDefault();
       prepareQuery();
     }
