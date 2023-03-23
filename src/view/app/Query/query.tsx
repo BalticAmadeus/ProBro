@@ -63,8 +63,11 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
         []
     );
-    const logger = new Logger(configuration.logging.react);
+    const [sortAction, setSortAction] = React.useState(false);
+    const [initialDataLoad, setInitialDataLoad] = React.useState(true);
+    const [recordColor, setRecordColor] = React.useState("red");
 
+    const logger = new Logger(configuration.logging.react);
 
     window.addEventListener('contextmenu', e => {
         e.stopImmediatePropagation();
@@ -321,6 +324,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                         recordsRetrievalTime: message.data.debug.recordsRetrievalTime,
                         connectTime: message.data.debug.timeConnect,
                     });
+                    allRecordsRetrieved(message.data.debug.recordsRetrieved, message.data.debug.recordsRetrievalTime);
                 }
         }
         setIsLoading(false);
@@ -341,6 +345,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
+        setInitialDataLoad(true);
         makeQuery(
             0,
             configuration.initialBatchSizeLoad /*number of records for first load*/,
@@ -388,7 +393,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                 lastRowID: lastRowID,
                 sortColumns: sortColumns,
                 filters: inputFilters,
-                timeOut: timeOut,
+                timeOut: timeOut
             },
         };
         logger.log("make query", command);
@@ -423,11 +428,23 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         if (isLoading) {
             return;
         }
+        setSortAction(true);
         setSortColumns(inputSortColumns);
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
         makeQuery(0, loaded, "", inputSortColumns, filters, 0);
+    }
+
+    function allRecordsRetrieved(recentRecords: number, recentRetrievalTime: number) {
+        if (!sortAction) {
+            const currentBatchSize: number = initialDataLoad ? configuration.initialBatchSizeLoad : configuration.batchSize;
+            setInitialDataLoad(false);
+            setRecordColor(recentRecords < currentBatchSize && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red");
+        }
+        else {
+            setSortAction(false);
+        }
     }
 
     function getFooterTag() {
@@ -441,9 +458,11 @@ Description: ${errorObject.description}`}</pre>
         } else if (isDataRetrieved) {
             return (
                 <div>
-                    <pre>{`Records in grid: ${loaded}
-Recent records numbers: ${statisticsObject.recordsRetrieved}
-Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
+                    <pre>{`Records in grid: `}
+                        <span style={{ color: recordColor }}>{loaded}</span>
+                    </pre>
+                    <pre>{`Recent records numbers: ${statisticsObject.recordsRetrieved}`}</pre>
+                    <pre>{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 </div>
             );
         } else {
@@ -467,7 +486,6 @@ Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
     };
 
     const insertRecord = () => {
-        ProcessAction
         processRecord(ProcessAction.Insert);
     };
     const updateRecord = () => {
