@@ -66,7 +66,6 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     const [sortAction, setSortAction] = React.useState(false);
     const [initialDataLoad, setInitialDataLoad] = React.useState(true);
     const [recordColor, setRecordColor] = React.useState("red");
-
     const logger = new Logger(configuration.logging.react);
 
     window.addEventListener('contextmenu', e => {
