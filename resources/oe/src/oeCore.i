@@ -618,7 +618,6 @@ FUNCTION SET_BUFFER_VALUE RETURNS LOG (INPUT-OUTPUT fhKey AS HANDLE, cMode AS CH
                                     jsonModelObject AS Progress.Json.ObjectModel.JsonObject):
     CASE fhKey:DATA-TYPE:
         WHEN "CHARACTER" THEN DO:
-            message "here2".
             IF cMode = "UPDATE" AND fhKey:BUFFER-VALUE <> jsonModelObject:GetJsonText("defaultValue") THEN DO:
                 UNDO, THROW NEW Progress.Lang.AppError("Record was changed", 600).
             END.
