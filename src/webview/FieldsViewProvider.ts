@@ -1,14 +1,18 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import { QueryEditor } from './QueryEditor';
-import { CommandAction, ICommand } from '../view/app/model';
+import { CommandAction, ICommand, TableDetails } from '../view/app/model';
 import { PanelViewProvider } from './PanelViewProvider';
 import { Logger } from "../common/Logger";
+import { PreferedTablesManager } from '../common/PreferedTablesManager';
+import { PreferedTablesManagerHelper } from '../common/PreferedTablesManagerHelper';
 
 export class FieldsViewProvider extends PanelViewProvider {
   private queryEditors: QueryEditor[] = [];
 
   private logger = new Logger(this.configuration.get("logging.node")!);
+  private preferedTablesManager = PreferedTablesManager.getInstance();
+  private preferedTablesManagerHelper = PreferedTablesManagerHelper.getInstance();
 
   constructor(context: vscode.ExtensionContext, _type: string) {
     super(context, _type);
@@ -32,6 +36,21 @@ export class FieldsViewProvider extends PanelViewProvider {
     }
   }
 
+  private async saveRows(){
+    if (this.tableNode?.cache !== undefined){
+      await this.preferedTablesManager.savePreferences(this.tableNode.tableName, this.tableNode.cache);
+    }
+  }
+
+  private loadSavedRows(){
+    if (this.tableNode?.cache !== undefined){
+      const savedTableDetails = this.preferedTablesManager.sendLoadedPreferences(this.tableNode?.tableName);
+      if (savedTableDetails){
+        this.preferedTablesManagerHelper.setSelectedRows(savedTableDetails);
+      }
+    }
+  }
+
   public resolveWebviewView(
     webviewView: vscode.WebviewView
   ): void | Thenable<void> {
@@ -46,6 +65,7 @@ export class FieldsViewProvider extends PanelViewProvider {
             this.tableNode.cache !== undefined
           ) {
             this.tableNode.cache.selectedColumns = command.columns;
+            this.saveRows();
           }
           this.logger.log(
             "this.tableNode.cache.selectedColumns:",
@@ -53,7 +73,10 @@ export class FieldsViewProvider extends PanelViewProvider {
           );
           this.notifyQueryEditors();
           break;
+        case CommandAction.LoadSavedRows:
+          this.loadSavedRows();
       }
+
     });
   }
 }

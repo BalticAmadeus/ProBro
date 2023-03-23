@@ -35,7 +35,8 @@ export enum CommandAction {
     Export,
     CRUD,
     Submit,
-    UpdateColumns
+    UpdateColumns,
+    LoadSavedRows
 }
 
 export interface FieldRow {

@@ -8,6 +8,7 @@ import { Logger } from "../../../common/Logger";
 
 import * as columnName from "./column.json";
 import { ISettings } from "../../../common/IExtensionSettings";
+import { PreferedTablesManagerHelper } from "../../../common/PreferedTablesManagerHelper";
 
 interface IConfigProps {
     vscode: any;
@@ -59,10 +60,11 @@ function rowKeyGetter(row: FieldRow) {
 function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
     const [rows, setRows] = useState(tableDetails.fields);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
-    const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>();
+    const [selectedRows, setSelectedRows] = useState<Set<number>>();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [filteredRows, setFilteredRows] = useState(rows);
 	const logger = new Logger(configuration.logging.react);
+	const preferedTablesManagerHelper = PreferedTablesManagerHelper.getInstance();
 
     const [filters, _setFilters] = React.useState({
         columns: {},
@@ -221,25 +223,41 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
 					enabled: true
 				});
 
-				if (message.data.selectedColumns === undefined) {
-					setSelectedRows(
-						(): ReadonlySet<number> =>
-						new Set(message.data.fields.map((field) => field.order))
-					);
-				} else {
-					const selected = message.data.fields.filter((row) =>
-						message.data.selectedColumns.includes(row.name)
-						);
-					setSelectedRows(
-						(): ReadonlySet<number> =>
-						new Set(selected.map((row) => row.order))
-					);
-				}
+				const initSavedRows = {
+					action: CommandAction.LoadSavedRows
+				};
+				vscode.postMessage(initSavedRows);
+				
+				preferedTablesManagerHelper.getSelectedRows().then(data => {
+					console.log("GOT DATA");
+					if (data.size !== 0){
+						setSelectedRows(data);
+					}
+					else{
+						if (message.data.selectedColumns === undefined) {
+							setSelectedRows(
+								(): Set<number> =>
+								new Set(message.data.fields.map((field) => field.order))
+							);
+						} 
+						else {
+							const selected = message.data.fields.filter((row) =>
+								message.data.selectedColumns.includes(row.name));
+							setSelectedRows(
+								(): Set<number> =>
+								new Set(selected.map((row) => row.order))
+							);
+						}
+					}
+				});
 			}
 		});
 	});
 
 	React.useEffect(() => {
+		preferedTablesManagerHelper.getSelectedRows().then(data => {
+			console.log("NEW DATA", data);
+		});
 		const obj = {
 			action: CommandAction.UpdateColumns,
 			columns: rows
