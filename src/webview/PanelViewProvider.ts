@@ -13,9 +13,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
     public tableListProvider?: TablesListProvider;
     public readonly configuration = vscode.workspace.getConfiguration("ProBro");
 
-    constructor(
-        private context: vscode.ExtensionContext, private _type: string) {
-    }
+    constructor (private context: vscode.ExtensionContext, private _type: string) {}
 
     public resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
         this._view = webviewView;
@@ -60,7 +58,8 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
           window.tableDetails = ${JSON.stringify(data)};
-          window.configuration = ${JSON.stringify(this.configuration)}
+          window.configuration = ${JSON.stringify(this.configuration)};
+          window.tableName = ${JSON.stringify(this.tableNode?.tableName)};
         </script>
     </head>
     <body>

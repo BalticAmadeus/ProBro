@@ -6,16 +6,19 @@ import { PanelViewProvider } from './PanelViewProvider';
 import { Logger } from "../common/Logger";
 import { PreferedTablesManager } from '../common/PreferedTablesManager';
 import { PreferedTablesManagerHelper } from '../common/PreferedTablesManagerHelper';
+import { TableNode } from '../treeview/TableNode';
 
 export class FieldsViewProvider extends PanelViewProvider {
   private queryEditors: QueryEditor[] = [];
 
   private logger = new Logger(this.configuration.get("logging.node")!);
-  private preferedTablesManager = PreferedTablesManager.getInstance();
-  private preferedTablesManagerHelper = PreferedTablesManagerHelper.getInstance();
+  private preferedTablesManager : PreferedTablesManager;
+  private preferedTablesManagerHelper : PreferedTablesManagerHelper;
 
   constructor(context: vscode.ExtensionContext, _type: string) {
     super(context, _type);
+    this.preferedTablesManager = PreferedTablesManager.getInstance(context);
+    this.preferedTablesManagerHelper = PreferedTablesManagerHelper.getInstance();
   }
 
   public addQueryEditor(queryEditor: QueryEditor) {
@@ -36,47 +39,31 @@ export class FieldsViewProvider extends PanelViewProvider {
     }
   }
 
-  private async saveRows(){
-    if (this.tableNode?.cache !== undefined){
-      await this.preferedTablesManager.savePreferences(this.tableNode.tableName, this.tableNode.cache);
-    }
+  private async saveRows(tableNode: TableNode, cache : TableDetails){
+      await this.preferedTablesManager.saveOnClick(tableNode.tableName, cache);
   }
 
-  private loadSavedRows(){
-    if (this.tableNode?.cache !== undefined){
-      const savedTableDetails = this.preferedTablesManager.sendLoadedPreferences(this.tableNode?.tableName);
-      if (savedTableDetails){
-        this.preferedTablesManagerHelper.setSelectedRows(savedTableDetails);
-      }
-    }
-  }
-
-  public resolveWebviewView(
-    webviewView: vscode.WebviewView
-  ): void | Thenable<void> {
+  public resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
     super.resolveWebviewView(webviewView);
 
     this._view!.webview.onDidReceiveMessage((command: ICommand) => {
       this.logger.log("Command:", command);
-      switch (command.action) {
-        case CommandAction.UpdateColumns:
-          if (
-            this.tableNode !== undefined &&
-            this.tableNode.cache !== undefined
-          ) {
+      if (this.tableNode !== undefined && this.tableNode.cache !== undefined){
+        switch (command.action) {
+          case CommandAction.UpdateColumns:
             this.tableNode.cache.selectedColumns = command.columns;
-            this.saveRows();
-          }
-          this.logger.log(
-            "this.tableNode.cache.selectedColumns:",
-            command.columns
-          );
-          this.notifyQueryEditors();
-          break;
-        case CommandAction.LoadSavedRows:
-          this.loadSavedRows();
+            this.saveRows(this.tableNode, this.tableNode.cache);
+            this.logger.log(
+              "this.tableNode.cache.selectedColumns:",
+              command.columns
+            );
+            this.notifyQueryEditors();
+            break;
+          case CommandAction.LoadSavedRows:
+            this.preferedTablesManager.saveTableSelectedRows(this.tableNode.tableName);
+            break;
+        }
       }
-
     });
   }
 }

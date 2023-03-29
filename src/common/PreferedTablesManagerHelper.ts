@@ -1,6 +1,3 @@
-import { TableDetails } from '../view/app/model';
-import { FieldRow } from '../view/app/model';
-
 export class PreferedTablesManagerHelper{
 
     private static instance: PreferedTablesManagerHelper;
@@ -19,24 +16,14 @@ export class PreferedTablesManagerHelper{
         this.selectedRows = new Set();
     }
 
-    public setSelectedRows(tableDetails: TableDetails){
-        //this.selectedRows.clear();
-
-        const selectedColumns: string[] | undefined= tableDetails.selectedColumns;
-
-        if (selectedColumns !== undefined){
-            tableDetails.fields.forEach((element) => {
-                if (selectedColumns.includes(element.name)){
-                    this.selectedRows.add(element.order);
-                }
-            });
-        }
-        console.log("SELECTED ROWS IN SET", [...this.selectedRows]);
+    public setSelectedRows(setas: Set<number>){
+        this.selectedRows = new Set(setas);
+        console.log("DATA IS SAVED NOW");
     }
 
-    public async getSelectedRows(): Promise<Set<number>>{
-        console.log("getSelectedRows", [...this.selectedRows]);
-        return this.selectedRows;
+    public getSelectedRows(): Set<number>{
+        console.log("DATA IS RETURNED NOW");
+        return new Set(this.selectedRows);
     }
 
 }

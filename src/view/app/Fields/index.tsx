@@ -5,11 +5,13 @@ import Fields from "./fields";
 import { TableDetails } from "../model";
 import { ISettings } from "../../../common/IExtensionSettings";
 
+
 declare global {
   interface Window {
     acquireVsCodeApi(): any;
     tableDetails: TableDetails;
     configuration: ISettings;
+    tableName: string
   }
 }
 
@@ -21,5 +23,6 @@ root.render(
     tableDetails={window.tableDetails}
     configuration={window.configuration}
     vscode={vscode}
+    tableName={window.tableName}
   />
 );

@@ -9,11 +9,13 @@ import { Logger } from "../../../common/Logger";
 import * as columnName from "./column.json";
 import { ISettings } from "../../../common/IExtensionSettings";
 import { PreferedTablesManagerHelper } from "../../../common/PreferedTablesManagerHelper";
+import { PreferedTablesManager } from "../../../common/PreferedTablesManager";
 
 interface IConfigProps {
     vscode: any;
     tableDetails: TableDetails
     configuration: ISettings;
+	tableName: string
 }
 
 const filterCSS: React.CSSProperties = {
@@ -56,8 +58,10 @@ function rowKeyGetter(row: FieldRow) {
     return row.order;
 }
 
+function Fields({ tableDetails, configuration, vscode, tableName }: IConfigProps) {
 
-function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
+	console.log("TABLENAME FROM HTML:", tableName);
+
     const [rows, setRows] = useState(tableDetails.fields);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<Set<number>>();
@@ -222,15 +226,15 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
 				setFilters({columns: {},
 					enabled: true
 				});
-
-				const initSavedRows = {
-					action: CommandAction.LoadSavedRows
-				};
-				vscode.postMessage(initSavedRows);
 				
-				preferedTablesManagerHelper.getSelectedRows().then(data => {
-					console.log("GOT DATA");
-					if (data.size !== 0){
+				const obj = {
+					action: CommandAction.LoadSavedRows,
+				};
+				vscode.postMessage(obj);
+				
+				const data = preferedTablesManagerHelper.getSelectedRows();
+					if (data.size === 0 ){
+						console.log("selectedrows", selectedRows);
 						setSelectedRows(data);
 					}
 					else{
@@ -249,15 +253,13 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
 							);
 						}
 					}
-				});
+
+
 			}
 		});
 	});
 
 	React.useEffect(() => {
-		preferedTablesManagerHelper.getSelectedRows().then(data => {
-			console.log("NEW DATA", data);
-		});
 		const obj = {
 			action: CommandAction.UpdateColumns,
 			columns: rows
