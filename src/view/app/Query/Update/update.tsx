@@ -123,6 +123,7 @@ export default function UpdatePopup({
       id: "Submit",
       action: CommandAction.Submit,
       params: {
+        minTime: 0,
         start: 0,
         pageLength: 0,
         timeOut: 1000,

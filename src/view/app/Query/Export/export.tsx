@@ -45,6 +45,7 @@ export default function ExportPopup({
             sortColumns: sortColumns,
             exportType: exportFormat,
             timeOut: 0,
+            minTime: 0
           };
         break;
         case DataToExport[DataToExport.Filter]:
@@ -56,7 +57,8 @@ export default function ExportPopup({
             sortColumns: sortColumns,
             filters: filters,
             exportType: exportFormat,
-            timeOut: 0
+            timeOut: 0,
+            minTime: 0
           };
           break;
         case DataToExport[DataToExport.Selection]:
@@ -73,7 +75,8 @@ export default function ExportPopup({
             filters: filters,
             exportType: exportFormat,
             timeOut: 0,
-            crud: rowids
+            crud: rowids,
+            minTime: 0
           };
           break;
       default:
