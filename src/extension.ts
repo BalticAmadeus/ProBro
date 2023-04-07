@@ -11,9 +11,18 @@ import { TableNode } from "./treeview/TableNode";
 import { TablesListProvider } from "./treeview/TablesListProvider";
 import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
 
+import { VersionChecker} from "./view/app/Welcome/VersionChecker";
+import { WelcomePageProvider } from "./webview/WelcomePageProvider";
+
 export function activate(context: vscode.ExtensionContext) {
 
   Constants.context = context;
+
+  const versionChecker = new VersionChecker(context);
+  
+  if (versionChecker.forDebug()){ // change it to .isNewVersion
+    new WelcomePageProvider(context,versionChecker.versionFromPackage);
+  }
 
   const connectionUpdater = new DbConnectionUpdater();
   connectionUpdater.updateConnectionStatuses(context);
