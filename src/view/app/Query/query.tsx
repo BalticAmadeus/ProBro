@@ -66,7 +66,6 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     const [sortAction, setSortAction] = React.useState(false);
     const [initialDataLoad, setInitialDataLoad] = React.useState(true);
     const [recordColor, setRecordColor] = React.useState("red");
-
     const logger = new Logger(configuration.logging.react);
 
     window.addEventListener('contextmenu', e => {
@@ -494,6 +493,10 @@ Description: ${errorObject.description}`}</pre>
     const deleteRecord = () => {
         processRecord(ProcessAction.Delete);
     };
+    const copyRecord = () => {
+        processRecord(ProcessAction.Copy);
+    };
+
     const processRecord = (mode: ProcessAction) => {
         setAction(mode);
         const rowids: string[] = [];
@@ -635,6 +638,7 @@ Description: ${errorObject.description}`}</pre>
                             insertRecord={insertRecord}
                             updateRecord={updateRecord}
                             deleteRecord={deleteRecord}
+                            copyRecord={copyRecord}
                             readRow={readRow}
                             logValue={configuration.logging.react}
                         ></UpdatePopup>
