@@ -397,12 +397,8 @@ FUNCTION GET_COLUMNS RETURNS Progress.Json.ObjectModel.JsonArray (lDumpFile AS L
 END FUNCTION.
 
 FUNCTION GET_MODE RETURNS CHARACTER ():
-    IF inputObject:GetJsonObject("params"):has("mode") THEN DO:
-        RETURN inputObject:GetJsonObject("params"):GetCharacter("mode").
-    END.
-    ELSE DO:
-        RETURN "DATA".
-    END.
+    IF NOT inputObject:GetJsonObject("params"):has("mode") THEN RETURN "DATA".
+    RETURN inputObject:GetJsonObject("params"):GetCharacter("mode").
 END FUNCTION.
 
 FUNCTION GET_WHERE_PHRASE RETURNS CHARACTER ():
