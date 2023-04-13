@@ -251,8 +251,129 @@ FUNCTION ADD_INDEX_INFORMATION RETURNS Progress.Json.ObjectModel.JsonArray ():
 END FUNCTION.
 
 PROCEDURE LOCAL_GET_TABLE_DETAILS:
-    jsonObject:Add("fields", ADD_FIELD_INFORMATION()).
-    jsonObject:Add("indexes", ADD_INDEX_INFORMATION()).
+        DEFINE VARIABLE jsonField AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
+        DEFINE VARIABLE jsonFields AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+        DEFINE VARIABLE jsonIndexes AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
+
+        DEFINE VARIABLE bhFile AS HANDLE NO-UNDO.
+        DEFINE VARIABLE bhIndex AS HANDLE NO-UNDO.
+        DEFINE VARIABLE bhIndexField AS HANDLE NO-UNDO.
+        DEFINE VARIABLE bhField AS HANDLE NO-UNDO.
+        DEFINE VARIABLE qhIndex AS WIDGET-HANDLE NO-UNDO.
+        DEFINE VARIABLE qhField AS WIDGET-HANDLE NO-UNDO.
+
+        DEFINE VARIABLE cFieldQuery AS CHARACTER NO-UNDO.
+        DEFINE VARIABLE cIndexQuery AS CHARACTER NO-UNDO.
+
+
+        jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
+        jsonIndexes = NEW Progress.Json.ObjectModel.JsonArray().
+
+        // get fields table details
+
+        CREATE BUFFER bhFile FOR TABLE "_file".
+        CREATE BUFFER bhField FOR TABLE "_field".
+
+        cFieldQuery = SUBSTITUTE("FOR EACH _file WHERE _file._file-name = '&1'" +
+                                " , EACH _field OF _file BY _field._order",
+                                inputObject:GetCharacter("params")).
+
+        CREATE QUERY qhField.
+        qhField:SET-BUFFERS(bhFile, bhField).
+        qhField:QUERY-PREPARE(cFieldQuery).
+        qhField:QUERY-OPEN.
+
+        DO WHILE qhField:GET-NEXT():
+            jsonField = NEW Progress.Json.ObjectModel.JsonObject().
+            jsonField:Add("order", bhField::_order).
+            jsonField:Add("name", bhField::_field-name).
+            jsonField:Add("type", bhField::_data-type).
+            jsonField:Add("format", bhField::_format).
+            jsonField:Add("label", bhField::_label).
+            jsonField:Add("initial", bhField::_initial).
+            jsonField:Add("columnLabel", bhField::_col-label).
+            jsonField:Add("mandatory", bhField::_mandatory).
+            jsonField:Add("extent", bhField::_extent).
+            jsonField:Add("decimals", bhField::_decimals).
+            jsonField:Add("rpos", bhField::_field-rpos).
+            jsonField:Add("valExp", bhField::_valexp).
+            jsonField:Add("valMessage", bhField::_valmsg).
+            jsonField:Add("helpMsg", bhField::_help).
+            jsonField:Add("description", bhField::_desc).
+            jsonField:Add("viewAs", bhField::_view-as).
+            jsonFields:Add(jsonField).
+        END.
+
+        qhField:QUERY-CLOSE().
+        DELETE OBJECT bhField.
+        DELETE OBJECT qhField.
+        DELETE OBJECT bhFile.
+
+        // get Index table details
+
+        CREATE BUFFER bhFile FOR TABLE "_file".
+        CREATE BUFFER bhIndex FOR TABLE "_Index".
+        CREATE BUFFER bhIndexField FOR TABLE "_Index-Field".
+        CREATE BUFFER bhField FOR TABLE "_Field".
+
+        DEFINE BUFFER bttIndex FOR ttIndex.
+
+        EMPTY TEMP-TABLE bttIndex.
+
+        cIndexQuery = SUBSTITUTE("FOR EACH _file WHERE _file._file-name = '&1'" +
+                            " , EACH _Index OF _file NO-LOCK" +
+                            " , EACH _Index-field OF _Index NO-LOCK" +
+                            " , EACH _Field OF _Index-field NO-LOCK",
+                            inputObject:GetCharacter('params')).
+
+        CREATE QUERY qhIndex.
+        qhIndex:SET-BUFFERS(bhFile, bhIndex, bhIndexField, bhField).
+        qhIndex:QUERY-PREPARE(cIndexQuery).
+        qhIndex:QUERY-OPEN.
+
+        DO WHILE qhIndex:GET-NEXT():
+            DEFINE VARIABLE cFlags AS CHARACTER NO-UNDO.
+            DEFINE VARIABLE cFields AS CHARACTER NO-UNDO.
+
+            FIND bttIndex WHERE bttIndex.cName = bhIndex::_Index-name NO-ERROR.
+            IF NOT AVAILABLE bttIndex THEN DO:
+                CREATE bttIndex.
+
+                //index name
+                bttIndex.cName = bhIndex::_Index-name.
+
+                //index flags
+                cFlags = SUBSTITUTE("&1 &2 &3",
+                                            STRING(bhFile::_prime-index = bhIndex:RECID, "P/"),
+                                            STRING(bhIndex::_unique, "U/"),
+                                            STRING(bhIndex::_WordIdx <> ?, "W/")
+                                            ).
+                cFlags = TRIM(cFLags).
+                bttIndex.cFlags = cFlags.
+            END.
+
+            //index field
+            cFields = SUBSTITUTE("&1 &2&3",
+                                bttIndex.cFields,
+                                bhField::_Field-name,
+                                STRING(bhIndexField::_ascending, '+/-')
+                                ).
+
+
+            cFields = TRIM(cFields).
+            bttIndex.cFields = cFields.
+        END.
+
+        qhIndex:QUERY-CLOSE().
+        DELETE OBJECT bhFile.
+        DELETE OBJECT bhIndex.
+        DELETE OBJECT bhIndexField.
+        DELETE OBJECT bhField.
+
+        jsonIndexes:Read(TEMP-TABLE bttIndex:HANDLE).
+
+        jsonObject:Add("fields", jsonFields).
+        jsonObject:Add("indexes", jsonIndexes).
 END PROCEDURE.
 
 PROCEDURE GET_ROW_DATA:
