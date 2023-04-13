@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.2.2 (2023-03-03)
+### Changed
+- Fixed issue with writing socket data
+- Fixed various small bugs
+
+### Added
+- Extension settings configuration for temporary files (-T)
+
 ## 1.2.1 (2023-02-17)
 ### Changed
 - Fixed critical issue for Linux

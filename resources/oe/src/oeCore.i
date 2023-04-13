@@ -537,7 +537,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
         jsonCrud = GET_CRUD().
     END.
 
-    IF CAN-DO("UPDATE,DATA", cMode) THEN DO:
+    IF CAN-DO("UPDATE,DATA,COPY", cMode) THEN DO:
         CREATE BUFFER bhTableName FOR TABLE inputObject:GetJsonObject("params"):GetCharacter("tableName").
         CREATE QUERY qhTableName.
         qhTableName:SET-BUFFERS(bhTableName).
@@ -764,7 +764,7 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
         END.
     END.
     ELSE DO:
-        IF cMode = "INSERT" THEN DO:
+        IF cMode = "INSERT" OR cMode = "COPY" THEN DO:
             bh:BUFFER-CREATE().
         END.
         ELSE IF cMode = "UPDATE" THEN DO:
