@@ -63,13 +63,11 @@ class OEClient {
         this.proc = cp.spawn("bash", [
           "-c ",
           [
-            `"${path.join(
-              Constants.context.extensionPath,
-              "resources",
-              "oe",
-              "scripts",
-              "oe.sh"          
-            )}"`,
+            `"${path.join(Constants.context.extensionPath, "resources", "oe", "scripts", "oe.sh")}"`,
+            "-p",
+            `"${path.join(Constants.context.extensionPath,"resources","oe","src","oeSocket.p")}"`,
+            "-clientlog",
+            `"${path.join(Constants.context.extensionPath,"resources", "oe", "oeSocket.pro")}"`,
             "-pf",
             `"${this.pfFilePath}"`,
           ].join(" "),
@@ -79,13 +77,11 @@ class OEClient {
         this.proc = cp.spawn("cmd.exe", [
           "/c",
           [
-            path.join(
-              Constants.context.extensionPath,
-              "resources",
-              "oe",
-              "scripts",
-              "oe.bat"
-            ),
+            path.join(Constants.context.extensionPath, "resources", "oe", "scripts", "oe.bat"),
+            "-p",
+            path.join(Constants.context.extensionPath,"resources","oe","src","oeSocket.p"),
+            "-clientlog",
+            path.join(Constants.context.extensionPath,"resources", "oe", "oeSocket.pro"),
             "-pf",
             this.pfFilePath,
           ].join(" "),
@@ -134,13 +130,9 @@ class OEClient {
     const pfContent = [
        this.tempFilesPath.length !== 0 ? `-T ${this.tempFilesPath}` : null,
       "-b",
-      "-p",
-      `"${path.join(Constants.context.extensionPath,"resources","oe","src","oeSocket.p")}"`,
       "-param",
       this.port.toString(),
       "-debugalert",
-      "-clientlog",
-      `"${path.join(Constants.context.extensionPath,"resources", "oe", "oeSocket.pro")}"`,
       this.logentrytypes.length !== 0 ? `-logentrytypes ${this.logentrytypes}` : null
     ].join(" ");
 
