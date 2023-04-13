@@ -539,25 +539,22 @@ Description: ${errorObject.description}`}</pre>
         }
     }
 
+    const suggestions = document.querySelector("#column-list");
+
     function autocomplete(input, list) {
         input.addEventListener('input', function () {
-
-            closeList();
 
             if (!this.value) { return; }
 
             let wordArray = this.value.split(' ');
-
             let lastWord = wordArray.pop();
 
-            const suggestions = document.createElement('div');
-            suggestions.setAttribute('id', 'suggestions');
-            this.parentNode.appendChild(suggestions);
+            suggestions.innerHTML = "";
 
             for (let i = 0; i < list.length; i++) {
                 if (list[i].toUpperCase().includes(lastWord.toUpperCase())) {
 
-                    const suggestion = document.createElement('div');
+                    const suggestion = document.createElement('li');
                     suggestion.innerHTML = list[i];
 
                     suggestion.addEventListener('click', function () {
@@ -567,9 +564,8 @@ Description: ${errorObject.description}`}</pre>
                             input.value += ' ';
                         }
                         input.value += this.innerHTML;
-                        console.log(input.value);
 
-                        closeList();
+                        suggestions.innerHTML = "";
                     });
                     suggestion.style.cursor = 'pointer';
 
@@ -578,11 +574,6 @@ Description: ${errorObject.description}`}</pre>
             }
 
         });
-
-        function closeList() {
-            let suggestions = document.getElementById('suggestions');
-            if (suggestions) { suggestions.parentNode.removeChild(suggestions); }
-        }
     }
 
     return (
@@ -607,6 +598,7 @@ Description: ${errorObject.description}`}</pre>
                                         }}
                                         onKeyDown={handleKeyDown}
                                     />
+                                    <ul className="autocomplete-list" id="column-list"></ul>
                                     <ProBroButton
                                         ref={(input) => (inputQuery = input)}
                                         startIcon={<PlayArrowTwoToneIcon />}
@@ -648,7 +640,7 @@ Description: ${errorObject.description}`}</pre>
                         ></UpdatePopup>
                     </div>
                 </div>
-            </div>
+            </div >
             <DataGrid
                 columns={selected}
                 rows={isFormatted ? formattedRows : rawRows}
@@ -670,7 +662,7 @@ Description: ${errorObject.description}`}</pre>
             ></DataGrid>
             {getFooterTag()}
             {isLoading && <div>Loading more rows...</div>}
-        </React.Fragment>
+        </React.Fragment >
     );
 }
 
