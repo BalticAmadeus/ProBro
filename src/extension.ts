@@ -233,7 +233,6 @@ export function activate(context: vscode.ExtensionContext) {
       } else {
         for (const id of Object.keys(portList)) {
           if (!portList[id].isInUse) {
-  
             extensionPort = portList[id].port;
             portList[id].isInUse = true;
             portList[id].timestamp = Date.now();
