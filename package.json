@@ -58,19 +58,6 @@
                     "default": 100,
                     "markdownDescription": "Specifies the initial number of records retrieved when query is opened"
                 },
-                "ProBro.possiblePortsList": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                                "type": "number",
-                                "minimum": 0,
-                                "maximum": 65536,
-                                "description": "Port number"
-                            },
-            
-                    "default": [23456],
-                    "markdownDescription": "(Restart needed)\n\n Provide free ports for local ProBro communication. Additional ports are used for additional vsCode instances using ProBro extension.  \n\n The default ProBro extension port is 23456"
-                },
                 "ProBro.tempfiles": {
                     "type": "string",
                     "markdownDescription": "Specifies path where temporary files are created."

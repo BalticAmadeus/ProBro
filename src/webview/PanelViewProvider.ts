@@ -14,7 +14,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
     public readonly configuration = vscode.workspace.getConfiguration("ProBro");
 
     constructor(
-        protected context: vscode.ExtensionContext, private _type: string) {
+        private context: vscode.ExtensionContext, private _type: string) {
     }
 
     public resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {

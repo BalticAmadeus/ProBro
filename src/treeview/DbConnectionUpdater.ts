@@ -1,29 +1,61 @@
 import * as vscode from "vscode";
 import { DatabaseProcessor } from "../db/DatabaseProcessor";
-import { IConfig } from "../view/app/model";
-import { IRefreshCallback, RefreshWithoutCallback } from "./IRefreshCallback";
+import { ConnectionStatus, IConfig } from "../view/app/model";
+import { IRefreshCallback } from "./IRefreshCallback";
 
 export class DbConnectionUpdater {
-    constructor() { }
+    constructor (){}
+    private locked: boolean = false;
+    private context: vscode.ExtensionContext = {} as vscode.ExtensionContext;
 
-    public async updateConnectionStatuses(context: vscode.ExtensionContext) {
-        this.updateConnectionStatusesWithRefreshCallback(context, new RefreshWithoutCallback());
-    }
+    public async updateConnectionStatusesWithRefreshCallback (context: vscode.ExtensionContext, refreshCallback: IRefreshCallback) {
+        this.context = context;
 
-    public async updateConnectionStatusesWithRefreshCallback(context: vscode.ExtensionContext, refreshCallback: IRefreshCallback) {
-        let connections = context.globalState.get<{ [id: string]: IConfig }>(`pro-bro.dbconfig`);
-
-        if (connections && Object.keys(connections).length !== 0) {
-            for (let id of Object.keys(connections)) {
-                await DatabaseProcessor.getInstance().getDBVersion(connections[id]).then((data) => {
-                    connections![id].conStatus = data.error ? false : true;
-                });;
-                context.globalState.update(`pro-bro.dbconfig`, connections);
-                refreshCallback.refresh();
+        try {
+            if (this.locked === false){
+                this.locked = true;
+                await this.updateStatuses(refreshCallback);
             }
         }
-        else {
-            refreshCallback.refresh();
+        finally {
+            this.locked = false;
+        } 
+    }
+
+    private async updateStatuses(refreshCallback: IRefreshCallback){
+        
+        let connections = this.context.globalState.get<{ [id: string]: IConfig }>(`pro-bro.dbconfig`);
+
+        if (!connections || Object.keys(connections).length === 0) {
+            return;
         }
+
+        for (let id of Object.keys(connections)) {
+            connections![id].conStatus = ConnectionStatus.Connecting;
+            this.updateStatus(connections, refreshCallback);
+            await this.wait();
+
+            const data = await DatabaseProcessor.getInstance().getDBVersion(connections[id]);
+            if (data instanceof Error || ("error" in data)) {
+                connections[id].conStatus = ConnectionStatus.NotConnected;
+            } 
+            else{
+                connections[id].conStatus = ConnectionStatus.Connected;
+            }
+            this.updateStatus(connections, refreshCallback);
+        }
+    }
+
+    private updateStatus(connections: {[id: string]: IConfig } | undefined, refreshCallback: IRefreshCallback){
+        this.context.globalState.update(`pro-bro.dbconfig`, connections);
+        refreshCallback.refresh();
+    }
+
+    private wait(): Promise<void> {
+        return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, 250);
+        });
     }
 }
