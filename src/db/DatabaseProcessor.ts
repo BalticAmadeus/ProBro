@@ -5,13 +5,13 @@ import * as cp from "child_process";
 import { IOEError, IOEParams, IOETableData, IOETablesList, IOEVersion } from "./Oe";
 import getOEClient from "./OeClient";
 import { SortColumn } from "react-data-grid";
+import { resolve } from "path";
 import { Logger } from "../common/Logger";
 
 export class DatabaseProcessor implements IProcessor {
 
     private static instance: DatabaseProcessor;
     private static isProcessRunning: boolean = false;
-    private static errObj = {errMessage: "", isError: false};
     
     private readonly configuration = vscode.workspace.getConfiguration("ProBro");
     private logger = new Logger(this.configuration.get("logging.node")!);
@@ -33,13 +33,8 @@ export class DatabaseProcessor implements IProcessor {
             return Promise.resolve(new Error("Processor is busy"));
         }
 
-        if (DatabaseProcessor.errObj.isError) {
-            vscode.window.showErrorMessage(DatabaseProcessor.errObj.errMessage);
-            return Promise.resolve(new Error(DatabaseProcessor.errObj.errMessage));
-        }
-
         DatabaseProcessor.isProcessRunning = true;
-        this.logger.log("execShell params", params);
+        this.logger.log("execShell params:", params);
         var timeInMs = Date.now();
 
         return getOEClient()
@@ -51,18 +46,10 @@ export class DatabaseProcessor implements IProcessor {
                 var json = JSON.parse(data);
                 console.log(`Process time: ${Date.now() - timeInMs}, OE time: ${json.debug.time}, Connect time: ${json.debug.timeConnect}`);
                 console.log(json.debug);
-                this.logger.log("getOEClient returns", json);
+                this.logger.log("getOEClient returns :", json);
                 DatabaseProcessor.isProcessRunning = false;
                 return json;
-            })
-            .catch(err => {
-                this.logger.log("getOeClient error", err.message);
-                vscode.window.showWarningMessage(err.message);
-                DatabaseProcessor.errObj.isError = true;
-                DatabaseProcessor.errObj.errMessage = err.message;
-                DatabaseProcessor.isProcessRunning = false;
-                return Promise.resolve(new Error(err.message));
-            })
+            });
 
         /*
                 return new Promise<string>((resolve, reject) => {
@@ -85,13 +72,11 @@ export class DatabaseProcessor implements IProcessor {
     }
 
     private getConnectionString(config: IConfig) {
-        if (!config.params.includes("-ct")) {
-            if (config.params == ""){
-                config.params += "-ct 1";
-            } else {
-                config.params += " -ct 1";
-            }
-        }
+        if (!config.params.includes("-ct"))
+            if (config.params == "")
+                config.params += "-ct 1"
+            else
+                config.params += " -ct 1"
                 
         var connectionString = `-db ${config.name} ${config.user ? '-U ' + config.user : ''} ${config.password ? '-P ' + config.password : ''} ${config.host ? '-H ' + config.host : ''} ${config.port ? '-S ' + config.port : ''} ${config.params}`;
         return connectionString;

@@ -80,8 +80,7 @@ export enum ProcessAction {
     Update,
     Delete,
     Submit,
-    Read,
-    Copy
+    Read
 }
 
 export enum DataToExport {
@@ -107,10 +106,4 @@ export interface ITableData {
 export interface TableCount {
     tableName: string | undefined,
     count: number
-}
-
-export interface IPort {
-    port: number,
-    isInUse: boolean,
-    timestamp: number | undefined
 }
