@@ -29,6 +29,7 @@ export class DbConnectionUpdater {
         let connections = this.context.globalState.get<{ [id: string]: IConfig }>(`pro-bro.dbconfig`);
 
         if (!connections || Object.keys(connections).length === 0) {
+            this.callback.refresh();
             return;
         }
 
