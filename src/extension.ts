@@ -49,7 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   const connectionUpdater = new DbConnectionUpdater();
-  connectionUpdater.updateConnectionStatusesWithRefreshCallback(context,groupListProvider);
+  connectionUpdater.updateConnectionStatusesWithRefreshCallback(context, groupListProvider);
 
   groups.onDidChangeSelection((e) =>
     groupListProvider.onDidChangeSelection(e, tablesListProvider)

@@ -1,29 +1,30 @@
 import * as vscode from "vscode";
 import { DatabaseProcessor } from "../db/DatabaseProcessor";
 import { ConnectionStatus, IConfig } from "../view/app/model";
-import { IRefreshCallback, RefreshWithoutCallback } from "./IRefreshCallback";
+import { IRefreshCallback } from "./IRefreshCallback";
 
 export class DbConnectionUpdater {
     constructor (){}
     private locked: boolean = false;
-
-    public async updateConnectionStatuses (context: vscode.ExtensionContext) {
-        this.updateConnectionStatusesWithRefreshCallback(context, new RefreshWithoutCallback());
-    }
+    private context: vscode.ExtensionContext = {} as vscode.ExtensionContext;
 
     public async updateConnectionStatusesWithRefreshCallback (context: vscode.ExtensionContext, refreshCallback: IRefreshCallback) {
-        if (this.locked === false){
-            this.locked = true;
-            
-            await this.updateStatuses(context,refreshCallback);
+        this.context = context;
 
-            this.locked = false;
+        try {
+            if (this.locked === false){
+                this.locked = true;
+                await this.updateStatuses(refreshCallback);
+            }
         }
+        finally {
+            this.locked = false;
+        } 
     }
 
-    private async updateStatuses(context: vscode.ExtensionContext, refreshCallback: IRefreshCallback){
+    private async updateStatuses(refreshCallback: IRefreshCallback){
         
-        let connections = context.globalState.get<{ [id: string]: IConfig }>(`pro-bro.dbconfig`);
+        let connections = this.context.globalState.get<{ [id: string]: IConfig }>(`pro-bro.dbconfig`);
 
         if (!connections || Object.keys(connections).length === 0) {
             return;
@@ -31,7 +32,7 @@ export class DbConnectionUpdater {
 
         for (let id of Object.keys(connections)) {
             connections![id].conStatus = ConnectionStatus.Connecting;
-            this.updateStatus(connections, context, refreshCallback);
+            this.updateStatus(connections, refreshCallback);
             await this.wait();
 
             const data = await DatabaseProcessor.getInstance().getDBVersion(connections[id]);
@@ -41,12 +42,12 @@ export class DbConnectionUpdater {
             else{
                 connections[id].conStatus = ConnectionStatus.Connected;
             }
-            this.updateStatus(connections, context, refreshCallback);
+            this.updateStatus(connections, refreshCallback);
         }
     }
 
-    private updateStatus(connections: {[id: string]: IConfig } | undefined, context: vscode.ExtensionContext, refreshCallback: IRefreshCallback){
-        context.globalState.update(`pro-bro.dbconfig`, connections);
+    private updateStatus(connections: {[id: string]: IConfig } | undefined, refreshCallback: IRefreshCallback){
+        this.context.globalState.update(`pro-bro.dbconfig`, connections);
         refreshCallback.refresh();
     }
 
