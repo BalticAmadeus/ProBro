@@ -94,6 +94,7 @@ export interface ITableData {
     wherePhrase?: string,
     start: number,
     pageLength: number,
+    minTime: number,
     lastRowID: string,
     sortColumns?: SortColumn[],
     filters?: any,

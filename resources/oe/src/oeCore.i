@@ -509,6 +509,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
     DEFINE VARIABLE cMode AS CHARACTER NO-UNDO.
     DEFINE VARIABLE lExport AS LOGICAL NO-UNDO INITIAL false.
     DEFINE VARIABLE lDumpFile AS LOGICAL No-UNDO INITIAL false.
+    DEFINE VARIABLE iMinTime AS INTEGER NO-UNDO.
 
     DEFINE BUFFER bttColumn FOR ttColumn.
 
@@ -560,6 +561,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
 
         iRemainingLength = inputObject:GetJsonObject("params"):GetInteger("pageLength").
         iTimeOut = inputObject:GetJsonObject("params"):GetInteger("timeOut").
+        iMinTime = inputObject:GetJsonObject("params"):GetInteger("minTime").
         dtStart = NOW.
 
         IF jsonCrud = ? THEN DO:
@@ -575,7 +577,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
                 jsonRaw:Add(jsonRawRow).
                 jsonFormatted:Add(jsonFormattedRow).
                 iRemainingLength = iRemainingLength - 1.
-                IF iRemainingLength <= 0 THEN LEAVE.
+                IF iRemainingLength <= 0 AND NOW - dtStart >= iMinTime THEN LEAVE.
                 IF iTimeOut > 0 AND NOW - dtStart >= iTimeOut THEN LEAVE.
             END.
         END.

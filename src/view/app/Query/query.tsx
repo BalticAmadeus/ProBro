@@ -352,6 +352,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
             sortColumns,
             filters,
             configuration.batchMaxTimeout /*ms for data retrieval*/
+            configuration.batchMinTimeout
         );
     };
 
@@ -371,7 +372,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
-        makeQuery(0, loaded, "", sortColumns, filters, 0);
+        makeQuery(0, loaded, "", sortColumns, filters, 0, 0);
     }
 
     function makeQuery(
@@ -380,7 +381,8 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         lastRowID,
         sortColumns,
         inputFilters,
-        timeOut
+        timeOut,
+        minTime
     ) {
         const command: ICommand = {
             id: "Query",
@@ -392,7 +394,8 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                 lastRowID: lastRowID,
                 sortColumns: sortColumns,
                 filters: inputFilters,
-                timeOut: timeOut
+                timeOut: timeOut,
+                minTime: minTime
             },
         };
         logger.log("make query", command);
@@ -420,7 +423,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         }
         setScrollHeight(event.currentTarget.scrollTop);
         setIsLoading(true);
-        makeQuery(loaded, configuration.batchSize, rowID, sortColumns, filters, configuration.batchMaxTimeout);
+        makeQuery(loaded, configuration.batchSize, rowID, sortColumns, filters, configuration.batchMaxTimeout, configuration.batchMinTimeout);
     }
 
     function onSortClick(inputSortColumns: SortColumn[]) {
@@ -432,7 +435,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
-        makeQuery(0, loaded, "", inputSortColumns, filters, 0);
+        makeQuery(0, loaded, "", inputSortColumns, filters, 0, 0);
     }
 
     function allRecordsRetrieved(recentRecords: number, recentRetrievalTime: number) {
@@ -519,6 +522,7 @@ Description: ${errorObject.description}`}</pre>
                 start: 0,
                 pageLength: selectedRows.size,
                 timeOut: 1000,
+                minTime: 1000,
                 lastRowID: selectedRows.values().next().value,
                 crud: rowids,
                 mode: ProcessAction[mode],
