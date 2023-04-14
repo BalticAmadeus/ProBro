@@ -11,7 +11,13 @@ export interface IConfig {
     password: string;
     group: string;
     params: string;
-    conStatus?: boolean;
+    conStatus?: ConnectionStatus;
+}
+
+export enum ConnectionStatus{
+    Connected,
+    Connecting,
+    NotConnected
 }
 
 export interface ICommand {
@@ -74,7 +80,8 @@ export enum ProcessAction {
     Update,
     Delete,
     Submit,
-    Read
+    Read,
+    Copy
 }
 
 export enum DataToExport {
@@ -101,4 +108,10 @@ export interface ITableData {
 export interface TableCount {
     tableName: string | undefined,
     count: number
+}
+
+export interface IPort {
+    port: number,
+    isInUse: boolean,
+    timestamp: number | undefined
 }

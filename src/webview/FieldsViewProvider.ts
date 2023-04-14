@@ -41,12 +41,19 @@ export class FieldsViewProvider extends PanelViewProvider {
       this.logger.log("Command:", command);
       switch (command.action) {
         case CommandAction.UpdateColumns:
+          if (command.columns?.length === 0) {
+            break;
+          }
+
           if (
             this.tableNode !== undefined &&
             this.tableNode.cache !== undefined
           ) {
             this.tableNode.cache.selectedColumns = command.columns;
           }
+
+          this.context.globalState.update(`selectedColumns.${this.tableNode!.getFullName()}`, command.columns);
+
           this.logger.log(
             "this.tableNode.cache.selectedColumns:",
             command.columns
