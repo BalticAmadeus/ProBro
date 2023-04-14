@@ -102,3 +102,9 @@ export interface TableCount {
     tableName: string | undefined,
     count: number
 }
+
+export interface IPort {
+    port: number,
+    isInUse: boolean,
+    timestamp: number | undefined
+}
