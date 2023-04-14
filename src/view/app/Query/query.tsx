@@ -446,6 +446,15 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         }
     }
 
+    function getLoaded() {
+        if (recordColor === "red") {
+            return '> ' + loaded;
+        }
+        else {
+            return loaded;
+        }
+    }
+
     function getFooterTag() {
         if (isError) {
             return (
@@ -458,7 +467,7 @@ Description: ${errorObject.description}`}</pre>
             return (
                 <div>
                     <pre>{`Records in grid: `}
-                        <span style={{ color: recordColor }}>{loaded}</span>
+                        <span style={{ color: recordColor }}>{getLoaded()}</span>
                     </pre>
                     <pre>{`Recent records numbers: ${statisticsObject.recordsRetrieved}`}</pre>
                     <pre>{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
