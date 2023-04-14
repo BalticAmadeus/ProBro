@@ -15,9 +15,7 @@ import { IPort } from "./view/app/model";
 export function activate(context: vscode.ExtensionContext) {
   let extensionPort: number;
   Constants.context = context;
-
-<<<<<<< HEAD
-=======
+  const connectionUpdater = new DbConnectionUpdater();
   vscode.workspace.onDidChangeConfiguration((event) => {
     const affected = event.affectsConfiguration("ProBro.possiblePortsList");
     if (!affected) {
@@ -83,12 +81,8 @@ export function activate(context: vscode.ExtensionContext) {
   };
   
   setInterval(updatePortList, 30000);
-  
-    
-  const connectionUpdater = new DbConnectionUpdater();
   connectionUpdater.updateConnectionStatuses(context);
 
->>>>>>> origin/develop
   const fieldsProvider = new FieldsViewProvider(context, "fields");
   const fields = vscode.window.registerWebviewViewProvider(
     `${Constants.globalExtensionKey}-fields`,
@@ -122,8 +116,7 @@ export function activate(context: vscode.ExtensionContext) {
     { treeDataProvider: groupListProvider }
   );
 
-  const connectionUpdater = new DbConnectionUpdater();
-  connectionUpdater.updateConnectionStatusesWithRefreshCallback(context,groupListProvider);
+  connectionUpdater.updateConnectionStatusesWithRefreshCallback(context);
 
   groups.onDidChangeSelection((e) =>
     groupListProvider.onDidChangeSelection(e, tablesListProvider)
@@ -140,7 +133,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.refreshList`,
-      () => { connectionUpdater.updateConnectionStatusesWithRefreshCallback(context, groupListProvider);}
+      () => { connectionUpdater.updateConnectionStatusesWithRefreshCallback(context);}
     )
   );
 
