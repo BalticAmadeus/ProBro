@@ -577,7 +577,7 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
                 jsonRaw:Add(jsonRawRow).
                 jsonFormatted:Add(jsonFormattedRow).
                 iRemainingLength = iRemainingLength - 1.
-                IF iRemainingLength <= 0 AND NOW - dt >= iMinTime THEN LEAVE.
+                IF iRemainingLength <= 0 AND NOW - dtStart >= iMinTime THEN LEAVE.
                 IF iTimeOut > 0 AND NOW - dtStart >= iTimeOut THEN LEAVE.
             END.
         END.
