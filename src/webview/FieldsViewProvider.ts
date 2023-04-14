@@ -47,6 +47,9 @@ export class FieldsViewProvider extends PanelViewProvider {
           ) {
             this.tableNode.cache.selectedColumns = command.columns;
           }
+
+          this.context.globalState.update(`selectedColumns.${this.tableNode!.getFullName()}`, command.columns);
+
           this.logger.log(
             "this.tableNode.cache.selectedColumns:",
             command.columns
