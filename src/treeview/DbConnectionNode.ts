@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import path = require("path");
 import { INode } from "./INode";
-import { IConfig } from "../view/app/model";
+import { ConnectionStatus, IConfig } from "../view/app/model";
 import { ConnectionEditor } from "../webview/ConnectionEditor";
 
 export class DbConnectionNode implements INode {
@@ -25,9 +25,22 @@ export class DbConnectionNode implements INode {
         "..",
         "..",
         "resources/icon",
-        this.config.conStatus ? "progress_icon.svg" : "progress_icon_stop.svg",
+        this.iconChooser(),
       ),
     };
+  }
+
+  private iconChooser(){
+    switch (this.config.conStatus){
+      case ConnectionStatus.Connected:
+        return "progress_icon.svg";
+      case ConnectionStatus.NotConnected:
+        return "progress_icon_stop.svg";
+      case ConnectionStatus.Connecting:
+        return "loading.gif";
+      default:
+        return "progress_icon_stop.svg";
+    }
   }
 
   public async getChildren(): Promise<INode[]> {
