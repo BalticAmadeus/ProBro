@@ -80,7 +80,8 @@ export enum ProcessAction {
     Update,
     Delete,
     Submit,
-    Read
+    Read,
+    Copy
 }
 
 export enum DataToExport {
