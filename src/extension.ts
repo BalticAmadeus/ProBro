@@ -81,10 +81,6 @@ export function activate(context: vscode.ExtensionContext) {
   };
   
   setInterval(updatePortList, 30000);
-  
-    
-  const connectionUpdater = new DbConnectionUpdater();
-  connectionUpdater.updateConnectionStatuses(context);
 
   const fieldsProvider = new FieldsViewProvider(context, "fields");
   const fields = vscode.window.registerWebviewViewProvider(
@@ -118,6 +114,11 @@ export function activate(context: vscode.ExtensionContext) {
     `${Constants.globalExtensionKey}-databases`,
     { treeDataProvider: groupListProvider }
   );
+   
+  const connectionUpdater = new DbConnectionUpdater();
+  connectionUpdater.updateConnectionStatusesWithRefreshCallback(context, groupListProvider);
+
+
   groups.onDidChangeSelection((e) =>
     groupListProvider.onDidChangeSelection(e, tablesListProvider)
   );
