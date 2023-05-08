@@ -360,12 +360,62 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         prepareQuery();
     };
 
-    const handleKeyDown = (event) => {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            prepareQuery();
+    var input = document.getElementById('input');
+
+    const handleKeyDown = (e) => {
+        // if (e.key === "Enter") {
+        //     e.preventDefault();
+        //     prepareQuery();
+        // }
+        if (e.keyCode === 13) {
+            //addText();
+            e.preventDefault();
+            const selectedText = document.querySelector(".selected").textContent;
+
+            addText(input, selectedText);
+            createListener(document.getElementById('input'), selectedColumns);
+
         }
-    };
+        if (e.keyCode === 38) {
+            var selected = document.querySelector(".selected") as HTMLLIElement;
+            if (selected === null) {
+                document.querySelectorAll(".autocomplete-list li").item(0).classList.add("selected");
+                selected = document.querySelector(".selected") as HTMLLIElement;
+            }
+            else {
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
+                if (selected.previousElementSibling === null) {
+                    selected.parentElement.lastElementChild.classList.add("selected");
+                } else {
+                    selected.previousElementSibling.classList.add("selected");
+                }
+            }
+            selected.focus();
+        }
+        if (e.keyCode === 40) {
+            var selected = document.querySelector(".selected") as HTMLLIElement;
+            if (selected === null) {
+                document.querySelectorAll(".autocomplete-list li").item(0).classList.add("selected");
+                selected = document.querySelector(".selected") as HTMLLIElement;
+            }
+            else {
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
+
+                if (selected.nextElementSibling === null) {
+                    selected.parentElement.firstElementChild.classList.add("selected");
+
+                } else {
+                    selected.nextElementSibling.classList.add("selected");
+                }
+            }
+            selected.focus();
+        }
+    }
+
 
     function reloadData(loaded: number) {
         setLoaded(0);
@@ -545,38 +595,54 @@ Description: ${errorObject.description}`}</pre>
     const suggestions = document.querySelector("#column-list");
 
     function autocomplete(input, list) {
-        input.addEventListener('input', function () {
 
-            if (!this.value) { return; }
+        let wordArray = input.value.split(' ');
+        let lastWord = wordArray.pop();
 
-            let wordArray = this.value.split(' ');
-            let lastWord = wordArray.pop();
+        suggestions.innerHTML = "";
 
-            suggestions.innerHTML = "";
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].toUpperCase().includes(lastWord.toUpperCase()) || lastWord === null) {
 
-            for (let i = 0; i < list.length; i++) {
-                if (list[i].toUpperCase().includes(lastWord.toUpperCase())) {
+                const suggestion = document.createElement('li');
+                suggestion.innerHTML = list[i];
 
-                    const suggestion = document.createElement('li');
-                    suggestion.innerHTML = list[i];
+                suggestion.addEventListener('click', function () {
 
-                    suggestion.addEventListener('click', function () {
-                        input.value = '';
-                        for (let i = 0; i < wordArray.length; i++) {
-                            input.value += wordArray[i];
-                            input.value += ' ';
-                        }
-                        input.value += this.innerHTML;
+                    addText(input, this.innerHTML);
 
-                        suggestions.innerHTML = "";
-                    });
-                    suggestion.style.cursor = 'pointer';
+                    suggestions.innerHTML = "";
+                    document.getElementById("input").focus();
+                });
 
-                    suggestions.appendChild(suggestion);
-                }
+                suggestion.style.cursor = 'pointer';
+
+                suggestions.appendChild(suggestion);
             }
+        }
+    }
 
-        });
+    function addText(input, newText) {
+        let wordArray = input.value.split(' ');
+        wordArray.pop();
+        input.value = '';
+        for (let i = 0; i < wordArray.length; i++) {
+            input.value += wordArray[i];
+            input.value += ' ';
+        }
+        input.value += newText;
+        input.value += ' ';
+        setWherePhrase(input.value);
+    }
+
+    function createListener(input, list) {
+        input.addEventListener('input', autocomplete(input, list));
+    }
+
+    function hideSuggestions() {
+        setTimeout(() => {
+            suggestions.innerHTML = "";
+        }, 500);
     }
 
     return (
@@ -586,30 +652,32 @@ Description: ${errorObject.description}`}</pre>
                 <div className="content">
                     <form className="form" action="#">
                         <div className="connection-details">
-                            <form autoComplete="off">
-                                <div className="input-box">
-                                    <input
-                                        id="input"
-                                        className="textInput"
-                                        type="text"
-                                        placeholder="WHERE ..."
-                                        value={wherePhrase}
-                                        style={{ width: "370px" }}
-                                        onChange={(event) => {
-                                            autocomplete(document.getElementById('input'), selectedColumns);
-                                            setWherePhrase(event.target.value);
-                                        }}
-                                        onKeyDown={handleKeyDown}
-                                    />
-                                    <ul className="autocomplete-list" id="column-list"></ul>
-                                    <ProBroButton
-                                        ref={(input) => (inputQuery = input)}
-                                        startIcon={<PlayArrowTwoToneIcon />}
-                                        onClick={onQueryClick}
-                                    >Query</ProBroButton>
-                                </div>
-                            </form>
+                            <div className="input-box">
+                                <input
+                                    id="input"
+                                    className="textInput"
+                                    type="text"
+                                    placeholder="WHERE ..."
+                                    value={wherePhrase}
+                                    style={{ width: "370px" }}
+                                    onFocus={() => {
+                                        createListener(document.getElementById('input'), selectedColumns);
+                                    }}
+                                    onBlur={hideSuggestions}
+                                    onChange={(event) => {
+                                        createListener(document.getElementById('input'), selectedColumns);
+                                        setWherePhrase(event.target.value);
+                                    }}
+                                    onKeyDown={handleKeyDown}
+                                />
+                                <ProBroButton
+                                    ref={(input) => (inputQuery = input)}
+                                    startIcon={<PlayArrowTwoToneIcon />}
+                                    onClick={onQueryClick}
+                                >Query</ProBroButton>
+                            </div>
                         </div>
+                        <ul className="autocomplete-list" id="column-list"></ul>
                     </form>
                     <div className="query-options">
                         <ExportData
