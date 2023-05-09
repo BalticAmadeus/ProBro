@@ -11,7 +11,13 @@ export interface IConfig {
     password: string;
     group: string;
     params: string;
-    conStatus?: boolean;
+    conStatus?: ConnectionStatus;
+}
+
+export enum ConnectionStatus{
+    Connected,
+    Connecting,
+    NotConnected
 }
 
 export interface ICommand {
@@ -88,6 +94,7 @@ export interface ITableData {
     wherePhrase?: string,
     start: number,
     pageLength: number,
+    minTime: number,
     lastRowID: string,
     sortColumns?: SortColumn[],
     filters?: any,
@@ -101,4 +108,10 @@ export interface ITableData {
 export interface TableCount {
     tableName: string | undefined,
     count: number
+}
+
+export interface IPort {
+    port: number,
+    isInUse: boolean,
+    timestamp: number | undefined
 }
