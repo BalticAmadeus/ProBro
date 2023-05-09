@@ -363,11 +363,13 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     var input = document.getElementById('input');
 
     const handleKeyDown = (e) => {
-        // if (e.key === "Enter") {
-        //     e.preventDefault();
-        //     prepareQuery();
-        // }
-        if (e.keyCode === 13) {
+        var selected = document.querySelector(".selected") as HTMLLIElement;
+        if (e.key === "Enter" && selected === null) {
+            e.preventDefault();
+            prepareQuery();
+        }
+
+        if (e.key === "Enter" && selected !== null) {
             //addText();
             e.preventDefault();
             const selectedText = document.querySelector(".selected").textContent;
@@ -376,11 +378,10 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
             createListener(document.getElementById('input'), selectedColumns);
 
         }
+
         if (e.keyCode === 38) {
-            var selected = document.querySelector(".selected") as HTMLLIElement;
             if (selected === null) {
                 document.querySelectorAll(".autocomplete-list li").item(0).classList.add("selected");
-                selected = document.querySelector(".selected") as HTMLLIElement;
             }
             else {
                 document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
@@ -392,13 +393,14 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                     selected.previousElementSibling.classList.add("selected");
                 }
             }
+            selected = document.querySelector(".selected") as HTMLLIElement;
+            selected.scrollIntoView();
             selected.focus();
         }
+
         if (e.keyCode === 40) {
-            var selected = document.querySelector(".selected") as HTMLLIElement;
             if (selected === null) {
                 document.querySelectorAll(".autocomplete-list li").item(0).classList.add("selected");
-                selected = document.querySelector(".selected") as HTMLLIElement;
             }
             else {
                 document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
@@ -412,10 +414,11 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                     selected.nextElementSibling.classList.add("selected");
                 }
             }
+            selected = document.querySelector(".selected") as HTMLLIElement;
+            selected.scrollIntoView();
             selected.focus();
         }
     }
-
 
     function reloadData(loaded: number) {
         setLoaded(0);
@@ -595,9 +598,7 @@ Description: ${errorObject.description}`}</pre>
     const suggestions = document.querySelector("#column-list");
 
     function autocomplete(input, list) {
-
-        let wordArray = input.value.split(' ');
-        let lastWord = wordArray.pop();
+        let lastWord = input.value.split(' ').pop();
 
         suggestions.innerHTML = "";
 
