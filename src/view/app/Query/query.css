@@ -93,7 +93,7 @@ body.vscode-dark .rdg-row-even {
     width: 400px;
     overflow: auto;
     max-height: 90px;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: var(--vscode-editorWidget-background);
 
 }
 
@@ -103,5 +103,5 @@ body.vscode-dark .rdg-row-even {
 }
 
 .autocomplete-list li.selected {
-    background-color: rgb(255, 0, 0);
+    background-color: var(--vscode-list-activeSelectionBackground);
 }

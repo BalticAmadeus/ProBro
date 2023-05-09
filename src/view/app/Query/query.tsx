@@ -351,7 +351,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
             "",
             sortColumns,
             filters,
-            configuration.batchMaxTimeout /*ms for data retrieval*/
+            configuration.batchMaxTimeout, /*ms for data retrieval*/
             configuration.batchMinTimeout
         );
     };
@@ -371,7 +371,6 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         }
 
         if (e.key === "Enter" && selected !== null) {
-            //addText();
             e.preventDefault();
             const selectedText = document.querySelector(".selected").textContent;
 
@@ -621,14 +620,6 @@ Description: ${errorObject.description}`}</pre>
                 const suggestion = document.createElement('li');
                 suggestion.innerHTML = list[i];
 
-                suggestion.addEventListener('click', function () {
-
-                    addText(input, this.innerHTML);
-
-                    suggestions.innerHTML = "";
-                    document.getElementById("input").focus();
-                });
-
                 suggestion.style.cursor = 'pointer';
 
                 suggestions.appendChild(suggestion);
@@ -649,14 +640,35 @@ Description: ${errorObject.description}`}</pre>
         setWherePhrase(input.value);
     }
 
+    function mouseoverListener() {
+        document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+            item.addEventListener("mouseover", function () {
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
+                this.classList.add("selected");
+            });
+            item.addEventListener("click", function () {
+                addText(input, this.innerHTML);
+                console.log(selectedColumns);
+                document.getElementById('input').focus();
+                setTimeout(() => {
+                    createListener(document.getElementById('input'), selectedColumns);
+                }, 301);
+
+            });
+        });
+    }
+
     function createListener(input, list) {
         input.addEventListener('input', autocomplete(input, list));
+        mouseoverListener();
     }
 
     function hideSuggestions() {
         setTimeout(() => {
             suggestions.innerHTML = "";
-        }, 500);
+        }, 300);
     }
 
     return (
