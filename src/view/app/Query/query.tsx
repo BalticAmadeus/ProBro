@@ -361,12 +361,64 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         prepareQuery();
     };
 
-    const handleKeyDown = (event) => {
-        if (event.key === "Enter") {
-            event.preventDefault();
+    var input = document.getElementById('input');
+
+    const handleKeyDown = (e) => {
+        var selected = document.querySelector(".selected") as HTMLLIElement;
+        if (e.key === "Enter" && selected === null) {
+            e.preventDefault();
             prepareQuery();
         }
-    };
+
+        if (e.key === "Enter" && selected !== null) {
+            e.preventDefault();
+            const selectedText = document.querySelector(".selected").textContent;
+
+            addText(input, selectedText);
+            createListener(document.getElementById('input'), selectedColumns);
+
+        }
+
+        if (e.keyCode === 38) {
+            if (selected === null) {
+                document.querySelectorAll(".autocomplete-list li").item(0).classList.add("selected");
+            }
+            else {
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
+                if (selected.previousElementSibling === null) {
+                    selected.parentElement.lastElementChild.classList.add("selected");
+                } else {
+                    selected.previousElementSibling.classList.add("selected");
+                }
+            }
+            selected = document.querySelector(".selected") as HTMLLIElement;
+            selected.scrollIntoView();
+            selected.focus();
+        }
+
+        if (e.keyCode === 40) {
+            if (selected === null) {
+                document.querySelectorAll(".autocomplete-list li").item(0).classList.add("selected");
+            }
+            else {
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
+
+                if (selected.nextElementSibling === null) {
+                    selected.parentElement.firstElementChild.classList.add("selected");
+
+                } else {
+                    selected.nextElementSibling.classList.add("selected");
+                }
+            }
+            selected = document.querySelector(".selected") as HTMLLIElement;
+            selected.scrollIntoView();
+            selected.focus();
+        }
+    }
 
     function reloadData(loaded: number) {
         setLoaded(0);
@@ -508,6 +560,7 @@ Description: ${errorObject.description}`}</pre>
     const copyRecord = () => {
         processRecord(ProcessAction.Copy);
     };
+
     const processRecord = (mode: ProcessAction) => {
         setAction(mode);
         const rowids: string[] = [];
@@ -554,6 +607,70 @@ Description: ${errorObject.description}`}</pre>
         }
     }
 
+    const suggestions = document.querySelector("#column-list");
+
+    function autocomplete(input, list) {
+        let lastWord = input.value.split(' ').pop();
+
+        suggestions.innerHTML = "";
+
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].toUpperCase().includes(lastWord.toUpperCase()) || lastWord === null) {
+
+                const suggestion = document.createElement('li');
+                suggestion.innerHTML = list[i];
+
+                suggestion.style.cursor = 'pointer';
+
+                suggestions.appendChild(suggestion);
+            }
+        }
+    }
+
+    function addText(input, newText) {
+        let wordArray = input.value.split(' ');
+        wordArray.pop();
+        input.value = '';
+        for (let i = 0; i < wordArray.length; i++) {
+            input.value += wordArray[i];
+            input.value += ' ';
+        }
+        input.value += newText;
+        input.value += ' ';
+        setWherePhrase(input.value);
+    }
+
+    function mouseoverListener() {
+        document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+            item.addEventListener("mouseover", function () {
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
+                this.classList.add("selected");
+            });
+            item.addEventListener("click", function () {
+                addText(input, this.innerHTML);
+                console.log(selectedColumns);
+                document.getElementById('input').focus();
+                setTimeout(() => {
+                    createListener(document.getElementById('input'), selectedColumns);
+                }, 301);
+
+            });
+        });
+    }
+
+    function createListener(input, list) {
+        input.addEventListener('input', autocomplete(input, list));
+        mouseoverListener();
+    }
+
+    function hideSuggestions() {
+        setTimeout(() => {
+            suggestions.innerHTML = "";
+        }, 300);
+    }
+
     return (
         <React.Fragment>
             <div className="container">
@@ -563,12 +680,18 @@ Description: ${errorObject.description}`}</pre>
                         <div className="connection-details">
                             <div className="input-box">
                                 <input
+                                    id="input"
                                     className="textInput"
                                     type="text"
                                     placeholder="WHERE ..."
                                     value={wherePhrase}
                                     style={{ width: "370px" }}
+                                    onFocus={() => {
+                                        createListener(document.getElementById('input'), selectedColumns);
+                                    }}
+                                    onBlur={hideSuggestions}
                                     onChange={(event) => {
+                                        createListener(document.getElementById('input'), selectedColumns);
                                         setWherePhrase(event.target.value);
                                     }}
                                     onKeyDown={handleKeyDown}
@@ -580,6 +703,7 @@ Description: ${errorObject.description}`}</pre>
                                 >Query</ProBroButton>
                             </div>
                         </div>
+                        <ul className="autocomplete-list" id="column-list"></ul>
                     </form>
                     <div className="query-options">
                         <ExportData
@@ -614,7 +738,7 @@ Description: ${errorObject.description}`}</pre>
                         ></UpdatePopup>
                     </div>
                 </div>
-            </div>
+            </div >
             <DataGrid
                 columns={selected}
                 rows={isFormatted ? formattedRows : rawRows}
@@ -636,7 +760,7 @@ Description: ${errorObject.description}`}</pre>
             ></DataGrid>
             {getFooterTag()}
             {isLoading && <div>Loading more rows...</div>}
-        </React.Fragment>
+        </React.Fragment >
     );
 }
 
