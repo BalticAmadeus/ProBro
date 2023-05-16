@@ -351,7 +351,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
             "",
             sortColumns,
             filters,
-            configuration.batchMaxTimeout /*ms for data retrieval*/
+            configuration.batchMaxTimeout, /*ms for data retrieval*/
             configuration.batchMinTimeout
         );
     };
@@ -468,12 +468,12 @@ Description: ${errorObject.description}`}</pre>
             );
         } else if (isDataRetrieved) {
             return (
-                <div>
-                    <pre>{`Records in grid: `}
+                <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
+                    <pre style={{ marginRight: "auto" }}>{`Records in grid:`}
                         <span style={{ color: recordColor }}>{getLoaded()}</span>
                     </pre>
-                    <pre>{`Recent records numbers: ${statisticsObject.recordsRetrieved}`}</pre>
-                    <pre>{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
+                    <pre style={{ marginLeft: "auto" }}>{`Recent records numbers: ${statisticsObject.recordsRetrieved}`}</pre>
+                    <pre style={{ marginLeft: "auto" }}>{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 </div>
             );
         } else {
