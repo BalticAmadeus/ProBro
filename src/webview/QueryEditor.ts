@@ -10,205 +10,215 @@ import { DumpFileFormatter } from "./DumpFileFormatter";
 import { Logger } from "../common/Logger";
 
 export class QueryEditor {
-  private readonly panel: vscode.WebviewPanel | undefined;
-  private readonly extensionPath: string;
-  private disposables: vscode.Disposable[] = [];
-  public tableName: string;
-  private fieldsProvider: FieldsViewProvider;
-  private readonly configuration = vscode.workspace.getConfiguration("ProBro");
-  private logger = new Logger(this.configuration.get("logging.node")!);
+    private readonly panel: vscode.WebviewPanel | undefined;
+    private readonly extensionPath: string;
+    private disposables: vscode.Disposable[] = [];
+    public tableName: string;
+    private fieldsProvider: FieldsViewProvider;
+    private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+    private logger = new Logger(this.configuration.get("logging.node")!);
 
-  constructor(
-    private context: vscode.ExtensionContext,
-    private tableNode: TableNode,
-    private tableListProvider: TablesListProvider,
-    private fieldProvider: FieldsViewProvider
-  ) {
-    this.extensionPath = context.asAbsolutePath("");
-    //        this.tableNode = this.tableListProvider.node;
+    constructor(
+        private context: vscode.ExtensionContext,
+        private tableNode: TableNode,
+        private tableListProvider: TablesListProvider,
+        private fieldProvider: FieldsViewProvider
+    ) {
+        this.extensionPath = context.asAbsolutePath("");
+        //        this.tableNode = this.tableListProvider.node;
 
-    this.tableName = tableNode.tableName;
-    this.fieldsProvider = fieldProvider;
+        this.tableName = tableNode.tableName;
+        this.fieldsProvider = fieldProvider;
 
-    this.panel = vscode.window.createWebviewPanel(
-      "queryOETable", // Identifies the type of the webview. Used internally
-      `${this.tableListProvider.config?.label}.${this.tableNode.tableName}`, // Title of the panel displayed to the user
-      vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-      {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-        localResourceRoots: [
-          vscode.Uri.file(path.join(context.asAbsolutePath(""), "out")),
-        ],
-      }
-    );
+        this.panel = vscode.window.createWebviewPanel(
+            "queryOETable", // Identifies the type of the webview. Used internally
+            `${this.tableListProvider.config?.label}.${this.tableNode.tableName}`, // Title of the panel displayed to the user
+            vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+            {
+                enableScripts: true,
+                retainContextWhenHidden: true,
+                localResourceRoots: [
+                    vscode.Uri.file(path.join(context.asAbsolutePath(""), "out")),
+                ],
+            }
+        );
 
-    this.panel.iconPath = {
-      dark: vscode.Uri.file(path.join( this.extensionPath, "resources", "icon", "query-icon-dark.svg")),
-      light: vscode.Uri.file(path.join( this.extensionPath, "resources", "icon", "query-icon-light.svg"))
-    };
+        this.panel.iconPath = {
+            dark: vscode.Uri.file(path.join(this.extensionPath, "resources", "icon", "query-icon-dark.svg")),
+            light: vscode.Uri.file(path.join(this.extensionPath, "resources", "icon", "query-icon-light.svg"))
+        };
 
-    if (this.panel) {
-      this.panel.webview.html = this.getWebviewContent({
-        columns: [],
-        data: [],
-      });
+        if (this.panel) {
+            this.panel.webview.html = this.getWebviewContent({
+                columns: [],
+                data: [],
+            });
+        }
+
+        this.panel.webview.onDidReceiveMessage(
+            (command: ICommand) => {
+                this.logger.log("command:", command);
+                switch (command.action) {
+                    case CommandAction.Query:
+                        if (this.tableListProvider.config) {
+
+                            DatabaseProcessor.getInstance()
+                                .getTableData(
+                                    this.tableListProvider.config,
+                                    this.tableNode.tableName,
+                                    command.params
+                                )
+                                .then((oe) => {
+                                    if (this.panel) {
+                                        const obj = {
+                                            id: command.id,
+                                            command: "data",
+                                            columns: tableNode.cache?.selectedColumns,
+                                            data: oe,
+                                        };
+                                        this.logger.log("data:", obj);
+                                        this.panel?.webview.postMessage(obj);
+                                    }
+                                });
+                            break;
+                        }
+                    case CommandAction.CRUD:
+                        if (this.tableListProvider.config) {
+                            DatabaseProcessor.getInstance()
+                                .getTableData(
+                                    this.tableListProvider.config,
+                                    this.tableNode.tableName,
+                                    command.params
+                                )
+                                .then((oe) => {
+                                    if (this.panel) {
+                                        const obj = {
+                                            id: command.id,
+                                            command: "crud",
+                                            data: oe,
+                                        };
+                                        this.logger.log("data:", obj);
+                                        this.panel?.webview.postMessage(obj);
+                                    }
+
+                                });
+                            break;
+                        }
+                    case CommandAction.Submit:
+                        if (this.tableListProvider.config) {
+                            DatabaseProcessor.getInstance()
+                                .submitTableData(
+                                    this.tableListProvider.config,
+                                    this.tableNode.tableName,
+                                    command.params
+                                )
+                                .then((oe) => {
+                                    if (this.panel) {
+                                        const obj = {
+                                            id: command.id,
+                                            command: "submit",
+                                            data: oe,
+                                        };
+                                        this.logger.log("data:", obj);
+                                        if (obj.data.description != null) {
+                                            if (obj.data.description == "")
+                                                vscode.window.showErrorMessage("Database Error: Trigger canceled action");
+                                            else
+                                                vscode.window.showErrorMessage("Database Error: " + obj.data.description);
+                                        }
+                                        else {
+                                            vscode.window.showInformationMessage("Action was successful");
+                                        }
+                                        this.panel?.webview.postMessage(obj);
+                                    }
+
+                                });
+                            break;
+                        }
+                    case CommandAction.Export:
+                        if (this.tableListProvider.config) {
+                            DatabaseProcessor.getInstance()
+                                .getTableData(
+                                    this.tableListProvider.config,
+                                    this.tableNode.tableName,
+                                    command.params
+                                )
+                                .then((oe) => {
+                                    if (this.panel) {
+                                        let exportData = oe;
+                                        if (command.params?.exportType === "dumpFile") {
+                                            const dumpFileFormatter = new DumpFileFormatter();
+                                            dumpFileFormatter.formatDumpFile(
+                                                oe,
+                                                this.tableNode.tableName,
+                                                this.tableListProvider.config!.label
+                                            );
+                                            exportData = dumpFileFormatter.getDumpFile();
+                                        }
+                                        const obj = {
+                                            id: command.id,
+                                            command: "export",
+                                            tableName: this.tableNode.tableName,
+                                            data: exportData,
+                                            format: command.params!.exportType,
+                                        };
+                                        this.logger.log("data:", obj);
+                                        this.panel?.webview.postMessage(obj);
+                                    }
+                                });
+                        }
+                        break;
+                }
+            },
+            undefined,
+            context.subscriptions
+        );
+
+        this.fieldsProvider.addQueryEditor(this);
+
+        this.panel.onDidDispose(
+            () => {
+                // When the panel is closed, cancel any future updates to the webview content
+                this.fieldsProvider.removeQueryEditor(this);
+            },
+            null,
+            context.subscriptions
+        );
+    }
+    // something like this but for focus column
+    public updateFields() {
+        const obj = {
+            command: "columns",
+            columns: this.tableNode.cache?.selectedColumns,
+        };
+        this.logger.log("updateFields:", obj);
+        this.panel?.webview.postMessage(obj);
     }
 
-    this.panel.webview.onDidReceiveMessage(
-      (command: ICommand) => {
-        this.logger.log("command:", command);
-        switch (command.action) {
-          case CommandAction.Query:
-            if (this.tableListProvider.config) {
+    public focusColumn() {
+        const obj = {
+            command: "focus",
+            columns: this.tableNode.cache?.focusColumn,
+        };
+        this.logger.log("focusColumn:", obj);
+        console.log("focusColumn:", obj);
+        this.panel?.webview.postMessage(obj);
+    }
 
-              DatabaseProcessor.getInstance()
-                .getTableData(
-                  this.tableListProvider.config,
-                  this.tableNode.tableName,
-                  command.params
-                )
-                .then((oe) => {
-                  if (this.panel) {
-                    const obj = {
-                      id: command.id,
-                      command: "data",
-                      columns: tableNode.cache?.selectedColumns,
-                      data: oe,
-                    };
-                    this.logger.log("data:", obj);
-                    this.panel?.webview.postMessage(obj);
-                  } 
-                });
-              break;
-            }
-          case CommandAction.CRUD:
-            if (this.tableListProvider.config) {
-              DatabaseProcessor.getInstance()
-                .getTableData(
-                  this.tableListProvider.config,
-                  this.tableNode.tableName,
-                  command.params
-                )
-                .then((oe) => {
-                  if (this.panel) {
-                    const obj = {
-                      id: command.id,
-                      command: "crud",
-                      data: oe,
-                    };
-                    this.logger.log("data:", obj);
-                    this.panel?.webview.postMessage(obj);
-                  }
-                    
-                });
-              break;
-            }
-          case CommandAction.Submit:
-            if (this.tableListProvider.config) {
-              DatabaseProcessor.getInstance()
-                .submitTableData(
-                  this.tableListProvider.config,
-                  this.tableNode.tableName,
-                  command.params
-                )
-                .then((oe) => {
-                  if (this.panel) {
-                    const obj = {
-                      id: command.id,
-                      command: "submit",
-                      data: oe,
-                    };
-                    this.logger.log("data:", obj);
-                    if (obj.data.description != null){
-                      if (obj.data.description == "")
-                        vscode.window.showErrorMessage("Database Error: Trigger canceled action");
-                      else
-                        vscode.window.showErrorMessage("Database Error: " + obj.data.description);
-                    }
-                    else{
-                      vscode.window.showInformationMessage("Action was successful");
-                    }
-                    this.panel?.webview.postMessage(obj);
-                  }
-                    
-                });
-              break;
-            }
-          case CommandAction.Export:
-            if (this.tableListProvider.config) {
-              DatabaseProcessor.getInstance()
-                .getTableData(
-                  this.tableListProvider.config,
-                  this.tableNode.tableName,
-                  command.params
-                )
-                .then((oe) => {
-                  if (this.panel) {
-                    let exportData = oe;
-                    if (command.params?.exportType === "dumpFile") {
-                      const dumpFileFormatter = new DumpFileFormatter();
-                      dumpFileFormatter.formatDumpFile(
-                        oe,
-                        this.tableNode.tableName,
-                        this.tableListProvider.config!.label
-                      );
-                      exportData = dumpFileFormatter.getDumpFile();
-                    }
-                    const obj = {
-                      id: command.id,
-                      command: "export",
-                      tableName: this.tableNode.tableName,
-                      data: exportData,
-                      format: command.params!.exportType,
-                    };
-                    this.logger.log("data:", obj);
-                    this.panel?.webview.postMessage(obj);
-                  }
-                });
-            }
-            break;
-        }
-      },
-      undefined,
-      context.subscriptions
-    );
+    private getWebviewContent(tableData: IOETableData): string {
+        // Local path to main script run in the webview
+        const reactAppPathOnDisk = vscode.Uri.file(
+            path.join(
+                vscode.Uri.file(
+                    this.context.asAbsolutePath(path.join("out/view/app", "query.js"))
+                ).fsPath
+            )
+        );
 
-    this.fieldsProvider.addQueryEditor(this);
+        const reactAppUri = this.panel?.webview.asWebviewUri(reactAppPathOnDisk);
+        const cspSource = this.panel?.webview.cspSource;
 
-    this.panel.onDidDispose(
-      () => {
-        // When the panel is closed, cancel any future updates to the webview content
-        this.fieldsProvider.removeQueryEditor(this);
-      },
-      null,
-      context.subscriptions
-    );
-  }
-
-  public updateFields() {
-    const obj = {
-      command: "columns",
-      columns: this.tableNode.cache?.selectedColumns,
-    };
-    this.logger.log("updateFields:", obj);
-    this.panel?.webview.postMessage(obj);
-  }
-
-  private getWebviewContent(tableData: IOETableData): string {
-    // Local path to main script run in the webview
-    const reactAppPathOnDisk = vscode.Uri.file(
-      path.join(
-        vscode.Uri.file(
-          this.context.asAbsolutePath(path.join("out/view/app", "query.js"))
-        ).fsPath
-      )
-    );
-
-    const reactAppUri = this.panel?.webview.asWebviewUri(reactAppPathOnDisk);
-    const cspSource = this.panel?.webview.cspSource;
-
-    return `<!DOCTYPE html>
+        return `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -232,5 +242,5 @@ export class QueryEditor {
         <script src="${reactAppUri}"></script>
     </body>
     </html>`;
-  }
+    }
 }

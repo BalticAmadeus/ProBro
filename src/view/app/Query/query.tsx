@@ -113,6 +113,10 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         const message = event.data;
         logger.log("got query data", message);
         switch (message.command) {
+            case "focus":
+                console.log("in query");
+
+                break;
             case "columns":
                 setSelectedColumns([...message.columns]);
                 break;
@@ -650,7 +654,6 @@ Description: ${errorObject.description}`}</pre>
             });
             item.addEventListener("click", function () {
                 addText(input, this.innerHTML);
-                console.log(selectedColumns);
                 document.getElementById('input').focus();
                 setTimeout(() => {
                     createListener(document.getElementById('input'), selectedColumns);

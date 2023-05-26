@@ -14,7 +14,7 @@ export interface IConfig {
     conStatus?: ConnectionStatus;
 }
 
-export enum ConnectionStatus{
+export enum ConnectionStatus {
     Connected,
     Connecting,
     NotConnected
@@ -41,7 +41,8 @@ export enum CommandAction {
     Export,
     CRUD,
     Submit,
-    UpdateColumns
+    UpdateColumns,
+    FocusColumn
 }
 
 export interface FieldRow {
@@ -72,7 +73,8 @@ export interface IndexRow {
 export interface TableDetails {
     fields: FieldRow[],
     indexes: IndexRow[],
-    selectedColumns?: string[]
+    selectedColumns?: string[],
+    focusColumn?: string[]
 }
 
 export enum ProcessAction {
