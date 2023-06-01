@@ -1,6 +1,7 @@
 import * as React from "react";
 import { IOETableData } from "../../../db/oe";
-import DataGrid, { SortColumn, SelectColumn, CopyEvent } from "react-data-grid";
+import DataGrid, { SortColumn, SelectColumn, CopyEvent, DataGridHandle } from "react-data-grid";
+
 
 import { CommandAction, ICommand, ProcessAction } from "../model";
 import ExportData from "./Export";
@@ -114,8 +115,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         logger.log("got query data", message);
         switch (message.command) {
             case "focus":
-                console.log("in query");
-
+                focusOnColumn(message.columns);
                 break;
             case "columns":
                 setSelectedColumns([...message.columns]);
@@ -605,6 +605,18 @@ Description: ${errorObject.description}`}</pre>
     };
     const selected = filterColumns();
 
+    const gridRef = React.useRef<DataGridHandle>(null);
+
+    function focusOnColumn(focusColumn) {
+
+        var selectedColumn = selected.find(column => column.name === focusColumn.name);
+
+        if (selectedColumn) {
+            var columnIdx = selected.indexOf(selectedColumn);
+            gridRef.current!.scrollToColumn(columnIdx);
+        }
+    }
+
     function handleCopy({ sourceRow, sourceColumnKey }: CopyEvent<any>): void {
         if (window.isSecureContext) {
             navigator.clipboard.writeText(sourceRow[sourceColumnKey]);
@@ -743,6 +755,7 @@ Description: ${errorObject.description}`}</pre>
                 </div>
             </div >
             <DataGrid
+                ref={gridRef}
                 columns={selected}
                 rows={isFormatted ? formattedRows : rawRows}
                 onScroll={handleScroll}

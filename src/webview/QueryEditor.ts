@@ -201,7 +201,6 @@ export class QueryEditor {
             columns: this.tableNode.cache?.focusColumn,
         };
         this.logger.log("focusColumn:", obj);
-        console.log("focusColumn:", obj);
         this.panel?.webview.postMessage(obj);
     }
 
