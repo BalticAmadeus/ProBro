@@ -57,14 +57,12 @@ body.vscode-dark .rdg-row-even {
     text-align: right;
 }
 
-.content {
-    display: inline-flex;
-}
 
 .query-options {
     position: relative;
     width: fit-content;
-    margin-left: auto;
+    display: inline-flex;
+    margin-top: 0px;
     margin-right: 10px;
 }
 

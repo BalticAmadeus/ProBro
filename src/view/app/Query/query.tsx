@@ -59,6 +59,8 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
     const [rowID, setRowID] = React.useState("");
     const [scrollHeight, setScrollHeight] = React.useState(() => 0);
+    const [isWindowSmall, setIsWindowSmall] = React.useState(false);
+
 
     const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
         []
@@ -108,6 +110,20 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
             window.removeEventListener("resize", windowResize);
         };
     }, []);
+
+    React.useEffect(() => {
+        const handleResize = () => {
+            setIsWindowSmall(window.innerWidth <= 628); // Adjust the breakpoint value as needed
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
 
     const messageEvent = (event) => {
         const message = event.data;
@@ -524,9 +540,16 @@ Description: ${errorObject.description}`}</pre>
                     <pre style={{ marginRight: "auto" }}>{`Records in grid:`}
                         <span style={{ color: recordColor }}>{getLoaded()}</span>
                     </pre>
-                    <pre style={{ marginLeft: "auto" }}>{`Recent records numbers: ${statisticsObject.recordsRetrieved}`}</pre>
+                    {isWindowSmall ? null : (
+                        <pre style={{ marginLeft: "auto" }}>
+                            {`Recent records numbers: ${statisticsObject.recordsRetrieved}`}
+                        </pre>
+                    )}
                     <pre style={{ marginLeft: "auto" }}>{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 </div>
+
+
+
             );
         } else {
             return <></>;
@@ -696,11 +719,22 @@ Description: ${errorObject.description}`}</pre>
                                     }}
                                     onKeyDown={handleKeyDown}
                                 />
-                                <ProBroButton
-                                    ref={(input) => (inputQuery = input)}
-                                    startIcon={<PlayArrowTwoToneIcon />}
-                                    onClick={onQueryClick}
-                                >Query</ProBroButton>
+
+                                {isWindowSmall ? (
+                                    <ProBroButton
+                                        ref={(input) => (inputQuery = input)}
+                                        startIcon={<PlayArrowTwoToneIcon />}
+                                        onClick={onQueryClick}
+                                    />
+                                ) : (
+                                    <ProBroButton
+                                        ref={(input) => (inputQuery = input)}
+                                        startIcon={<PlayArrowTwoToneIcon />}
+                                        onClick={onQueryClick}
+                                    >
+                                        Query
+                                    </ProBroButton>
+                                )}
                             </div>
                         </div>
                         <ul className="autocomplete-list" id="column-list"></ul>
