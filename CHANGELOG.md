@@ -1,5 +1,14 @@
 # Change Log
+## 1.3.0 (2023-06-20)
 
+### Changed
+- Fixed deleting connections
+- Fixed various small bugs
+
+### Added
+- Field name suggestions
+- Create a copy of record
+- Possibility to have multiple vs code instances
 ## 1.2.2 (2023-03-03)
 ### Changed
 - Fixed issue with writing socket data

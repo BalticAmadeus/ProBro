@@ -29,10 +29,11 @@ This open source project is in active development. Our goal is to simplify the a
   - Lazy loading
   - JSON/OE formatting
   - Custom queries
+  - Suggest field names (*new*)
   - View record on double-click
 - Export
   - Formats
-    - .D file (*new*)
+    - .D file
     - JSON
     - Excel
     - CSV
@@ -42,9 +43,9 @@ This open source project is in active development. Our goal is to simplify the a
     - Filtered records
 - CRUD operations
   - Delete multiple
-  - Insert
+  - Insert/copy (*new*)
   - Update
-- Extension settings configuration (*new*)
+- Extension settings configuration
 - Supported OS
   - Windows
   - Linux

@@ -4,6 +4,7 @@ import { ICommand, CommandAction, IConfig } from "../view/app/model";
 import { Constants } from "../common/Constants";
 import { DatabaseProcessor } from "../db/DatabaseProcessor";
 import { Logger } from "../common/Logger";
+import { v4 as uuid } from 'uuid';
 
 export class ConnectionEditor {
     private readonly panel: vscode.WebviewPanel | undefined;
@@ -96,7 +97,7 @@ export class ConnectionEditor {
         const cspSource = this.panel?.webview.cspSource;
 
         let config: IConfig = {
-            id: "Connection",
+            id: uuid(),
             label: "",
             name: "",
             description: "",
