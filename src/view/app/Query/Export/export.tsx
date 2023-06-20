@@ -9,12 +9,12 @@ import { Logger } from "../../../../common/Logger";
 
 
 export default function ExportPopup({
-  wherePhrase,
-  vscode,
-  sortColumns,
-  filters,
-  selectedRows,
-  logValue
+    wherePhrase,
+    vscode,
+    sortColumns,
+    filters,
+    selectedRows,
+    logValue
 }) {
   const [exportFormat, setExportFormat] = React.useState("");
   const [radioSelection, setRadioSelection] = React.useState("");
@@ -28,95 +28,98 @@ export default function ExportPopup({
 
 
 
-  const exportList = ["dumpFile", "json", "csv", "xls"];
+    const exportList = ["dumpFile", "json", "csv", "xls"];
 
-  const getData = () => {
-    console.log("get data");
-    const command: ICommand = {
-      id: "GetData",
-      action: CommandAction.Export,
-    };
-    switch (radioSelection) {
-      case DataToExport[DataToExport.Table]:
-        command.params = {
-          wherePhrase: wherePhrase,
-          start: 0,
-          pageLength: 100000,
-          lastRowID: "",
-          sortColumns: sortColumns,
-          exportType: exportFormat,
-          timeOut: 0,
+    const getData = () => {
+        console.log("get data");
+        const command: ICommand = {
+            id: "GetData",
+            action: CommandAction.Export,
         };
-        break;
-      case DataToExport[DataToExport.Filter]:
-        command.params = {
-          wherePhrase: wherePhrase,
-          start: 0,
-          pageLength: 100000,
-          lastRowID: "",
-          sortColumns: sortColumns,
-          filters: filters,
-          exportType: exportFormat,
-          timeOut: 0
-        };
-        break;
-      case DataToExport[DataToExport.Selection]:
-        const rowids: string[] = [];
-        selectedRows.forEach((element) => {
-          rowids.push(element);
-        });
-        command.params = {
-          wherePhrase: wherePhrase,
-          start: 0,
-          pageLength: 100000,
-          lastRowID: "",
-          sortColumns: sortColumns,
-          filters: filters,
-          exportType: exportFormat,
-          timeOut: 0,
-          crud: rowids
-        };
-        break;
-      default:
-        break;
-    }
-    logger.log("export request", command);
-    vscode.postMessage(command);
-  };
-
-  const handleMessage = (event) => {
-    const message = event.data;
-    logger.log("got export data", message);
-    switch (message.command) {
-      case "export":
-        if (message.format === "dumpFile") {
-          logger.log("dumpfile export got.");
-          exportFromJSON({
-            data: message.data,
-            fileName: message.tableName,
-            exportType: exportFromJSON.types.txt,
-            extension: "d"
-          });
-          break;
+        switch (radioSelection) {
+            case DataToExport[DataToExport.Table]:
+                command.params = {
+                    wherePhrase: wherePhrase,
+                    start: 0,
+                    pageLength: 100000,
+                    lastRowID: "",
+                    sortColumns: sortColumns,
+                    exportType: exportFormat,
+                    timeOut: 0,
+                    minTime: 0,
+                };
+                break;
+            case DataToExport[DataToExport.Filter]:
+                command.params = {
+                    wherePhrase: wherePhrase,
+                    start: 0,
+                    pageLength: 100000,
+                    lastRowID: "",
+                    sortColumns: sortColumns,
+                    filters: filters,
+                    exportType: exportFormat,
+                    timeOut: 0,
+                    minTime: 0,
+                };
+                break;
+            case DataToExport[DataToExport.Selection]:
+                const rowids: string[] = [];
+                selectedRows.forEach((element) => {
+                    rowids.push(element);
+                });
+                command.params = {
+                    wherePhrase: wherePhrase,
+                    start: 0,
+                    pageLength: 100000,
+                    lastRowID: "",
+                    sortColumns: sortColumns,
+                    filters: filters,
+                    exportType: exportFormat,
+                    timeOut: 0,
+                    crud: rowids,
+                    minTime: 0
+                };
+                break;
+            default:
+                break;
         }
-        const exportData = message.data.rawData.map(({ ROWID, ...rest }) => {
-          return rest;
-        });
-        exportFromJSON({
-          data: exportData,
-          fileName: message.tableName,
-          exportType: exportFromJSON.types[message.format],
-        });
-    }
-  };
-
-  React.useEffect(() => {
-    window.addEventListener("message", handleMessage);
-
-    return () => {
-      return window.removeEventListener("message", handleMessage);
+        logger.log("export request", command);
+        vscode.postMessage(command);
     };
-  }, []);
+
+    const handleMessage = (event) => {
+        const message = event.data;
+        logger.log("got export data", message);
+        switch (message.command) {
+            case "export":
+                if (message.format === "dumpFile") {
+                    logger.log("dumpfile export got.");
+                    exportFromJSON({
+                        data: message.data,
+                        fileName: message.tableName,
+                        exportType: exportFromJSON.types.txt,
+                        extension: "d"
+                    });
+                    break;
+                }
+                const exportData = message.data.rawData.map(({ ROWID, ...rest }) => {
+                    return rest;
+                });
+                exportFromJSON({
+                    data: exportData,
+                    fileName: message.tableName,
+                    exportType: exportFromJSON.types[message.format],
+                });
+        }
+    };
+
+    React.useEffect(() => {
+        window.addEventListener("message", handleMessage);
+
+        return () => {
+            return window.removeEventListener("message", handleMessage);
+        };
+    }, []);
 
   React.useEffect(() => {
     const handleResize = () => {
