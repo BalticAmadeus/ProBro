@@ -5,7 +5,7 @@ import DataGrid, { SortColumn, SelectColumn, CopyEvent } from "react-data-grid";
 import { CommandAction, ICommand, ProcessAction } from "../model";
 import ExportData from "./Export";
 import UpdatePopup from "./Update";
-import { ProBroButton } from "./components/button";
+import { ProBroButton } from "../assets/button";
 import RawOnTwoToneIcon from "@mui/icons-material/RawOnTwoTone";
 import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
 import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
