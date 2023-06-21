@@ -3,7 +3,8 @@ import { styled } from "@mui/material/styles";
 
 export const ProBroButton = styled(Button)({
   variant: "text",
-  margin: "10px",
+  marginLeft: "0px",
+  marginTop: "3px",
   color: "inherit",
   backgroundColor: "inherit",
   ":disabled": {
