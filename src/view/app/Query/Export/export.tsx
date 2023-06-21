@@ -4,7 +4,7 @@ import exportFromJSON from "export-from-json";
 import { CommandAction, DataToExport, ICommand } from "../../model";
 import ExportIcon from "@mui/icons-material/FileDownloadTwoTone";
 import "./export.css";
-import { ProBroButton } from "../components/button";
+import { ProBroButton } from "../../assets/button";
 import { Logger } from "../../../../common/Logger";
 
 
