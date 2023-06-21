@@ -30,6 +30,12 @@ body.vscode-dark .rdg-row-even {
     color: var(--vscode-input-foreground);
 }
 
+.textInputQuery {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    width: 370px;
+}
+
 .rowid-cell {
     width: 0px;
     padding: 0;
@@ -57,14 +63,19 @@ body.vscode-dark .rdg-row-even {
     text-align: right;
 }
 
+.content {
+    display: flex;
+    flex-wrap: wrap;
+}
 
 .query-options {
     position: relative;
     width: fit-content;
-    display: inline-flex;
     margin-top: 0px;
     margin-right: 10px;
+    max-width: 100%;
 }
+
 
 .form {
     width: fit-content;
@@ -102,4 +113,16 @@ body.vscode-dark .rdg-row-even {
 
 .autocomplete-list li.selected {
     background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+@media (max-width: 998px) {
+    .textInputQuery {
+        width: 200px;
+    }
+}
+
+@media (max-width: 828px) {
+    .textInputQuery {
+        width: 140px;
+    }
 }

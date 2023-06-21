@@ -123,7 +123,7 @@ export default function ExportPopup({
 
   React.useEffect(() => {
     const handleResize = () => {
-      setIsWindowSmall(window.innerWidth <= 628); // Adjust the breakpoint value as needed
+      setIsWindowSmall(window.innerWidth <= 828); // Adjust the breakpoint value as needed
     };
 
     window.addEventListener('resize', handleResize);

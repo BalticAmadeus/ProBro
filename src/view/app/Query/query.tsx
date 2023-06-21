@@ -113,7 +113,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
 
     React.useEffect(() => {
         const handleResize = () => {
-            setIsWindowSmall(window.innerWidth <= 628); // Adjust the breakpoint value as needed
+            setIsWindowSmall(window.innerWidth <= 828); // Adjust the breakpoint value as needed
         };
 
         window.addEventListener('resize', handleResize);
@@ -704,11 +704,10 @@ Description: ${errorObject.description}`}</pre>
                             <div className="input-box">
                                 <input
                                     id="input"
-                                    className="textInput"
+                                    className="textInputQuery"
                                     type="text"
                                     placeholder="WHERE ..."
                                     value={wherePhrase}
-                                    style={{ width: "370px" }}
                                     onFocus={() => {
                                         createListener(document.getElementById('input'), selectedColumns);
                                     }}
@@ -719,7 +718,6 @@ Description: ${errorObject.description}`}</pre>
                                     }}
                                     onKeyDown={handleKeyDown}
                                 />
-
                                 {isWindowSmall ? (
                                     <ProBroButton
                                         ref={(input) => (inputQuery = input)}
