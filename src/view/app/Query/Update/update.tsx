@@ -133,6 +133,7 @@ export default function UpdatePopup({
                 crud: rowids,
                 data: submitData,
                 mode: ProcessAction[action],
+                minTime: 0,
             },
         };
         logger.log("crud submit data", command);

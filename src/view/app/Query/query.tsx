@@ -785,7 +785,7 @@ Description: ${errorObject.description}`}</pre>
                 onSortColumnsChange={onSortClick}
                 className={filters.enabled ? "filter-cell" : undefined}
                 headerRowHeight={filters.enabled ? 70 : undefined}
-                style={{ height: windowHeight - 175, whiteSpace: "pre" }}
+                style={{ height: windowHeight - 140, whiteSpace: "pre" }}
                 selectedRows={selectedRows}
                 onSelectedRowsChange={setSelectedRows}
                 rowKeyGetter={rowKeyGetter}
