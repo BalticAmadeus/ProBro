@@ -6,30 +6,38 @@ import * as fs from "fs";
 import path = require("path");
 
 class OEClient {
-    private port: number;
-    private host: string;
-    private client!: Net.Socket;
-    private data!: string;
-    private dataFinish!: any;
-    private procFinish!: any;
-    private pclientFinish!: any;
-    private proc!: cp.ChildProcessWithoutNullStreams;
-    private enc = new TextDecoder("utf-8");
-    private readonly configuration = vscode.workspace.getConfiguration("ProBro");
-    private logentrytypes: string = this.configuration.get("logging.openEdge")!;
-    private tempFilesPath: string = this.configuration.get("tempfiles")!;
-    private pfFilePath: string = path.join(Constants.context.extensionPath, "resources", "oe", "connectionPf.pf");
+  private port: number;
+  private host: string;
+  private client!: Net.Socket;
+  private data!: string;
+  private dataFinish!: any;
+  private procFinish!: any;
+  private proc!: cp.ChildProcessWithoutNullStreams;
+  private enc = new TextDecoder("utf-8");
+  private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private logentrytypes: string = this.configuration.get("logging.openEdge")!;
+  private tempFilesPath: string = this.configuration.get("tempfiles")!;
+  private pfFilePath: string = path.join(
+    Constants.context.extensionPath,
+    "resources",
+    "oe",
+    "connectionPf.pf"
+  );
 
   constructor(port: number, host: string) {
-     this.port = port;
-     this.host = host;
+    this.port = port;
+    this.host = host;
   }
 
   public init(): Promise<any> {
     return this.runProc().then((resolve) => {
       this.client = new Net.Socket();
       this.client.connect(this.port, this.host, () => {
-        console.log("TCP connection established with the server at " + this.port.toString() + ".");
+        console.log(
+          "TCP connection established with the server at " +
+            this.port.toString() +
+            "."
+        );
       });
       // The client can also receive data from the server by reading from its socket.
       this.client.on("data", (chunk) => {
@@ -57,17 +65,34 @@ class OEClient {
       }/resources/oe/src/oeSocket.p" -param "${Buffer.from("PARAM").toString(
         "base64"
       )}" `;
-      
+
       if (process.platform === "linux") {
         this.createPfFile();
         this.proc = cp.spawn("bash", [
           "-c ",
           [
-            `"${path.join(Constants.context.extensionPath, "resources", "oe", "scripts", "oe.sh")}"`,
+            `"${path.join(
+              Constants.context.extensionPath,
+              "resources",
+              "oe",
+              "scripts",
+              "oe.sh"
+            )}"`,
             "-p",
-            `"${path.join(Constants.context.extensionPath,"resources","oe","src","oeSocket.p")}"`,
+            `"${path.join(
+              Constants.context.extensionPath,
+              "resources",
+              "oe",
+              "src",
+              "oeSocket.p"
+            )}"`,
             "-clientlog",
-            `"${path.join(Constants.context.extensionPath,"resources", "oe", "oeSocket.pro")}"`,
+            `"${path.join(
+              Constants.context.extensionPath,
+              "resources",
+              "oe",
+              "oeSocket.pro"
+            )}"`,
             "-pf",
             `"${this.pfFilePath}"`,
           ].join(" "),
@@ -77,11 +102,28 @@ class OEClient {
         this.proc = cp.spawn("cmd.exe", [
           "/c",
           [
-            path.join(Constants.context.extensionPath, "resources", "oe", "scripts", "oe.bat"),
+            path.join(
+              Constants.context.extensionPath,
+              "resources",
+              "oe",
+              "scripts",
+              "oe.bat"
+            ),
             "-p",
-            path.join(Constants.context.extensionPath,"resources","oe","src","oeSocket.p"),
+            path.join(
+              Constants.context.extensionPath,
+              "resources",
+              "oe",
+              "src",
+              "oeSocket.p"
+            ),
             "-clientlog",
-            path.join(Constants.context.extensionPath,"resources", "oe", "oeSocket.pro"),
+            path.join(
+              Constants.context.extensionPath,
+              "resources",
+              "oe",
+              "oeSocket.pro"
+            ),
             "-pf",
             this.pfFilePath,
           ].join(" "),
@@ -126,17 +168,19 @@ class OEClient {
     });
   }
 
-  public createPfFile():void {
+  public createPfFile(): void {
     const pfContent = [
-       this.tempFilesPath.length !== 0 ? `-T ${this.tempFilesPath}` : null,
+      this.tempFilesPath.length !== 0 ? `-T ${this.tempFilesPath}` : null,
       "-b",
       "-param",
       this.port.toString(),
       "-debugalert",
-      this.logentrytypes.length !== 0 ? `-logentrytypes ${this.logentrytypes}` : null
+      this.logentrytypes.length !== 0
+        ? `-logentrytypes ${this.logentrytypes}`
+        : null,
     ].join(" ");
 
-    fs.writeFile(this.pfFilePath, pfContent, () => {},);
+    fs.writeFile(this.pfFilePath, pfContent, () => {});
   }
 }
 
@@ -154,9 +198,10 @@ async function getOEClient(): Promise<any> {
       .then((portVal: any) => {
         port = portVal;
       });
-    
-    if(!port) {
-      return new Promise(() =>{ throw new Error("No port provided. Unable to start connection");
+
+    if (!port) {
+      return new Promise(() => {
+        throw new Error("No port provided. Unable to start connection");
       });
     }
     client = new OEClient(port, host);
