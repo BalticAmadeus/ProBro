@@ -1,0 +1,17 @@
+{
+    "name": "pro-bro",
+    "version": "1.0",
+    "oeversion": "12.6",
+    "graphicalMode": true,
+    "charset": "utf-8",
+    "extraParameters": "",
+    "buildPath": [
+      { "type": "source", "path": "resources/oe/src" }
+    ],
+    "buildDirectory": "build",
+    "dbConnections": [],
+    "numThreads": 1,
+    "procedures": [
+    ],
+    "profiles": [ ]
+  }
