@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  app-backend:
+  sports-db-126:
     build:
       context: "./"
       dockerfile: "./Dockerfile"
