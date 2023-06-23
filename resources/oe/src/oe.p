@@ -5,6 +5,16 @@ field cName as character
 field cFlags as character
 field cFields as character
 .
+
+DEFINE TEMP-TABLE ttColumn NO-UNDO
+FIELD cName AS CHARACTER SERIALIZE-NAME "name"
+FIELD cKey AS CHARACTER SERIALIZE-NAME "key"
+FIELD cLabel AS CHARACTER SERIALIZE-NAME "label"
+FIELD cType AS CHARACTER SERIALIZE-NAME "type"
+FIELD cFormat AS CHARACTER SERIALIZE-NAME "format"
+FIELD iExtent AS INTEGER 
+.
+
 message PROPATH.
 DEFINE VARIABLE inputMem AS MEMPTR NO-UNDO.
 DEFINE VARIABLE inputParser AS Progress.Json.ObjectModel.ObjectModelParser NO-UNDO.
