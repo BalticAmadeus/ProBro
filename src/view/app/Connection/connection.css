@@ -149,11 +149,13 @@ form .buttons .button-narrow {
     }
 }
 
-Input[type="text"] {
+Input[type="text"],
+Input[type="password"] {
     background-color: var(--vscode-input-background);
     color: var(--vscode-input-foreground);
     border-color: var(--vscode-editorBracketMatch-border);
 }
+
 
 .heading {
     display: flex;

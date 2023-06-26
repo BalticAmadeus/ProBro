@@ -198,7 +198,7 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
                             </div>
                             <div className="input-box">
                                 <input
-                                    type="text"
+                                    type="password"
                                     placeholder="Password"
                                     value={password}
                                     onChange={(event) => {
