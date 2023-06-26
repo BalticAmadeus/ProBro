@@ -33,6 +33,7 @@ export interface IQueryParams {
 }
 
 
+
 export enum CommandAction {
     Save,
     Test,
@@ -41,7 +42,8 @@ export enum CommandAction {
     Export,
     CRUD,
     Submit,
-    UpdateColumns
+    UpdateColumns,
+    RefreshTableData
 }
 
 export interface FieldRow {
