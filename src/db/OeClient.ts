@@ -58,14 +58,6 @@ class OEClient {
 
   private runProc(): Promise<any> {
     return new Promise((resolve) => {
-      const cmd = `${
-        Constants.context.extensionPath
-      }/resources/oe/scripts/oe.bat -b -debugalert -p "${
-        Constants.context.extensionPath
-      }/resources/oe/src/oeSocket.p" -param "${Buffer.from("PARAM").toString(
-        "base64"
-      )}" `;
-
       if (process.platform === "linux") {
         this.createPfFile();
         this.proc = cp.spawn("bash", [
