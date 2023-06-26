@@ -33,7 +33,7 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
 
     const logger = new Logger(configuration.logging.react);
 
-    const onSaveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const onSaveClick = (event: React.MouseEvent<HTMLInputElement>) => {
         event.preventDefault();
         const id: string = "SaveClick";
         const config: IConfig = {
@@ -57,7 +57,7 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
         vscode.postMessage(command);
     };
 
-    const onTestClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const onTestClick = (event: React.MouseEvent<HTMLInputElement>) => {
         event.preventDefault();
         const id: string = "TestClick";
         const config: IConfig = {
