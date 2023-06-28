@@ -1,4 +1,6 @@
-FROM gitlab.baltic-amadeus.lt:5005/progress/progress-docker/progress-build:12.6.0-centos
+ARG IMAGE_NAME
+
+FROM $IMAGE_NAME
 
 # Get build Arguments
 ARG DB_NAME
