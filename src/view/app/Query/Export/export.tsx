@@ -6,6 +6,8 @@ import ExportIcon from "@mui/icons-material/FileDownloadTwoTone";
 import "./export.css";
 import { ProBroButton } from "../../assets/button";
 import { Logger } from "../../../../common/Logger";
+import * as vscode from "vscode";
+
 
 
 export default function ExportPopup({
@@ -19,6 +21,7 @@ export default function ExportPopup({
   const [exportFormat, setExportFormat] = React.useState("");
   const [radioSelection, setRadioSelection] = React.useState("");
   const [isWindowSmall, setIsWindowSmall] = React.useState(false);
+  const [isSaving, setIsSaving] = React.useState(false);
   const logger = new Logger(logValue);
 
   function handleChange({ currentTarget }: React.ChangeEvent<HTMLInputElement>) {
@@ -29,6 +32,8 @@ export default function ExportPopup({
 
 
     const exportList = ["dumpFile", "json", "csv", "xls"];
+
+    
 
     const getData = () => {
         console.log("get data");
@@ -88,29 +93,33 @@ export default function ExportPopup({
     };
 
     const handleMessage = (event) => {
-        const message = event.data;
-        logger.log("got export data", message);
-        switch (message.command) {
-            case "export":
-                if (message.format === "dumpFile") {
-                    logger.log("dumpfile export got.");
-                    exportFromJSON({
-                        data: message.data,
-                        fileName: message.tableName,
-                        exportType: exportFromJSON.types.txt,
-                        extension: "d"
-                    });
-                    break;
-                }
-                const exportData = message.data.rawData.map(({ ROWID, ...rest }) => {
-                    return rest;
-                });
-                exportFromJSON({
-                    data: exportData,
-                    fileName: message.tableName,
-                    exportType: exportFromJSON.types[message.format],
-                });
-        }
+      const message = event.data;
+      logger.log("got export data", message);
+      switch (message.command) {
+        case "export":
+          if (message.format === "dumpFile") {
+            logger.log("dumpfile export got.");
+            exportFromJSON({
+              data: message.data,
+              fileName: message.tableName,
+              exportType: exportFromJSON.types.txt,
+              extension: "d",
+            });
+            break;
+          }
+          const exportData = message.data.rawData.map(({ ROWID, ...rest }) => {
+            return rest;
+          });
+          exportFromJSON({
+            data: exportData,
+            fileName: message.tableName,
+            exportType: exportFromJSON.types[message.format],
+          });
+          setIsSaving(false);
+          break;
+        default:
+          break;
+      }
     };
 
     React.useEffect(() => {
@@ -185,26 +194,25 @@ export default function ExportPopup({
             </div>
           </div>
           <div className="btn-container">
-            <ProBroButton
-              className="button"
-              onClick={() => {
-                getData();
-                close();
-              }}
-            >
-              Export
-            </ProBroButton>
-            <ProBroButton
-              className="button"
-              onClick={() => {
-                close();
-              }}
-            >
-              Cancel
-            </ProBroButton>
-          </div>
+          <ProBroButton
+            className="button"
+            onClick={() => {
+              setIsSaving(true);
+              getData();
+            }}
+            disabled={isSaving}
+          >
+            Export
+          </ProBroButton>
+          <ProBroButton className="button" onClick={() => close()}>
+            Cancel
+          </ProBroButton>
         </div>
-      )}
+        {isSaving ? (
+          <span className="export-saving">Saving...</span>
+        ) : null}
+      </div>
+    )}
     </Popup>
   );
 }
