@@ -5,3 +5,4 @@ node_modules
 *.vsix
 resources/oe/oeSocket.pro
 *.r
+.builder/**

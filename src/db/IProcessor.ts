@@ -1,2 +1,1 @@
-export interface IProcessor {
-}
+export interface IProcessor {}

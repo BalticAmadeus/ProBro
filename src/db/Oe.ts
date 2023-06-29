@@ -1,52 +1,52 @@
 import { Column } from "react-data-grid";
 
 export interface IOEVersion {
-    dbversion: string,
-    proversion: string
+  dbversion: string;
+  proversion: string;
 }
 
 export interface IOEError {
-    error: number,
-    description: string,
-    trace: string
+  error: number;
+  description: string;
+  trace: string;
 }
 
 export interface IOETablesList {
-    tables: ITable[]
+  tables: ITable[];
 }
 
 export interface IOEParams {
-    connectionString: string,
-    command: string,
-    params?: any
+  connectionString: string;
+  command: string;
+  params?: any;
 }
 
 export interface IOETableData {
-    columns: Column<string, unknown>[],
-    data: string[]
+  columns: Column<string, unknown>[];
+  data: string[];
 }
 
 interface ITable {
-    name: string,
-    tableType: string
+  name: string;
+  tableType: string;
 }
 
 export interface IExportDumpData {
-    rawData: any[],
-    columns: IOeColumn[],
-    psc: IOePsc
+  rawData: any[];
+  columns: IOeColumn[];
+  psc: IOePsc;
 }
 
 interface IOeColumn {
-    name: string,
-    key: string,
-    label: string,
-    type: string,
-    format: string | null
+  name: string;
+  key: string;
+  label: string;
+  type: string;
+  format: string | null;
 }
 export interface IOePsc {
-    cpstream: string,
-    dateformat: string,
-    numformat: string,
-    timestamp: string
+  cpstream: string;
+  dateformat: string;
+  numformat: string;
+  timestamp: string;
 }
