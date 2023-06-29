@@ -5,6 +5,7 @@ services:
       context: "./"
       dockerfile: "./Dockerfile"
       args:
+        - IMAGE_NAME=${IMAGE_NAME_126}
         - DB_NAME=${DB_NAME}
     environment:
       - DB_NAME=${DB_NAME}
