@@ -1,5 +1,8 @@
 import * as React from "react";
 import { CommandAction, ICommand, IConfig } from "../model";
+import { ProBroButton } from "../assets/button";
+import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
+import { PfParser } from "../utils/PfParser";
 import { Logger } from "../../../common/Logger";
 import { ISettings } from "../../../common/IExtensionSettings";
 
@@ -30,7 +33,7 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
 
     const logger = new Logger(configuration.logging.react);
 
-    const onSaveClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const onSaveClick = (event: React.MouseEvent<HTMLInputElement>) => {
         event.preventDefault();
         const id: string = "SaveClick";
         const config: IConfig = {
@@ -54,7 +57,7 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
         vscode.postMessage(command);
     };
 
-    const onTestClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const onTestClick = (event: React.MouseEvent<HTMLInputElement>) => {
         event.preventDefault();
         const id: string = "TestClick";
         const config: IConfig = {
@@ -78,10 +81,44 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
         vscode.postMessage(command);
     };
 
+    const importPf = () => {
+        let input = document.createElement("input");
+        input.id = "inputVal";
+        input.type = "file";
+        input.accept = ".pf";
+        input.onchange = ev => {
+            let [file] = Array.from(input.files);
+            const reader = new FileReader();
+            reader.addEventListener("load", () => {
+                const pfParser = new PfParser();
+                const pfConfig = pfParser.parse(reader.result as string);
+                console.log("pfConfig: ", pfConfig);
+                setName(pfConfig.name);
+                setHost(pfConfig.host);
+                setPort(pfConfig.port);
+                setUser(pfConfig.user);
+                setPassword(pfConfig.password);
+                setLabel(file.name.split(".", 1)[0]);
+                setParams(pfConfig.params);
+            });
+            if (file) {
+                reader.readAsText(file);
+            }
+        };
+        input.click();
+    };
+
     return (
         <React.Fragment>
             <div className="container">
-                <div className="title">Connect to server</div>
+                <div className="heading">
+                    <div className="title">Connect to server</div>
+                    <ProBroButton
+                        className="importPf"
+                        onClick={importPf}
+                        startIcon={<FileUploadRoundedIcon />}
+                    >Import .pf</ProBroButton>
+                </div>
                 <div className="content">
                     <form action="#">
                         <div className="connection-details">
@@ -161,7 +198,7 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
                             </div>
                             <div className="input-box">
                                 <input
-                                    type="text"
+                                    type="password"
                                     placeholder="Password"
                                     value={password}
                                     onChange={(event) => {

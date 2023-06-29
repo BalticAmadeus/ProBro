@@ -1,3 +1,4 @@
+.builder/**
 .vscode/**
 .vscode-test/**
 src/**
@@ -9,3 +10,4 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+*.r

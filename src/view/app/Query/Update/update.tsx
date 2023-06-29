@@ -4,7 +4,7 @@ import { CommandAction, ICommand, ProcessAction } from "../../model";
 import AddIcon from "@mui/icons-material/AddTwoTone";
 import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
 import EditIcon from "@mui/icons-material/EditTwoTone";
-import { ProBroButton } from "../components/button";
+import { ProBroButton } from "../../assets/button";
 import "./update.css";
 import { Logger } from "../../../../common/Logger";
 
@@ -25,6 +25,7 @@ export default function UpdatePopup({
     readRow,
     logValue
 }) {
+    const [isWindowSmall, setIsWindowSmall] = React.useState(false);
     const logger = new Logger(logValue);
     const table = [];
     const inputs: {
@@ -139,6 +140,19 @@ export default function UpdatePopup({
         vscode.postMessage(command);
     };
 
+    React.useEffect(() => {
+        const handleResize = () => {
+            setIsWindowSmall(window.innerWidth <= 828); // Adjust the breakpoint value as needed
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     return (
         <React.Fragment>
             <Popup open={open} onClose={() => setOpen(false)} modal>
@@ -178,21 +192,55 @@ export default function UpdatePopup({
                     </div>
                 )}
             </Popup>
-            <ProBroButton
-                startIcon={<AddIcon />}
-                onClick={selectedRows.size === 1 ? copyRecord : insertRecord}
-                disabled={selectedRows.size > 0 ? false : false}
-            >{selectedRows.size === 1 ? "Copy" : "Create"}</ProBroButton>
-            <ProBroButton
-                startIcon={<EditIcon />}
-                onClick={updateRecord}
-                disabled={selectedRows.size === 1 ? false : true}
-            >Update</ProBroButton>
-            <ProBroButton
-                startIcon={<DeleteIcon />}
-                onClick={deleteRecord}
-                disabled={selectedRows.size > 0 ? false : true}
-            >Delete</ProBroButton>
+
+
+
+            {isWindowSmall ? (
+                <>
+                    <ProBroButton
+                        startIcon={<AddIcon />}
+                        onClick={selectedRows.size === 1 ? copyRecord : insertRecord}
+                        disabled={selectedRows.size > 0 ? false : false}
+                    >
+                    </ProBroButton>
+                    <ProBroButton
+                        startIcon={<EditIcon />}
+                        onClick={updateRecord}
+                        disabled={selectedRows.size === 1 ? false : true}
+                    >
+                    </ProBroButton>
+                    <ProBroButton
+                        startIcon={<DeleteIcon />}
+                        onClick={deleteRecord}
+                        disabled={selectedRows.size > 0 ? false : true}
+                    >
+                    </ProBroButton>
+                </>
+            ) : (
+                <>
+                    <ProBroButton
+                        startIcon={<AddIcon />}
+                        onClick={selectedRows.size === 1 ? copyRecord : insertRecord}
+                        disabled={selectedRows.size > 0 ? false : false}
+                    >
+                        {selectedRows.size === 1 ? "Copy" : "Create"}
+                    </ProBroButton>
+                    <ProBroButton
+                        startIcon={<EditIcon />}
+                        onClick={updateRecord}
+                        disabled={selectedRows.size === 1 ? false : true}
+                    >
+                        Update
+                    </ProBroButton>
+                    <ProBroButton
+                        startIcon={<DeleteIcon />}
+                        onClick={deleteRecord}
+                        disabled={selectedRows.size > 0 ? false : true}
+                    >
+                        Delete
+                    </ProBroButton>
+                </>
+            )}
         </React.Fragment>
     );
 }

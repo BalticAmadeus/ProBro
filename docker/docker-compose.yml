@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+  sports-db-126:
+    build:
+      context: "./"
+      dockerfile: "./Dockerfile"
+      args:
+        - IMAGE_NAME=${IMAGE_NAME_126}
+        - DB_NAME=${DB_NAME}
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=${DB_PORT}
+      - DB_MIN_PORT=${DB_MIN_PORT}
+      - DB_MAX_PORT=${DB_MAX_PORT}
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+      - ${DB_MIN_PORT}-${DB_MAX_PORT}:${DB_MIN_PORT}-${DB_MAX_PORT}

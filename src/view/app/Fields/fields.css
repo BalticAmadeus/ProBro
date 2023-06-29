@@ -42,3 +42,22 @@ body.vscode-dark .rdg-row-even {
   background-color: var(--vscode-input-background);
   color: var(--vscode-input-foreground);
   }
+  
+  .refreshButton {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background-color: var(--vscode-list-inactiveSelectionBackground);
+    color: var(--rdg-border-color);
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  body.vscode-dark .refreshButton{
+    background-color: var(--vscode-list-inactiveSelectionBackground);
+    color: var(--rdg-border-color);
+  }

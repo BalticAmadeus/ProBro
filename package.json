@@ -9,7 +9,7 @@
         "DB",
         "Explorer"
     ],
-    "version": "1.3.0",
+    "version": "1.3.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -49,7 +49,7 @@
                 "ProBro.batchMaxTimeout": {
                     "type": "number",
                     "minimum": 10,
-                    "default": 100,
+                    "default": 1000,
                     "markdownDescription": "Specifies maximum time in milliseconds to retrieve batch of records"
                 },
                 "ProBro.batchMinTimeout": {
@@ -74,7 +74,10 @@
                         "description": "Port number"
                     },
                     "default": [
-                        23456
+                        23456,
+                        23457,
+                        23458,
+                        23459
                     ],
                     "markdownDescription": "(Restart needed)\n\n Provide free ports for local ProBro communication. Additional ports are used for additional vsCode instances using ProBro extension.  \n\n The default ProBro extension port is 23456"
                 },
