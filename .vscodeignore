@@ -1,3 +1,4 @@
+.builder/**
 .vscode/**
 .vscode-test/**
 src/**
