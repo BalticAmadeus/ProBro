@@ -1,4 +1,14 @@
 # Change Log
+## 1.3.1 (2023-06-29)
+
+### Changed
+- Fixed processor is busy bug
+- Fixed filed and index table not visible when opening bug
+- Fixed various other small bugs
+
+### Added
+- Development process improvements
+
 ## 1.3.0 (2023-06-20)
 
 ### Changed
