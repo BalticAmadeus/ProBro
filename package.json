@@ -74,7 +74,10 @@
                         "description": "Port number"
                     },
                     "default": [
-                        23456
+                        23456,
+                        23457,
+                        23458,
+                        23459
                     ],
                     "markdownDescription": "(Restart needed)\n\n Provide free ports for local ProBro communication. Additional ports are used for additional vsCode instances using ProBro extension.  \n\n The default ProBro extension port is 23456"
                 },
