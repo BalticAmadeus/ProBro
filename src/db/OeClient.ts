@@ -61,7 +61,7 @@ class OEClient {
       if (process.platform === "linux") {
         this.createPfFile();
         this.proc = cp.spawn("bash", [
-          "-c ",
+          "-c",
           [
             `"${path.join(
               Constants.context.extensionPath,
