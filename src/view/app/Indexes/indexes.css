@@ -2,9 +2,7 @@
   --rdg-background-color: initial;
   --rdg-header-background-color: var(--vscode-editorWidget-background);
   --rdg-row-hover-background-color: rgba(0, 0, 0, 0.2);
-  --rdg-row-selected-background-color: var(
-    --vscode-list-inactiveSelectionBackground
-  );
+  --rdg-row-selected-background-color: var(--vscode-list-inactiveSelectionBackground);
   --rdg-checkbox-color: inherit;
   --rdg-checkbox-focus-color: inherit;
   --rdg-font-size: inherit;
@@ -28,14 +26,15 @@ body.vscode-dark .rdg-row-even {
   transform: translate(-50%, -50%);
   z-index: 9999;
   background-color: var(--vscode-list-inactiveSelectionBackground);
-  color: var(--vscode-editorWidget-background);
+  color: var(--rdg-border-color);
   border: none;
   border-radius: 4px;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
 }
-body.vscode-dark .refreshButton{
+
+body.vscode-dark .refreshButton {
   background-color: var(--vscode-list-inactiveSelectionBackground);
-  color: var(--vscode-editorWidget-background);
+  color: var(--rdg-border-color);
 }
