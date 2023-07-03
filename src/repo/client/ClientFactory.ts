@@ -1,16 +1,14 @@
-import { ClientType } from "./ClientType";
+import { IClient } from "./IClient";
 import { LocalClient } from "./local/LocalClient";
-import { RemoteClient } from "./remote/RemoteClient";
+import { RemoteClientStorage } from "./remote/RemoteClientStorage";
 
 export class ClientFactory {
-  static getInstance(clientType: ClientType) {
-    switch (clientType) {
-      case ClientType.local:
+  public static async getInstance(connectionId: number): Promise<IClient> {
+    switch (connectionId) {
+      case 0:
         return LocalClient.getInstance();
-      case ClientType.remote:
-        return RemoteClient.getInstance();
       default:
-        throw new Error("Invalid client type");
+        return RemoteClientStorage.getInstance(connectionId);
     }
   }
 }

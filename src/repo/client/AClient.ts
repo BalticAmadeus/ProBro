@@ -1,136 +1,52 @@
 import * as Net from "net";
-import * as cp from "child_process";
-import path = require("path");
-import { Constants } from "../../common/Constants";
+
+import { ConnectionParams } from "../ConnectionParams";
 
 export class AClient {
-  private port: number;
-  private host: string;
-  private data!: string;
-  private client!: Net.Socket;
-  private proc!: cp.ChildProcessWithoutNullStreams;
+  protected connectionParams: ConnectionParams;
+  protected data!: string;
+  protected client!: Net.Socket;
 
-  private dataFinish!: any;
-  private procFinish!: any;
-  private enc = new TextDecoder("utf-8");
+  protected dataFinish!: any;
+  protected procFinish!: any;
+  protected enc = new TextDecoder("utf-8");
 
-  private pfFilePath: string = path.join(
-    Constants.context.extensionPath,
-    "resources",
-    "oe",
-    "connectionPf.pf"
-  );
-
-  private readonly linuxConnectionString = [
-    "-c",
-    [
-      `"${path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "scripts",
-        "oe.sh"
-      )}"`,
-      "-p",
-      `"${path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "src",
-        "oeSocket.p"
-      )}"`,
-      "-clientlog",
-      `"${path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "oeSocket.pro"
-      )}"`,
-      "-pf",
-      `"${this.pfFilePath}"`,
-    ].join(" "),
-  ];
-
-  private readonly windowsConnectionString = [
-    "/c",
-    [
-      path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "scripts",
-        "oe.bat"
-      ),
-      "-p",
-      path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "src",
-        "oeSocket.p"
-      ),
-      "-clientlog",
-      path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "oeSocket.pro"
-      ),
-      "-pf",
-      this.pfFilePath,
-    ].join(" "),
-  ];
-
-  protected constructor(port: number, host: string) {
-    this.port = port;
-    this.host = host;
+  protected constructor(connectionParams: ConnectionParams) {
+    this.connectionParams = connectionParams;
   }
 
-  protected runProc(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      switch (process.platform) {
-        case "linux":
-          this.proc = cp.spawn("bash", this.linuxConnectionString);
-          break;
-        case "win32":
-          this.proc = cp.spawn("cmd.exe", this.windowsConnectionString);
-          break;
-        default:
-          reject("Unsupported platform");
-      }
+  protected async listen(start: Promise<any>): Promise<any> {
+    return start.then(() => {
+      this.client = new Net.Socket();
+      this.client.connect(
+        this.connectionParams.port,
+        this.connectionParams.host,
+        () => {
+          console.log(
+            "TCP connection established with the server at " +
+              this.connectionParams.port.toString() +
+              "."
+          );
+        }
+      );
 
-      this.proc.stdout.on("data", (data) => {
-        console.log(`stdout: ${data}`);
-
-        const dataString = this.enc.decode(data);
-        if (
-          dataString.startsWith("SERVER STARTED AT " + this.port.toString())
-        ) {
-          this.procFinish(dataString);
+      this.client.on("data", (chunk) => {
+        console.log(`Data received from the server`);
+        this.data += chunk.toString();
+        if (this.data.endsWith(`\n`)) {
+          this.dataFinish(this.data);
         }
       });
 
-      this.proc.stderr.on("data", (data) => {
-        console.log(`stderr: ${data}`);
+      this.client.on("end", () => {
+        console.log("Requested an end to the TCP connection");
       });
 
-      this.proc.on("exit", (code) => {
-        console.log(`child process exited with code ${code}`);
-      });
-
-      this.proc.on("close", (code) => {
-        console.log(`child process exited with code ${code}`);
-      });
-
-      this.proc.on("error", (err) => {
-        console.log(`child process error ${err}`);
-      });
-
-      this.procFinish = resolve;
+      return this;
     });
   }
 
-  public sendCommand(cmd: string): Promise<string> {
+  public sendRequest(cmd: string): Promise<string> {
     this.data = "";
 
     return new Promise((resolve, reject) => {
