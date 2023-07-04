@@ -1,4 +1,5 @@
-import { ConnectionParams } from "../../ConnectionParams";
+import { IRemoteConnectionConfig } from "../../../view/app/model";
+import { ConnectionParams } from "../../../view/app/model";
 import { AClient } from "../AClient";
 import { IClient } from "../IClient";
 

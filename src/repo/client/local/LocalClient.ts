@@ -6,10 +6,10 @@ import path = require("path");
 import { AClient } from "../AClient";
 import { IClient } from "../IClient";
 import { Constants } from "../../../common/Constants";
-import { ConnectionParams } from "../../ConnectionParams";
+import { ConnectionParams } from "../../../view/app/model";
 
 export class LocalClient extends AClient implements IClient {
-  private static localClient: LocalClient | undefined;
+  private static localClient: LocalClient | undefined = undefined;
 
   private static readonly host = "localhost";
   private readonly configuration = vscode.workspace.getConfiguration("ProBro");
@@ -169,7 +169,7 @@ export class LocalClient extends AClient implements IClient {
       this.procFinish = resolve;
     });
   }
-  public createPfFile(): void {
+  private createPfFile(): void {
     const pfContent = [
       this.tempFilesPath.length !== 0 ? `-T ${this.tempFilesPath}` : null,
       "-b",

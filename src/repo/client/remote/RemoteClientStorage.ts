@@ -1,36 +1,41 @@
-import { ConnectionParams } from "../../ConnectionParams";
+import {
+  ConnectionParams,
+  IConnectionConfig,
+  IRemoteConnectionConfig,
+} from "../../../view/app/model";
 import { IClient } from "../IClient";
 import { RemoteClient } from "./RemoteClient";
 
 export class RemoteClientStorage {
-  private static remoteClientMap: Map<number, IClient> = new Map<
-    number,
+  private static remoteClientMap: Map<string, IClient> = new Map<
+    string,
     RemoteClient
   >();
 
-  public static async getInstance(connectionId: number): Promise<IClient> {
-    if (!RemoteClientStorage.remoteClientMap.has(connectionId)) {
+  public static async getInstance(
+    connectionConfig: IRemoteConnectionConfig
+  ): Promise<IClient> {
+    if (
+      !RemoteClientStorage.remoteClientMap.has(connectionConfig.connectionId)
+    ) {
       RemoteClientStorage.remoteClientMap.set(
-        connectionId,
-        new RemoteClient(RemoteClientStorage.getConnectionParams(connectionId))
+        connectionConfig.connectionId,
+        new RemoteClient(connectionConfig.agentConParams)
       );
     }
 
-    var remoteClient = RemoteClientStorage.remoteClientMap.get(connectionId);
+    var remoteClient = RemoteClientStorage.remoteClientMap.get(
+      connectionConfig.connectionId
+    );
 
     if (remoteClient === undefined) {
       return new Promise(() => {
         throw new Error(
-          `No remote client found for connectionId: ${connectionId}`
+          `No remote client found for connectionId: ${connectionConfig.connectionId}`
         );
       });
     }
 
     return remoteClient;
-  }
-
-  private static getConnectionParams(connectionId: number): ConnectionParams {
-    //TODO: get connection params for connectionId
-    return new ConnectionParams("localhost", 0);
   }
 }

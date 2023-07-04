@@ -1,7 +1,12 @@
-import { type } from "os";
 import { SortColumn } from "react-data-grid";
 
+export class ConnectionParams {
+  constructor(public host: string, public port: number) {}
+}
+
 export interface IConfig {
+  type: ConnectionType.Local;
+  connectionId: "LOCAL";
   id: string;
   label: string;
   name: string;
@@ -16,13 +21,19 @@ export interface IConfig {
 }
 
 export interface IRemoteConnectionConfig {
-  connectionId: number;
-  agentHost: string;
-  agentPort: string;
+  type: ConnectionType.Remote;
+  connectionId: string;
+  agentConParams: ConnectionParams;
   agentDatabaseName: string;
+  conStatus?: ConnectionStatus;
 }
 
 export type IConnectionConfig = IConfig | IRemoteConnectionConfig;
+
+export enum ConnectionType {
+  Local,
+  Remote,
+}
 
 export enum ConnectionStatus {
   Connected,

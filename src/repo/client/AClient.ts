@@ -1,6 +1,6 @@
 import * as Net from "net";
 
-import { ConnectionParams } from "../ConnectionParams";
+import { ConnectionParams } from "../../view/app/ConnectionParams";
 
 export class AClient {
   protected connectionParams: ConnectionParams;

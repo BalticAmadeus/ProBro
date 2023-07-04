@@ -1,7 +1,7 @@
 import { IProcessor } from "../IProcessor";
 
 export class MockProcessor implements IProcessor {
-  private static instance: MockProcessor | undefined; // singleton
+  private static instance: MockProcessor | undefined = undefined; // singleton
 
   private constructor() {}
 
