@@ -7,7 +7,9 @@ import { TablesListProvider } from "./TablesListProvider";
 import { DbConnectionNode } from "./DbConnectionNode";
 import { IRefreshCallback } from "./IRefreshCallback";
 
-export class GroupListProvider implements vscode.TreeDataProvider<INode>, IRefreshCallback {
+export class GroupListProvider
+  implements vscode.TreeDataProvider<INode>, IRefreshCallback
+{
   private _onDidChangeTreeData: vscode.EventEmitter<INode | undefined | void> =
     new vscode.EventEmitter<INode | undefined | void>();
   readonly onDidChangeTreeData: vscode.Event<INode | undefined | void> =
@@ -54,15 +56,32 @@ export class GroupListProvider implements vscode.TreeDataProvider<INode>, IRefre
   }
 
   private async getGroupNodes(): Promise<groupNode.GroupNode[]> {
-    
     const connections = this.context.globalState.get<{
       [key: string]: IConfig;
     }>(`${Constants.globalExtensionKey}.dbconfig`);
+
+    const workspaceConnections = this.context.workspaceState.get<{
+      [key: string]: IConfig;
+    }>(`${Constants.globalExtensionKey}.dbconfig`);
+
     const groupNodes: groupNode.GroupNode[] = [];
     var groupNames: string[] = [];
     if (connections) {
       for (const id of Object.keys(connections)) {
         let group = connections[id].group.toUpperCase();
+        if (!group) {
+          group = "<EMPTY>";
+        }
+        if (groupNames.indexOf(group) === -1) {
+          groupNames.push(group);
+          groupNodes.push(new groupNode.GroupNode(this.context, group));
+        }
+      }
+    }
+
+    if (workspaceConnections) {
+      for (const id of Object.keys(workspaceConnections)) {
+        let group = workspaceConnections[id].group.toUpperCase();
         if (!group) {
           group = "<EMPTY>";
         }
