@@ -1,5 +1,5 @@
-import { PfParser } from "./PfParser";
-import { IConfig } from "../model";
+import { PfParser } from "../view/app/utils/PfParser";
+import { IConfig } from "../view/app/model";
 
 export function readFile(fileName: string): string {
   while (fileName.charAt(0) === "/") {
@@ -19,7 +19,7 @@ export function parseOEFile(fileContent: string) {
   const groupName = name;
   let num = 0;
 
-  dbConnections.forEach((connection) => {
+  dbConnections.forEach((connection: { name: any; connect: any }) => {
     const { name, connect } = connection;
 
     const pfParser = new PfParser();

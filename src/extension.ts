@@ -11,7 +11,7 @@ import { TableNode } from "./treeview/TableNode";
 import { TablesListProvider } from "./treeview/TablesListProvider";
 import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
 import { IPort, IConfig, ICommand } from "./view/app/model";
-import { readFile, parseOEFile } from "./view/app/utils/OpenEdgeJsonReaded";
+import { readFile, parseOEFile } from "./common/OpenEdgeJsonReaded";
 
 export function activate(context: vscode.ExtensionContext) {
   let extensionPort: number;
