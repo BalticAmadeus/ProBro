@@ -1,6 +1,5 @@
 import * as Net from "net";
-
-import { ConnectionParams } from "../../view/app/ConnectionParams";
+import { ConnectionParams } from "../../view/app/model";
 
 export class AClient {
   protected connectionParams: ConnectionParams;
@@ -15,15 +14,16 @@ export class AClient {
     this.connectionParams = connectionParams;
   }
 
-  protected async listen(start: Promise<any>): Promise<any> {
+  protected listen(start: Promise<any>): Promise<any> {
     return start.then(() => {
+      console.log("V2: Starting TCP listener");
       this.client = new Net.Socket();
       this.client.connect(
         this.connectionParams.port,
         this.connectionParams.host,
         () => {
           console.log(
-            "TCP connection established with the server at " +
+            "V2: TCP connection established with the server at " +
               this.connectionParams.port.toString() +
               "."
           );
@@ -31,15 +31,16 @@ export class AClient {
       );
 
       this.client.on("data", (chunk) => {
-        console.log(`Data received from the server`);
+        console.log("V2: Data received from the server");
         this.data += chunk.toString();
         if (this.data.endsWith(`\n`)) {
           this.dataFinish(this.data);
+          console.log("V2: Data finish");
         }
       });
 
       this.client.on("end", () => {
-        console.log("Requested an end to the TCP connection");
+        console.log("V2: Requested an end to the TCP connection");
       });
 
       return this;
@@ -48,10 +49,18 @@ export class AClient {
 
   public sendRequest(cmd: string): Promise<string> {
     this.data = "";
-
-    return new Promise((resolve, reject) => {
-      this.client.write(`${cmd}\n`);
-      this.dataFinish = resolve;
-    });
+    // console.log("CMD: " + cmd);
+    // for (let i = 0; i < 500; i++) {
+    //   console.log("V2: Waiting for shit");
+    // }
+    try {
+      return new Promise((resolve) => {
+        console.log("V2: Sending request to server");
+        this.client.write(`${cmd}\n`);
+        this.dataFinish = resolve;
+      });
+    } finally {
+      console.log("V2: Request sent");
+    }
   }
 }

@@ -11,6 +11,7 @@ import {
 import { IOEParams } from "../../../db/Oe";
 import { ClientFactory } from "../../client/ClientFactory";
 import { Logger } from "../../../common/Logger";
+import getOEClient from "../../../db/OeClient";
 
 export class DBProcessor implements IProcessor {
   private static instance: DBProcessor | undefined = undefined; // singleton
@@ -53,7 +54,8 @@ export class DBProcessor implements IProcessor {
       ).formConnectionString(config),
       command: "get_version",
     };
-
+    await this.execRequest(config, params);
+    console.log("getDBVersion returns", params);
     return this.execRequest(config, params);
   }
 
@@ -111,30 +113,35 @@ export class DBProcessor implements IProcessor {
     this.logger.log("execShell params", params);
     var timeInMs = Date.now();
 
-    return ClientFactory.getInstance(config)
-      .then((client) => {
-        console.log(cmd);
-        return client.sendRequest(cmd);
-      })
-      .then((data) => {
-        var json = JSON.parse(data);
-        console.log(
-          `Process time: ${Date.now() - timeInMs}, OE time: ${
-            json.debug.time
-          }, Connect time: ${json.debug.timeConnect}`
-        );
-        console.log(json.debug);
-        this.logger.log("getOEClient returns", json);
-        this.processStartTime = undefined;
-        return json;
-      })
-      .catch((err) => {
-        this.logger.log("getOeClient error", err.message);
-        vscode.window.showWarningMessage(err.message);
-        this.errObj.isError = true;
-        this.errObj.errMessage = err.message;
-        this.processStartTime = undefined;
-        return Promise.resolve(new Error(err.message));
-      });
+    return (
+      getOEClient()
+        // return (
+        //   ClientFactory.getInstance(config)
+        .then((client) => {
+          console.log(cmd);
+          // return client.sendRequest(cmd);
+          return client.sendCommand(cmd);
+        })
+        .then((data) => {
+          var json = JSON.parse(data);
+          console.log(
+            `Process time: ${Date.now() - timeInMs}, OE time: ${
+              json.debug.time
+            }, Connect time: ${json.debug.timeConnect}`
+          );
+          console.log(json.debug);
+          this.logger.log("getOEClient returns", json);
+          this.processStartTime = undefined;
+          return json;
+        })
+        .catch((err) => {
+          this.logger.log("getOeClient error", err.message);
+          vscode.window.showWarningMessage(err.message);
+          this.errObj.isError = true;
+          this.errObj.errMessage = err.message;
+          this.processStartTime = undefined;
+          return Promise.resolve(new Error(err.message));
+        })
+    );
   }
 }

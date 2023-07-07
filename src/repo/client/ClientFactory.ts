@@ -15,6 +15,8 @@ export class ClientFactory {
         return LocalClient.getInstance();
       case ConnectionType.Remote:
         return RemoteClientStorage.getInstance(connectionConfig);
+      default:
+        return LocalClient.getInstance(); //TODO
     }
   }
 
@@ -27,7 +29,7 @@ export class ClientFactory {
       case "TEST":
         return RemoteClientHelper.getInstance();
       default:
-        return RemoteClientHelper.getInstance();
+        return LocalClientHelper.getInstance(); //TODO
     }
   }
 }

@@ -120,12 +120,16 @@ export class LocalClient extends AClient implements IClient {
     ].join(" "),
   ];
 
-  protected startAndListen(): Promise<any> {
-    return this.listen(this.start());
+  protected startAndListen() {
+    // this.start();
+    this.listen(this.start());
   }
 
   protected start(): Promise<any> {
     return new Promise((resolve, reject) => {
+      console.log("V2: Starting OE client");
+      this.createPfFile();
+
       switch (process.platform) {
         case "linux":
           this.proc = cp.spawn("bash", this.linuxConnectionString);
@@ -138,7 +142,7 @@ export class LocalClient extends AClient implements IClient {
       }
 
       this.proc.stdout.on("data", (data) => {
-        console.log(`stdout: ${data}`);
+        console.log(`child stdout: ${data}`);
 
         const dataString = this.enc.decode(data);
         if (
@@ -147,6 +151,7 @@ export class LocalClient extends AClient implements IClient {
           )
         ) {
           this.procFinish(dataString);
+          console.log("V2: Server started");
         }
       });
 
