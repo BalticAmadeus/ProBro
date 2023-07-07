@@ -31,7 +31,7 @@ export function parseOEFile(fileContent: string) {
       id: "local" + num,
       label: name,
       name: pfConfig.name,
-      description: "from openedge",
+      description: "from openedge-build.json",
       host: pfConfig.host,
       port: pfConfig.port,
       user: pfConfig.user,
