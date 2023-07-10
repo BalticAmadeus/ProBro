@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export DLC=/usr/dlc
+export DLC="$7"
 export PROWD254=/usr/dlc/proword.254
 export TERM=xterm
 export PROPATH=$PROPATH:$(dirname "$PWD")
@@ -39,8 +39,8 @@ if [ ! -n "$JREHOME" ]
     PATH=$JREHOME/bin:$PATH
   fi
 fi
- 
+
 # Set the Progress Shared lib environment
 . $DLC/bin/slib_env
 
-exec $PROEXE -1 "$@" -cpinternal UTF-8 -cpstream UTF-8 -cpcoll Basic -cpcase Basic
+exec $PROEXE -1 "$1" "$2" "$3" "$4" "$5" "$6" -cpinternal UTF-8 -cpstream UTF-8 -cpcoll Basic -cpcase Basic

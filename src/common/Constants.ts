@@ -4,5 +4,5 @@ export class Constants {
   public static extensionId = "pro-bro";
   public static globalExtensionKey = "pro-bro";
   public static context: any;
-  public static DLC: any;
+  public static DLC: string;
 }
