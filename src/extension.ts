@@ -126,7 +126,7 @@ export function activate(context: vscode.ExtensionContext) {
     defaultRuntime = oeRuntimes.find((runtime) => runtime.default);
   }
   if (defaultRuntime !== undefined) {
-    defaultDLC = defaultRuntime.path;
+    Constants.DLC = defaultRuntime.path;
   }
 
   vscode.workspace.findFiles("**/openedge-project.json").then((list) => {
