@@ -10,11 +10,14 @@ import { GroupListProvider } from "./treeview/GroupListProvider";
 import { TableNode } from "./treeview/TableNode";
 import { TablesListProvider } from "./treeview/TablesListProvider";
 import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
-import { IPort } from "./view/app/model";
+import { IPort, IConfig, ICommand } from "./view/app/model";
+import { readFile, parseOEFile } from "./common/OpenEdgeJsonReaded";
 
 export function activate(context: vscode.ExtensionContext) {
   let extensionPort: number;
   Constants.context = context;
+
+  let allFileContent: string = "";
 
   vscode.workspace.onDidChangeConfiguration((event) => {
     const affected = event.affectsConfiguration("ProBro.possiblePortsList");
@@ -123,7 +126,46 @@ export function activate(context: vscode.ExtensionContext) {
     defaultRuntime = oeRuntimes.find((runtime) => runtime.default);
   }
   if (defaultRuntime !== undefined) {
-    Constants.DLC = defaultRuntime.path;
+    defaultDLC = defaultRuntime.path;
+  }
+
+  vscode.workspace.findFiles("**/openedge-project.json").then((list) => {
+    list.forEach((uri) => createJsonDatabases(uri));
+  });
+
+  vscode.workspace
+    .createFileSystemWatcher("**/openedge-project.json")
+    .onDidChange((uri) => createJsonDatabases(uri));
+
+  function createJsonDatabases(uri: vscode.Uri) {
+    allFileContent = readFile(uri.path);
+
+    const configs = parseOEFile(allFileContent);
+
+    console.log("configs: ", configs);
+
+    let connections = context.workspaceState.get<{ [id: string]: IConfig }>(
+      `${Constants.globalExtensionKey}.dbconfig`
+    );
+    connections = {};
+
+    configs.forEach((config) => {
+      console.log("config: ", config);
+
+      console.log("Connections: ", connections);
+      if (!connections) {
+        connections = {};
+      }
+      connections[config.id] = config;
+      context.workspaceState.update(
+        `${Constants.globalExtensionKey}.dbconfig`,
+        connections
+      );
+      vscode.window.showInformationMessage("Connection saved succesfully.");
+      vscode.commands.executeCommand(
+        `${Constants.globalExtensionKey}.refreshList`
+      );
+    });
   }
 
   const tablesListProvider = new TablesListProvider(
@@ -131,6 +173,7 @@ export function activate(context: vscode.ExtensionContext) {
     fieldsProvider,
     indexesProvider
   );
+
   const tables = vscode.window.createTreeView(
     `${Constants.globalExtensionKey}-tables`,
     { treeDataProvider: tablesListProvider }
@@ -307,6 +350,7 @@ export function activate(context: vscode.ExtensionContext) {
         ) {
           portList[id].isInUse = false;
           portList[id].timestamp = undefined;
+          createJsonDatabases;
           context.globalState.update(
             `${Constants.globalExtensionKey}.portList`,
             portList
