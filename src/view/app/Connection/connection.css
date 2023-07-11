@@ -165,3 +165,25 @@ Input[type="password"] {
 .importPf {
     padding: 0;
 }
+
+.autocomplete-list {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    z-index: 2;
+    list-style-type: none;
+    width: 400px;
+    overflow: auto;
+    max-height: 90px;
+    background-color: var(--vscode-editorWidget-background);
+
+}
+
+.autocomplete-list li {
+    width: 200px;
+    cursor: pointer;
+}
+
+.autocomplete-list li.selected {
+    background-color: var(--vscode-list-activeSelectionBackground);
+}
