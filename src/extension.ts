@@ -108,8 +108,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(indexes);
 
   let oeRuntimes: Array<any>;
-  let defaultRuntime;
-  let defaultDLC;
 
   oeRuntimes = vscode.workspace
     .getConfiguration("abl.configuration")
@@ -120,13 +118,12 @@ export function activate(context: vscode.ExtensionContext) {
     );
   }
 
-  if (oeRuntimes.length === 1) {
-    defaultRuntime = oeRuntimes[0];
-  } else {
-    defaultRuntime = oeRuntimes.find((runtime) => runtime.default);
-  }
+  const defaultRuntime =
+    oeRuntimes.length === 1
+      ? oeRuntimes[0]
+      : oeRuntimes.find((runtime) => runtime.default);
   if (defaultRuntime !== undefined) {
-    Constants.DLC = defaultRuntime.path;
+    Constants.dlc = defaultRuntime.path;
   }
 
   vscode.workspace.findFiles("**/openedge-project.json").then((list) => {
