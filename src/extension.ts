@@ -10,22 +10,94 @@ import { GroupListProvider } from "./treeview/GroupListProvider";
 import { TableNode } from "./treeview/TableNode";
 import { TablesListProvider } from "./treeview/TablesListProvider";
 import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
+import { IPort, IConfig, ICommand } from "./view/app/model";
+import { readFile, parseOEFile } from "./common/OpenEdgeJsonReaded";
 
 import { VersionChecker} from "./view/app/Welcome/VersionChecker";
 import { WelcomePageProvider } from "./webview/WelcomePageProvider";
 
 export function activate(context: vscode.ExtensionContext) {
-
+  let extensionPort: number;
   Constants.context = context;
 
   const versionChecker = new VersionChecker(context);
   
-  if (versionChecker.forDebug()){ // change it to .isNewVersion
+  if (versionChecker.isNewVersion()){ // change it to .isNewVersion
     new WelcomePageProvider(context,versionChecker.versionFromPackage);
   }
 
-  const connectionUpdater = new DbConnectionUpdater();
-  connectionUpdater.updateConnectionStatuses(context);
+  let allFileContent: string = "";
+
+  vscode.workspace.onDidChangeConfiguration((event) => {
+    const affected = event.affectsConfiguration("ProBro.possiblePortsList");
+    if (!affected) {
+      return;
+    }
+
+    const settingsPorts: number[] = vscode.workspace
+      .getConfiguration("ProBro")
+      .get("possiblePortsList")!;
+    if (settingsPorts.length === 0) {
+      context.globalState.update(
+        `${Constants.globalExtensionKey}.portList`,
+        undefined
+      );
+      return;
+    }
+    let newGlobalStatePortList: IPort[] = [];
+    const globalStatePorts = context.globalState.get<{ [id: string]: IPort }>(
+      `${Constants.globalExtensionKey}.portList`
+    )!;
+    if (globalStatePorts) {
+      newGlobalStatePortList = Object.values(globalStatePorts).filter(
+        (gPort) => {
+          const portIndex: number = settingsPorts.indexOf(gPort.port);
+          if (portIndex < 0) {
+            return false;
+          } else {
+            settingsPorts.splice(portIndex, 1);
+            return true;
+          }
+        }
+      );
+    }
+
+    newGlobalStatePortList = [
+      ...newGlobalStatePortList,
+      ...settingsPorts.map((sPort: number): IPort => {
+        return { port: sPort, isInUse: false, timestamp: undefined };
+      }),
+    ];
+
+    context.globalState.update(
+      `${Constants.globalExtensionKey}.portList`,
+      newGlobalStatePortList
+    );
+  });
+
+  const updatePortList = () => {
+    if (!extensionPort) {
+      return;
+    }
+    const portList = context.globalState.get<{ [id: string]: IPort }>(
+      `${Constants.globalExtensionKey}.portList`
+    );
+    if (!portList) {
+      return;
+    }
+    for (const id of Object.keys(portList)) {
+      if (portList[id].port === extensionPort) {
+        portList[id].timestamp = Date.now();
+        break;
+      }
+    }
+    context.globalState.update(
+      `${Constants.globalExtensionKey}.portList`,
+      portList
+    );
+  };
+
+  setInterval(updatePortList, 30000);
 
   const fieldsProvider = new FieldsViewProvider(context, "fields");
   const fields = vscode.window.registerWebviewViewProvider(
@@ -43,7 +115,50 @@ export function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(indexes);
 
-  const tablesListProvider = new TablesListProvider(context, fieldsProvider, indexesProvider);
+  vscode.workspace.findFiles("**/openedge-project.json").then((list) => {
+    list.forEach((uri) => createJsonDatabases(uri));
+  });
+
+  vscode.workspace
+    .createFileSystemWatcher("**/openedge-project.json")
+    .onDidChange((uri) => createJsonDatabases(uri));
+
+  function createJsonDatabases(uri: vscode.Uri) {
+    allFileContent = readFile(uri.path);
+
+    const configs = parseOEFile(allFileContent);
+
+    console.log("configs: ", configs);
+
+    let connections = context.workspaceState.get<{ [id: string]: IConfig }>(
+      `${Constants.globalExtensionKey}.dbconfig`
+    );
+    connections = {};
+
+    configs.forEach((config) => {
+      console.log("config: ", config);
+
+      console.log("Connections: ", connections);
+      if (!connections) {
+        connections = {};
+      }
+      connections[config.id] = config;
+      context.workspaceState.update(
+        `${Constants.globalExtensionKey}.dbconfig`,
+        connections
+      );
+      vscode.window.showInformationMessage("Connection saved succesfully.");
+      vscode.commands.executeCommand(
+        `${Constants.globalExtensionKey}.refreshList`
+      );
+    });
+  }
+
+  const tablesListProvider = new TablesListProvider(
+    context,
+    fieldsProvider,
+    indexesProvider
+  );
   const tables = vscode.window.createTreeView(
     `${Constants.globalExtensionKey}-tables`,
     { treeDataProvider: tablesListProvider }
@@ -59,6 +174,13 @@ export function activate(context: vscode.ExtensionContext) {
     `${Constants.globalExtensionKey}-databases`,
     { treeDataProvider: groupListProvider }
   );
+
+  const connectionUpdater = new DbConnectionUpdater();
+  connectionUpdater.updateConnectionStatusesWithRefreshCallback(
+    context,
+    groupListProvider
+  );
+
   groups.onDidChangeSelection((e) =>
     groupListProvider.onDidChangeSelection(e, tablesListProvider)
   );
@@ -74,7 +196,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.refreshList`,
-      () => { connectionUpdater.updateConnectionStatusesWithRefreshCallback(context, groupListProvider);}
+      () => {
+        connectionUpdater.updateConnectionStatusesWithRefreshCallback(
+          context,
+          groupListProvider
+        );
+      }
     )
   );
 
@@ -82,12 +209,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.query`,
       (node: TableNode) => {
-        new QueryEditor(
-          context,
-          node,
-          tablesListProvider,
-          fieldsProvider
-        );
+        new QueryEditor(context, node, tablesListProvider, fieldsProvider);
       }
     )
   );
@@ -110,43 +232,116 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  vscode.commands.registerCommand( `${Constants.globalExtensionKey}.list-filter`, async () => {
-    const options:QuickPickItem[] = [...new Set([...tablesListProvider.tableNodes.map(table => table.tableType)])].map(label => ({label}));
-    options.forEach((option) => {
-      if (tablesListProvider.filters?.includes(option.label)) {
-        option.picked = true; 
+  vscode.commands.registerCommand(
+    `${Constants.globalExtensionKey}.list-filter`,
+    async () => {
+      const options: QuickPickItem[] = [
+        ...new Set([
+          ...tablesListProvider.tableNodes.map((table) => table.tableType),
+        ]),
+      ].map((label) => ({ label }));
+      options.forEach((option) => {
+        if (tablesListProvider.filters?.includes(option.label)) {
+          option.picked = true;
+        }
+      });
+      const quickPick = vscode.window.createQuickPick();
+      quickPick.items = options;
+      quickPick.canSelectMany = true;
+      quickPick.onDidAccept(() => quickPick.dispose());
+
+      if (tablesListProvider.filters) {
+        quickPick.selectedItems = options.filter((option) => option.picked);
       }
-    });
-    const quickPick = vscode.window.createQuickPick();
-    quickPick.items = options;
-    quickPick.canSelectMany = true;
-    quickPick.onDidAccept(() => quickPick.dispose());
 
-    if (tablesListProvider.filters) {  
-      quickPick.selectedItems = options.filter((option) => option.picked);
+      quickPick.onDidChangeSelection(async (selection) => {
+        const filters = selection.map((type) => type.label);
+        tablesListProvider.refreshList(filters);
+      });
+
+      quickPick.onDidHide(() => quickPick.dispose());
+      quickPick.show();
     }
-  
-    quickPick.onDidChangeSelection(async selection => {
-      const filters = selection.map((type) => type.label);
-      tablesListProvider.refreshList(filters);
-    });
+  );
 
-    quickPick.onDidHide(() => quickPick.dispose());
-    quickPick.show();
-  
-});
+  vscode.commands.registerCommand(
+    `${Constants.globalExtensionKey}.dblClickQuery`,
+    (_) => {
+      tablesListProvider.countClick();
+      if (tablesListProvider.tableClicked.count === 2) {
+        new QueryEditor(
+          context,
+          tablesListProvider.node as TableNode,
+          tablesListProvider,
+          fieldsProvider
+        );
+      }
+    }
+  );
 
-vscode.commands.registerCommand(
-  `${Constants.globalExtensionKey}.dblClickQuery`,(_) => {
-    tablesListProvider.countClick();
-    if (tablesListProvider.tableClicked.count === 2) {
-      new QueryEditor(
-              context,
-              tablesListProvider.node as TableNode,
-              tablesListProvider,
-              fieldsProvider
+  vscode.commands.registerCommand(
+    `${Constants.globalExtensionKey}.getPort`,
+    async (): Promise<number | undefined> => {
+      const portList = context.globalState.get<{ [id: string]: IPort }>(
+        `${Constants.globalExtensionKey}.portList`
+      )!;
+      if (!portList) {
+        await vscode.window
+          .showErrorMessage(
+            "No port provided for connection. Provide port and restart. You can use default port number.",
+            "default",
+            "settings"
+          )
+          .then((selection) => {
+            if (selection === "default") {
+              extensionPort = 23456;
+            } else if (selection === "settings") {
+              vscode.commands.executeCommand("workbench.action.openSettings");
+            }
+          });
+      } else {
+        for (const id of Object.keys(portList)) {
+          if (!portList[id].isInUse) {
+            extensionPort = portList[id].port;
+            portList[id].isInUse = true;
+            portList[id].timestamp = Date.now();
+            context.globalState.update(
+              `${Constants.globalExtensionKey}.portList`,
+              portList
             );
+            break;
+          }
+        }
+      }
+      return extensionPort;
     }
-  } 
-);
+  );
+
+  vscode.commands.registerCommand(
+    `${Constants.globalExtensionKey}.releasePort`,
+    () => {
+      const portList = context.globalState.get<{ [id: string]: IPort }>(
+        `${Constants.globalExtensionKey}.portList`
+      );
+
+      if (!portList) {
+        return;
+      }
+
+      for (const id of Object.keys(portList)) {
+        if (
+          portList[id].isInUse &&
+          Date.now() - portList[id].timestamp! > 35000
+        ) {
+          portList[id].isInUse = false;
+          portList[id].timestamp = undefined;
+          createJsonDatabases;
+          context.globalState.update(
+            `${Constants.globalExtensionKey}.portList`,
+            portList
+          );
+        }
+      }
+    }
+  );
 }

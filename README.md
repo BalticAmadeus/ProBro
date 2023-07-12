@@ -29,10 +29,11 @@ This open source project is in active development. Our goal is to simplify the a
   - Lazy loading
   - JSON/OE formatting
   - Custom queries
+  - Suggest field names (*new*)
   - View record on double-click
 - Export
   - Formats
-    - .D file (*new*)
+    - .D file
     - JSON
     - Excel
     - CSV
@@ -42,9 +43,9 @@ This open source project is in active development. Our goal is to simplify the a
     - Filtered records
 - CRUD operations
   - Delete multiple
-  - Insert
+  - Insert/copy (*new*)
   - Update
-- Extension settings configuration (*new*)
+- Extension settings configuration
 - Supported OS
   - Windows
   - Linux
@@ -63,4 +64,4 @@ Full changelog is available [here](CHANGELOG.md)
 
 ## Sponsored by [Baltic Amadeus](https://www.ba.lt/en).
 
-[![BA](resources/images/Balticmadeus_RGB-01.jpg)](https://www.ba.lt/en)<br>
+[![BA](https://raw.githubusercontent.com/BalticAmadeus/ProBro/develop/resources/images/Balticmadeus_RGB-01.jpg)](https://www.ba.lt/en)

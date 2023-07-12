@@ -49,7 +49,7 @@ export class WelcomePageProvider {
     const reactAppPathOnDisk = vscode.Uri.file(
       path.join(
         vscode.Uri.file(
-          this.context.asAbsolutePath(path.join("out/view/app", "welcomePage.js"))
+          this.context.asAbsolutePath(path.join("out/view/app", "welcome.js"))
         ).fsPath
       )
     );

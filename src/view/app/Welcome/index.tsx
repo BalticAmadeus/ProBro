@@ -1,8 +1,5 @@
 import * as React from 'react';
-import { createRoot } from "react-dom/client";
-import WelcomePage from './welcomePage';
+import * as ReactDOM from 'react-dom';
+import { Welcome } from './welcome';
 
-const root = createRoot(document.getElementById("root")!);
-root.render(
-    <WelcomePage/>
-    );
+ReactDOM.render(<Welcome />, document.getElementById('root'));
