@@ -34,8 +34,6 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
     const [label, setLabel] = React.useState(vsState.config.label);
     const [params, setParams] = React.useState(vsState.config.params);
 
-    let context: vscode.ExtensionContext;
-
     const logger = new Logger(configuration.logging.react);
 
     const onSaveClick = (event: React.MouseEvent<HTMLInputElement>) => {
@@ -66,9 +64,14 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
         const message = event.data;
         switch (message.command) {
             case "group":
-                console.log(message.columns);
                 setGroupNames(message.columns);
-                createListener(document.getElementById('input'), groupNames);
+                if (groupNames.length === 0) {
+                    getGroups();
+                }
+                else {
+                    createListener(document.getElementById('input'), groupNames);
+                }
+
             break;
         }
     };
@@ -115,7 +118,6 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
             reader.addEventListener("load", () => {
                 const pfParser = new PfParser();
                 const pfConfig = pfParser.parse(reader.result as string);
-                console.log("pfConfig: ", pfConfig);
                 setName(pfConfig.name);
                 setHost(pfConfig.host);
                 setPort(pfConfig.port);
@@ -153,9 +155,16 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
         vscode.postMessage(command);
     };
 
-
     const handleKeyDown = (e) => {
         var selected = document.querySelector(".selected") as HTMLLIElement;
+
+        if (e.key === "Enter" && selected !== null) {
+            e.preventDefault();
+            const selectedText = document.querySelector(".selected").textContent;
+
+            setGroup(selectedText);
+            createListener(document.getElementById('input'), groupNames);
+        }
 
         if (e.keyCode === 38) {
             if (selected === null) {
@@ -196,25 +205,20 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
             selected.scrollIntoView();
             selected.focus();
         }
-    }
+    };
 
     const suggestions = document.querySelector("#column-list");
 
-    function autocomplete(input, list) {
-        let lastWord = input.value.split(' ').pop();
+    function autocomplete( list) {
 
         suggestions.innerHTML = "";
 
         for (let i = 0; i < list.length; i++) {
-            if (list[i].toUpperCase().includes(lastWord.toUpperCase()) || lastWord === null) {
-
                 const suggestion = document.createElement('li');
                 suggestion.innerHTML = list[i];
-
                 suggestion.style.cursor = 'pointer';
 
                 suggestions.appendChild(suggestion);
-            }
         }
     }
 
@@ -227,12 +231,11 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
                 this.classList.add("selected");
             });
             item.addEventListener("click", function () {
-                // addText(input, this.innerHTML);
-                // console.log(groupNames);
-                // document.getElementById('input').focus();
-                // setTimeout(() => {
-                //     createListener(document.getElementById('input'), groupNames);
-                // }, 301);
+                setGroup(this.innerHTML);
+                document.getElementById('input').focus();
+                setTimeout(() => {
+                    createListener(document.getElementById('input'), groupNames);
+                }, 301);
 
             });
         });
@@ -247,7 +250,7 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
     function createListener(input, list) {
         console.log("createListener");
         console.log(list);
-        input.addEventListener('input', autocomplete(input, list));
+        input.addEventListener('input', autocomplete(list));
         mouseoverListener();
     }
 

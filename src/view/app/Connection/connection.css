@@ -172,7 +172,7 @@ Input[type="password"] {
     padding: 0;
     z-index: 2;
     list-style-type: none;
-    width: 400px;
+    width: 300px;
     overflow: auto;
     max-height: 90px;
     background-color: var(--vscode-editorWidget-background);
