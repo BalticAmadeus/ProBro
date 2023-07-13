@@ -5,8 +5,6 @@ An extension for Progress DB browsing.
 ## Current status
 This open source project is in active development. Our goal is to simplify the access to Progress DB wen using VS Code as a development environment.
 
-<img src="resources/images/multisorting.gif">
-
 ## Features
 - Connection to Progress DB:
   - Connect to Progress DB via ABL Socket server
@@ -64,4 +62,4 @@ Full changelog is available [here](CHANGELOG.md)
 
 ## Sponsored by [Baltic Amadeus](https://www.ba.lt/en).
 
-[![BA](https://raw.githubusercontent.com/BalticAmadeus/ProBro/develop/resources/images/Balticmadeus_RGB-01.jpg)](https://www.ba.lt/en)
+[![BA](https://raw.githubusercontent.com/BalticAmadeus/ProBro/main/resources/images/Balticmadeus_RGB-01.jpg)](https://www.ba.lt/en)
