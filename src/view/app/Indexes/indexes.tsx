@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useMemo } from "react";
-import { IndexRow, TableDetails } from "../model";
+import { CommandAction, IndexRow, TableDetails } from "../model";
 import DataGrid from "react-data-grid";
 import type { SortColumn } from "react-data-grid";
 import * as columnName from "./column.json";
@@ -8,6 +8,7 @@ import { Logger } from "../../../common/Logger";
 import { ISettings } from "../../../common/IExtensionSettings";
 
 interface IConfigProps {
+    vscode: any
     tableDetails: TableDetails
     configuration: ISettings;
 }
@@ -30,8 +31,9 @@ function rowKeyGetter(row: IndexRow) {
     return row.cName;
 }
 
-function Indexes({ tableDetails, configuration }: IConfigProps) {
+function Indexes({ tableDetails, configuration, vscode }: IConfigProps) {
     const [rows, setRows] = useState(tableDetails.indexes);
+    const [dataLoaded, setDataLoaded] = useState(false);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
         () => new Set()
@@ -79,13 +81,28 @@ function Indexes({ tableDetails, configuration }: IConfigProps) {
             switch (message.command) {
                 case "data":
                     setRows(message.data.indexes);
+                    setDataLoaded(true);
             }
         });
     });
 
+    const refresh = () => {
+        const obj = {
+            action: CommandAction.RefreshTableData,
+        };
+        logger.log("Refresh Table Data", obj);
+        vscode.postMessage(obj);
+    };
+
     return (
         <div>
-            {rows.length > 0 ? (
+            {!dataLoaded ? ( 
+            <button
+                className="refreshButton"
+                onClick={refresh}>Refresh
+            </button>
+
+           ) : rows.length > 0 ? (
                 <DataGrid
                     columns={columnName.columns}
                     rows={sortedRows}
@@ -99,7 +116,7 @@ function Indexes({ tableDetails, configuration }: IConfigProps) {
                     onRowsChange={setRows}
                     sortColumns={sortColumns}
                     onSortColumnsChange={setSortColumns}
-                    style={{ height: windowHeight}}
+                    style={{ height: windowHeight }}
                 />
             ) : null}
         </div>

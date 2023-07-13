@@ -13,6 +13,7 @@ declare global {
     configuration: ISettings;
   }
 }
+const vscode = window.acquireVsCodeApi();
 
 const root = createRoot(document.getElementById("root"));
-root.render(<Indexes tableDetails={window.tableDetails} configuration={window.configuration}/>);
+root.render(<Indexes tableDetails={window.tableDetails} configuration={window.configuration} vscode={vscode}/>);

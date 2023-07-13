@@ -1,7 +1,7 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import { Constants } from '../common/Constants';
-import { TableDetails } from '../view/app/model';
+import { CommandAction, ICommand, TableDetails } from '../view/app/model';
 import { TableNode } from '../treeview/TableNode';
 import { TablesListProvider } from '../treeview/TablesListProvider';
 
@@ -14,7 +14,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
     public readonly configuration = vscode.workspace.getConfiguration("ProBro");
 
     constructor(
-        private context: vscode.ExtensionContext, private _type: string) {
+        protected context: vscode.ExtensionContext, private _type: string) {
     }
 
     public resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
@@ -34,7 +34,19 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
                 }
             }
         });
+
+        this._view!.webview.onDidReceiveMessage((command: ICommand) => {
+            console.log("Command:", command);
+            switch (command.action) {
+              case CommandAction.RefreshTableData:
+                if (this.tableNode) {
+                    this.tableListProvider?.displayData(this.tableNode);
+                }
+            }
+          });
     }
+
+    
 
     private getWebviewContent(data: TableDetails): string {
         // Local path to main script run in the webview

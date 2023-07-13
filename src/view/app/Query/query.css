@@ -1,84 +1,132 @@
 .r104f42s700-beta13 {
-  --rdg-background-color: initial;
-  --rdg-header-background-color: var(--vscode-editorWidget-background);
-  --rdg-row-hover-background-color: var(--vscode-list-activeSelectionBackground);
-  --row-selected-hover-background-color: var(--vscode-list-activeSelectionBackground);
-  --rdg-row-selected-background-color: var(--vscode-list-inactiveSelectionBackground);
-  --rdg-checkbox-color: inherit;
-  --rdg-checkbox-focus-color: inherit;
-  --rdg-font-size: inherit;
-  color: inherit;
-  --rdg-selection-color: var(--vscode-focusBorder);
-  --rdg-border-color: none;
+    --rdg-background-color: initial;
+    --rdg-header-background-color: var(--vscode-editorWidget-background);
+    --rdg-row-hover-background-color: var(--vscode-list-activeSelectionBackground);
+    --row-selected-hover-background-color: var(--vscode-list-activeSelectionBackground);
+    --rdg-row-selected-background-color: var(--vscode-list-inactiveSelectionBackground);
+    --rdg-checkbox-color: inherit;
+    --rdg-checkbox-focus-color: inherit;
+    --rdg-font-size: inherit;
+    color: inherit;
+    --rdg-selection-color: var(--vscode-focusBorder);
+    --rdg-border-color: none;
 
 }
+
 .c1wupbe700-beta13 {
-  padding-inline: 4px;
+    padding-inline: 4px;
+}
+
+.cd9l4jz700-beta13 {
+    background-color: var(--rdg-header-background-color)
 }
 
 .rdg-row-even {
-  --rdg-background-color: rgba(0, 0, 0, 0.1);
+    --rdg-background-color: rgba(0, 0, 0, 0.1);
 }
 
 body.vscode-dark .rdg-row-even {
-  --rdg-background-color: rgba(0, 0, 0, 0.4);
+    --rdg-background-color: rgba(0, 0, 0, 0.4);
 }
 
 .textInput {
-background-color: var(--vscode-input-background);
-color: var(--vscode-input-foreground);
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
 }
 
-.rowid-cell{
-  width: 0px;
-  padding: 0;
+.textInputQuery {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    width: 370px;
 }
 
-.filter-cell{
+.rowid-cell {
+    width: 0px;
+    padding: 0;
+}
+
+.filter-cell {
     line-height: 35px;
     padding: 0;
 }
 
-.filter-cell > div {
+.filter-cell>div {
     padding-block: 0;
     padding-inline: 4px;
 }
 
-.filter-cell > div:first-child {
+.filter-cell>div:first-child {
     border-block-end: 1px solid var(--rdg-border-color);
 }
 
 .rdg-cell {
-  white-space: pre-wrap;
+    white-space: pre-wrap;
 }
 
 .rightAlign {
-  text-align: right;
+    text-align: right;
 }
 
 .content {
-  display: inline-flex;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .query-options {
-  position:relative;
-  width: fit-content;
-  margin-left: auto;
-  margin-right: 10px;
-
+    position: relative;
+    width: fit-content;
+    margin-top: 0px;
+    margin-right: 10px;
+    max-width: 100%;
 }
 
+
 .form {
-  width: fit-content;
-  margin-right: 10px;
+    width: fit-content;
+    margin-right: 10px;
 }
 
 .c1noyk41700-beta13:checked+.cdwjxv8700-beta13 {
-  background: var(--vscode-editor-foreground);
-  outline: none;
+    background: var(--vscode-editor-foreground);
+    outline: none;
 }
+
 .cdwjxv8700-beta13 {
-  border: 2px solid var(--vscode-editor-foreground);
-  block-size: 10px;
-  inline-size: 10px;
+    border: 2px solid var(--vscode-editor-foreground);
+    block-size: 10px;
+    inline-size: 10px;
+}
+
+.autocomplete-list {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    z-index: 2;
+    list-style-type: none;
+    width: 400px;
+    overflow: auto;
+    max-height: 90px;
+    background-color: var(--vscode-editorWidget-background);
+
+}
+
+.autocomplete-list li {
+    width: 200px;
+    cursor: pointer;
+}
+
+.autocomplete-list li.selected {
+    background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+@media (max-width: 998px) {
+    .textInputQuery {
+        width: 200px;
+    }
+}
+
+@media (max-width: 828px) {
+    .textInputQuery {
+        width: 140px;
+    }
 }

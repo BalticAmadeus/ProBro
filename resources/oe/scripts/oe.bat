@@ -13,6 +13,6 @@ if "%ICU_DATA%"==""    set ICU_DATA="%DLC%\bin\icu\data\\"
 
 cd %~dp0/..
 
-"%PROEXE%" %1 %2 %3 %4 %5 %6 %7 %8 %9
+"%PROEXE%" %1 %2 %3 %4 %5 %6 %7 %8 %9 -cpinternal UTF-8 -cpstream UTF-8 -cpcoll Basic -cpcase Basic
 
 :END

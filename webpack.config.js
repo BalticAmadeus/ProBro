@@ -7,7 +7,7 @@ module.exports = {
     fields: "./src/view/app/Fields",
     indexes: "./src/view/app/Indexes",
     query: "./src/view/app/Query",
-    welcomePage: "./src/view/app/Welcome"
+    welcome: "./src/view/app/Welcome",
   },
   output: {
     path: path.resolve(__dirname, "out/view/app"),
@@ -49,7 +49,7 @@ module.exports = {
           {
             loader: "css-loader"
           },
-          
+
         ]
       }
     ]

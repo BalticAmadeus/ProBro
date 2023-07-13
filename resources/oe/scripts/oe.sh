@@ -43,4 +43,4 @@ fi
 # Set the Progress Shared lib environment
 . $DLC/bin/slib_env
 
-exec $PROEXE -1 "$@"
+exec $PROEXE -1 "$@" -cpinternal UTF-8 -cpstream UTF-8 -cpcoll Basic -cpcase Basic
