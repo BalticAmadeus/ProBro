@@ -48,9 +48,9 @@ This open source project is in active development. Our goal is to simplify the a
   - Windows
   - Linux
 ## Guide
-- [Install and setup guide](resources/markdown/setup.md)
-- [User manual](resources/markdown/manual.md)
-- [Development setup guide](resources/markdown/dev_env_setup.md)
+- [Install and setup guide](https://github.com/BalticAmadeus/ProBro/blob/main/resources/markdown/setup.md)
+- [User manual](https://github.com/BalticAmadeus/ProBro/blob/main/resources/markdown/manual.md)
+- [Development setup guide](https://github.com/BalticAmadeus/ProBro/blob/main/resources/markdown/dev_env_setup.md)
 
 ## Related work
 - [DataDigger](https://datadigger.wordpress.com/) developed by Patrick Tingen. A great source of features and examples when working on this project.
