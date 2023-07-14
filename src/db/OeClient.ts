@@ -87,6 +87,7 @@ class OEClient {
             )}"`,
             "-pf",
             `"${this.pfFilePath}"`,
+            `"${Constants.dlc}"`,
           ].join(" "),
         ]);
       } else if (process.platform === "win32") {
@@ -118,6 +119,7 @@ class OEClient {
             ),
             "-pf",
             this.pfFilePath,
+            Constants.dlc,
           ].join(" "),
         ]);
       } else {
