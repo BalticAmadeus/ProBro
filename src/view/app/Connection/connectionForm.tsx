@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import * as React from "react";
 import { CommandAction, ICommand, IConfig } from "../model";
 import { ProBroButton } from "../assets/button";
@@ -20,6 +21,8 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
     const oldState = vscode.getState();
     const initState = oldState ? oldState : { config: initialData };
     const [vsState, _] = React.useState<IConfigState>(initState);
+
+    const [groupNames, setGroupNames] = React.useState([]);
 
     const [name, setName] = React.useState(vsState.config.name);
     const [description, setDescription] = React.useState(vsState.config.description);
@@ -57,6 +60,29 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
         vscode.postMessage(command);
     };
 
+    const messageEvent = (event) => {
+        const message = event.data;
+        switch (message.command) {
+            case "group":
+                setGroupNames(message.columns);
+                if (groupNames.length === 0) {
+                    getGroups();
+                }
+                else {
+                    createListener(document.getElementById('input'), groupNames);
+                }
+
+            break;
+        }
+    };
+
+    React.useEffect(() => {
+        window.addEventListener("message", messageEvent);
+        return () => {
+            window.removeEventListener("message", messageEvent);
+        };
+    });
+
     const onTestClick = (event: React.MouseEvent<HTMLInputElement>) => {
         event.preventDefault();
         const id: string = "TestClick";
@@ -92,7 +118,6 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
             reader.addEventListener("load", () => {
                 const pfParser = new PfParser();
                 const pfConfig = pfParser.parse(reader.result as string);
-                console.log("pfConfig: ", pfConfig);
                 setName(pfConfig.name);
                 setHost(pfConfig.host);
                 setPort(pfConfig.port);
@@ -107,6 +132,127 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
         };
         input.click();
     };
+
+    function getGroups() {
+        const id: string = "getGroup";
+        const config: IConfig = {
+            id: "",
+            label: "",
+            name: "",
+            description: "",
+            host: "",
+            port: "",
+            user: "",
+            password: "",
+            group: "",
+            params: "",
+        };
+        const command: ICommand = {
+            id: id,
+            action: CommandAction.Group,
+            content: config,
+        };
+        vscode.postMessage(command);
+    };
+
+    const handleKeyDown = (e) => {
+        var selected = document.querySelector(".selected") as HTMLLIElement;
+
+        if (e.key === "Enter" && selected !== null) {
+            e.preventDefault();
+            const selectedText = document.querySelector(".selected").textContent;
+
+            setGroup(selectedText);
+            createListener(document.getElementById('input'), groupNames);
+        }
+
+        if (e.keyCode === 38) {
+            if (selected === null) {
+                document.querySelectorAll(".autocomplete-list li").item(0).classList.add("selected");
+            }
+            else {
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
+                if (selected.previousElementSibling === null) {
+                    selected.parentElement.lastElementChild.classList.add("selected");
+                } else {
+                    selected.previousElementSibling.classList.add("selected");
+                }
+            }
+            selected = document.querySelector(".selected") as HTMLLIElement;
+            selected.scrollIntoView();
+            selected.focus();
+        }
+
+        if (e.keyCode === 40) {
+            if (selected === null) {
+                document.querySelectorAll(".autocomplete-list li").item(0).classList.add("selected");
+            }
+            else {
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
+
+                if (selected.nextElementSibling === null) {
+                    selected.parentElement.firstElementChild.classList.add("selected");
+
+                } else {
+                    selected.nextElementSibling.classList.add("selected");
+                }
+            }
+            selected = document.querySelector(".selected") as HTMLLIElement;
+            selected.scrollIntoView();
+            selected.focus();
+        }
+    };
+
+    const suggestions = document.querySelector("#column-list");
+
+    function autocomplete( list) {
+
+        suggestions.innerHTML = "";
+
+        for (let i = 0; i < list.length; i++) {
+                const suggestion = document.createElement('li');
+                suggestion.innerHTML = list[i];
+                suggestion.style.cursor = 'pointer';
+
+                suggestions.appendChild(suggestion);
+        }
+    }
+
+    function mouseoverListener() {
+        document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+            item.addEventListener("mouseover", function () {
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
+                this.classList.add("selected");
+            });
+            item.addEventListener("click", function () {
+                setGroup(this.innerHTML);
+                document.getElementById('input').focus();
+                setTimeout(() => {
+                    createListener(document.getElementById('input'), groupNames);
+                }, 301);
+
+            });
+        });
+    }
+
+    function hideSuggestions() {
+        setTimeout(() => {
+            suggestions.innerHTML = "";
+        }, 300);
+    }
+
+    function createListener(input, list) {
+        console.log("createListener");
+        console.log(list);
+        input.addEventListener('input', autocomplete(list));
+        mouseoverListener();
+    }
 
     return (
         <React.Fragment>
@@ -134,13 +280,21 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
                             </div>
                             <div className="input-box">
                                 <input
+                                    id="input"
                                     type="text"
                                     placeholder="Group"
                                     value={group}
+                                    onFocus={() => {
+                                        getGroups();
+                                    }}
+                                    onBlur={hideSuggestions}
                                     onChange={(event) => {
+                                        createListener(document.getElementById('input'), groupNames);
                                         setGroup(event.target.value);
                                     }}
+                                    onKeyDown={handleKeyDown}
                                 />
+                                <ul className="autocomplete-list" id="column-list"></ul>
                             </div>
                             <div className="input-box-wide">
                                 <input
