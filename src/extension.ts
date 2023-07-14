@@ -10,11 +10,14 @@ import { GroupListProvider } from "./treeview/GroupListProvider";
 import { TableNode } from "./treeview/TableNode";
 import { TablesListProvider } from "./treeview/TablesListProvider";
 import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
-import { IPort } from "./view/app/model";
+import { IPort, IConfig, ICommand } from "./view/app/model";
+import { readFile, parseOEFile } from "./common/OpenEdgeJsonReaded";
 
 export function activate(context: vscode.ExtensionContext) {
   let extensionPort: number;
   Constants.context = context;
+
+  let allFileContent: string = "";
 
   vscode.workspace.onDidChangeConfiguration((event) => {
     const affected = event.affectsConfiguration("ProBro.possiblePortsList");
@@ -66,9 +69,11 @@ export function activate(context: vscode.ExtensionContext) {
   const updatePortList = () => {
     if (!extensionPort) {
       return;
-    };
-    const portList = context.globalState.get<{[id: string]:IPort}>(`${Constants.globalExtensionKey}.portList`);
-    if(!portList) {
+    }
+    const portList = context.globalState.get<{ [id: string]: IPort }>(
+      `${Constants.globalExtensionKey}.portList`
+    );
+    if (!portList) {
       return;
     }
     for (const id of Object.keys(portList)) {
@@ -76,10 +81,13 @@ export function activate(context: vscode.ExtensionContext) {
         portList[id].timestamp = Date.now();
         break;
       }
-    };
-    context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
+    }
+    context.globalState.update(
+      `${Constants.globalExtensionKey}.portList`,
+      portList
+    );
   };
-  
+
   setInterval(updatePortList, 30000);
 
   const fieldsProvider = new FieldsViewProvider(context, "fields");
@@ -98,7 +106,50 @@ export function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(indexes);
 
-  const tablesListProvider = new TablesListProvider(context, fieldsProvider, indexesProvider);
+  vscode.workspace.findFiles("**/openedge-project.json").then((list) => {
+    list.forEach((uri) => createJsonDatabases(uri));
+  });
+
+  vscode.workspace
+    .createFileSystemWatcher("**/openedge-project.json")
+    .onDidChange((uri) => createJsonDatabases(uri));
+
+  function createJsonDatabases(uri: vscode.Uri) {
+    allFileContent = readFile(uri.path);
+
+    const configs = parseOEFile(allFileContent);
+
+    console.log("configs: ", configs);
+
+    let connections = context.workspaceState.get<{ [id: string]: IConfig }>(
+      `${Constants.globalExtensionKey}.dbconfig`
+    );
+    connections = {};
+
+    configs.forEach((config) => {
+      console.log("config: ", config);
+
+      console.log("Connections: ", connections);
+      if (!connections) {
+        connections = {};
+      }
+      connections[config.id] = config;
+      context.workspaceState.update(
+        `${Constants.globalExtensionKey}.dbconfig`,
+        connections
+      );
+      vscode.window.showInformationMessage("Connection saved succesfully.");
+      vscode.commands.executeCommand(
+        `${Constants.globalExtensionKey}.refreshList`
+      );
+    });
+  }
+
+  const tablesListProvider = new TablesListProvider(
+    context,
+    fieldsProvider,
+    indexesProvider
+  );
   const tables = vscode.window.createTreeView(
     `${Constants.globalExtensionKey}-tables`,
     { treeDataProvider: tablesListProvider }
@@ -114,10 +165,12 @@ export function activate(context: vscode.ExtensionContext) {
     `${Constants.globalExtensionKey}-databases`,
     { treeDataProvider: groupListProvider }
   );
-   
-  const connectionUpdater = new DbConnectionUpdater();
-  connectionUpdater.updateConnectionStatusesWithRefreshCallback(context, groupListProvider);
 
+  const connectionUpdater = new DbConnectionUpdater();
+  connectionUpdater.updateConnectionStatusesWithRefreshCallback(
+    context,
+    groupListProvider
+  );
 
   groups.onDidChangeSelection((e) =>
     groupListProvider.onDidChangeSelection(e, tablesListProvider)
@@ -134,7 +187,12 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.refreshList`,
-      () => { connectionUpdater.updateConnectionStatusesWithRefreshCallback(context, groupListProvider);}
+      () => {
+        connectionUpdater.updateConnectionStatusesWithRefreshCallback(
+          context,
+          groupListProvider
+        );
+      }
     )
   );
 
@@ -142,12 +200,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.query`,
       (node: TableNode) => {
-        new QueryEditor(
-          context,
-          node,
-          tablesListProvider,
-          fieldsProvider
-        );
+        new QueryEditor(context, node, tablesListProvider, fieldsProvider);
       }
     )
   );
@@ -170,12 +223,17 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  vscode.commands.registerCommand( 
-    `${Constants.globalExtensionKey}.list-filter`, async () => {
-      const options:QuickPickItem[] = [...new Set([...tablesListProvider.tableNodes.map(table => table.tableType)])].map(label => ({label}));
+  vscode.commands.registerCommand(
+    `${Constants.globalExtensionKey}.list-filter`,
+    async () => {
+      const options: QuickPickItem[] = [
+        ...new Set([
+          ...tablesListProvider.tableNodes.map((table) => table.tableType),
+        ]),
+      ].map((label) => ({ label }));
       options.forEach((option) => {
         if (tablesListProvider.filters?.includes(option.label)) {
-          option.picked = true; 
+          option.picked = true;
         }
       });
       const quickPick = vscode.window.createQuickPick();
@@ -183,11 +241,11 @@ export function activate(context: vscode.ExtensionContext) {
       quickPick.canSelectMany = true;
       quickPick.onDidAccept(() => quickPick.dispose());
 
-      if (tablesListProvider.filters) {  
+      if (tablesListProvider.filters) {
         quickPick.selectedItems = options.filter((option) => option.picked);
       }
-    
-      quickPick.onDidChangeSelection(async selection => {
+
+      quickPick.onDidChangeSelection(async (selection) => {
         const filters = selection.map((type) => type.label);
         tablesListProvider.refreshList(filters);
       });
@@ -198,17 +256,18 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   vscode.commands.registerCommand(
-    `${Constants.globalExtensionKey}.dblClickQuery`,(_) => {
+    `${Constants.globalExtensionKey}.dblClickQuery`,
+    (_) => {
       tablesListProvider.countClick();
       if (tablesListProvider.tableClicked.count === 2) {
         new QueryEditor(
-                context,
-                tablesListProvider.node as TableNode,
-                tablesListProvider,
-                fieldsProvider
-              );
+          context,
+          tablesListProvider.node as TableNode,
+          tablesListProvider,
+          fieldsProvider
+        );
       }
-    } 
+    }
   );
 
   vscode.commands.registerCommand(
@@ -237,7 +296,10 @@ export function activate(context: vscode.ExtensionContext) {
             extensionPort = portList[id].port;
             portList[id].isInUse = true;
             portList[id].timestamp = Date.now();
-            context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
+            context.globalState.update(
+              `${Constants.globalExtensionKey}.portList`,
+              portList
+            );
             break;
           }
         }
@@ -247,19 +309,30 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   vscode.commands.registerCommand(
-    `${Constants.globalExtensionKey}.releasePort`, () => {
-      const portList = context.globalState.get<{[id: string]:IPort}>(`${Constants.globalExtensionKey}.portList`);
+    `${Constants.globalExtensionKey}.releasePort`,
+    () => {
+      const portList = context.globalState.get<{ [id: string]: IPort }>(
+        `${Constants.globalExtensionKey}.portList`
+      );
 
-      if(!portList) {
+      if (!portList) {
         return;
       }
 
       for (const id of Object.keys(portList)) {
-        if (portList[id].isInUse && (Date.now() - portList[id].timestamp!) > 35000) {
+        if (
+          portList[id].isInUse &&
+          Date.now() - portList[id].timestamp! > 35000
+        ) {
           portList[id].isInUse = false;
           portList[id].timestamp = undefined;
-          context.globalState.update(`${Constants.globalExtensionKey}.portList`, portList);
+          createJsonDatabases;
+          context.globalState.update(
+            `${Constants.globalExtensionKey}.portList`,
+            portList
+          );
         }
-      };
-    });
+      }
+    }
+  );
 }

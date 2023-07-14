@@ -22,10 +22,43 @@ export class DbConnectionUpdater {
       if (this.locked === false) {
         this.locked = true;
         await this.updateStatuses();
+        await this.updateWorkStateStatuses();
       }
     } finally {
       this.locked = false;
     }
+  }
+
+  private async updateWorkStateStatuses() {
+    let connections = this.context.workspaceState.get<{
+      [id: string]: IConfig;
+    }>(`pro-bro.dbconfig`);
+
+    if (!connections || Object.keys(connections).length === 0) {
+      this.callback.refresh();
+      return;
+    }
+
+    for (let id of Object.keys(connections)) {
+      connections![id].conStatus = ConnectionStatus.Connecting;
+      this.updateWorkStateStatus(connections);
+      await this.wait();
+
+      const data = await DatabaseProcessor.getInstance().getDBVersion(
+        connections[id]
+      );
+      if (data instanceof Error || "error" in data) {
+        connections[id].conStatus = ConnectionStatus.NotConnected;
+      } else {
+        connections[id].conStatus = ConnectionStatus.Connected;
+      }
+      this.updateWorkStateStatus(connections);
+    }
+  }
+
+  private updateWorkStateStatus(connections: { [id: string]: IConfig }) {
+    this.context.workspaceState.update(`pro-bro.dbconfig`, connections);
+    this.callback.refresh();
   }
 
   private async updateStatuses() {
@@ -43,8 +76,7 @@ export class DbConnectionUpdater {
       this.updateStatus(connections);
       await this.wait();
 
-      // const data = await DatabaseProcessor.getInstance().getDBVersion(connections[id]);
-      const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
+      const data = await DatabaseProcessor.getInstance().getDBVersion(
         connections[id]
       );
       if (data instanceof Error || "error" in data) {

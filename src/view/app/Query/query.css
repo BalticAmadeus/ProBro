@@ -17,6 +17,10 @@
     padding-inline: 4px;
 }
 
+.cd9l4jz700-beta13 {
+    background-color: var(--rdg-header-background-color)
+}
+
 .rdg-row-even {
     --rdg-background-color: rgba(0, 0, 0, 0.1);
 }
