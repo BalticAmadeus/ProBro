@@ -58,7 +58,7 @@ This open source project is in active development. Our goal is to simplify the a
 
 ## Changelog
 
-Full changelog is available [here](CHANGELOG.md)
+Full changelog is available [here](https://github.com/BalticAmadeus/ProBro/blob/main/CHANGELOG.md)
 
 ## Sponsored by [Baltic Amadeus](https://www.ba.lt/en).
 
