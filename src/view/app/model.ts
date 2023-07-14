@@ -63,6 +63,7 @@ export enum CommandAction {
   Submit,
   UpdateColumns,
   RefreshTableData,
+  Group,
 }
 
 export interface FieldRow {

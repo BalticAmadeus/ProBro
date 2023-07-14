@@ -13,9 +13,18 @@ import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
 import { IPort, IConfig, ICommand } from "./view/app/model";
 import { readFile, parseOEFile } from "./common/OpenEdgeJsonReaded";
 
+import { VersionChecker} from "./view/app/Welcome/VersionChecker";
+import { WelcomePageProvider } from "./webview/WelcomePageProvider";
+
 export function activate(context: vscode.ExtensionContext) {
   let extensionPort: number;
   Constants.context = context;
+
+  const versionChecker = new VersionChecker(context);
+  
+  if (versionChecker.isNewVersion()){ // change it to .isNewVersion
+    new WelcomePageProvider(context,versionChecker.versionFromPackage);
+  }
 
   let allFileContent: string = "";
 
@@ -82,6 +91,7 @@ export function activate(context: vscode.ExtensionContext) {
         break;
       }
     }
+
     context.globalState.update(
       `${Constants.globalExtensionKey}.portList`,
       portList
@@ -105,6 +115,25 @@ export function activate(context: vscode.ExtensionContext) {
     {}
   );
   context.subscriptions.push(indexes);
+
+  let oeRuntimes: Array<any>;
+
+  oeRuntimes = vscode.workspace
+    .getConfiguration("abl.configuration")
+    .get<Array<any>>("runtimes")!;
+  if (oeRuntimes.length === 0) {
+    vscode.window.showWarningMessage(
+      "No OpenEdge runtime configured on this machine"
+    );
+  }
+
+  const defaultRuntime =
+    oeRuntimes.length === 1
+      ? oeRuntimes[0]
+      : oeRuntimes.find((runtime) => runtime.default);
+  if (defaultRuntime !== undefined) {
+    Constants.dlc = defaultRuntime.path;
+  }
 
   vscode.workspace.findFiles("**/openedge-project.json").then((list) => {
     list.forEach((uri) => createJsonDatabases(uri));
@@ -150,6 +179,7 @@ export function activate(context: vscode.ExtensionContext) {
     fieldsProvider,
     indexesProvider
   );
+
   const tables = vscode.window.createTreeView(
     `${Constants.globalExtensionKey}-tables`,
     { treeDataProvider: tablesListProvider }

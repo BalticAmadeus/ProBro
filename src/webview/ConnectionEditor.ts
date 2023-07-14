@@ -70,6 +70,9 @@ export class ConnectionEditor {
     this.panel.webview.onDidReceiveMessage(
       (command: ICommand) => {
         this.logger.log("command:", command);
+        let connections = this.context.globalState.get<{
+          [id: string]: IConfig;
+        }>(`${Constants.globalExtensionKey}.dbconfig`);
         switch (command.action) {
           case CommandAction.Save:
             if (!this.isTestedSuccesfully) {
@@ -78,9 +81,6 @@ export class ConnectionEditor {
               );
               return;
             }
-            let connections = this.context.globalState.get<{
-              [id: string]: IConfig;
-            }>(`${Constants.globalExtensionKey}.dbconfig`);
             if (!connections) {
               connections = {};
             }
@@ -112,6 +112,17 @@ export class ConnectionEditor {
                 }
               });
             return;
+          case CommandAction.Group:
+            var groupNames: string[] = [];
+
+            if (connections) {
+              for (const id of Object.keys(connections)) {
+                let group = connections[id].group.toUpperCase();
+                groupNames.push(group);
+              }
+              this.groupList(groupNames);
+            }
+            return;
         }
       },
       undefined,
@@ -125,6 +136,14 @@ export class ConnectionEditor {
       null,
       context.subscriptions
     );
+  }
+
+  private groupList(groupNames: string[]) {
+    const obj = {
+      command: "group",
+      columns: groupNames,
+    };
+    this.panel?.webview.postMessage(obj);
   }
 
   private getWebviewContent(): string {
@@ -143,8 +162,8 @@ export class ConnectionEditor {
     const cspSource = this.panel?.webview.cspSource;
 
     let config: IConfig = {
-      type: ConnectionType.Local,
       connectionId: "LOCAL",
+      type: ConnectionType.Local,
       id: uuid(),
       label: "",
       name: "",
