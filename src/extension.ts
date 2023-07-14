@@ -119,17 +119,12 @@ export function activate(context: vscode.ExtensionContext) {
 
     const configs = parseOEFile(allFileContent);
 
-    console.log("configs: ", configs);
-
     let connections = context.workspaceState.get<{ [id: string]: IConfig }>(
       `${Constants.globalExtensionKey}.dbconfig`
     );
     connections = {};
 
     configs.forEach((config) => {
-      console.log("config: ", config);
-
-      console.log("Connections: ", connections);
       if (!connections) {
         connections = {};
       }
