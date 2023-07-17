@@ -178,8 +178,14 @@ export default function UpdatePopup({
                                     Are You sure You want delete {selectedRows.size} record
                                     {selectedRows.size > 1 && "s"}?
                                 </div>
-                            ) : (
+                            ) : action === ProcessAction.Read ? (
                                 <>
+                                    <table>
+                                        <tbody>{table}</tbody>
+                                    </table>
+                                </>
+                            ) : (
+                                <div>
                                     <table>
                                         <tbody>{table}</tbody>
                                     </table>
@@ -190,7 +196,7 @@ export default function UpdatePopup({
                                             defaultChecked
                                         /> Use Triggers
                                     </label>
-                                </>
+                                </div>
                             )}
                         </div>
                         <div className="update-btn-container">
