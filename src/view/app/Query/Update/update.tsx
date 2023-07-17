@@ -188,7 +188,7 @@ export default function UpdatePopup({
                                             id="myCheckbox"
                                             onClick={listenForCheck}
                                             defaultChecked
-                                        /> Check me!
+                                        /> Use Triggers
                                     </label>
                                 </>
                             )}
