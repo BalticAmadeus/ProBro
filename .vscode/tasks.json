@@ -15,6 +15,50 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"label": "Docker: Start and Watch",
+			"type": "shell",
+			"command": "docker-compose -f ${workspaceFolder}/docker/docker-compose.yml up",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
+			"problemMatcher": {
+				"owner": "docker",
+				"fileLocation": [
+					"relative",
+					"${workspaceFolder}/docker"
+				],
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^(.*)$",
+					"endsPattern": "^(.*)$"
+				},
+				"pattern": {
+					"regexp": "^(.*)$",
+					"file": 1,
+					"location": 0,
+					"message": 1
+				}
+			}
+		},
+		{
+			"label": "Docker: Stop",
+			"type": "shell",
+			"command": "docker-compose -f ${workspaceFolder}/docker/docker-compose.yml down",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "never"
+			},
+			"problemMatcher": []
 		}
 	]
 }
