@@ -1,0 +1,26 @@
+{
+    "name": "pro-bro",
+    "version": "1.0",
+    "oeversion": "12.6",
+    "graphicalMode": false,
+    "charset": "utf-8",
+    "extraParameters": "",
+    "buildPath": [],
+    "dbConnections": [
+        {
+            "name": "sports2020",
+            "connect": "-db sports2020 -S 30000",
+            "dumpFile": "",
+            "aliases": []
+        },
+        {
+            "name": "notWorking",
+            "connect": "-db notWorking -S 99999",
+            "dumpFile": "",
+            "aliases": []
+        }
+    ],
+    "numThreads": 1,
+    "procedures": [],
+    "profiles": []
+}

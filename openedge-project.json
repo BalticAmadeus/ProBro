@@ -1,17 +1,33 @@
 {
-    "name": "pro-bro",
-    "version": "1.0",
-    "oeversion": "12.6",
-    "graphicalMode": false,
-    "charset": "utf-8",
-    "extraParameters": "",
-    "buildPath": [
-      { "type": "source", "path": "resources/oe/src" },
-      { "type": "propath", "path": "resources/oe" },
-      { "type": "propath", "path": "resources/oe/src" }
-    ],
-    "dbConnections": [],
-    "numThreads": 1,
-    "procedures": [ ],
-    "profiles": [ ]
-  }
+  "name": "pro-bro",
+  "version": "1.0",
+  "oeversion": "12.6",
+  "graphicalMode": false,
+  "charset": "utf-8",
+  "extraParameters": "",
+  "buildPath": [
+    {
+      "type": "source",
+      "path": "resources/oe/src"
+    },
+    {
+      "type": "propath",
+      "path": "resources/oe"
+    },
+    {
+      "type": "propath",
+      "path": "resources/oe/src"
+    }
+  ],
+  "dbConnections": [
+    {
+      "name": "sports2020",
+      "connect": "-db sports2020 -H localhost -S 30000",
+      "dumpFile": "",
+      "aliases": []
+    }
+  ],
+  "numThreads": 1,
+  "procedures": [],
+  "profiles": []
+}

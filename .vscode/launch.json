@@ -10,7 +10,8 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"${workspaceFolder}/docker"
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -30,6 +31,11 @@
 				"${workspaceFolder}/out/test/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}"
+		}
+	],
+	"folders": [
+		{
+			"path": "${workspaceFolder}/docker"
 		}
 	]
 }
