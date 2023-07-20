@@ -19,8 +19,6 @@ export class LocalClient extends AClient implements IClient {
 
   private constructor(connectionParams: ConnectionParams) {
     super(connectionParams);
-
-    this.startAndListen();
   }
 
   // singleton
@@ -30,7 +28,13 @@ export class LocalClient extends AClient implements IClient {
         new ConnectionParams(this.host, await this.getPort())
       );
     }
-    return LocalClient.localClient;
+    return LocalClient.localClient.init();
+  }
+
+  private async init(): Promise<any> {
+    return this.startAndListen().finally(() => {
+      console.log("V2: started and listened");
+    });
   }
 
   private static async getPort(): Promise<number> {
@@ -87,6 +91,7 @@ export class LocalClient extends AClient implements IClient {
       )}"`,
       "-pf",
       `"${this.pfFilePath}"`,
+      `"${Constants.dlc}"`,
     ].join(" "),
   ];
 
@@ -117,15 +122,21 @@ export class LocalClient extends AClient implements IClient {
       ),
       "-pf",
       this.pfFilePath,
+      Constants.dlc,
     ].join(" "),
   ];
 
-  protected startAndListen() {
-    // this.start();
-    this.listen(this.start());
+  protected async startAndListen(): Promise<any> {
+    return this.start()
+      .then(() => {
+        this.listen();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
-  protected start(): Promise<any> {
+  protected async start(): Promise<any> {
     return new Promise((resolve, reject) => {
       console.log("V2: Starting OE client");
       this.createPfFile();

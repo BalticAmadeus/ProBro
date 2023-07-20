@@ -8,6 +8,7 @@ import { TablesListProvider } from "../treeview/TablesListProvider";
 import { FieldsViewProvider } from "./FieldsViewProvider";
 import { DumpFileFormatter } from "./DumpFileFormatter";
 import { Logger } from "../common/Logger";
+import { ProcessorFactory } from "../repo/processor/ProcessorFactory";
 
 export class QueryEditor {
   private readonly panel: vscode.WebviewPanel | undefined;
@@ -44,8 +45,22 @@ export class QueryEditor {
     );
 
     this.panel.iconPath = {
-      dark: vscode.Uri.file(path.join( this.extensionPath, "resources", "icon", "query-icon-dark.svg")),
-      light: vscode.Uri.file(path.join( this.extensionPath, "resources", "icon", "query-icon-light.svg"))
+      dark: vscode.Uri.file(
+        path.join(
+          this.extensionPath,
+          "resources",
+          "icon",
+          "query-icon-dark.svg"
+        )
+      ),
+      light: vscode.Uri.file(
+        path.join(
+          this.extensionPath,
+          "resources",
+          "icon",
+          "query-icon-light.svg"
+        )
+      ),
     };
 
     if (this.panel) {
@@ -61,8 +76,7 @@ export class QueryEditor {
         switch (command.action) {
           case CommandAction.Query:
             if (this.tableListProvider.config) {
-
-              DatabaseProcessor.getInstance()
+              ProcessorFactory.getProcessorInstance()
                 .getTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,
@@ -78,13 +92,13 @@ export class QueryEditor {
                     };
                     this.logger.log("data:", obj);
                     this.panel?.webview.postMessage(obj);
-                  } 
+                  }
                 });
               break;
             }
           case CommandAction.CRUD:
             if (this.tableListProvider.config) {
-              DatabaseProcessor.getInstance()
+              ProcessorFactory.getProcessorInstance()
                 .getTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,
@@ -100,13 +114,12 @@ export class QueryEditor {
                     this.logger.log("data:", obj);
                     this.panel?.webview.postMessage(obj);
                   }
-                    
                 });
               break;
             }
           case CommandAction.Submit:
             if (this.tableListProvider.config) {
-              DatabaseProcessor.getInstance()
+              ProcessorFactory.getProcessorInstance()
                 .submitTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,
@@ -120,24 +133,28 @@ export class QueryEditor {
                       data: oe,
                     };
                     this.logger.log("data:", obj);
-                    if (obj.data.description != null){
+                    if (obj.data.description != null) {
                       if (obj.data.description == "")
-                        vscode.window.showErrorMessage("Database Error: Trigger canceled action");
+                        vscode.window.showErrorMessage(
+                          "Database Error: Trigger canceled action"
+                        );
                       else
-                        vscode.window.showErrorMessage("Database Error: " + obj.data.description);
-                    }
-                    else{
-                      vscode.window.showInformationMessage("Action was successful");
+                        vscode.window.showErrorMessage(
+                          "Database Error: " + obj.data.description
+                        );
+                    } else {
+                      vscode.window.showInformationMessage(
+                        "Action was successful"
+                      );
                     }
                     this.panel?.webview.postMessage(obj);
                   }
-                    
                 });
               break;
             }
           case CommandAction.Export:
             if (this.tableListProvider.config) {
-              DatabaseProcessor.getInstance()
+              ProcessorFactory.getProcessorInstance()
                 .getTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,

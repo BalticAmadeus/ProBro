@@ -9,7 +9,14 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "@typescript-eslint/naming-convention": "warn",
+        "@typescript-eslint/naming-convention": [
+            "warn",
+            {
+              "selector": "enumMember",
+              "format": ["PascalCase"]
+            }
+          ],
+      
         "@typescript-eslint/semi": "warn",
         "curly": "warn",
         "eqeqeq": "warn",

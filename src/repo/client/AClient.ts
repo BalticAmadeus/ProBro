@@ -14,8 +14,8 @@ export class AClient {
     this.connectionParams = connectionParams;
   }
 
-  protected listen(start: Promise<any>): Promise<any> {
-    return start.then(() => {
+  protected listen(): Promise<any> {
+    return new Promise((resolve) => {
       console.log("V2: Starting TCP listener");
       this.client = new Net.Socket();
       this.client.connect(

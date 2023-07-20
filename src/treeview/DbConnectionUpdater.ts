@@ -44,7 +44,7 @@ export class DbConnectionUpdater {
       this.updateWorkStateStatus(connections);
       await this.wait();
 
-      const data = await DatabaseProcessor.getInstance().getDBVersion(
+      const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
         connections[id]
       );
       if (data instanceof Error || "error" in data) {
@@ -76,7 +76,7 @@ export class DbConnectionUpdater {
       this.updateStatus(connections);
       await this.wait();
 
-      const data = await DatabaseProcessor.getInstance().getDBVersion(
+      const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
         connections[id]
       );
       if (data instanceof Error || "error" in data) {

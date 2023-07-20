@@ -59,35 +59,73 @@ export class DBProcessor implements IProcessor {
     return this.execRequest(config, params);
   }
 
-  public getTablesList(config: IConfig): Promise<any> {
-    throw new Error("Method not implemented.");
+  public async getTablesList(config: IConfig): Promise<any> {
+    var params: IOEParams = {
+      connectionString: (
+        await ClientFactory.getClientHelperInstance(config)
+      ).formConnectionString(config),
+      command: "get_tables",
+    };
+    return this.execRequest(config, params);
   }
 
-  public getTableData(
+  public async getTableData(
     config: IConfig,
     tableName: string | undefined,
     inputParams: ITableData | undefined
   ): Promise<any> {
-    throw new Error("Method not implemented.");
+    if (config && tableName && inputParams) {
+      var params: IOEParams = {
+        connectionString: (
+          await ClientFactory.getClientHelperInstance(config)
+        ).formConnectionString(config),
+        command: "get_table_data",
+        params: { tableName: tableName, ...inputParams },
+      };
+      return this.execRequest(config, params);
+    } else {
+      return Promise.resolve({ columns: [], data: [] });
+    }
   }
 
-  public submitTableData(
+  public async submitTableData(
     config: IConfig,
     tableName: string | undefined,
     inputParams: ITableData | undefined
   ): Promise<any> {
-    throw new Error("Method not implemented.");
+    if (config && tableName && inputParams) {
+      var params: IOEParams = {
+        connectionString: (
+          await ClientFactory.getClientHelperInstance(config)
+        ).formConnectionString(config),
+        command: "submit_table_data",
+        params: { tableName: tableName, ...inputParams },
+      };
+      return this.execRequest(config, params);
+    } else {
+      return Promise.resolve({ columns: [], data: [] });
+    }
   }
 
-  public getTableDetails(
+  public async getTableDetails(
     config: IConfig,
-    tableName: string | undefined,
-    inputParams: ITableData | undefined
+    tableName: string | undefined
   ): Promise<TableDetails> {
-    throw new Error("Method not implemented.");
+    if (config && tableName) {
+      var params: IOEParams = {
+        connectionString: (
+          await ClientFactory.getClientHelperInstance(config)
+        ).formConnectionString(config),
+        command: "get_table_details",
+        params: tableName,
+      };
+      return this.execRequest(config, params);
+    } else {
+      return Promise.resolve({ fields: [], indexes: [] });
+    }
   }
 
-  private execRequest(
+  private async execRequest(
     config: IConnectionConfig,
     params: IOEParams
   ): Promise<any> {
@@ -113,35 +151,37 @@ export class DBProcessor implements IProcessor {
     this.logger.log("execShell params", params);
     var timeInMs = Date.now();
 
-    return (
-      getOEClient()
-        // return (
-        //   ClientFactory.getInstance(config)
-        .then((client) => {
-          console.log(cmd);
-          // return client.sendRequest(cmd);
-          return client.sendCommand(cmd);
-        })
-        .then((data) => {
-          var json = JSON.parse(data);
-          console.log(
-            `Process time: ${Date.now() - timeInMs}, OE time: ${
-              json.debug.time
-            }, Connect time: ${json.debug.timeConnect}`
-          );
-          console.log(json.debug);
-          this.logger.log("getOEClient returns", json);
-          this.processStartTime = undefined;
-          return json;
-        })
-        .catch((err) => {
-          this.logger.log("getOeClient error", err.message);
-          vscode.window.showWarningMessage(err.message);
-          this.errObj.isError = true;
-          this.errObj.errMessage = err.message;
-          this.processStartTime = undefined;
-          return Promise.resolve(new Error(err.message));
-        })
-    );
+    // return (
+    //   getOEClient()
+    return ClientFactory.getInstance(config)
+      .then((client) => {
+        console.log("CMD: ", cmd);
+        return client.sendRequest(cmd);
+        // return client.sendCommand(cmd);
+      })
+      .then((data) => {
+        var json = JSON.parse(data);
+        console.log(
+          `Process time: ${Date.now() - timeInMs}, OE time: ${
+            json.debug.time
+          }, Connect time: ${json.debug.timeConnect}`
+        );
+        console.log(json.debug);
+        this.logger.log("getOEClient returns", json);
+        this.processStartTime = undefined;
+        return json;
+      })
+      .catch((err) => {
+        this.logger.log("getOeClient error", err.message);
+        vscode.window.showWarningMessage(err.message);
+        this.errObj.isError = true;
+        this.errObj.errMessage = err.message;
+        this.processStartTime = undefined;
+        return Promise.resolve(new Error(err.message));
+      })
+      .finally(() => {
+        this.logger.log("getOeClient finally");
+        this.processStartTime = undefined;
+      });
   }
 }

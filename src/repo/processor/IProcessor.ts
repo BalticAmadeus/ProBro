@@ -15,7 +15,6 @@ export interface IProcessor {
   ): Promise<any>;
   getTableDetails(
     config: IConfig,
-    tableName: string | undefined,
-    inputParams: ITableData | undefined
+    tableName: string | undefined
   ): Promise<TableDetails>;
 }
