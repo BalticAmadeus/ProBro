@@ -22,10 +22,11 @@ export default function UpdatePopup({
     setOpen,
     action,
     readRow,
-    logValue
+    logValue,
+    defaultTrigger
 }) {
     const [isWindowSmall, setIsWindowSmall] = React.useState(false);
-    const [useTriggers, setUseTriggers] = React.useState(true);
+    const [useTriggers, setUseTriggers] = React.useState(defaultTrigger);
     const logger = new Logger(logValue);
     const table = [];
     const inputs: {
@@ -138,7 +139,7 @@ export default function UpdatePopup({
             },
         };
 
-        setUseTriggers(true);
+        setUseTriggers(defaultTrigger);
         logger.log("crud submit data", command);
         vscode.postMessage(command);
     };
@@ -193,7 +194,7 @@ export default function UpdatePopup({
                                         <input type="checkbox"
                                             id="myCheckbox"
                                             onClick={listenForCheck}
-                                            defaultChecked
+                                            defaultChecked={useTriggers}
                                         /> Use write trigger
                                     </label>
                                 </div>
@@ -210,7 +211,7 @@ export default function UpdatePopup({
                             <ProBroButton
                                 className="button"
                                 onClick={() => {
-                                    setUseTriggers(true);
+                                    setUseTriggers(defaultTrigger);
                                     setOpen(false);
                                 }}
                             >
