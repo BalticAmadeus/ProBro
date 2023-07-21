@@ -81,6 +81,11 @@
                     ],
                     "markdownDescription": "(Restart needed)\n\n Provide free ports for local ProBro communication. Additional ports are used for additional vsCode instances using ProBro extension.  \n\n The default ProBro extension port is 23456"
                 },
+                "ProBro.useWriteTriggers": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Use write triggers"
+                },
                 "ProBro.tempfiles": {
                     "type": "string",
                     "markdownDescription": "Specifies path where temporary files are created."
