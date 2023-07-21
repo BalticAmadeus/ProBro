@@ -83,6 +83,7 @@
                 },
                 "ProBro.useWriteTriggers": {
                     "type": "boolean",
+                    "default": "true",
                     "markdownDescription": "Use write triggers"
                 },
                 "ProBro.tempfiles": {
