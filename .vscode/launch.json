@@ -10,12 +10,14 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"${workspaceFolder}/docker"
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-			"preLaunchTask": "${defaultBuildTask}"
+			"preLaunchTask": "Docker: Start and Watch",
+			"postDebugTask": "Docker: Stop"
 		},
 		{
 			"name": "Extension Tests",
@@ -29,6 +31,11 @@
 				"${workspaceFolder}/out/test/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}"
+		}
+	],
+	"folders": [
+		{
+			"path": "${workspaceFolder}/docker"
 		}
 	]
 }
