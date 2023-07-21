@@ -23,7 +23,8 @@ export class DbConnectionNode implements INode {
                 __filename,
                 "..",
                 "..",
-                "resources/icon",
+                "resources",
+                "icon",
                 this.iconChooser(),
             ),
         };
