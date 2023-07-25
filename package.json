@@ -181,6 +181,11 @@
                 "icon": "$(trash)"
             },
             {
+                "command": "pro-bro.procedureEditor",
+                "title": "ProBro: Launch Procedure Editor",
+                "icon": "$(preview)"
+            },
+            {
                 "command": "pro-bro.query",
                 "title": "ProBro: Query",
                 "icon": "$(play)"
@@ -221,6 +226,11 @@
                 },
                 {
                     "command": "pro-bro.deleteConnection",
+                    "when": "view == pro-bro-databases && viewItem == dbConnection",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.procedureEditor",
                     "when": "view == pro-bro-databases && viewItem == dbConnection",
                     "group": "inline"
                 },
