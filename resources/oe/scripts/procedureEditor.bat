@@ -1,2 +1,6 @@
 @echo off
-echo %2\bin\prowin.exe %1
+set dbInfo=%2
+
+set dbInfo=%dbInfo:"=%
+
+%1\bin\prowin.exe %dbInfo%

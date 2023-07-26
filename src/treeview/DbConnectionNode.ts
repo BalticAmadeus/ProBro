@@ -74,7 +74,7 @@ export class DbConnectionNode implements INode {
 
   public procedureEditor(context: vscode.ExtensionContext) {
     // Replace 'path/to/myscript.bat' with the actual path to your .bat script
-    const shit = path.join(
+    const scriptPath = path.join(
       Constants.context.extensionPath,
       "resources",
       "oe",
@@ -97,9 +97,15 @@ export class DbConnectionNode implements INode {
       params: "",
     };
     if (this.id) {
-      const connections = this.context.globalState.get<{
+      let connections = this.context.globalState.get<{
         [id: string]: IConfig;
       }>(`${Constants.globalExtensionKey}.dbconfig`);
+
+      if (connections && !connections[this.id]) {
+        connections = this.context.workspaceState.get<{
+          [id: string]: IConfig;
+        }>(`${Constants.globalExtensionKey}.dbconfig`);
+      }
       if (connections) {
         configDB = connections[this.id];
       }
@@ -116,10 +122,10 @@ export class DbConnectionNode implements INode {
     if (configDB.password) {
       dbContent += "-P " + configDB.password + " ";
     }
-    if (configDB.password) {
+    if (configDB.host) {
       dbContent += "-H " + configDB.host + " ";
     }
-    if (configDB.password) {
+    if (configDB.port) {
       dbContent += "-S " + configDB.port + " ";
     }
     if (configDB.params) {
@@ -127,7 +133,7 @@ export class DbConnectionNode implements INode {
     }
 
     // Spawn the child process to execute the .bat script
-    const child = spawn(shit, [dlc, dbContent]);
+    const child = spawn(scriptPath, [dlc, dbContent]);
 
     // Listen for data from the .bat script (if needed)
     child.stdout.on("data", (data) => {
