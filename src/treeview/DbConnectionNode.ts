@@ -72,18 +72,7 @@ export class DbConnectionNode implements INode {
     new ConnectionEditor(context, "Edit Connection", this.id);
   }
 
-  public procedureEditor(context: vscode.ExtensionContext) {
-    // Replace 'path/to/myscript.bat' with the actual path to your .bat script
-    const scriptPath = path.join(
-      Constants.context.extensionPath,
-      "resources",
-      "oe",
-      "scripts",
-      "procedureEditor.bat"
-    );
-
-    const dlc = Constants.dlc;
-
+  private getAllConnections() {
     let configDB: IConfig = {
       id: uuid(),
       label: "",
@@ -96,6 +85,7 @@ export class DbConnectionNode implements INode {
       group: "",
       params: "",
     };
+
     if (this.id) {
       let connections = this.context.globalState.get<{
         [id: string]: IConfig;
@@ -107,10 +97,13 @@ export class DbConnectionNode implements INode {
         }>(`${Constants.globalExtensionKey}.dbconfig`);
       }
       if (connections) {
-        configDB = connections[this.id];
+        return connections[this.id];
       }
     }
+    return configDB;
+  }
 
+  private createConnectionString(configDB: IConfig) {
     let dbContent = "";
 
     if (configDB.name) {
@@ -132,17 +125,59 @@ export class DbConnectionNode implements INode {
       dbContent += configDB.params;
     }
 
+    return dbContent;
+  }
+
+  private scriptLauncher(
+    scriptPath: string,
+    procedureName: string,
+    dbContent: string
+  ) {
+    const dlc = Constants.dlc;
     // Spawn the child process to execute the .bat script
-    const child = spawn(scriptPath, [dlc, dbContent]);
+    const child = spawn(scriptPath, [dlc, procedureName, dbContent]);
 
     // Listen for data from the .bat script (if needed)
     child.stdout.on("data", (data) => {
       console.log(`stdout: ${data}`);
     });
 
+    child.on("error", (error) => console.log("child process error: \n", error));
+
     // Listen for the process exit event
     child.on("exit", (code) => {
       console.log(`Child process exited with code ${code}`);
     });
+  }
+
+  private selectTool(name: string) {
+    if (name === "dataAdministration") {
+      return "-p _admin.p";
+    } else if (name === "dataDictionary") {
+      return "-p _dict.p";
+    }
+    return "";
+  }
+
+  public runScript(context: vscode.ExtensionContext, scriptName: string) {
+    if (process.platform === "win32") {
+      const scriptPath = path.join(
+        Constants.context.extensionPath,
+        "resources",
+        "oe",
+        "scripts",
+        "OeTools.bat"
+      );
+
+      const procedureName = this.selectTool(scriptName);
+
+      const configDB: IConfig = this.getAllConnections();
+
+      const dbContent = this.createConnectionString(configDB);
+
+      this.scriptLauncher(scriptPath, procedureName, dbContent);
+    } else if (process.platform === "linux") {
+      //to do
+    }
   }
 }

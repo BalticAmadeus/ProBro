@@ -253,7 +253,25 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.procedureEditor`,
       (dbConnectionNode: DbConnectionNode) => {
-        dbConnectionNode.procedureEditor(context);
+        dbConnectionNode.runScript(context, "procedureEditor");
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      `${Constants.globalExtensionKey}.dataAdministration`,
+      (dbConnectionNode: DbConnectionNode) => {
+        dbConnectionNode.runScript(context, "dataAdministration");
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      `${Constants.globalExtensionKey}.dataDictionary`,
+      (dbConnectionNode: DbConnectionNode) => {
+        dbConnectionNode.runScript(context, "dataDictionary");
       }
     )
   );

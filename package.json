@@ -186,6 +186,16 @@
                 "icon": "$(preview)"
             },
             {
+                "command": "pro-bro.dataAdministration",
+                "title": "ProBro: Launch Data Administration",
+                "icon": "$(server-environment)"
+            },
+            {
+                "command": "pro-bro.dataDictionary",
+                "title": "ProBro: Launch Data Dictionary",
+                "icon": "$(book)"
+            },
+            {
                 "command": "pro-bro.query",
                 "title": "ProBro: Query",
                 "icon": "$(play)"
@@ -226,6 +236,16 @@
                 },
                 {
                     "command": "pro-bro.deleteConnection",
+                    "when": "view == pro-bro-databases && viewItem == dbConnection",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.dataAdministration",
+                    "when": "view == pro-bro-databases && viewItem == dbConnection",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.dataDictionary",
                     "when": "view == pro-bro-databases && viewItem == dbConnection",
                     "group": "inline"
                 },
