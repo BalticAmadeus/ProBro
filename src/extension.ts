@@ -13,7 +13,7 @@ import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
 import { IPort, IConfig, ICommand } from "./view/app/model";
 import { readFile, parseOEFile } from "./common/OpenEdgeJsonReaded";
 
-import { VersionChecker} from "./view/app/Welcome/VersionChecker";
+import { VersionChecker } from "./view/app/Welcome/VersionChecker";
 import { WelcomePageProvider } from "./webview/WelcomePageProvider";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -21,9 +21,10 @@ export function activate(context: vscode.ExtensionContext) {
   Constants.context = context;
 
   const versionChecker = new VersionChecker(context);
-  
-  if (versionChecker.isNewVersion()){ // change it to .isNewVersion
-    new WelcomePageProvider(context,versionChecker.versionFromPackage);
+
+  if (versionChecker.isNewVersion()) {
+    // change it to .isNewVersion
+    new WelcomePageProvider(context, versionChecker.versionFromPackage);
   }
 
   let allFileContent: string = "";
@@ -244,6 +245,33 @@ export function activate(context: vscode.ExtensionContext) {
       `${Constants.globalExtensionKey}.editConnection`,
       (dbConnectionNode: DbConnectionNode) => {
         dbConnectionNode.editConnection(context);
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      `${Constants.globalExtensionKey}.procedureEditor`,
+      (dbConnectionNode: DbConnectionNode) => {
+        dbConnectionNode.runScript(context, "procedureEditor");
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      `${Constants.globalExtensionKey}.dataAdministration`,
+      (dbConnectionNode: DbConnectionNode) => {
+        dbConnectionNode.runScript(context, "dataAdministration");
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      `${Constants.globalExtensionKey}.dataDictionary`,
+      (dbConnectionNode: DbConnectionNode) => {
+        dbConnectionNode.runScript(context, "dataDictionary");
       }
     )
   );
