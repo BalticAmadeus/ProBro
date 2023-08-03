@@ -1,4 +1,3 @@
-import * as vscode from "vscode";
 import * as React from "react";
 import { CommandAction, ICommand, IConfig } from "../model";
 import { ProBroButton } from "../assets/button";
