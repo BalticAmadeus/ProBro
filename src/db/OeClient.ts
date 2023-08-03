@@ -57,6 +57,24 @@ class OEClient {
   }
 
   private runProc(): Promise<any> {
+    console.log(
+      `chmod +x ${path.join(
+        Constants.context.extensionPath,
+        "resources",
+        "oe",
+        "scripts",
+        "oe.sh"
+      )}`
+    );
+    cp.execSync(
+      `chmod +x ${path.join(
+        Constants.context.extensionPath,
+        "resources",
+        "oe",
+        "scripts",
+        "oe.sh"
+      )}`
+    );
     return new Promise((resolve) => {
       if (process.platform === "linux") {
         this.createPfFile();
