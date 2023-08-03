@@ -18,18 +18,15 @@ $ ext install BalticAmadeus.pro-bro
 
 ## Setup
 
-Currently, to set up DLC and other variables and custom parameters you need to make changes inside ProBro scripts.
+By default DLC is taken from ```abl.configuration.runtimes``` parameter which is default setting for ABL extensions.
+Alternatively, you can setup necessary environment variables in launch script.
 
-We'll definitely improve this process with future releases.
-
-### For Linux
+### Launch script for Linux
 ```
 /home/<user directory>/.vscode/extensions/balticamadeus.pro-bro-<version>/resources/oe/scripts/oe.sh
 ```
 
-Also, change ```oe.sh``` file permissions to make it executable.
-
-### For Windows
+### Launch script for Windows
 ```
 C:\Users\<user folder>\.vscode\extensions\balticamadeus.pro-bro-<version>\resources\oe\scripts\oe.bat
 ```

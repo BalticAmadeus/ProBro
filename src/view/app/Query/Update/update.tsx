@@ -8,7 +8,6 @@ import { ProBroButton } from "../../assets/button";
 import "./update.css";
 import { Logger } from "../../../../common/Logger";
 
-
 export default function UpdatePopup({
     vscode,
     selectedRows,
@@ -23,9 +22,11 @@ export default function UpdatePopup({
     setOpen,
     action,
     readRow,
-    logValue
+    logValue,
+    defaultTrigger
 }) {
     const [isWindowSmall, setIsWindowSmall] = React.useState(false);
+    const [useTriggers, setUseTriggers] = React.useState(defaultTrigger);
     const logger = new Logger(logValue);
     const table = [];
     const inputs: {
@@ -134,11 +135,22 @@ export default function UpdatePopup({
                 data: submitData,
                 mode: ProcessAction[action],
                 minTime: 0,
+                useTriggers: useTriggers,
             },
         };
+
+        setUseTriggers(defaultTrigger);
         logger.log("crud submit data", command);
         vscode.postMessage(command);
     };
+
+    function listenForCheck() {
+        const checkbox = document.getElementById("myCheckbox") as HTMLInputElement;
+
+        checkbox.addEventListener("change", () => {
+          setUseTriggers(checkbox.checked);
+        });
+    }
 
     React.useEffect(() => {
         const handleResize = () => {
@@ -167,13 +179,29 @@ export default function UpdatePopup({
                                     Are You sure You want delete {selectedRows.size} record
                                     {selectedRows.size > 1 && "s"}?
                                 </div>
+                            ) : action === ProcessAction.Read ? (
+                                <>
+                                    <table>
+                                        <tbody>{table}</tbody>
+                                    </table>
+                                </>
                             ) : (
-                                <table>
-                                    <tbody>{table}</tbody>
-                                </table>
+                                <div>
+                                    <table>
+                                        <tbody>{table}</tbody>
+                                    </table>
+                                    <label>
+                                        <input type="checkbox"
+                                            id="myCheckbox"
+                                            onClick={listenForCheck}
+                                            defaultChecked={useTriggers}
+                                        /> Use write trigger
+                                    </label>
+                                </div>
                             )}
                         </div>
                         <div className="update-btn-container">
+
                             {ProcessAction[action] !== "Read" ? (
                                 <ProBroButton className="button" onClick={onSubmitClick}>
                                     {ProcessAction[action]}
@@ -183,6 +211,7 @@ export default function UpdatePopup({
                             <ProBroButton
                                 className="button"
                                 onClick={() => {
+                                    setUseTriggers(defaultTrigger);
                                     setOpen(false);
                                 }}
                             >

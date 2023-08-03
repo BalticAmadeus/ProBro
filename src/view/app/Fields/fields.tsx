@@ -8,7 +8,6 @@ import { Logger } from "../../../common/Logger";
 
 import * as columnName from "./column.json";
 import { ISettings } from "../../../common/IExtensionSettings";
-import { ProBroButton } from "../assets/button";
 
 interface IConfigProps {
 	vscode: any;
@@ -38,14 +37,26 @@ function getComparator(sortColumn: string): Comparator {
 		case "label":
 		case "initial":
 		case "columnLabel":
+			return (a, b) => {
+				const valueA = a[sortColumn] || "";
+				const valueB = b[sortColumn] || "";
+				return valueA.localeCompare(valueB);
+			};
 		case "mandatory":
 		case "valexp":
+			return (a, b) => {
+				const valueA = a[sortColumn] || "";
+				const valueB = b[sortColumn] || "";
+				return valueA.localeCompare(valueB);
+			};
 		case "valMessage":
 		case "helpMsg":
 		case "description":
 		case "viewAs":
 			return (a, b) => {
-				return a[sortColumn].localeCompare(b[sortColumn]);
+				const valueA = a[sortColumn] || "";
+				const valueB = b[sortColumn] || "";
+				return valueA.localeCompare(valueB);
 			};
 		default:
 			throw new Error(`unsupported sortColumn: "${sortColumn}"`);
@@ -264,12 +275,12 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
 
 	return (
 		<div>
-            {!dataLoaded ? ( 
-            <button
-                className="refreshButton"
-                onClick={refresh}>Refresh
-            </button>
-           ) : rows.length > 0 ? (
+			{!dataLoaded ? (
+				<button
+					className="refreshButton"
+					onClick={refresh}>Refresh
+				</button>
+			) : rows.length > 0 ? (
 				<DataGrid
 					columns={[SelectColumn, ...columnName.columns]}
 					rows={sortedRows}

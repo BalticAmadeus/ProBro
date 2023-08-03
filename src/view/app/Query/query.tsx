@@ -767,6 +767,7 @@ Description: ${errorObject.description}`}</pre>
                             copyRecord={copyRecord}
                             readRow={readRow}
                             logValue={configuration.logging.react}
+                            defaultTrigger={configuration.useWriteTriggers}
                         ></UpdatePopup>
                     </div>
                 </div>

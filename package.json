@@ -9,7 +9,7 @@
         "DB",
         "Explorer"
     ],
-    "version": "1.3.2",
+    "version": "1.4.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -80,6 +80,11 @@
                         23459
                     ],
                     "markdownDescription": "(Restart needed)\n\n Provide free ports for local ProBro communication. Additional ports are used for additional vsCode instances using ProBro extension.  \n\n The default ProBro extension port is 23456"
+                },
+                "ProBro.useWriteTriggers": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Use write triggers"
                 },
                 "ProBro.tempfiles": {
                     "type": "string",
@@ -176,6 +181,21 @@
                 "icon": "$(trash)"
             },
             {
+                "command": "pro-bro.procedureEditor",
+                "title": "ProBro: Launch Procedure Editor",
+                "icon": "$(preview)"
+            },
+            {
+                "command": "pro-bro.dataAdministration",
+                "title": "ProBro: Launch Data Administration",
+                "icon": "$(server-environment)"
+            },
+            {
+                "command": "pro-bro.dataDictionary",
+                "title": "ProBro: Launch Data Dictionary",
+                "icon": "$(book)"
+            },
+            {
                 "command": "pro-bro.query",
                 "title": "ProBro: Query",
                 "icon": "$(play)"
@@ -216,6 +236,21 @@
                 },
                 {
                     "command": "pro-bro.deleteConnection",
+                    "when": "view == pro-bro-databases && viewItem == dbConnection",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.dataAdministration",
+                    "when": "view == pro-bro-databases && viewItem == dbConnection",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.dataDictionary",
+                    "when": "view == pro-bro-databases && viewItem == dbConnection",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.procedureEditor",
                     "when": "view == pro-bro-databases && viewItem == dbConnection",
                     "group": "inline"
                 },
@@ -278,9 +313,14 @@
         "esbuild": "^0.17.5",
         "export-from-json": "^1.6.0",
         "faker": "^5.5.3",
+        "fs": "^0.0.1-security",
+        "html-webpack-plugin": "^5.5.3",
+        "path": "^0.12.7",
+        "raw-loader": "^4.0.2",
         "react": "^18.1.0",
         "react-data-grid": "7.0.0-beta.13",
         "react-dom": "^18.1.0",
+        "react-markdown": "^8.0.7",
         "react-table": "^7.8.0",
         "reactjs-popup": "^2.0.5",
         "uuid": "^9.0.0"

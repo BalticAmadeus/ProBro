@@ -5,8 +5,6 @@ An extension for Progress DB browsing.
 ## Current status
 This open source project is in active development. Our goal is to simplify the access to Progress DB wen using VS Code as a development environment.
 
-<img src="resources/images/multisorting.gif">
-
 ## Features
 - Connection to Progress DB:
   - Connect to Progress DB via ABL Socket server
@@ -15,6 +13,8 @@ This open source project is in active development. Our goal is to simplify the a
   - Deleting Connections
   - Edit Connections
   - Connection status indicator
+  - Shortcuts to OE tools (*new*)
+  - Default import from ```openedge-project.json``` (*new*)
 - Tables
   - Hidden tables
   - Launch query
@@ -29,7 +29,7 @@ This open source project is in active development. Our goal is to simplify the a
   - Lazy loading
   - JSON/OE formatting
   - Custom queries
-  - Suggest field names (*new*)
+  - Suggest field names
   - View record on double-click
 - Export
   - Formats
@@ -43,16 +43,17 @@ This open source project is in active development. Our goal is to simplify the a
     - Filtered records
 - CRUD operations
   - Delete multiple
-  - Insert/copy (*new*)
+  - Insert/copy
   - Update
+  - Disable/enable triggers (*new*)
 - Extension settings configuration
 - Supported OS
   - Windows
   - Linux
 ## Guide
-- [Install and setup guide](resources/markdown/setup.md)
-- [User manual](resources/markdown/manual.md)
-- [Development setup guide](resources/markdown/dev_env_setup.md)
+- [Install and setup guide](https://github.com/BalticAmadeus/ProBro/blob/main/resources/markdown/setup.md)
+- [User manual](https://github.com/BalticAmadeus/ProBro/blob/main/resources/markdown/manual.md)
+- [Development setup guide](https://github.com/BalticAmadeus/ProBro/blob/main/resources/markdown/dev_env_setup.md)
 
 ## Related work
 - [DataDigger](https://datadigger.wordpress.com/) developed by Patrick Tingen. A great source of features and examples when working on this project.
@@ -60,8 +61,8 @@ This open source project is in active development. Our goal is to simplify the a
 
 ## Changelog
 
-Full changelog is available [here](CHANGELOG.md)
+Full changelog is available [here](https://github.com/BalticAmadeus/ProBro/blob/main/CHANGELOG.md)
 
 ## Sponsored by [Baltic Amadeus](https://www.ba.lt/en).
 
-[![BA](resources/images/Balticmadeus_RGB-01.jpg)](https://www.ba.lt/en)<br>
+[![BA](https://raw.githubusercontent.com/BalticAmadeus/ProBro/main/resources/images/Balticmadeus_RGB-01.jpg)](https://www.ba.lt/en)

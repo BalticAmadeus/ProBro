@@ -1,8 +1,20 @@
 # Change Log
+
+## 1.4.0 (2023-08-03)
+### Changed
+- Fixed various small bugs
+
+### Added
+- Default DLC import from ```settings.json```
+- Default Databases import from ```openedge-project.json```
+- Shortcuts to OE tools (for Windows)
+- Possibility to enable/disable triggers
+
 ## 1.3.2 HF (2023-06-30)
 
 ### Changed
 - Fixed socket server crash on linux
+
 ## 1.3.1 (2023-06-29)
 
 ### Changed
@@ -14,7 +26,6 @@
 - Development process improvements
 
 ## 1.3.0 (2023-06-20)
-
 ### Changed
 - Fixed deleting connections
 - Fixed various small bugs
@@ -23,6 +34,8 @@
 - Field name suggestions
 - Create a copy of record
 - Possibility to have multiple vs code instances
+
+
 ## 1.2.2 (2023-03-03)
 ### Changed
 - Fixed issue with writing socket data

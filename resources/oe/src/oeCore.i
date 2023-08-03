@@ -733,6 +733,7 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
     DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
     DEFINE VARIABLE fhKey AS HANDLE NO-UNDO.
     DEFINE VARIABLE cMode AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE lUseTriggers AS LOGICAL NO-UNDO.
 
     DEFINE VARIABLE i AS INTEGER NO-UNDO.
 
@@ -747,6 +748,8 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
     qh:QUERY-OPEN.
 
     cMode = inputObject:GetJsonObject("params"):GetCharacter("mode").
+
+    lUseTriggers = inputObject:GetJsonObject("params"):GetLogical("useTriggers").
 
     IF cMode = "DELETE" THEN DO:
         DO i = 1 TO jsonCrud:Length:
@@ -769,9 +772,19 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
     END.
     ELSE DO:
         IF cMode = "INSERT" OR cMode = "COPY" THEN DO:
+            IF lUseTriggers = false THEN DO:
+                bh:DISABLE-LOAD-TRIGGERS(FALSE).
+                bh:DISABLE-DUMP-TRIGGERS( ).
+            END.
+
             bh:BUFFER-CREATE().
         END.
         ELSE IF cMode = "UPDATE" THEN DO:
+            IF lUseTriggers = false THEN DO:
+                bh:DISABLE-LOAD-TRIGGERS(FALSE).
+                bh:DISABLE-DUMP-TRIGGERS( ).
+            END.
+
             IF qh:REPOSITION-TO-ROWID(TO-ROWID(inputObject:GetJsonObject("params"):GetCharacter("lastRowID"))) THEN DO:
                 IF qh:GET-NEXT(EXCLUSIVE-LOCK, NO-WAIT) THEN DO:
                     IF bh:LOCKED THEN DO:
