@@ -59,6 +59,16 @@ class OEClient {
   private runProc(): Promise<any> {
     return new Promise((resolve) => {
       if (process.platform === "linux") {
+        const accessScript = `chmod +x ${path.join(
+          Constants.context.extensionPath,
+          "resources",
+          "oe",
+          "scripts",
+          "oe.sh"
+        )}`;
+        console.log(accessScript);
+        cp.execSync(accessScript);
+
         this.createPfFile();
         this.proc = cp.spawn("bash", [
           "-c",

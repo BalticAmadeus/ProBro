@@ -6,9 +6,6 @@ import ExportIcon from "@mui/icons-material/FileDownloadTwoTone";
 import "./export.css";
 import { ProBroButton } from "../../assets/button";
 import { Logger } from "../../../../common/Logger";
-import * as vscode from "vscode";
-
-
 
 export default function ExportPopup({
     wherePhrase,
