@@ -13,6 +13,8 @@ This open source project is in active development. Our goal is to simplify the a
   - Deleting Connections
   - Edit Connections
   - Connection status indicator
+  - Shortcuts to OE tools (*new*)
+  - Default import from ```openedge-project.json``` (*new*)
 - Tables
   - Hidden tables
   - Launch query
@@ -27,7 +29,7 @@ This open source project is in active development. Our goal is to simplify the a
   - Lazy loading
   - JSON/OE formatting
   - Custom queries
-  - Suggest field names (*new*)
+  - Suggest field names
   - View record on double-click
 - Export
   - Formats
@@ -41,8 +43,9 @@ This open source project is in active development. Our goal is to simplify the a
     - Filtered records
 - CRUD operations
   - Delete multiple
-  - Insert/copy (*new*)
+  - Insert/copy
   - Update
+  - Disable/enable triggers (*new*)
 - Extension settings configuration
 - Supported OS
   - Windows

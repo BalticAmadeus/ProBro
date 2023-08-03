@@ -8,7 +8,6 @@ import { Logger } from "../../../common/Logger";
 
 import * as columnName from "./column.json";
 import { ISettings } from "../../../common/IExtensionSettings";
-import { ProBroButton } from "../assets/button";
 
 interface IConfigProps {
 	vscode: any;
