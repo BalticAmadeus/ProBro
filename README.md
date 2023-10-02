@@ -3,9 +3,11 @@
 An extension for Progress DB browsing.
 
 ## Current status
+
 This open source project is in active development. Our goal is to simplify the access to Progress DB wen using VS Code as a development environment.
 
 ## Features
+
 - Connection to Progress DB:
   - Connect to Progress DB via ABL Socket server
   - Connect to multiple local Progress DBs
@@ -13,8 +15,9 @@ This open source project is in active development. Our goal is to simplify the a
   - Deleting Connections
   - Edit Connections
   - Connection status indicator
-  - Shortcuts to OE tools (*new*)
-  - Default import from ```openedge-project.json``` (*new*)
+  - Shortcuts to OE tools
+  - Default import from `openedge-project.json`
+  - can disable import form `openedge-project.json` (new)
 - Tables
   - Hidden tables
   - Launch query
@@ -45,17 +48,20 @@ This open source project is in active development. Our goal is to simplify the a
   - Delete multiple
   - Insert/copy
   - Update
-  - Disable/enable triggers (*new*)
+  - Disable/enable triggers (_new_)
 - Extension settings configuration
 - Supported OS
   - Windows
   - Linux
+
 ## Guide
+
 - [Install and setup guide](https://github.com/BalticAmadeus/ProBro/blob/main/resources/markdown/setup.md)
 - [User manual](https://github.com/BalticAmadeus/ProBro/blob/main/resources/markdown/manual.md)
 - [Development setup guide](https://github.com/BalticAmadeus/ProBro/blob/main/resources/markdown/dev_env_setup.md)
 
 ## Related work
+
 - [DataDigger](https://datadigger.wordpress.com/) developed by Patrick Tingen. A great source of features and examples when working on this project.
 - [vscode-abl](https://github.com/chriscamicas/vscode-abl) a VSCode plugin for ABL.
 
