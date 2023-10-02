@@ -206,8 +206,6 @@ export function activate(context: vscode.ExtensionContext) {
     );
   }
 
-
-
   const tablesListProvider = new TablesListProvider(
     context,
     fieldsProvider,
