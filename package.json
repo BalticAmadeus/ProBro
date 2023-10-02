@@ -23,7 +23,7 @@
         "Visualization",
         "Other"
     ],
-    "icon": "resources/ProBroLogo.png",
+    "icon": "resources/pB_logo.png",
     "galleryBanner": {
         "color": "#248bfa",
         "theme": "dark"
