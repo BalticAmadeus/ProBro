@@ -16,8 +16,7 @@ This open source project is in active development. Our goal is to simplify the a
   - Edit Connections
   - Connection status indicator
   - Shortcuts to OE tools
-  - Default import from `openedge-project.json`
-  - can disable import form `openedge-project.json` (new)
+  - Possibility to import from `openedge-project.json` (_new_)
 - Tables
   - Hidden tables
   - Launch query
@@ -48,7 +47,7 @@ This open source project is in active development. Our goal is to simplify the a
   - Delete multiple
   - Insert/copy
   - Update
-  - Disable/enable triggers (_new_)
+  - Disable/enable triggers
 - Extension settings configuration
 - Supported OS
   - Windows
