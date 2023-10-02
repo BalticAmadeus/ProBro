@@ -23,7 +23,7 @@
         "Visualization",
         "Other"
     ],
-    "icon": "resources/pB_logo.png",
+    "icon": "resources/ProBroLogo.png",
     "galleryBanner": {
         "color": "#248bfa",
         "theme": "dark"
@@ -80,6 +80,11 @@
                         23459
                     ],
                     "markdownDescription": "(Restart needed)\n\n Provide free ports for local ProBro communication. Additional ports are used for additional vsCode instances using ProBro extension.  \n\n The default ProBro extension port is 23456"
+                },
+                "ProBro.importConnections": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Import connections from openedge-project.json"
                 },
                 "ProBro.useWriteTriggers": {
                     "type": "boolean",

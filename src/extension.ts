@@ -136,15 +136,44 @@ export function activate(context: vscode.ExtensionContext) {
     Constants.dlc = defaultRuntime.path;
   }
 
-  vscode.workspace.findFiles("**/openedge-project.json").then((list) => {
-    list.forEach((uri) => createJsonDatabases(uri));
+
+  let importConnections = vscode.workspace.getConfiguration('ProBro').get('importConnections');
+  let fileWatcher: vscode.FileSystemWatcher;
+
+  if (importConnections) {
+    vscode.workspace.findFiles("**/openedge-project.json").then((list) => {
+      list.forEach((uri) => createJsonDatabases(uri));
+    });
+  } else {
+    clearDatabaseConfigState();
+  }
+
+  fileWatcher = vscode.workspace.createFileSystemWatcher("**/openedge-project.json")
+  fileWatcher.onDidChange((uri) => {
+    if (importConnections) {
+      createJsonDatabases(uri);
+    } else {
+      clearDatabaseConfigState();
+    }
   });
 
-  vscode.workspace
-    .createFileSystemWatcher("**/openedge-project.json")
-    .onDidChange((uri) => createJsonDatabases(uri));
+  vscode.workspace.onDidChangeConfiguration((event) => {
+
+    if (event.affectsConfiguration('ProBro.importConnections')) {
+      importConnections = vscode.workspace.getConfiguration('ProBro').get('importConnections');
+      if (importConnections) {
+        vscode.workspace.findFiles("**/openedge-project.json").then((list) => {
+          list.forEach((uri) => createJsonDatabases(uri));
+        });
+      } else {
+        clearDatabaseConfigState();
+      }
+    }
+
+  });
 
   function createJsonDatabases(uri: vscode.Uri) {
+
     allFileContent = readFile(uri.path);
 
     const configs = parseOEFile(allFileContent);
@@ -169,6 +198,15 @@ export function activate(context: vscode.ExtensionContext) {
       );
     });
   }
+
+  function clearDatabaseConfigState() {
+    context.workspaceState.update(`${Constants.globalExtensionKey}.dbconfig`, {});
+    vscode.commands.executeCommand(
+      `${Constants.globalExtensionKey}.refreshList`
+    );
+  }
+
+
 
   const tablesListProvider = new TablesListProvider(
     context,
