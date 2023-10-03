@@ -108,15 +108,19 @@ export class ConnectionEditor {
               });
             return;
           case CommandAction.Group:
-            var groupNames: string[] = [];
-
             if (connections) {
+              const uniqueGroups = new Set<string>(); // Specify that the Set will contain strings
+
               for (const id of Object.keys(connections)) {
                 let group = connections[id].group.toUpperCase();
-                groupNames.push(group);
+                uniqueGroups.add(group);
               }
+
+              const groupNames: string[] = Array.from(uniqueGroups);
+
               this.groupList(groupNames);
             }
+
             return;
         }
       },

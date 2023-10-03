@@ -247,8 +247,6 @@ function ConnectionForm({ vscode, initialData, configuration, ...props }: IConfi
     }
 
     function createListener(input, list) {
-        console.log("createListener");
-        console.log(list);
         input.addEventListener('input', autocomplete(list));
         mouseoverListener();
     }
