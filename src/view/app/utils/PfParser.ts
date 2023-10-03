@@ -13,6 +13,8 @@ export class PfParser {
       password: "",
       group: "",
       params: "",
+      connectionId: "LOCAL",
+      type: 0,
     };
 
     pfFile

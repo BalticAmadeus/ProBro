@@ -38,6 +38,8 @@ export function parseOEFile(fileContent: string) {
       password: pfConfig.password,
       group: groupName,
       params: pfConfig.params,
+      connectionId: "LOCAL",
+      type: 0,
     };
 
     configList.push(config);

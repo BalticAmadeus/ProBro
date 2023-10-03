@@ -171,6 +171,8 @@ export class ConnectionEditor {
       password: "",
       group: "",
       params: "",
+      connectionId: "LOCAL",
+      type: 0,
     };
     if (this.id) {
       const connections = this.context.globalState.get<{
