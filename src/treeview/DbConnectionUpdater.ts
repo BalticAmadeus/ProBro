@@ -46,7 +46,7 @@ export class DbConnectionUpdater {
         "V2: +-------------------------------updateWorkStateStatuses",
         connections[id]
       );
-      const data = ProcessorFactory.getProcessorInstance().getDBVersion(
+      const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
         connections[id]
       );
 

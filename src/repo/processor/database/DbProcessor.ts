@@ -11,7 +11,6 @@ import {
 import { IOEParams } from "../../../db/Oe";
 import { ClientFactory } from "../../client/ClientFactory";
 import { Logger } from "../../../common/Logger";
-import getOEClient from "../../../db/OeClient";
 
 export class DbProcessor implements IProcessor {
   private static instance: DbProcessor | undefined = undefined; // singleton
@@ -150,16 +149,14 @@ export class DbProcessor implements IProcessor {
     this.logger.log("execShell params", params);
     let timeInMs = Date.now();
 
-    // return (
-    //   getOEClient()
     return ClientFactory.getInstance(config)
       .then((client) => {
         console.log("CMD: ", cmd);
         console.log("client: ", client);
         return client.sendRequest(cmd);
-        // return client.sendCommand(cmd);
       })
       .then((data) => {
+        console.log("data: ", data);
         let json = JSON.parse(data);
         console.log(
           `Process time: ${Date.now() - timeInMs}, OE time: ${
