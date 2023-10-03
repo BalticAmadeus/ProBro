@@ -129,6 +129,7 @@ export interface ITableData {
   }[];
   mode?: string;
   exportType?: string;
+  useTriggers?: boolean;
 }
 
 export interface TableCount {
