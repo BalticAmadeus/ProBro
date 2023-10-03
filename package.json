@@ -135,7 +135,7 @@
                 {
                     "type": "webview",
                     "id": "pro-bro-fields",
-                    "name": "",
+                    "name": "Fields Explorer",
                     "contextualTitle": "Fields Explorer",
                     "title": "Fields Explorer"
                 }
@@ -144,7 +144,7 @@
                 {
                     "type": "webview",
                     "id": "pro-bro-indexes",
-                    "name": "",
+                    "name": "Indexes Explorer",
                     "contextualTitle": "Indexes Explorer",
                     "title": "Indexes Explorer"
                 }
@@ -152,7 +152,7 @@
             "pro-bro": [
                 {
                     "id": "pro-bro-databases",
-                    "name": "DataBases",
+                    "name": "Databases",
                     "contextualTitle": "OpenEdge Explorer",
                     "title": "OpenEdge Explorer"
                 },
