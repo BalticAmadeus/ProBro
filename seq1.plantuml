@@ -1,0 +1,38 @@
+@startuml SimpleLocalInitialisationSequence
+
+title Simple Local Initialisation sequence (AS IS)
+
+actor User
+participant VSCode
+participant Server
+database Database1
+database Database2
+
+User -> VSCode ++ #Gold : Start
+VSCode ->  VSCode : GetAvailablePort\n(port)
+VSCode ->  Server ++ #Azure: Start (port)
+Server ->  Server : CREATE SERVER-SOCKET
+VSCode <-- Server : Started
+VSCode ->  VSCode : GetDbList\n(host, port, etc.)
+VSCode ->  Server : GetDbVersion\n(host, port, etc.)
+
+activate Server #Azure
+Server -> Database1 : CONNECT VALUE (host, port, etc.)
+Server <-- Database1
+Server -> Database1 : DBVERSION
+Server <-- Database1
+VSCode <-- Server : DbVersion\n(version)
+deactivate Server
+
+VSCode ->  Server : GetDbVersion\n(host, port, etc.)
+
+activate Server #Azure
+Server -> Database2 : CONNECT VALUE (pahost, port, etc.rams)
+Server <-- Database2
+Server -> Database2 : DBVERSION
+Server <-- Database2
+VSCode <-- Server : DbVersion\n(version)
+deactivate Server
+User <-- VSCode : End
+
+@enduml
