@@ -270,8 +270,17 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.deleteConnection`,
-      (dbConnectionNode: DbConnectionNode) => {
-        dbConnectionNode.deleteConnection(context);
+      async (dbConnectionNode: DbConnectionNode) => {
+        const confirmation = await vscode.window.showWarningMessage(
+          `Are you sure you want to delete the connection "${dbConnectionNode.config.label}"?`,
+          { modal: true },
+          'Yes',
+          'No'
+        );
+
+        if (confirmation === 'Yes') {
+          dbConnectionNode.deleteConnection(context);
+        }
       }
     )
   );
