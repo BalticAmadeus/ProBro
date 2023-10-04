@@ -16,7 +16,7 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-			"preLaunchTask": "Docker: Start and Watch",
+			"preLaunchTask": "Build and watch",
 			"postDebugTask": "Docker: Stop"
 		},
 		{
