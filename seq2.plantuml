@@ -4,42 +4,42 @@ title Simple Remote Initialisation sequence
 
 actor User
 participant VSCode
-participant Server as "Remote Server"
+participant Broker as "Remote broker"
 database Database1
 database Database2
 
-User -> Server ++ #Azure : Start
-Server ->  Server : CREATE SERVER-SOCKET
-User <-- Server : Started
+User -> Broker ++ #Azure : Start
+Broker ->  Broker : CREATE Broker-SOCKET
+User <-- Broker : Started
 User -> VSCode ++ #Gold : Start
 VSCode ->  VSCode : GetAvailablePort\n(port)
-VSCode -[#green]> Server : GetStatus
-VSCode <[#green]-- Server : Status\n(Running)
-VSCode -[#green]>  Server : GetDbNameList
-Server -[#green]>  Server : GetDbNameListFromConfig\n(db1, db2, etc.)
-VSCode <[#green]-- Server : DbNameList\n(db1, db2, etc.)
-VSCode -[#green]>  Server : GetDbVersion\n(name)
+VSCode -[#green]> Broker : GetStatus
+VSCode <[#green]-- Broker : Status\n(Running)
+VSCode -[#green]>  Broker : GetDbNameList
+Broker -[#green]>  Broker : GetDbNameListFromConfig\n(db1, db2, etc.)
+VSCode <[#green]-- Broker : DbNameList\n(db1, db2, etc.)
+VSCode -[#green]>  Broker : GetDbVersion\n(name)
 
-activate Server #Azure
-Server -[#green]>  Server : GetConnParamsConfig\n(host, port, etc.)
-Server -> Database1 : CONNECT VALUE (host, port, etc.)
-Server <-- Database1
-Server -> Database1 : DBVERSION
-Server <-- Database1
-VSCode <-- Server : DbVersion\n(version)
-deactivate Server
+activate Broker #Azure
+Broker -[#green]>  Broker : GetConnParamsConfig\n(host, port, etc.)
+Broker -> Database1 : CONNECT VALUE (host, port, etc.)
+Broker <-- Database1
+Broker -> Database1 : DBVERSION
+Broker <-- Database1
+VSCode <-- Broker : DbVersion\n(version)
+deactivate Broker
 
-VSCode -[#green]>  Server : GetDbVersion\n(name)
+VSCode -[#green]>  Broker : GetDbVersion\n(name)
 
-activate Server #Azure
-Server -[#green]>  Server : GetConnParamsConfig\n(host, port, etc.)
-Server -> Database2 : CONNECT VALUE (host, port, etc.)
-Server <-- Database2
-Server -> Database2 : DBVERSION
-Server <-- Database2
-VSCode <-- Server : DbVersion\n(version)
-deactivate Server
+activate Broker #Azure
+Broker -[#green]>  Broker : GetConnParamsConfig\n(host, port, etc.)
+Broker -> Database2 : CONNECT VALUE (host, port, etc.)
+Broker <-- Database2
+Broker -> Database2 : DBVERSION
+Broker <-- Database2
+VSCode <-- Broker : DbVersion\n(version)
+deactivate Broker
 User <-- VSCode : End
-User <-- Server : End
+User <-- Broker : End
 
 @enduml

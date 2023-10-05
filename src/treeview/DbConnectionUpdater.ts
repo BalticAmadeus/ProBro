@@ -42,17 +42,8 @@ export class DbConnectionUpdater {
       this.updateWorkStateStatus(connections);
       await this.wait();
 
-      console.log(
-        "V2: +-------------------------------updateWorkStateStatuses",
-        connections[id]
-      );
       const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
         connections[id]
-      );
-
-      console.log(
-        "V2: ++++++++++++++++++++++++++++++++++updateWorkStateStatuses",
-        data
       );
 
       if (data instanceof Error || "error" in data) {
@@ -84,15 +75,9 @@ export class DbConnectionUpdater {
       this.updateStatus(connections);
       await this.wait();
 
-      console.log(
-        "V2: +--------------------------------updateStatuses",
-        connections[id]
-      );
       const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
         connections[id]
       );
-
-      console.log("V2: ++++++++++++++++++++++++++++++++++updateStatuses", data);
 
       if (data instanceof Error || "error" in data) {
         connections[id].conStatus = ConnectionStatus.NotConnected;

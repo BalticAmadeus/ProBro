@@ -31,6 +31,7 @@ export class LocalClient extends AClient implements IClient {
       await LocalClient.localClient.init();
     }
 
+    console.log("V2: Returning local client");
     return LocalClient.localClient;
   }
 
