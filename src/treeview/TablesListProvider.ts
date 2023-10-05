@@ -39,7 +39,6 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
       return ProcessorFactory.getProcessorInstance()
         .getTableDetails(this.config, node.tableName)
         .then((oeTableDetails) => {
-          console.log("7777777777777777777777777777777777", oeTableDetails);
           oeTableDetails.selectedColumns = this.context.globalState.get<
             string[]
           >(`selectedColumns.${node.getFullName()}`);
