@@ -2,9 +2,9 @@ import path = require("path");
 import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
 import { Constants } from "../common/Constants";
-import { DatabaseProcessor } from "../db/DatabaseProcessor";
 import { Logger } from "../common/Logger";
 import { v4 as uuid } from "uuid";
+import { ProcessorFactory } from "../repo/processor/ProcessorFactory";
 
 export class ConnectionEditor {
   private readonly panel: vscode.WebviewPanel | undefined;
@@ -93,7 +93,7 @@ export class ConnectionEditor {
             );
             return;
           case CommandAction.Test:
-            DatabaseProcessor.getInstance()
+            ProcessorFactory.getProcessorInstance()
               .getDBVersion(command.content!)
               .then((oe) => {
                 if (oe.error) {
@@ -171,6 +171,8 @@ export class ConnectionEditor {
       password: "",
       group: "",
       params: "",
+      connectionId: "LOCAL",
+      type: 0,
     };
     if (this.id) {
       const connections = this.context.globalState.get<{

@@ -84,6 +84,8 @@ export class DbConnectionNode implements INode {
       password: "",
       group: "",
       params: "",
+      connectionId: "LOCAL",
+      type: 0,
     };
 
     if (this.id) {

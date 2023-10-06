@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { INode } from "./INode";
 import * as tableNode from "./TableNode";
 import { IConfig, TableCount } from "../view/app/model";
-import { DatabaseProcessor } from "../db/DatabaseProcessor";
+import { ProcessorFactory } from "../repo/processor/ProcessorFactory";
 import { TableNode } from "./TableNode";
 import { PanelViewProvider } from "../webview/PanelViewProvider";
 
@@ -37,7 +37,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
       });
       return;
     } else {
-      return DatabaseProcessor.getInstance()
+      return ProcessorFactory.getProcessorInstance()
         .getTableDetails(this.config, node.tableName)
         .then((oeTableDetails) => {
           oeTableDetails.selectedColumns = this.context.globalState.get<
@@ -144,7 +144,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     this.tableNodes = [];
     if (this.configs) {
       for (let config of this.configs) {
-        await DatabaseProcessor.getInstance()
+        await ProcessorFactory.getProcessorInstance()
           .getTablesList(config)
           .then((oeTables) => {
             if (oeTables instanceof Error) {

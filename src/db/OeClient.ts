@@ -52,6 +52,7 @@ class OEClient {
         console.log("Requested an end to the TCP connection");
       });
 
+      console.log("V1: OE Client initialized");
       return this;
     });
   }

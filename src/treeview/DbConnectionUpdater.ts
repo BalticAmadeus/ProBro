@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { DatabaseProcessor } from "../db/DatabaseProcessor";
 import { ConnectionStatus, IConfig } from "../view/app/model";
 import { IRefreshCallback } from "./IRefreshCallback";
+import { ProcessorFactory } from "../repo/processor/ProcessorFactory";
 
 export class DbConnectionUpdater {
   constructor() {}
@@ -42,9 +42,10 @@ export class DbConnectionUpdater {
       this.updateWorkStateStatus(connections);
       await this.wait();
 
-      const data = await DatabaseProcessor.getInstance().getDBVersion(
+      const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
         connections[id]
       );
+
       if (data instanceof Error || "error" in data) {
         connections[id].conStatus = ConnectionStatus.NotConnected;
       } else {
@@ -74,9 +75,10 @@ export class DbConnectionUpdater {
       this.updateStatus(connections);
       await this.wait();
 
-      const data = await DatabaseProcessor.getInstance().getDBVersion(
+      const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
         connections[id]
       );
+
       if (data instanceof Error || "error" in data) {
         connections[id].conStatus = ConnectionStatus.NotConnected;
       } else {

@@ -14,7 +14,6 @@
 			},
 			"group": {
 				"kind": "build",
-				"isDefault": true
 			}
 		},
 		{
@@ -23,7 +22,6 @@
 			"command": "docker-compose -f ${workspaceFolder}/docker/docker-compose.yml up",
 			"group": {
 				"kind": "build",
-				"isDefault": true
 			},
 			"isBackground": true,
 			"presentation": {
