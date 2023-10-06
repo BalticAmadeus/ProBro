@@ -144,7 +144,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     this.tableNodes = [];
     if (this.configs) {
       for (let config of this.configs) {
-        await DatabaseProcessor.getInstance()
+        await ProcessorFactory.getProcessorInstance()
           .getTablesList(config)
           .then((oeTables) => {
             if (oeTables instanceof Error) {
