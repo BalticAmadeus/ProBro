@@ -61,10 +61,9 @@
 		},
 		{
 			"label": "Build and watch",
-			"dependsOrder": "parallel",
 			"dependsOn": [
-					"Default watch",
-					"Docker: Start"
+				"Default watch",
+				"Docker: Start"
 			]
 		}
 	]
