@@ -25,6 +25,7 @@ export class TableNode implements INode {
   public getTreeItem(): vscode.TreeItem {
     return {
       label: this.tableName,
+      description: this.connectionLabel,
       collapsibleState: vscode.TreeItemCollapsibleState.None,
       contextValue: "table",
     };
