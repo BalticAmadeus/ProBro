@@ -38,7 +38,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
       return;
     } else {
       return DatabaseProcessor.getInstance()
-        .getTableDetails(this.config, node.tableName) // find all similar places and change
+        .getTableDetails(this.config, node.tableName)
         .then((oeTableDetails) => {
           oeTableDetails.selectedColumns = this.context.globalState.get<
             string[]
@@ -75,11 +75,17 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     if (e.selection.length && this.configs) {
       if (e.selection[0] instanceof TableNode) {
         this.node = e.selection[0] as TableNode;
-        this.config = this.configs.find(
-          (config) => config.name === this.node?.connectionName
-        );
+        this.selectDbConfig(this.node);
         this.displayData(this.node);
       }
+    }
+  }
+
+  public selectDbConfig(node: TableNode) {
+    if (this.configs) {
+      this.config = this.configs.find(
+        (config) => config.name === node.connectionName
+      );
     }
   }
 
@@ -135,7 +141,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
   }
 
   private async getGroupNodes(): Promise<void> {
-    this.tableNodes = []; // nunulina
+    this.tableNodes = [];
     if (this.configs) {
       for (let config of this.configs) {
         await DatabaseProcessor.getInstance()

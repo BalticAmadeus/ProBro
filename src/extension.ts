@@ -266,9 +266,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.query`,
       (node: TableNode) => {
-        tables.onDidChangeSelection((e) =>
-          tablesListProvider.onDidChangeSelection(e)
-        );
+        tablesListProvider.selectDbConfig(node);
         new QueryEditor(context, node, tablesListProvider, fieldsProvider);
       }
     )
