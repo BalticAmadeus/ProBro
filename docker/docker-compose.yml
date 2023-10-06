@@ -15,3 +15,18 @@ services:
     ports:
       - ${DB_PORT}:${DB_PORT}
       - ${DB_MIN_PORT}-${DB_MAX_PORT}:${DB_MIN_PORT}-${DB_MAX_PORT}
+  sports-db-126-2:
+    build:
+      context: "./"
+      dockerfile: "./Dockerfile"
+      args:
+        - IMAGE_NAME=${IMAGE_NAME_126}
+        - DB_NAME=${DB_NAME2}
+    environment:
+      - DB_NAME=${DB_NAME2}
+      - DB_PORT=${DB_PORT2}
+      - DB_MIN_PORT=${DB_MIN_PORT2}
+      - DB_MAX_PORT=${DB_MAX_PORT2}
+    ports:
+      - ${DB_PORT2}:${DB_PORT2}
+      - ${DB_MIN_PORT2}-${DB_MAX_PORT2}:${DB_MIN_PORT2}-${DB_MAX_PORT2}

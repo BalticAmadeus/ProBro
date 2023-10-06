@@ -2,12 +2,13 @@ import * as vscode from "vscode";
 import { INode } from "./INode";
 import * as tableNode from "./TableNode";
 import { IConfig, TableCount } from "../view/app/model";
+import { ProcessorFactory } from "../repo/processor/ProcessorFactory";
 import { TableNode } from "./TableNode";
 import { PanelViewProvider } from "../webview/PanelViewProvider";
-import { ProcessorFactory } from "../repo/processor/ProcessorFactory";
 
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
   public config: IConfig | undefined;
+  public configs: IConfig[] | undefined;
   public node: TableNode | undefined;
   public tableNodes: tableNode.TableNode[] = [];
   public filters: string[] | undefined = ["UserTable"];
@@ -71,11 +72,20 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
   }
 
   onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>): any {
-    if (e.selection.length && this.config) {
+    if (e.selection.length && this.configs) {
       if (e.selection[0] instanceof TableNode) {
         this.node = e.selection[0] as TableNode;
+        this.selectDbConfig(this.node);
         this.displayData(this.node);
       }
+    }
+  }
+
+  public selectDbConfig(node: TableNode) {
+    if (this.configs) {
+      this.config = this.configs.find(
+        (config) => config.name === node.connectionName
+      );
     }
   }
 
@@ -107,8 +117,8 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     }, 500);
   }
 
-  public refresh(config: IConfig | undefined): void {
-    this.config = config;
+  public refresh(configs: IConfig[] | undefined): void {
+    this.configs = configs;
     this._onDidChangeTreeData.fire();
   }
 
@@ -132,38 +142,42 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 
   private async getGroupNodes(): Promise<void> {
     this.tableNodes = [];
-    if (this.config) {
-      await ProcessorFactory.getProcessorInstance()
-        .getTablesList(this.config)
-        .then((oeTables) => {
-          if (oeTables instanceof Error) {
-            return;
-          }
+    if (this.configs) {
+      for (let config of this.configs) {
+        await DatabaseProcessor.getInstance()
+          .getTablesList(config)
+          .then((oeTables) => {
+            if (oeTables instanceof Error) {
+              return;
+            }
 
-          if (oeTables.error) {
-            vscode.window.showErrorMessage(
-              `Error connecting DB: ${oeTables.description} (${oeTables.error})`
-            );
-            return;
-          }
+            if (oeTables.error) {
+              vscode.window.showErrorMessage(
+                `Error connecting DB: ${oeTables.description} (${oeTables.error})`
+              );
+              return;
+            }
 
-          if (this.config) {
-            console.log(`Requested tables list of DB: ${this.config.name}`);
-            const connectionName = this.config.label;
-            oeTables.tables.forEach(
-              (table: { name: string; tableType: string }) => {
-                this.tableNodes?.push(
-                  new tableNode.TableNode(
-                    this.context,
-                    table.name,
-                    table.tableType,
-                    connectionName
-                  )
-                );
-              }
-            );
-          }
-        });
+            if (config) {
+              console.log(`Requested tables list of DB: ${config.name}`);
+              const connectionLabel = config.label;
+              const connectionName = config.name;
+              oeTables.tables.forEach(
+                (table: { name: string; tableType: string }) => {
+                  this.tableNodes?.push(
+                    new tableNode.TableNode(
+                      this.context,
+                      table.name,
+                      table.tableType,
+                      connectionName,
+                      connectionLabel
+                    )
+                  );
+                }
+              );
+            }
+          });
+      }
     }
   }
 

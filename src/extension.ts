@@ -10,7 +10,7 @@ import { GroupListProvider } from "./treeview/GroupListProvider";
 import { TableNode } from "./treeview/TableNode";
 import { TablesListProvider } from "./treeview/TablesListProvider";
 import { DbConnectionUpdater } from "./treeview/DbConnectionUpdater";
-import { IPort, IConfig, ICommand } from "./view/app/model";
+import { IPort, IConfig } from "./view/app/model";
 import { readFile, parseOEFile } from "./common/OpenEdgeJsonReaded";
 
 import { VersionChecker } from "./view/app/Welcome/VersionChecker";
@@ -23,7 +23,6 @@ export function activate(context: vscode.ExtensionContext) {
   const versionChecker = new VersionChecker(context);
 
   if (versionChecker.isNewVersion()) {
-    // change it to .isNewVersion
     new WelcomePageProvider(context, versionChecker.versionFromPackage);
   }
 
@@ -136,8 +135,9 @@ export function activate(context: vscode.ExtensionContext) {
     Constants.dlc = defaultRuntime.path;
   }
 
-
-  let importConnections = vscode.workspace.getConfiguration('ProBro').get('importConnections');
+  let importConnections = vscode.workspace
+    .getConfiguration("ProBro")
+    .get("importConnections");
   let fileWatcher: vscode.FileSystemWatcher;
 
   if (importConnections) {
@@ -148,7 +148,9 @@ export function activate(context: vscode.ExtensionContext) {
     clearDatabaseConfigState();
   }
 
-  fileWatcher = vscode.workspace.createFileSystemWatcher("**/openedge-project.json")
+  fileWatcher = vscode.workspace.createFileSystemWatcher(
+    "**/openedge-project.json"
+  );
   fileWatcher.onDidChange((uri) => {
     if (importConnections) {
       createJsonDatabases(uri);
@@ -158,9 +160,10 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   vscode.workspace.onDidChangeConfiguration((event) => {
-
-    if (event.affectsConfiguration('ProBro.importConnections')) {
-      importConnections = vscode.workspace.getConfiguration('ProBro').get('importConnections');
+    if (event.affectsConfiguration("ProBro.importConnections")) {
+      importConnections = vscode.workspace
+        .getConfiguration("ProBro")
+        .get("importConnections");
       if (importConnections) {
         vscode.workspace.findFiles("**/openedge-project.json").then((list) => {
           list.forEach((uri) => createJsonDatabases(uri));
@@ -169,11 +172,9 @@ export function activate(context: vscode.ExtensionContext) {
         clearDatabaseConfigState();
       }
     }
-
   });
 
   function createJsonDatabases(uri: vscode.Uri) {
-
     allFileContent = readFile(uri.path);
 
     const configs = parseOEFile(allFileContent);
@@ -200,7 +201,10 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   function clearDatabaseConfigState() {
-    context.workspaceState.update(`${Constants.globalExtensionKey}.dbconfig`, {});
+    context.workspaceState.update(
+      `${Constants.globalExtensionKey}.dbconfig`,
+      {}
+    );
     vscode.commands.executeCommand(
       `${Constants.globalExtensionKey}.refreshList`
     );
@@ -225,7 +229,7 @@ export function activate(context: vscode.ExtensionContext) {
   const groupListProvider = new GroupListProvider(context, tables);
   const groups = vscode.window.createTreeView(
     `${Constants.globalExtensionKey}-databases`,
-    { treeDataProvider: groupListProvider }
+    { treeDataProvider: groupListProvider, canSelectMany: true }
   );
 
   const connectionUpdater = new DbConnectionUpdater();
@@ -262,6 +266,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.query`,
       (node: TableNode) => {
+        tablesListProvider.selectDbConfig(node);
         new QueryEditor(context, node, tablesListProvider, fieldsProvider);
       }
     )
@@ -274,11 +279,11 @@ export function activate(context: vscode.ExtensionContext) {
         const confirmation = await vscode.window.showWarningMessage(
           `Are you sure you want to delete the connection "${dbConnectionNode.config.label}"?`,
           { modal: true },
-          'Yes',
-          'No'
+          "Yes",
+          "No"
         );
 
-        if (confirmation === 'Yes') {
+        if (confirmation === "Yes") {
           dbConnectionNode.deleteConnection(context);
         }
       }
