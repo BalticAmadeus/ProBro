@@ -11,6 +11,7 @@ import {
 import { IOEParams } from "../../../db/Oe";
 import { ClientFactory } from "../../client/ClientFactory";
 import { Logger } from "../../../common/Logger";
+import { Constants } from "../../../common/Constants";
 
 export class DbProcessor implements IProcessor {
   private static instance: DbProcessor | undefined = undefined; // singleton
@@ -18,7 +19,9 @@ export class DbProcessor implements IProcessor {
   private processTimeout: number = 5000; // 5 seconds
   private errObj = { errMessage: "", isError: false };
 
-  private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private readonly configuration = vscode.workspace.getConfiguration(
+    Constants.globalExtensionKey
+  );
   private logger = new Logger(this.configuration.get("logging.node")!);
 
   private constructor() {}

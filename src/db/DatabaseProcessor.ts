@@ -4,6 +4,7 @@ import { IProcessor } from "./IProcessor";
 import { IOEParams } from "./Oe";
 import getOEClient from "./OeClient";
 import { Logger } from "../common/Logger";
+import { Constants } from "../common/Constants";
 
 export class DatabaseProcessor implements IProcessor {
   private static instance: DatabaseProcessor; // singleton
@@ -11,7 +12,9 @@ export class DatabaseProcessor implements IProcessor {
   private static processTimeout: number = 5000; // 5 seconds
   private static errObj = { errMessage: "", isError: false };
 
-  private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private readonly configuration = vscode.workspace.getConfiguration(
+    Constants.globalExtensionKey
+  );
   private logger = new Logger(this.configuration.get("logging.node")!);
 
   private constructor() {}

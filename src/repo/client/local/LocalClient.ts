@@ -12,7 +12,9 @@ export class LocalClient extends AClient implements IClient {
   private static localClient: LocalClient | undefined = undefined;
 
   private static readonly host = "localhost";
-  private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private readonly configuration = vscode.workspace.getConfiguration(
+    Constants.globalExtensionKey
+  );
   private logentrytypes: string = this.configuration.get("logging.openEdge")!;
   private tempFilesPath: string = this.configuration.get("tempfiles")!;
   protected proc!: cp.ChildProcessWithoutNullStreams;

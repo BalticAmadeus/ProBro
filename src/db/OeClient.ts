@@ -14,7 +14,9 @@ class OEClient {
   private procFinish!: any;
   private proc!: cp.ChildProcessWithoutNullStreams;
   private enc = new TextDecoder("utf-8");
-  private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private readonly configuration = vscode.workspace.getConfiguration(
+    Constants.globalExtensionKey
+  );
   private logentrytypes: string = this.configuration.get("logging.openEdge")!;
   private tempFilesPath: string = this.configuration.get("tempfiles")!;
   private pfFilePath: string = path.join(
