@@ -8,6 +8,7 @@ import { FieldsViewProvider } from "./FieldsViewProvider";
 import { DumpFileFormatter } from "./DumpFileFormatter";
 import { Logger } from "../common/Logger";
 import { ProcessorFactory } from "../repo/processor/ProcessorFactory";
+import { Constants } from "../common/Constants";
 
 export class QueryEditor {
   private readonly panel: vscode.WebviewPanel | undefined;
@@ -15,7 +16,9 @@ export class QueryEditor {
   private disposables: vscode.Disposable[] = [];
   public tableName: string;
   private fieldsProvider: FieldsViewProvider;
-  private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private readonly configuration = vscode.workspace.getConfiguration(
+    Constants.globalExtensionKey
+  );
   private logger = new Logger(this.configuration.get("logging.node")!);
 
   constructor(

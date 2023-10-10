@@ -4,6 +4,7 @@ import { DbProcessor } from "./database/DbProcessor";
 import { MockProcessor } from "./mock/MockProcessor";
 import { DatabaseProcessor } from "../../db/DatabaseProcessor";
 import * as vscode from "vscode";
+import { Constants } from "../../common/Constants";
 
 export class ProcessorFactory {
   private static readonly processorType: ProcessorType = ProcessorType.Database;
@@ -23,7 +24,9 @@ export class ProcessorFactory {
 
   private static determineProcessorType(): ProcessorType {
     // TODO: delete after old processor is removed
-    const configuration = vscode.workspace.getConfiguration("ProBro");
+    const configuration = vscode.workspace.getConfiguration(
+      Constants.globalExtensionKey
+    );
     const useNew: boolean = configuration.get("development.useNewDbClient")!;
 
     console.log("useNew: " + useNew);

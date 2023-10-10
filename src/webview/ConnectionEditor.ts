@@ -12,7 +12,9 @@ export class ConnectionEditor {
   private disposables: vscode.Disposable[] = [];
   private isTestedSuccesfully: boolean = false;
   private readonly id?: string;
-  private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private readonly configuration = vscode.workspace.getConfiguration(
+    Constants.globalExtensionKey
+  );
   private logger = new Logger(this.configuration.get("logging.node")!);
 
   constructor(

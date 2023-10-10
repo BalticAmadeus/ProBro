@@ -29,13 +29,15 @@ export function activate(context: vscode.ExtensionContext) {
   let allFileContent: string = "";
 
   vscode.workspace.onDidChangeConfiguration((event) => {
-    const affected = event.affectsConfiguration("ProBro.possiblePortsList");
+    const affected = event.affectsConfiguration(
+      `${Constants.globalExtensionKey}.possiblePortsList`
+    );
     if (!affected) {
       return;
     }
 
     const settingsPorts: number[] = vscode.workspace
-      .getConfiguration("ProBro")
+      .getConfiguration(Constants.globalExtensionKey)
       .get("possiblePortsList")!;
     if (settingsPorts.length === 0) {
       context.globalState.update(
@@ -136,7 +138,7 @@ export function activate(context: vscode.ExtensionContext) {
   }
 
   let importConnections = vscode.workspace
-    .getConfiguration("ProBro")
+    .getConfiguration(Constants.globalExtensionKey)
     .get("importConnections");
   let fileWatcher: vscode.FileSystemWatcher;
 
@@ -160,9 +162,13 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   vscode.workspace.onDidChangeConfiguration((event) => {
-    if (event.affectsConfiguration("ProBro.importConnections")) {
+    if (
+      event.affectsConfiguration(
+        `${Constants.globalExtensionKey}.importConnections`
+      )
+    ) {
       importConnections = vscode.workspace
-        .getConfiguration("ProBro")
+        .getConfiguration(Constants.globalExtensionKey)
         .get("importConnections");
       if (importConnections) {
         vscode.workspace.findFiles("**/openedge-project.json").then((list) => {
