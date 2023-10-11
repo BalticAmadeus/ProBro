@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 
 import "./query.css";
 import QueryForm from "./query";
-import { IOETableData } from "../../../db/oe";
+import { IOETableData } from "../../../../src/db/oe";
 import { ISettings } from "../../../common/IExtensionSettings";
 
 declare global {
