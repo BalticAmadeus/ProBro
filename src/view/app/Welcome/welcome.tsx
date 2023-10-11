@@ -1,5 +1,5 @@
 import * as React from 'react';
-import './Welcome.css';
+import '../Welcome/welcome.css';
 
 
 import ReactMarkdown from 'react-markdown';
