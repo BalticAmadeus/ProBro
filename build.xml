@@ -1,0 +1,29 @@
+<project name="ProBro" default="compile">
+  <property environment="env" />
+  <taskdef resource="PCT.properties" classpath="${user.home}/.ant/lib/PCT.jar;/usr/share/ant/lib/PCT.jar" />
+  <typedef resource="types.properties" classpath="${user.home}/.ant/lib/PCT.jar;/usr/share/ant/lib/PCT.jar" />
+  <DlcHome value="${env.DLC}" />
+  <echo>DLC=${env.DLC}</echo>
+
+  <path id="propath">
+    <pathelement path="resources/oe" />
+    <pathelement path="resources/oe/src" />
+    <pathelement location="${env.DLC}/tty/OpenEdge.Core.pl" />
+  </path>
+
+  <property name="tempDir" value="target/temp" />
+
+  <target name="compile">
+    <echo message="Compiling ProBro"/> 
+    <PCTCompile destDir="target/rcode" keepXref="true" xmlXref="true" forceCompile="true">
+      <fileset dir="resources/oe/src" includes="**/*.cls,**/*.p" />
+      <propath refid="propath" />
+      <DBConnection dbName="sp2k" dbDir="${DB_DIR}" readOnly="true" />
+    </PCTCompile>
+  </target>
+
+  <target name="deploy">
+    <!-- TODO -->
+  </target>
+
+</project>

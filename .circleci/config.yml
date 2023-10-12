@@ -20,7 +20,8 @@ jobs:
       - image: kherring/oedb:latest
     steps:
       - checkout
-      - run: tr ' ' '\n' \<<< "$PROGRESS_CFG_BASE64" | base64 --decode > /psc/dlc/progress.cfg        
+      - run: tr ' ' '\n' \<<< "$PROGRESS_CFG_BASE64" | base64 --decode > /psc/dlc/progress.cfg
+      - run: ant compile
 workflows:
   build:
     jobs:
