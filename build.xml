@@ -11,6 +11,10 @@
     <pathelement location="${env.DLC}/tty/OpenEdge.Core.pl" />
   </path>
 
+  <condition property="DB_DIR" value="/psc/wrk/sp2k" else="target/db/sp2k" >
+    <os family="unix" />
+  </condition>
+  
   <property name="tempDir" value="target/temp" />
 
   <target name="compile">
