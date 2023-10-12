@@ -15,7 +15,14 @@ jobs:
       - run:
           name: Compile Views
           command: npm run compile:views
+  compile:
+    docker:
+      - image: kherring/oedb:latest
+    steps:
+      - checkout
+      - run: tr ' ' '\n' \<<< "$PROGRESS_CFG_BASE64" | base64 --decode > /psc/dlc/progress.cfg        
 workflows:
   build:
     jobs:
       - build
+      - compile
