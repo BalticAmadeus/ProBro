@@ -22,6 +22,15 @@ jobs:
       - checkout
       - run: tr ' ' '\n' \<<< "$PROGRESS_CFG_BASE64" | base64 --decode > /psc/dlc/progress.cfg
       - run: ant compile
+      - persist_to_workspace:
+          root: .
+          paths: [ '.' ]
+      - store_artifacts:
+          path: target/results.xml
+      - store_artifacts:
+          path: target/ablunit.log
+      - store_test_results:
+          path: target/results.xml
 workflows:
   build:
     jobs:
