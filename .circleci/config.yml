@@ -21,7 +21,7 @@ jobs:
     steps:
       - checkout
       - run: tr ' ' '\n' \<<< "$PROGRESS_CFG_BASE64" | base64 --decode > /psc/dlc/progress.cfg
-      - run: cat /psc/dlc/progress.cfg
+      - run: cd /psc/dlc | ls -ltr
       - run: pro
       - run: ant compile
       - persist_to_workspace:
