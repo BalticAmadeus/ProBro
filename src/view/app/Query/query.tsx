@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IOETableData } from "../../../db/oe";
+import { IOETableData } from "../../../db/Oe";
 import DataGrid, { SortColumn, SelectColumn, CopyEvent } from "react-data-grid";
 
 import { CommandAction, ICommand, ProcessAction } from "../model";
