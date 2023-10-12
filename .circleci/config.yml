@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build:
+  build-front-end:
     docker:
       - image: circleci/node:16
     steps:
@@ -15,7 +15,7 @@ jobs:
       - run:
           name: Compile Views
           command: npm run compile:views
-  compile:
+  build-back-end:
     docker:
       - image: kherring/oedb:latest
     steps:
@@ -30,5 +30,5 @@ jobs:
 workflows:
   build:
     jobs:
-      - build
-      - compile
+      - build-front-end
+      - build-back-end
