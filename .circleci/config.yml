@@ -27,10 +27,6 @@ jobs:
           paths: [ '.' ]
       - store_artifacts:
           path: target/results.xml
-      - store_artifacts:
-          path: target/ablunit.log
-      - store_test_results:
-          path: target/results.xml
 workflows:
   build:
     jobs:

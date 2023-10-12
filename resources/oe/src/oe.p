@@ -17,7 +17,7 @@ FIELD iExtent AS INTEGER
 
 message PROPATH.
 DEFINE VARIABLE inputMem AS MEMPTR NO-UNDO.
-DEFINE VARIABLE inputParser AS Progress.Json.ObjectModel.ObjectModelParser NO-UNDO.
+DEFINE VARIABLE inputParserf AS Progress.Json.ObjectModel.ObjectModelParser NO-UNDO.
 DEFINE VARIABLE inputObject AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 DEFINE VARIABLE connectionString AS CHARACTER NO-UNDO.
 DEFINE VARIABLE command AS CHARACTER NO-UNDO.
