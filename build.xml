@@ -14,7 +14,7 @@
   <property name="tempDir" value="target/temp" />
 
   <target name="compile">
-    <echo message="Compiling ProBro"/> 
+    <echo message="Compiling ProBro Back-End"/> 
     <PCTCompile destDir="target/rcode" keepXref="true" xmlXref="true" forceCompile="true">
       <fileset dir="resources/oe/src" includes="**/*.cls,**/*.p" />
       <propath refid="propath" />
