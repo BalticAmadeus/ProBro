@@ -8,6 +8,7 @@
   <path id="propath">
     <pathelement path="resources/oe" />
     <pathelement path="resources/oe/src" />
+    <pathelement path="resources/oe/tests" />
     <pathelement location="${env.DLC}/tty/OpenEdge.Core.pl" />
   </path>
 
@@ -33,7 +34,7 @@
     </condition>
     <mkdir dir="${tempDir}" />
     <ABLUnit writeLog="true" destDir="target" failOnError="true" haltOnFailure="true" tempDir="${tempDir}">
-      <fileset dir="oe/test" includes="**/*.p,**/*.cls" />
+      <fileset dir="resources/oe/tests" includes="**/*.p,**/*.cls" />
       <propath refid="propath" />
       <Profiler enabled="true" outputDir="target/profiler" coverage="true" />
     </ABLUnit>
