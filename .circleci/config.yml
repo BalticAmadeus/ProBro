@@ -41,7 +41,7 @@ jobs:
     steps:
       - checkout
       - run: 
-          name: Vsix Package
+          name: Build Extension
           command: npm run vsce
 workflows:
   build:
