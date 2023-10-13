@@ -39,10 +39,10 @@ jobs:
     docker:
       - image: circleci/node:16
     steps:
-     - checkout
+      - checkout
       - run: 
-        name: Vsix Package
-        command: vsce package
+          name: Vsix Package
+          command: vsce package
 workflows:
   build:
     jobs:
