@@ -22,6 +22,7 @@ jobs:
       - checkout
       - run: tr ' ' '\n' \<<< "$PROGRESS_CFG_BASE64" | base64 --decode > /psc/dlc/progress.cfg
       - run: ant compile
+      - run: ant test
       - persist_to_workspace:
           root: .
           paths: [ '.' ]

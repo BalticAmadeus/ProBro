@@ -21,9 +21,22 @@
     <echo message="Compiling ProBro Back-End"/> 
     <PCTCompile destDir="target/rcode" keepXref="true" xmlXref="true" forceCompile="true">
       <fileset dir="resources/oe/src" includes="**/*.cls,**/*.p" />
+      <fileset dir="resources/oe/tests" includes="**/*.cls,**/*.p" />
       <propath refid="propath" />
       <DBConnection dbName="sp2k" dbDir="${DB_DIR}" readOnly="true" />
     </PCTCompile>
+  </target>
+
+    <target name="test" depends="compile">
+    <condition property="fileset.includes" value="${file}" else="**/*Test.cls,**/*Test.p" >
+      <isset property="file" />
+    </condition>
+    <mkdir dir="${tempDir}" />
+    <ABLUnit writeLog="true" destDir="target" failOnError="true" haltOnFailure="true" tempDir="${tempDir}">
+      <fileset dir="oe/tests" includes="**/*.p,**/*.cls" />
+      <propath refid="propath" />
+      <Profiler enabled="true" outputDir="target/profiler" coverage="true" />
+    </ABLUnit>
   </target>
 
   <target name="deploy">
