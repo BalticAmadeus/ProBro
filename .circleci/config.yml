@@ -18,6 +18,8 @@ jobs:
       - run:
           name: Run Tests
           command: npm run jestTest
+      - store_test_results:
+          path: test-results
   build-back-end:
     docker:
       - image: kherring/oedb:latest
@@ -30,6 +32,8 @@ jobs:
           root: .
           paths: [ '.' ]
       - store_artifacts:
+          path: target/results.xml
+      - store_test_results:
           path: target/results.xml
 workflows:
   build:
