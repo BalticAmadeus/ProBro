@@ -37,9 +37,12 @@ jobs:
           path: target/results.xml
   build:
     docker:
-      - image: circleci/node:14
+      - image: circleci/node:16
     steps:
       - checkout
+      - run: 
+          name: Install vsce
+          command: npm install vsce
       - run: 
           name: Build Extension
           command: npm run vsce
