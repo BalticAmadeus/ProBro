@@ -15,11 +15,16 @@ jobs:
       - run:
           name: Compile Views
           command: npm run compile:views
+  test-front-end:
+    docker:
+      - image: circleci/node:16
+    steps:
+      - checkout
       - run:
           name: Run Tests
           command: npm run jestTest
       - store_test_results:
-          path: test-results
+          path: test-results/jest
   build-back-end:
     docker:
       - image: kherring/oedb:latest
@@ -39,4 +44,5 @@ workflows:
   build:
     jobs:
       - build-front-end
+      - test-front-end
       - build-back-end
