@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-front-end:
     docker:
-      - image: cimg/node:16
+      - image: circleci/node:16
     steps:
       - checkout
       - run:
