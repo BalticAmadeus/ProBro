@@ -15,6 +15,9 @@ jobs:
       - run:
           name: Compile Views
           command: npm run compile:views
+      - run:
+          name: Run Tests
+          command: npm run jestTest
   build-back-end:
     docker:
       - image: kherring/oedb:latest
