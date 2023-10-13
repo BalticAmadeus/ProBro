@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-front-end:
     docker:
-      - image: circleci/node:16
+      - image: cimg/node:16
     steps:
       - checkout
       - run:
@@ -15,11 +15,6 @@ jobs:
       - run:
           name: Compile Views
           command: npm run compile:views
-  test-front-end:
-    docker:
-      - image: circleci/node:16
-    steps:
-      - checkout
       - run:
           name: Run Tests
           command: npm run jestTest
@@ -44,5 +39,4 @@ workflows:
   build:
     jobs:
       - build-front-end
-      - test-front-end
       - build-back-end
