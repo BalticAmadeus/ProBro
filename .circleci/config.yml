@@ -42,7 +42,7 @@ jobs:
       - checkout
       - run: 
           name: Vsix Package
-          command: vsce package
+          command: npm run vsce
 workflows:
   build:
     jobs:
