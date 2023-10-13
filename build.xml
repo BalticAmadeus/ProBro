@@ -33,7 +33,7 @@
     </condition>
     <mkdir dir="${tempDir}" />
     <ABLUnit writeLog="true" destDir="target" failOnError="true" haltOnFailure="true" tempDir="${tempDir}">
-      <fileset dir="oe/tests" includes="**/*.p,**/*.cls" />
+      <fileset dir="oe/test" includes="**/*.p,**/*.cls" />
       <propath refid="propath" />
       <Profiler enabled="true" outputDir="target/profiler" coverage="true" />
     </ABLUnit>
