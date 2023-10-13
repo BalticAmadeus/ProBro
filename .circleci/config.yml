@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build-front-end:
+  test-and-build-front-end:
     docker:
       - image: circleci/node:16
     steps:
