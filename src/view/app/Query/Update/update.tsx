@@ -23,10 +23,12 @@ export default function UpdatePopup({
   action,
   readRow,
   logValue,
-  defaultTrigger,
+  defaultWriteTrigger,
+  defaultDeleteTrigger,
 }) {
   const [isWindowSmall, setIsWindowSmall] = React.useState(false);
-  const [useTriggers, setUseTriggers] = React.useState(defaultTrigger);
+  const [useWriteTriggers, setUseWriteTriggers] = React.useState(defaultWriteTrigger);
+  const [useDeleteTriggers, setUseDeleteTriggers] = React.useState(defaultDeleteTrigger);
   const logger = new Logger(logValue);
   const table = [];
   const inputs: {
@@ -139,11 +141,14 @@ export default function UpdatePopup({
         data: submitData,
         mode: ProcessAction[action],
         minTime: 0,
-        useTriggers: useTriggers,
+        useWriteTriggers: useWriteTriggers,
+        useDeleteTriggers: useDeleteTriggers,
       },
     };
 
-    setUseTriggers(defaultTrigger);
+    setUseWriteTriggers(defaultWriteTrigger);
+    setUseDeleteTriggers(defaultDeleteTrigger);
+
     logger.log("crud submit data", command);
     vscode.postMessage(command);
   };
@@ -152,7 +157,12 @@ export default function UpdatePopup({
     const checkbox = document.getElementById("myCheckbox") as HTMLInputElement;
 
     checkbox.addEventListener("change", () => {
-      setUseTriggers(checkbox.checked);
+        if(action === ProcessAction.Delete) {
+            setUseDeleteTriggers(checkbox.checked);
+        }
+        else {
+            setUseWriteTriggers(checkbox.checked);
+        }
     });
   }
 
@@ -182,6 +192,13 @@ export default function UpdatePopup({
                 <div>
                   Are You sure You want delete {selectedRows.size} record
                   {selectedRows.size > 1 && "s"}?
+                    <label>
+                        <input type="checkbox"
+                            id="myCheckbox"
+                            onClick={listenForCheck}
+                            defaultChecked
+                        /> Use delete trigger
+                    </label>
                 </div>
               ) : action === ProcessAction.Read ? (
                 <>
@@ -199,7 +216,7 @@ export default function UpdatePopup({
                       type="checkbox"
                       id="myCheckbox"
                       onClick={listenForCheck}
-                      defaultChecked={useTriggers}
+                      defaultChecked={useWriteTriggers}
                     />{" "}
                     Use write trigger
                   </label>
@@ -215,7 +232,8 @@ export default function UpdatePopup({
               <ProBroButton
                 className="button"
                 onClick={() => {
-                  setUseTriggers(defaultTrigger);
+                  setUseWriteTriggers(defaultWriteTrigger);
+                  setUseDeleteTriggers(defaultDeleteTrigger);
                   setOpen(false);
                 }}
               >

@@ -5,6 +5,7 @@ export interface ISettings {
   initialBatchSizeLoad: number;
   logging: ILogging;
   useWriteTriggers: boolean;
+  useDeleteTriggers: boolean;
 }
 
 export interface ILogging {
