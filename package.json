@@ -95,6 +95,11 @@
                     "type": "string",
                     "markdownDescription": "Specifies path where temporary files are created."
                 },
+                "pro-bro.filterAsYouType": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Use filter as you type"
+                },
                 "pro-bro.logging.react": {
                     "type": "boolean",
                     "markdownDescription": "Log input and output in React part to console"
