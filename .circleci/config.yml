@@ -35,8 +35,20 @@ jobs:
           path: target/results.xml
       - store_test_results:
           path: target/results.xml
+  build:
+    docker:
+      - image: circleci/node:16
+    steps:
+      - checkout
+      - run: 
+          name: Install vsce
+          command: npm install vsce
+      - run: 
+          name: Build Extension
+          command: npm run vsce
 workflows:
   build:
     jobs:
       - test-and-compile-front-end
       - test-and-compile-back-end
+      - build

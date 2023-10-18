@@ -285,7 +285,8 @@
         "watch:extension": "tsc -watch -p ./",
         "watch:views": "webpack --watch --mode development",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
-        "jestTest": "jest"
+        "jestTest": "jest",
+        "vsce": "vsce package"
     },
     "devDependencies": {
         "@babel/core": "^7.21.0",
