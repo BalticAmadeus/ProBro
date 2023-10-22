@@ -307,6 +307,15 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
+      `${Constants.globalExtensionKey}.disableConnection`,
+      (dbConnectionNode: DbConnectionNode) => {
+        dbConnectionNode.disableConnection(context);
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.procedureEditor`,
       (dbConnectionNode: DbConnectionNode) => {
         dbConnectionNode.runScript(context, "procedureEditor");

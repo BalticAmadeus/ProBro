@@ -45,6 +45,8 @@ export class DbConnectionNode implements INode {
         return "progress_icon_stop.svg";
       case ConnectionStatus.Connecting:
         return "loading.gif";
+      case ConnectionStatus.Disabled:
+        return "connection-disabled.svg";
       default:
         return "progress_icon_stop.svg";
     }
@@ -65,6 +67,25 @@ export class DbConnectionNode implements INode {
     }
     delete connections[this.config.id];
     this.context.globalState.update(`pro-bro.dbconfig`, connections);
+    vscode.commands.executeCommand(`pro-bro.refreshList`);
+  }
+
+  public disableConnection(context: vscode.ExtensionContext){
+    let connections = context.globalState.get<{ [id: string]: IConfig }>(
+      `pro-bro.dbconfig`
+    );
+    if (!connections) {
+      connections = {};
+    }
+    if (connections[this.config.id]) {
+      if (connections[this.config.id].conStatus === ConnectionStatus.Connected) {
+        connections[this.config.id].conStatus = ConnectionStatus.Disabled;
+
+      } else {
+        connections[this.config.id].conStatus = ConnectionStatus.Connected;
+      }
+    }
+    context.globalState.update(`pro-bro.dbconfig`, connections);
     vscode.commands.executeCommand(`pro-bro.refreshList`);
   }
 

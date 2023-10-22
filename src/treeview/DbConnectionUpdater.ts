@@ -38,21 +38,24 @@ export class DbConnectionUpdater {
     }
 
     for (let id of Object.keys(connections)) {
-      connections![id].conStatus = ConnectionStatus.Connecting;
-      this.updateWorkStateStatus(connections);
-      await this.wait();
-
-      const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
-        connections[id]
-      );
-
-      if (data instanceof Error || "error" in data) {
-        connections[id].conStatus = ConnectionStatus.NotConnected;
-      } else {
-        connections[id].conStatus = ConnectionStatus.Connected;
+      if (connections[id].conStatus === ConnectionStatus.Disabled) {
+        continue;
       }
-      this.updateWorkStateStatus(connections);
+        connections![id].conStatus = ConnectionStatus.Connecting;
+        this.updateWorkStateStatus(connections);
+        await this.wait();
+
+        const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
+          connections[id]
+        );
+
+        if (data instanceof Error || "error" in data) {
+          connections[id].conStatus = ConnectionStatus.NotConnected;
+        } else {
+          connections[id].conStatus = ConnectionStatus.Connected;
+        }
     }
+    this.updateWorkStateStatus(connections);
   }
 
   private updateWorkStateStatus(connections: { [id: string]: IConfig }) {
@@ -71,21 +74,24 @@ export class DbConnectionUpdater {
     }
 
     for (let id of Object.keys(connections)) {
-      connections![id].conStatus = ConnectionStatus.Connecting;
-      this.updateStatus(connections);
-      await this.wait();
-
-      const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
-        connections[id]
-      );
-
-      if (data instanceof Error || "error" in data) {
-        connections[id].conStatus = ConnectionStatus.NotConnected;
-      } else {
-        connections[id].conStatus = ConnectionStatus.Connected;
+      if (connections[id].conStatus === ConnectionStatus.Disabled) {
+        continue;
       }
-      this.updateStatus(connections);
+        connections![id].conStatus = ConnectionStatus.Connecting;
+        this.updateStatus(connections);
+        await this.wait();
+
+        const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
+          connections[id]
+        );
+
+        if (data instanceof Error || "error" in data) {
+          connections[id].conStatus = ConnectionStatus.NotConnected;
+        } else {
+          connections[id].conStatus = ConnectionStatus.Connected;
+        }
     }
+    this.updateStatus(connections);
   }
 
   private updateStatus(connections: { [id: string]: IConfig }) {

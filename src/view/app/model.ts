@@ -39,6 +39,7 @@ export enum ConnectionStatus {
   Connected,
   Connecting,
   NotConnected,
+  Disabled,
 }
 
 export interface ICommand {

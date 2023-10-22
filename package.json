@@ -191,6 +191,11 @@
                 "icon": "$(trash)"
             },
             {
+                "command": "pro-bro.disableConnection",
+                "title": "pro-bro: Disable/Enable Connection",
+                "icon": "$(zap)"
+            },
+            {
                 "command": "pro-bro.procedureEditor",
                 "title": "pro-bro: Launch Procedure Editor",
                 "icon": "$(preview)"
@@ -239,6 +244,11 @@
                 }
             ],
             "view/item/context": [
+                {
+                    "command": "pro-bro.disableConnection",
+                    "when": "view == pro-bro-databases && viewItem == dbConnection",
+                    "group": "inline"
+                },
                 {
                     "command": "pro-bro.editConnection",
                     "when": "view == pro-bro-databases && viewItem == dbConnection",
