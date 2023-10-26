@@ -70,66 +70,52 @@ export class LocalClient extends AClient implements IClient {
     "connectionPf.pf"
   );
 
+  private readonly linuxProPath = `"${path.join(
+    Constants.dlc,
+    "bin",
+    "_progres"
+  )}"`;
+
   protected readonly linuxConnectionString = [
-    "-c",
-    [
-      `"${path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "scripts",
-        "oe.sh"
-      )}"`,
-      "-p",
-      `"${path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "src",
-        "oeSocket.p"
-      )}"`,
-      "-clientlog",
-      `"${path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "oeSocket.pro"
-      )}"`,
-      "-pf",
-      `"${this.pfFilePath}"`,
-      `"${Constants.dlc}"`,
-    ].join(" "),
+    "-p",
+    `"${path.join(
+      Constants.context.extensionPath,
+      "resources",
+      "oe",
+      "src",
+      "oeSocket.p"
+    )}"`,
+    "-clientlog",
+    `"${path.join(
+      Constants.context.extensionPath,
+      "resources",
+      "oe",
+      "oeSocket.pro"
+    )}"`,
+    "-pf",
+    `"${this.pfFilePath}"`,
   ];
 
+  private readonly windowsProPath = path.join(Constants.dlc, "bin", "_progres");
+
   protected readonly windowsConnectionString = [
-    "/c",
-    [
-      path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "scripts",
-        "oe.bat"
-      ),
-      "-p",
-      path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "src",
-        "oeSocket.p"
-      ),
-      "-clientlog",
-      path.join(
-        Constants.context.extensionPath,
-        "resources",
-        "oe",
-        "oeSocket.pro"
-      ),
-      "-pf",
-      this.pfFilePath,
-      Constants.dlc,
-    ].join(" "),
+    "-p",
+    path.join(
+      Constants.context.extensionPath,
+      "resources",
+      "oe",
+      "src",
+      "oeSocket.p"
+    ),
+    "-clientlog",
+    path.join(
+      Constants.context.extensionPath,
+      "resources",
+      "oe",
+      "oeSocket.pro"
+    ),
+    "-pf",
+    this.pfFilePath,
   ];
 
   protected async startAndListen(): Promise<any> {
@@ -149,10 +135,13 @@ export class LocalClient extends AClient implements IClient {
 
       switch (process.platform) {
         case "linux":
-          this.proc = cp.spawn("bash", this.linuxConnectionString);
+          this.proc = cp.spawn(this.linuxProPath, this.linuxConnectionString);
           break;
         case "win32":
-          this.proc = cp.spawn("cmd.exe", this.windowsConnectionString);
+          this.proc = cp.spawn(
+            this.windowsProPath,
+            this.windowsConnectionString
+          );
           break;
         default:
           reject("Unsupported platform");
