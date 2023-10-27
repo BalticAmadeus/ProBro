@@ -39,6 +39,7 @@ function ConnectionForm({
   const [group, setGroup] = React.useState(vsState.config.group);
   const [label, setLabel] = React.useState(vsState.config.label);
   const [params, setParams] = React.useState(vsState.config.params);
+  const [workState, setWorkState] = React.useState(vsState.config.workState);
 
   const logger = new Logger(configuration.logging.react);
 
@@ -275,13 +276,15 @@ function ConnectionForm({
       <div className="container">
         <div className="heading">
           <div className="title">Connect to server</div>
-          <ProBroButton
-            className="importPf"
-            onClick={importPf}
-            startIcon={<FileUploadRoundedIcon />}
-          >
-            Import .pf
-          </ProBroButton>
+          {!workState && (
+            <ProBroButton
+                className="importPf"
+                onClick={importPf}
+                startIcon={<FileUploadRoundedIcon />}
+            >
+                Import .pf
+            </ProBroButton>
+          )}
         </div>
         <div className="content">
           <form action="#">
@@ -294,6 +297,7 @@ function ConnectionForm({
                   onChange={(event) => {
                     setLabel(event.target.value);
                   }}
+                  disabled={workState}
                 />
               </div>
               <div className="input-box">
@@ -313,6 +317,7 @@ function ConnectionForm({
                     );
                     setGroup(event.target.value);
                   }}
+                  disabled={workState}
                   onKeyDown={handleKeyDown}
                 />
                 <ul className="autocomplete-list" id="column-list"></ul>
@@ -325,6 +330,7 @@ function ConnectionForm({
                   onChange={(event) => {
                     setName(event.target.value);
                   }}
+                  disabled={workState}
                 />
               </div>
             </div>
@@ -337,6 +343,7 @@ function ConnectionForm({
                   onChange={(event) => {
                     setDescription(event.target.value);
                   }}
+                  disabled={workState}
                 />
               </div>
             </div>
@@ -349,6 +356,7 @@ function ConnectionForm({
                   onChange={(event) => {
                     setHost(event.target.value);
                   }}
+                  disabled={workState}
                 />
               </div>
               <div className="input-box">
@@ -359,6 +367,7 @@ function ConnectionForm({
                   onChange={(event) => {
                     setPort(event.target.value);
                   }}
+                  disabled={workState}
                 />
               </div>
               <div className="input-box">
@@ -369,6 +378,7 @@ function ConnectionForm({
                   onChange={(event) => {
                     setUser(event.target.value);
                   }}
+                  disabled={workState}
                 />
               </div>
               <div className="input-box">
@@ -379,6 +389,7 @@ function ConnectionForm({
                   onChange={(event) => {
                     setPassword(event.target.value);
                   }}
+                  disabled={workState}
                 />
               </div>
               <div className="input-box-wide">
@@ -389,16 +400,21 @@ function ConnectionForm({
                   onChange={(event) => {
                     setParams(event.target.value);
                   }}
+                  disabled={workState}
                 />
               </div>
             </div>
             <div className="buttons">
-              <div className="button-narrow">
-                <input type="submit" value="Test" onClick={onTestClick} />
-              </div>
-              <div className="button-narrow">
-                <input type="submit" value="Save" onClick={onSaveClick} />
-              </div>
+                {!workState && (
+                    <div className="button-narrow">
+                        <input type="submit" value="Test" onClick={onTestClick} />
+                    </div>
+                )}
+                {!workState && (
+                    <div className="button-narrow">
+                        <input type="submit" value="Save" onClick={onSaveClick} />
+                    </div>
+                )}
             </div>
           </form>
         </div>
