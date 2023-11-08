@@ -6,18 +6,24 @@ import { ConnectionEditor } from "../webview/ConnectionEditor";
 import { spawn } from "child_process";
 import { Constants } from "../common/Constants";
 import { v4 as uuid } from "uuid";
+import { DbConnectionUpdater } from "./DbConnectionUpdater";
+import { IRefreshCallback } from "./IRefreshCallback";
 
 export class DbConnectionNode implements INode {
   public readonly id: string;
   public readonly config: IConfig;
+  private readonly refreshCallback: IRefreshCallback;
+  
 
   constructor(
     id: string,
     config: IConfig,
+    refreshCallback: IRefreshCallback,
     private context: vscode.ExtensionContext
   ) {
     this.id = id;
     this.config = config;
+    this.refreshCallback = refreshCallback;
   }
 
   public getTreeItem(): vscode.TreeItem {
@@ -70,6 +76,17 @@ export class DbConnectionNode implements INode {
 
   public editConnection(context: vscode.ExtensionContext) {
     new ConnectionEditor(context, "Edit Connection", this.id);
+  }
+
+  public refreshConnection(context: vscode.ExtensionContext) {
+    const dbConnectionUpdater = new DbConnectionUpdater();
+    const connectionId = this.config.id;
+
+    dbConnectionUpdater.updateSingleConnectionStatusWithRefreshCallback(
+      connectionId,
+      context,
+      this.refreshCallback,
+    );
   }
 
   private getAllConnections() {
