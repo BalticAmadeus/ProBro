@@ -39,7 +39,7 @@ function ConnectionForm({
   const [group, setGroup] = React.useState(vsState.config.group);
   const [label, setLabel] = React.useState(vsState.config.label);
   const [params, setParams] = React.useState(vsState.config.params);
-  const [workState, setWorkState] = React.useState(vsState.config.workState);
+  const [workState] = React.useState(vsState.config.workState);
 
   const logger = new Logger(configuration.logging.react);
 
