@@ -114,7 +114,7 @@
                 },
                 "pro-bro.development.useNewDbClient": {
                     "type": "boolean",
-                    "default": "true",
+                    "default": "false",
                     "markdownDescription": "Use New DB Client implementation"
                 }
             }
