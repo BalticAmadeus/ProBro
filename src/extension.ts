@@ -298,6 +298,15 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
+      `${Constants.globalExtensionKey}.refreshConnection`,
+      (dbConnectionNode: DbConnectionNode) => {
+        dbConnectionNode.refreshConnection(context);
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.editConnection`,
       (dbConnectionNode: DbConnectionNode) => {
         dbConnectionNode.editConnection(context);

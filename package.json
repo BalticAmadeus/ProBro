@@ -181,6 +181,11 @@
                 "icon": "$(refresh)"
             },
             {
+                "command": "pro-bro.refreshConnection",
+                "title": "pro-bro: Refresh Connection",
+                "icon": "$(refresh)"
+            },
+            {
                 "command": "pro-bro.addEntry",
                 "title": "pro-bro: Add Connection",
                 "icon": "$(add)"
@@ -246,6 +251,11 @@
             "view/item/context": [
                 {
                     "command": "pro-bro.editConnection",
+                    "when": "view == pro-bro-databases && viewItem == dbConnection",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.refreshConnection",
                     "when": "view == pro-bro-databases && viewItem == dbConnection",
                     "group": "inline"
                 },
