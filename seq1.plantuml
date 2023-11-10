@@ -1,0 +1,38 @@
+@startuml SimpleLocalInitialisDatabase1ationSequence
+
+title Simple Local Initialisation sequence (AS IS)
+
+actor User
+participant VSCode
+participant Broker as "Local broker"
+database Database1
+database Database2
+
+User -> VSCode ++ #Gold : Start
+VSCode ->  VSCode : GetAvailablePort\n(port)
+VSCode ->  Broker ++ #Azure: Start (port)
+Broker ->  Broker : CREATE Broker-SOCKET
+VSCode <-- Broker : Started
+VSCode ->  VSCode : GetDbList\n(host, port, etc.)
+VSCode ->  Broker : GetDbVersion\n(host, port, etc.)
+
+activate Broker #Azure
+Broker -> Database1 : CONNECT VALUE (host, port, etc.)
+Broker <-- Database1
+Broker -> Database1 : DBVERSION
+Broker <-- Database1
+VSCode <-- Broker : DbVersion\n(version)
+deactivate Broker
+
+VSCode ->  Broker : GetDbVersion\n(host, port, etc.)
+
+activate Broker #Azure
+Broker -> Database2 : CONNECT VALUE (pahost, port, etc.rams)
+Broker <-- Database2
+Broker -> Database2 : DBVERSION
+Broker <-- Database2
+VSCode <-- Broker : DbVersion\n(version)
+deactivate Broker
+User <-- VSCode : End
+
+@enduml

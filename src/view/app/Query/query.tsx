@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IOETableData } from "../../../db/oe";
+import { IOETableData } from "../../../db/Oe";
 import DataGrid, { SortColumn, SelectColumn, CopyEvent } from "react-data-grid";
 
 import { CommandAction, ICommand, ProcessAction } from "../model";
@@ -207,12 +207,20 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                                             reloadData(configuration.initialBatchSizeLoad);
                                         }, 500);
                                     }
+                                    function testKeyDown(event) {
+                                        if (event.key === "Enter") {
+                                            event.preventDefault();
+                                            reloadData(configuration.initialBatchSizeLoad);
+                                        }
+                                    }
 
                                     function handleInputKeyDown(event) {
                                         var tempFilters = filters;
                                         tempFilters.columns[column.key] = event.target.value;
                                         setFilters(tempFilters);
-                                        handleKeyInputTimeout();
+                                        if (configuration.filterAsYouType  === true) {
+                                            handleKeyInputTimeout();
+                                        }
                                     }
 
                                     return (
@@ -269,6 +277,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                                                         style={filterCSS}
                                                         defaultValue={filters.columns[column.key]}
                                                         onChange={handleInputKeyDown}
+                                                        onKeyDown={testKeyDown}
                                                     />
                                                 </div>
                                             )}
@@ -673,7 +682,6 @@ Description: ${errorObject.description}`}</pre>
             });
             item.addEventListener("click", function () {
                 addText(input, this.innerHTML);
-                console.log(selectedColumns);
                 document.getElementById('input').focus();
                 setTimeout(() => {
                     createListener(document.getElementById('input'), selectedColumns);

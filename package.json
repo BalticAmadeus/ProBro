@@ -9,7 +9,7 @@
         "DB",
         "Explorer"
     ],
-    "version": "1.4.1",
+    "version": "1.5.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -38,33 +38,33 @@
     "main": "./out/extension.js",
     "contributes": {
         "configuration": {
-            "title": "ProBro",
+            "title": "pro-bro",
             "properties": {
-                "ProBro.batchSize": {
+                "pro-bro.batchSize": {
                     "type": "number",
                     "minimum": 100,
                     "default": 1000,
                     "markdownDescription": "Specifies number of records retrieved in one loading"
                 },
-                "ProBro.batchMaxTimeout": {
+                "pro-bro.batchMaxTimeout": {
                     "type": "number",
                     "minimum": 10,
                     "default": 1000,
                     "markdownDescription": "Specifies maximum time in milliseconds to retrieve batch of records"
                 },
-                "ProBro.batchMinTimeout": {
+                "pro-bro.batchMinTimeout": {
                     "type": "number",
                     "minimum": 10,
                     "default": 100,
                     "markdownDescription": "Specifies time in milliseconds to retrieve batch of records"
                 },
-                "ProBro.initialBatchSizeLoad": {
+                "pro-bro.initialBatchSizeLoad": {
                     "type": "number",
                     "minimum": 50,
                     "default": 100,
                     "markdownDescription": "Specifies the initial number of records retrieved when query is opened"
                 },
-                "ProBro.possiblePortsList": {
+                "pro-bro.possiblePortsList": {
                     "type": "array",
                     "minItems": 1,
                     "items": {
@@ -81,31 +81,41 @@
                     ],
                     "markdownDescription": "(Restart needed)\n\n Provide free ports for local ProBro communication. Additional ports are used for additional vsCode instances using ProBro extension.  \n\n The default ProBro extension port is 23456"
                 },
-                "ProBro.importConnections": {
+                "pro-bro.importConnections": {
                     "type": "boolean",
                     "default": "true",
                     "markdownDescription": "Import connections from openedge-project.json"
                 },
-                "ProBro.useWriteTriggers": {
+                "pro-bro.useWriteTriggers": {
                     "type": "boolean",
                     "default": "true",
                     "markdownDescription": "Use write triggers"
                 },
-                "ProBro.tempfiles": {
+                "pro-bro.tempfiles": {
                     "type": "string",
                     "markdownDescription": "Specifies path where temporary files are created."
                 },
-                "ProBro.logging.react": {
+                "pro-bro.filterAsYouType": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Use filter as you type"
+                },
+                "pro-bro.logging.react": {
                     "type": "boolean",
                     "markdownDescription": "Log input and output in React part to console"
                 },
-                "ProBro.logging.node": {
+                "pro-bro.logging.node": {
                     "type": "boolean",
                     "markdownDescription": "Log input and output in Node part to console"
                 },
-                "ProBro.logging.openEdge": {
+                "pro-bro.logging.openEdge": {
                     "type": "string",
                     "markdownDescription": "Specify one or more log entry types (-logentrytypes) for custom OpenEdge part logging. Reload required."
+                },
+                "pro-bro.development.useNewDbClient": {
+                    "type": "boolean",
+                    "default": "false",
+                    "markdownDescription": "Use New DB Client implementation"
                 }
             }
         },
@@ -135,7 +145,7 @@
                 {
                     "type": "webview",
                     "id": "pro-bro-fields",
-                    "name": "",
+                    "name": "Fields Explorer",
                     "contextualTitle": "Fields Explorer",
                     "title": "Fields Explorer"
                 }
@@ -144,7 +154,7 @@
                 {
                     "type": "webview",
                     "id": "pro-bro-indexes",
-                    "name": "",
+                    "name": "Indexes Explorer",
                     "contextualTitle": "Indexes Explorer",
                     "title": "Indexes Explorer"
                 }
@@ -152,7 +162,7 @@
             "pro-bro": [
                 {
                     "id": "pro-bro-databases",
-                    "name": "DataBases",
+                    "name": "Databases",
                     "contextualTitle": "OpenEdge Explorer",
                     "title": "OpenEdge Explorer"
                 },
@@ -167,47 +177,52 @@
         "commands": [
             {
                 "command": "pro-bro.refreshList",
-                "title": "ProBro: Refresh",
+                "title": "pro-bro: Refresh",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "pro-bro.refreshConnection",
+                "title": "pro-bro: Refresh Connection",
                 "icon": "$(refresh)"
             },
             {
                 "command": "pro-bro.addEntry",
-                "title": "ProBro: Add Connection",
+                "title": "pro-bro: Add Connection",
                 "icon": "$(add)"
             },
             {
                 "command": "pro-bro.editConnection",
-                "title": "ProBro: Edit Connection",
+                "title": "pro-bro: Edit Connection",
                 "icon": "$(edit)"
             },
             {
                 "command": "pro-bro.deleteConnection",
-                "title": "ProBro: Delete Connection",
+                "title": "pro-bro: Delete Connection",
                 "icon": "$(trash)"
             },
             {
                 "command": "pro-bro.procedureEditor",
-                "title": "ProBro: Launch Procedure Editor",
+                "title": "pro-bro: Launch Procedure Editor",
                 "icon": "$(preview)"
             },
             {
                 "command": "pro-bro.dataAdministration",
-                "title": "ProBro: Launch Data Administration",
+                "title": "pro-bro: Launch Data Administration",
                 "icon": "$(server-environment)"
             },
             {
                 "command": "pro-bro.dataDictionary",
-                "title": "ProBro: Launch Data Dictionary",
+                "title": "pro-bro: Launch Data Dictionary",
                 "icon": "$(book)"
             },
             {
                 "command": "pro-bro.query",
-                "title": "ProBro: Query",
+                "title": "pro-bro: Query",
                 "icon": "$(play)"
             },
             {
                 "command": "pro-bro.list-filter",
-                "title": "ProBro: List Filter",
+                "title": "pro-bro: List Filter",
                 "icon": "$(list-filter)"
             },
             {
@@ -236,6 +251,11 @@
             "view/item/context": [
                 {
                     "command": "pro-bro.editConnection",
+                    "when": "view == pro-bro-databases && viewItem == dbConnection",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.refreshConnection",
                     "when": "view == pro-bro-databases && viewItem == dbConnection",
                     "group": "inline"
                 },
@@ -280,7 +300,8 @@
         "watch:extension": "tsc -watch -p ./",
         "watch:views": "webpack --watch --mode development",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
-        "jestTest": "jest"
+        "jestTest": "jest",
+        "vsce": "vsce package"
     },
     "devDependencies": {
         "@babel/core": "^7.21.0",

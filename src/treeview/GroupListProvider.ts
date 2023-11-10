@@ -29,9 +29,15 @@ export class GroupListProvider
         e.selection[0] instanceof DbConnectionNode &&
         tablesListProvider instanceof TablesListProvider
       ) {
-        const node = e.selection[0] as DbConnectionNode;
-        console.log("GroupList", node.config);
-        (tablesListProvider as TablesListProvider).refresh(node.config);
+        const nodes = e.selection as DbConnectionNode[];
+        let configs: IConfig[] = [];
+
+        nodes.forEach((node) => {
+          configs.push(node.config);
+        });
+
+        console.log("GroupList", configs);
+        (tablesListProvider as TablesListProvider).refresh(configs);
         return;
       }
     }
@@ -74,7 +80,7 @@ export class GroupListProvider
         }
         if (groupNames.indexOf(group) === -1) {
           groupNames.push(group);
-          groupNodes.push(new groupNode.GroupNode(this.context, group));
+          groupNodes.push(new groupNode.GroupNode(this.context, group, this));
         }
       }
     }
@@ -87,7 +93,7 @@ export class GroupListProvider
         }
         if (groupNames.indexOf(group) === -1) {
           groupNames.push(group);
-          groupNodes.push(new groupNode.GroupNode(this.context, group));
+          groupNodes.push(new groupNode.GroupNode(this.context, group, this));
         }
       }
     }

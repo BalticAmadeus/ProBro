@@ -1,13 +1,14 @@
 import path = require("path");
 import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
-import { DatabaseProcessor } from "../db/DatabaseProcessor";
 import { IOETableData } from "../db/Oe";
 import { TableNode } from "../treeview/TableNode";
 import { TablesListProvider } from "../treeview/TablesListProvider";
 import { FieldsViewProvider } from "./FieldsViewProvider";
 import { DumpFileFormatter } from "./DumpFileFormatter";
 import { Logger } from "../common/Logger";
+import { ProcessorFactory } from "../repo/processor/ProcessorFactory";
+import { Constants } from "../common/Constants";
 
 export class QueryEditor {
   private readonly panel: vscode.WebviewPanel | undefined;
@@ -15,7 +16,9 @@ export class QueryEditor {
   private disposables: vscode.Disposable[] = [];
   public tableName: string;
   private fieldsProvider: FieldsViewProvider;
-  private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private readonly configuration = vscode.workspace.getConfiguration(
+    Constants.globalExtensionKey
+  );
   private logger = new Logger(this.configuration.get("logging.node")!);
 
   constructor(
@@ -44,8 +47,22 @@ export class QueryEditor {
     );
 
     this.panel.iconPath = {
-      dark: vscode.Uri.file(path.join( this.extensionPath, "resources", "icon", "query-icon-dark.svg")),
-      light: vscode.Uri.file(path.join( this.extensionPath, "resources", "icon", "query-icon-light.svg"))
+      dark: vscode.Uri.file(
+        path.join(
+          this.extensionPath,
+          "resources",
+          "icon",
+          "query-icon-dark.svg"
+        )
+      ),
+      light: vscode.Uri.file(
+        path.join(
+          this.extensionPath,
+          "resources",
+          "icon",
+          "query-icon-light.svg"
+        )
+      ),
     };
 
     if (this.panel) {
@@ -61,8 +78,7 @@ export class QueryEditor {
         switch (command.action) {
           case CommandAction.Query:
             if (this.tableListProvider.config) {
-
-              DatabaseProcessor.getInstance()
+              ProcessorFactory.getProcessorInstance()
                 .getTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,
@@ -78,13 +94,13 @@ export class QueryEditor {
                     };
                     this.logger.log("data:", obj);
                     this.panel?.webview.postMessage(obj);
-                  } 
+                  }
                 });
-              break;
             }
+            break;
           case CommandAction.CRUD:
             if (this.tableListProvider.config) {
-              DatabaseProcessor.getInstance()
+              ProcessorFactory.getProcessorInstance()
                 .getTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,
@@ -100,13 +116,12 @@ export class QueryEditor {
                     this.logger.log("data:", obj);
                     this.panel?.webview.postMessage(obj);
                   }
-                    
                 });
-              break;
             }
+            break;
           case CommandAction.Submit:
             if (this.tableListProvider.config) {
-              DatabaseProcessor.getInstance()
+              ProcessorFactory.getProcessorInstance()
                 .submitTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,
@@ -120,24 +135,29 @@ export class QueryEditor {
                       data: oe,
                     };
                     this.logger.log("data:", obj);
-                    if (obj.data.description != null){
-                      if (obj.data.description == "")
-                        vscode.window.showErrorMessage("Database Error: Trigger canceled action");
-                      else
-                        vscode.window.showErrorMessage("Database Error: " + obj.data.description);
-                    }
-                    else{
-                      vscode.window.showInformationMessage("Action was successful");
+                    if (obj.data.description !== null) {
+                      if (obj.data.description === "") {
+                        vscode.window.showErrorMessage(
+                          "Database Error: Trigger canceled action"
+                        );
+                      } else {
+                        vscode.window.showErrorMessage(
+                          "Database Error: " + obj.data.description
+                        );
+                      }
+                    } else {
+                      vscode.window.showInformationMessage(
+                        "Action was successful"
+                      );
                     }
                     this.panel?.webview.postMessage(obj);
                   }
-                    
                 });
-              break;
             }
+            break;
           case CommandAction.Export:
             if (this.tableListProvider.config) {
-              DatabaseProcessor.getInstance()
+              ProcessorFactory.getProcessorInstance()
                 .getTableData(
                   this.tableListProvider.config,
                   this.tableNode.tableName,

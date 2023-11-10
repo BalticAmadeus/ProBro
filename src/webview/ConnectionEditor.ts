@@ -2,9 +2,9 @@ import path = require("path");
 import * as vscode from "vscode";
 import { ICommand, CommandAction, IConfig } from "../view/app/model";
 import { Constants } from "../common/Constants";
-import { DatabaseProcessor } from "../db/DatabaseProcessor";
 import { Logger } from "../common/Logger";
 import { v4 as uuid } from "uuid";
+import { ProcessorFactory } from "../repo/processor/ProcessorFactory";
 
 export class ConnectionEditor {
   private readonly panel: vscode.WebviewPanel | undefined;
@@ -12,7 +12,9 @@ export class ConnectionEditor {
   private disposables: vscode.Disposable[] = [];
   private isTestedSuccesfully: boolean = false;
   private readonly id?: string;
-  private readonly configuration = vscode.workspace.getConfiguration("ProBro");
+  private readonly configuration = vscode.workspace.getConfiguration(
+    Constants.globalExtensionKey
+  );
   private logger = new Logger(this.configuration.get("logging.node")!);
 
   constructor(
@@ -93,7 +95,7 @@ export class ConnectionEditor {
             );
             return;
           case CommandAction.Test:
-            DatabaseProcessor.getInstance()
+            ProcessorFactory.getProcessorInstance()
               .getDBVersion(command.content!)
               .then((oe) => {
                 if (oe.error) {
@@ -108,15 +110,19 @@ export class ConnectionEditor {
               });
             return;
           case CommandAction.Group:
-            var groupNames: string[] = [];
-
             if (connections) {
+              const uniqueGroups = new Set<string>(); // Specify that the Set will contain strings
+
               for (const id of Object.keys(connections)) {
                 let group = connections[id].group.toUpperCase();
-                groupNames.push(group);
+                uniqueGroups.add(group);
               }
+
+              const groupNames: string[] = Array.from(uniqueGroups);
+
               this.groupList(groupNames);
             }
+
             return;
         }
       },
@@ -167,6 +173,9 @@ export class ConnectionEditor {
       password: "",
       group: "",
       params: "",
+      connectionId: "LOCAL",
+      type: 0,
+      workState: false,
     };
     if (this.id) {
       const connections = this.context.globalState.get<{
@@ -174,6 +183,15 @@ export class ConnectionEditor {
       }>(`${Constants.globalExtensionKey}.dbconfig`);
       if (connections) {
         config = connections[this.id];
+        if (!config) {
+          const workspaceConnections = this.context.workspaceState.get<{
+            [id: string]: IConfig;
+          }>(`${Constants.globalExtensionKey}.dbconfig`);
+          if (workspaceConnections) {
+            config = workspaceConnections[this.id];
+            config.workState = true;
+          }
+        }
       }
     }
 

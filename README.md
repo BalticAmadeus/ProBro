@@ -9,6 +9,7 @@ This open source project is in active development. Our goal is to simplify the a
 ## Features
 
 - Connection to Progress DB:
+
   - Connect to Progress DB via ABL Socket server
   - Connect to multiple local Progress DBs
   - Custom connection groups
@@ -16,11 +17,13 @@ This open source project is in active development. Our goal is to simplify the a
   - Edit Connections
   - Connection status indicator
   - Shortcuts to OE tools
-  - Possibility to import from `openedge-project.json` (_new_)
+  - Possibility to import from `openedge-project.json`
+
 - Tables
   - Hidden tables
   - Launch query
   - Launch query on double click
+  - Select tables form multiple databases (_new_)
 - Indexes
 - Fields
   - Filtering
@@ -33,6 +36,7 @@ This open source project is in active development. Our goal is to simplify the a
   - Custom queries
   - Suggest field names
   - View record on double-click
+  - Enable/disable filtering as you type (_new_)
 - Export
   - Formats
     - .D file

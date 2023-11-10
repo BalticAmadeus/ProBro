@@ -3,6 +3,7 @@ import { Constants } from "../common/Constants";
 import { IConfig } from "../view/app/model";
 import { INode } from "./INode";
 import * as connectionNode from "./DbConnectionNode";
+import { IRefreshCallback } from "./IRefreshCallback";
 
 export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
   private _onDidChangeTreeData: vscode.EventEmitter<INode | undefined | void> =
@@ -12,7 +13,8 @@ export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
 
   constructor(
     private context: vscode.ExtensionContext,
-    private readonly groupName: string
+    private readonly groupName: string,
+    private readonly refreshCallback: IRefreshCallback
   ) {}
 
   refresh(): void {
@@ -54,6 +56,7 @@ export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
           let node = new connectionNode.DbConnectionNode(
             id,
             connections[id],
+            this.refreshCallback,
             this.context
           );
           connectionNodes.push(node);
@@ -71,6 +74,7 @@ export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
           let node = new connectionNode.DbConnectionNode(
             id,
             workspaceConnections[id],
+            this.refreshCallback,
             this.context
           );
           connectionNodes.push(node);

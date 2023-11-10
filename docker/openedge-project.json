@@ -14,6 +14,12 @@
             "aliases": []
         },
         {
+            "name": "sports20201",
+            "connect": "-db sports20201 -S 30001",
+            "dumpFile": "",
+            "aliases": []
+        },
+        {
             "name": "notWorking",
             "connect": "-db notWorking -S 99999",
             "dumpFile": "",

@@ -4,6 +4,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "Default watch",
 			"type": "npm",
 			"script": "watch",
 			"problemMatcher": "$tsc-watch",
@@ -13,16 +14,14 @@
 			},
 			"group": {
 				"kind": "build",
-				"isDefault": true
 			}
 		},
 		{
-			"label": "Docker: Start and Watch",
+			"label": "Docker: Start",
 			"type": "shell",
 			"command": "docker-compose -f ${workspaceFolder}/docker/docker-compose.yml up",
 			"group": {
 				"kind": "build",
-				"isDefault": true
 			},
 			"isBackground": true,
 			"presentation": {
@@ -59,6 +58,13 @@
 				"reveal": "never"
 			},
 			"problemMatcher": []
+		},
+		{
+			"label": "Build and watch",
+			"dependsOn": [
+				"Default watch",
+				"Docker: Start"
+			]
 		}
 	]
 }

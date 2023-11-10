@@ -1,9 +1,11 @@
 import * as vscode from "vscode";
 import { DatabaseListProvider } from "./DatabaseListProvider";
 import { INode } from "./INode";
+import { IRefreshCallback } from "./IRefreshCallback";
 
 export class GroupNode implements INode {
-    constructor(private context: vscode.ExtensionContext, private readonly groupName: string) {}
+    constructor(private context: vscode.ExtensionContext, private readonly groupName: string, private readonly refreshCallback: IRefreshCallback) {}
+
 
     public getTreeItem(): vscode.TreeItem {
         return {
@@ -14,7 +16,7 @@ export class GroupNode implements INode {
     }
 
     public async getChildren(): Promise<INode[]> {
-        return new DatabaseListProvider(this.context, this.groupName).getChildren(undefined);
+        return new DatabaseListProvider(this.context, this.groupName, this.refreshCallback).getChildren(undefined);
     }
 
 }
