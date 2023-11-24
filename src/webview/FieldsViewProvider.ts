@@ -25,9 +25,9 @@ export class FieldsViewProvider extends PanelViewProvider {
   }
 
   public notifyQueryEditors() {
-    for (let i = 0; i < this.queryEditors.length; i++) {
-      if (this.queryEditors[i].tableName === this.tableNode?.tableName) {
-        this.queryEditors[i].updateFields();
+    for (const queryEditor of this.queryEditors) {
+      if (queryEditor.tableName === this.tableNode?.tableName) {
+        queryEditor.updateFields();
       }
     }
   }

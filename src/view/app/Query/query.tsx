@@ -26,9 +26,9 @@ interface IConfigProps {
 }
 
 interface IErrorObject {
-    error: String;
-    description: String;
-    trace?: String;
+    error: string;
+    description: string;
+    trace?: string;
 }
 interface IStatisticsObject {
     recordsRetrieved: number;
@@ -96,7 +96,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         setWindowHeight(window.innerHeight);
     };
 
-    var inputQuery: HTMLButtonElement = undefined;
+    let inputQuery: HTMLButtonElement = undefined;
     React.useEffect(() => {
         if (inputQuery) {
             inputQuery.click();
@@ -215,10 +215,10 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                                     }
 
                                     function handleInputKeyDown(event) {
-                                        var tempFilters = filters;
+                                        const tempFilters = filters;
                                         tempFilters.columns[column.key] = event.target.value;
                                         setFilters(tempFilters);
-                                        if (configuration.filterAsYouType  === true) {
+                                        if (configuration.filterAsYouType === true) {
                                             handleKeyInputTimeout();
                                         }
                                     }
@@ -386,10 +386,10 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         prepareQuery();
     };
 
-    var input = document.getElementById('input');
+    let input = document.getElementById('input');
 
     const handleKeyDown = (e) => {
-        var selected = document.querySelector(".selected") as HTMLLIElement;
+        let selected = document.querySelector(".selected") as HTMLLIElement;
         if (e.key === "Enter" && selected === null) {
             e.preventDefault();
             prepareQuery();
@@ -418,7 +418,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                     selected.previousElementSibling.classList.add("selected");
                 }
             }
-            selected = document.querySelector(".selected") as HTMLLIElement;
+            selected = document.querySelector(".selected");
             selected.scrollIntoView();
             selected.focus();
         }
@@ -439,11 +439,11 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                     selected.nextElementSibling.classList.add("selected");
                 }
             }
-            selected = document.querySelector(".selected") as HTMLLIElement;
+            selected = document.querySelector(".selected");
             selected.scrollIntoView();
             selected.focus();
         }
-    }
+    };
 
     function reloadData(loaded: number) {
         setLoaded(0);
@@ -646,14 +646,11 @@ Description: ${errorObject.description}`}</pre>
 
         suggestions.innerHTML = "";
 
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].toUpperCase().includes(lastWord.toUpperCase()) || lastWord === null) {
-
+        for (const item of list) {
+            if (item.toUpperCase().includes(lastWord.toUpperCase()) || lastWord === null) {
                 const suggestion = document.createElement('li');
-                suggestion.innerHTML = list[i];
-
+                suggestion.innerHTML = item;
                 suggestion.style.cursor = 'pointer';
-
                 suggestions.appendChild(suggestion);
             }
         }
@@ -663,8 +660,8 @@ Description: ${errorObject.description}`}</pre>
         let wordArray = input.value.split(' ');
         wordArray.pop();
         input.value = '';
-        for (let i = 0; i < wordArray.length; i++) {
-            input.value += wordArray[i];
+        for (const word of wordArray) {
+            input.value += word;
             input.value += ' ';
         }
         input.value += newText;

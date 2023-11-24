@@ -35,7 +35,6 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
         command: "data",
         data: node.cache,
       });
-      return;
     } else {
       return ProcessorFactory.getProcessorInstance()
         .getTableDetails(this.config, node.tableName)
@@ -74,7 +73,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
   onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>): any {
     if (e.selection.length && this.configs) {
       if (e.selection[0] instanceof TableNode) {
-        this.node = e.selection[0] as TableNode;
+        this.node = e.selection[0];
         this.selectDbConfig(this.node);
         this.displayData(this.node);
       }

@@ -1,6 +1,6 @@
 import path = require("path");
 import * as vscode from "vscode";
-import { ICommand, CommandAction, IConfig } from "../view/app/model";
+import { ICommand, CommandAction} from "../view/app/model";
 import { IOETableData } from "../db/Oe";
 import { TableNode } from "../treeview/TableNode";
 import { TablesListProvider } from "../treeview/TablesListProvider";
@@ -28,8 +28,6 @@ export class QueryEditor {
     private fieldProvider: FieldsViewProvider
   ) {
     this.extensionPath = context.asAbsolutePath("");
-    //        this.tableNode = this.tableListProvider.node;
-
     this.tableName = tableNode.tableName;
     this.fieldsProvider = fieldProvider;
 
