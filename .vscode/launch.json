@@ -17,7 +17,7 @@
 				"${workspaceFolder}/out/**/*.js"
 			],
 			"preLaunchTask": "Build and watch",
-			"postDebugTask": "Stop Docker and termanate all"
+			"postDebugTask": "Stop Docker and terminate all"
 		},
 		{
 			"name": "Extension Tests",

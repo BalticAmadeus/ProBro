@@ -86,7 +86,7 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Stop Docker and termanate all",
+			"label": "Stop Docker and terminate all",
 			"dependsOrder": "sequence",
 			"dependsOn": [
 				"Docker: Stop",
