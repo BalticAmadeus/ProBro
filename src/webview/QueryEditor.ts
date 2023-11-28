@@ -133,7 +133,11 @@ export class QueryEditor {
                       data: oe,
                     };
                     this.logger.log("data:", obj);
-                    if (obj.data.description !== null) {
+
+                    if (
+                      obj.data.description !== null &&
+                      obj.data.description !== undefined
+                    ) {
                       if (obj.data.description === "") {
                         vscode.window.showErrorMessage(
                           "Database Error: Trigger canceled action"
