@@ -139,7 +139,7 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
 			}
 
 			function handleInputKeyDown(event) {
-				var tempFilters = filters;
+				const tempFilters = filters;
 				if (event.target.value === "") {
 					delete tempFilters.columns[column.key];
 				} else {

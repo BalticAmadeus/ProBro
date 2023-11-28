@@ -14,32 +14,22 @@ export class MockProcessor implements IProcessor {
   }
 
   getDBVersion(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve("Mock DB Version");
-    });
+    return Promise.resolve("Mock DB Version");
   }
 
   getTablesList(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve("Mock Tables List");
-    });
+    return Promise.resolve("Mock Tables List");
   }
-
+  
   getTableData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve("Mock Table Data");
-    });
+    return Promise.resolve("Mock Table Data");
   }
-
+  
   submitTableData(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve("Mock Submit Table Data");
-    });
+    return Promise.resolve("Mock Submit Table Data");
   }
-
+  
   getTableDetails(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      resolve("Mock Table Details");
-    });
+    return Promise.resolve("Mock Table Details");
   }
 }

@@ -23,7 +23,7 @@ export class ConnectionEditor {
     id?: string
   ) {
     this.extensionPath = context.asAbsolutePath("");
-    const config = this.context.globalState.get<{ [id: string]: IConfig }>(
+    this.context.globalState.get<{ [id: string]: IConfig }>(
       `${Constants.globalExtensionKey}.dbconfig`
     );
     if (id) {
