@@ -6,6 +6,7 @@ export interface ISettings {
   logging: ILogging;
   useWriteTriggers: boolean;
   useDeleteTriggers: boolean;
+  filterAsYouType: boolean;
 }
 
 export interface ILogging {

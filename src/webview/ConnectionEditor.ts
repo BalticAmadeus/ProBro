@@ -175,6 +175,7 @@ export class ConnectionEditor {
       params: "",
       connectionId: "LOCAL",
       type: 0,
+      workState: false,
     };
     if (this.id) {
       const connections = this.context.globalState.get<{
@@ -182,6 +183,15 @@ export class ConnectionEditor {
       }>(`${Constants.globalExtensionKey}.dbconfig`);
       if (connections) {
         config = connections[this.id];
+        if (!config) {
+          const workspaceConnections = this.context.workspaceState.get<{
+            [id: string]: IConfig;
+          }>(`${Constants.globalExtensionKey}.dbconfig`);
+          if (workspaceConnections) {
+            config = workspaceConnections[this.id];
+            config.workState = true;
+          }
+        }
       }
     }
 

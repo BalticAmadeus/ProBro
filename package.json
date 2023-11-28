@@ -9,7 +9,7 @@
         "DB",
         "Explorer"
     ],
-    "version": "1.4.1",
+    "version": "1.5.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -100,6 +100,11 @@
                     "type": "string",
                     "markdownDescription": "Specifies path where temporary files are created."
                 },
+                "pro-bro.filterAsYouType": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Use filter as you type"
+                },
                 "pro-bro.logging.react": {
                     "type": "boolean",
                     "markdownDescription": "Log input and output in React part to console"
@@ -114,7 +119,7 @@
                 },
                 "pro-bro.development.useNewDbClient": {
                     "type": "boolean",
-                    "default": "true",
+                    "default": "false",
                     "markdownDescription": "Use New DB Client implementation"
                 }
             }
@@ -178,6 +183,11 @@
             {
                 "command": "pro-bro.refreshList",
                 "title": "pro-bro: Refresh",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "pro-bro.refreshConnection",
+                "title": "pro-bro: Refresh Connection",
                 "icon": "$(refresh)"
             },
             {
@@ -246,6 +256,11 @@
             "view/item/context": [
                 {
                     "command": "pro-bro.editConnection",
+                    "when": "view == pro-bro-databases && viewItem == dbConnection",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.refreshConnection",
                     "when": "view == pro-bro-databases && viewItem == dbConnection",
                     "group": "inline"
                 },

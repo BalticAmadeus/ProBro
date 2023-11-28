@@ -88,10 +88,59 @@ export class DbConnectionUpdater {
     }
   }
 
+  public async updateSingleConnectionStatusWithRefreshCallback(
+    connectionId: string,
+    context: vscode.ExtensionContext,
+    callback: IRefreshCallback
+  ) {
+    this.context = context;
+    this.callback = callback;
+  
+    try {
+      if (this.locked === false) {
+        this.locked = true;
+        await this.updateSingleConnectionStatus(connectionId);
+      }
+    } finally {
+      this.locked = false;
+    }
+  }
+  
+  private async updateSingleConnectionStatus(connectionId: string) {
+    let connections = this.context.globalState.get<{ [id: string]: IConfig }>(
+      `pro-bro.dbconfig`
+    );
+  
+    if (!connections || !connections[connectionId]) {
+      return;
+    }
+    
+    connections[connectionId].conStatus = ConnectionStatus.Connecting;
+    this.updateStatus(connections);
+    await this.wait();
+  
+    try {
+      const data = await ProcessorFactory.getProcessorInstance().getDBVersion(
+        connections[connectionId]
+      );
+  
+      if (data instanceof Error || "error" in data) {
+        connections[connectionId].conStatus = ConnectionStatus.NotConnected;
+      } else {
+        connections[connectionId].conStatus = ConnectionStatus.Connected;
+      }
+    } catch (error) {
+      connections[connectionId].conStatus = ConnectionStatus.NotConnected;
+    } finally {
+      this.updateStatus(connections);
+    }
+  }
+  
   private updateStatus(connections: { [id: string]: IConfig }) {
     this.context.globalState.update(`pro-bro.dbconfig`, connections);
     this.callback.refresh();
   }
+
 
   private wait(): Promise<void> {
     return new Promise((resolve) => {

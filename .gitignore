@@ -7,3 +7,4 @@ resources/oe/oeSocket.pro
 *.r
 .builder/**
 docker/.builder/**
+.scannerwork

@@ -18,6 +18,7 @@ export interface IConfig {
   group: string;
   params: string;
   conStatus?: ConnectionStatus;
+  workState?: boolean;
 }
 
 export interface IRemoteConnectionConfig {

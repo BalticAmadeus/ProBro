@@ -80,7 +80,7 @@ export class GroupListProvider
         }
         if (groupNames.indexOf(group) === -1) {
           groupNames.push(group);
-          groupNodes.push(new groupNode.GroupNode(this.context, group));
+          groupNodes.push(new groupNode.GroupNode(this.context, group, this));
         }
       }
     }
@@ -93,7 +93,7 @@ export class GroupListProvider
         }
         if (groupNames.indexOf(group) === -1) {
           groupNames.push(group);
-          groupNodes.push(new groupNode.GroupNode(this.context, group));
+          groupNodes.push(new groupNode.GroupNode(this.context, group, this));
         }
       }
     }
