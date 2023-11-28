@@ -56,7 +56,6 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     const [columnsCRUD, setColumnsCRUD] = React.useState(() => []);
     const [recordsCRUD, setRecordsCRUD] = React.useState(() => []);
     const [loaded, setLoaded] = React.useState(() => 0);
-    const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
     const [rowID, setRowID] = React.useState("");
     const [scrollHeight, setScrollHeight] = React.useState(() => 0);
     const [isWindowSmall, setIsWindowSmall] = React.useState(false);
@@ -92,9 +91,6 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         setIsFormatted(!isFormatted);
     };
 
-    const windowResize = () => {
-        setWindowHeight(window.innerHeight);
-    };
 
     let inputQuery: HTMLButtonElement = undefined;
     React.useEffect(() => {
@@ -103,13 +99,6 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         }
     }, []);
 
-    React.useEffect(() => {
-        window.addEventListener("resize", windowResize);
-
-        return () => {
-            window.removeEventListener("resize", windowResize);
-        };
-    }, []);
 
     React.useEffect(() => {
         const handleResize = () => {
@@ -789,14 +778,16 @@ Description: ${errorObject.description}`}</pre>
                 onSortColumnsChange={onSortClick}
                 className={filters.enabled ? "filter-cell" : undefined}
                 headerRowHeight={filters.enabled ? 70 : undefined}
-                style={{ height: windowHeight - 140, whiteSpace: "pre" }}
+                style={{ height: "fit-content", whiteSpace: "pre" }}
                 selectedRows={selectedRows}
                 onSelectedRowsChange={setSelectedRows}
                 rowKeyGetter={rowKeyGetter}
                 onRowDoubleClick={readRecord}
                 onCopy={handleCopy}
             ></DataGrid>
-            {getFooterTag()}
+            <div className="footer">
+                {getFooterTag()}
+            </div>
             {isLoading && <div>Loading more rows...</div>}
         </React.Fragment >
     );
