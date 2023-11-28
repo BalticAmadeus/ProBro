@@ -19,14 +19,7 @@
       "path": "resources/oe/src"
     }
   ],
-  "dbConnections": [
-    {
-      "name": "sports2020",
-      "connect": "-db sports2020 -H localhost -S 30000",
-      "dumpFile": "",
-      "aliases": []
-    }
-  ],
+  "dbConnections": [],
   "numThreads": 1,
   "procedures": [],
   "profiles": []
