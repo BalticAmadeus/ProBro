@@ -36,13 +36,7 @@ interface IStatisticsObject {
     connectTime: number;
 }
 
-function QueryForm({
-    vscode,
-    tableData,
-    tableName,
-    configuration,
-    ...props
-}: IConfigProps) {
+function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState(false);
 
@@ -75,13 +69,9 @@ function QueryForm({
     const [recordColor, setRecordColor] = React.useState("red");
     const logger = new Logger(configuration.logging.react);
 
-    window.addEventListener(
-        "contextmenu",
-        (e) => {
-            e.stopImmediatePropagation();
-        },
-        true
-    );
+    window.addEventListener('contextmenu', e => {
+        e.stopImmediatePropagation();
+    }, true);
 
     const [filters, _setFilters] = React.useState({
         columns: {},
@@ -114,13 +104,14 @@ function QueryForm({
             setIsWindowSmall(window.innerWidth <= 828); // Adjust the breakpoint value as needed
         };
 
-        window.addEventListener("resize", handleResize);
+        window.addEventListener('resize', handleResize);
         handleResize();
 
         return () => {
-            window.removeEventListener("resize", handleResize);
+            window.removeEventListener('resize', handleResize);
         };
     }, []);
+
 
     const messageEvent = (event) => {
         const message = event.data;
@@ -282,7 +273,7 @@ function QueryForm({
                                     );
                                 };
                             }
-                            column.minWidth = column.name.length * fontSize;
+                            column.minWidth = column.name.length * (fontSize);
                             switch (column.type) {
                                 case "integer":
                                 case "decimal":
@@ -314,11 +305,7 @@ function QueryForm({
                         if (message.columns !== undefined) {
                             setSelectedColumns([...message.columns]);
                         } else {
-                            setSelectedColumns(
-                                [...message.data.columns.map((column) => column.name)].filter(
-                                    (column) => column !== "ROWID"
-                                )
-                            );
+                            setSelectedColumns([...message.data.columns.map(column => column.name)].filter(column => column !== "ROWID"));
                         }
                     }
                     const boolField = message.data.columns.filter(
@@ -349,10 +336,7 @@ function QueryForm({
                         recordsRetrievalTime: message.data.debug.recordsRetrievalTime,
                         connectTime: message.data.debug.timeConnect,
                     });
-                    allRecordsRetrieved(
-                        message.data.debug.recordsRetrieved,
-                        message.data.debug.recordsRetrievalTime
-                    );
+                    allRecordsRetrieved(message.data.debug.recordsRetrieved, message.data.debug.recordsRetrievalTime);
                 }
         }
         setIsLoading(false);
@@ -380,7 +364,7 @@ function QueryForm({
             "",
             sortColumns,
             filters,
-            configuration.batchMaxTimeout /*ms for data retrieval*/,
+            configuration.batchMaxTimeout, /*ms for data retrieval*/
             configuration.batchMinTimeout
         );
     };
@@ -390,7 +374,7 @@ function QueryForm({
         prepareQuery();
     };
 
-    var input = document.getElementById("input");
+    var input = document.getElementById('input');
 
     const handleKeyDown = (e) => {
         var selected = document.querySelector(".selected") as HTMLLIElement;
@@ -404,21 +388,18 @@ function QueryForm({
             const selectedText = document.querySelector(".selected").textContent;
 
             addText(input, selectedText);
-            createListener(document.getElementById("input"), selectedColumns);
+            createListener(document.getElementById('input'), selectedColumns);
+
         }
 
         if (e.keyCode === 38) {
             if (selected === null) {
-                document
-                    .querySelectorAll(".autocomplete-list li")
-                    .item(0)
-                    .classList.add("selected");
-            } else {
-                document
-                    .querySelectorAll(".autocomplete-list li")
-                    .forEach(function (item) {
-                        item.classList.remove("selected");
-                    });
+                document.querySelectorAll(".autocomplete-list li").item(0).classList.add("selected");
+            }
+            else {
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
                 if (selected.previousElementSibling === null) {
                     selected.parentElement.lastElementChild.classList.add("selected");
                 } else {
@@ -432,19 +413,16 @@ function QueryForm({
 
         if (e.keyCode === 40) {
             if (selected === null) {
-                document
-                    .querySelectorAll(".autocomplete-list li")
-                    .item(0)
-                    .classList.add("selected");
-            } else {
-                document
-                    .querySelectorAll(".autocomplete-list li")
-                    .forEach(function (item) {
-                        item.classList.remove("selected");
-                    });
+                document.querySelectorAll(".autocomplete-list li").item(0).classList.add("selected");
+            }
+            else {
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
 
                 if (selected.nextElementSibling === null) {
                     selected.parentElement.firstElementChild.classList.add("selected");
+
                 } else {
                     selected.nextElementSibling.classList.add("selected");
                 }
@@ -453,7 +431,7 @@ function QueryForm({
             selected.scrollIntoView();
             selected.focus();
         }
-    };
+    }
 
     function reloadData(loaded: number) {
         setLoaded(0);
@@ -482,7 +460,7 @@ function QueryForm({
                 sortColumns: sortColumns,
                 filters: inputFilters,
                 timeOut: timeOut,
-                minTime: minTime,
+                minTime: minTime
             },
         };
         logger.log("make query", command);
@@ -510,15 +488,7 @@ function QueryForm({
         }
         setScrollHeight(event.currentTarget.scrollTop);
         setIsLoading(true);
-        makeQuery(
-            loaded,
-            configuration.batchSize,
-            rowID,
-            sortColumns,
-            filters,
-            configuration.batchMaxTimeout,
-            configuration.batchMinTimeout
-        );
+        makeQuery(loaded, configuration.batchSize, rowID, sortColumns, filters, configuration.batchMaxTimeout, configuration.batchMinTimeout);
     }
 
     function onSortClick(inputSortColumns: SortColumn[]) {
@@ -533,30 +503,22 @@ function QueryForm({
         makeQuery(0, loaded, "", inputSortColumns, filters, 0, 0);
     }
 
-    function allRecordsRetrieved(
-        recentRecords: number,
-        recentRetrievalTime: number
-    ) {
+    function allRecordsRetrieved(recentRecords: number, recentRetrievalTime: number) {
         if (!sortAction) {
-            const currentBatchSize: number = initialDataLoad
-                ? configuration.initialBatchSizeLoad
-                : configuration.batchSize;
+            const currentBatchSize: number = initialDataLoad ? configuration.initialBatchSizeLoad : configuration.batchSize;
             setInitialDataLoad(false);
-            setRecordColor(
-                recentRecords < currentBatchSize &&
-                    recentRetrievalTime < configuration.batchMaxTimeout
-                    ? "green"
-                    : "red"
-            );
-        } else {
+            setRecordColor(recentRecords < currentBatchSize && recentRetrievalTime < configuration.batchMaxTimeout ? "green" : "red");
+        }
+        else {
             setSortAction(false);
         }
     }
 
     function getLoaded() {
         if (recordColor === "red") {
-            return "> " + loaded;
-        } else {
+            return '> ' + loaded;
+        }
+        else {
             return loaded;
         }
     }
@@ -571,11 +533,8 @@ Description: ${errorObject.description}`}</pre>
             );
         } else if (isDataRetrieved) {
             return (
-                <div
-                    style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
-                >
-                    <pre style={{ marginRight: "auto" }}>
-                        {`Records in grid:`}
+                <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
+                    <pre style={{ marginRight: "auto" }}>{`Records in grid:`}
                         <span style={{ color: recordColor }}>{getLoaded()}</span>
                     </pre>
                     {isWindowSmall ? null : (
@@ -583,10 +542,11 @@ Description: ${errorObject.description}`}</pre>
                             {`Recent records numbers: ${statisticsObject.recordsRetrieved}`}
                         </pre>
                     )}
-                    <pre
-                        style={{ marginLeft: "auto" }}
-                    >{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
+                    <pre style={{ marginLeft: "auto" }}>{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 </div>
+
+
+
             );
         } else {
             return <></>;
@@ -652,15 +612,13 @@ Description: ${errorObject.description}`}</pre>
                 if (/\[\d+\]$/.test(column.key)) {
                     testColumn = column.key.match(/[^[]+/)[0];
                 }
-                return (
-                    selectedColumns.includes(testColumn) || testColumn === "select-row"
-                );
+                return selectedColumns.includes(testColumn) || testColumn === "select-row";
             });
             return selection;
         } else {
             return [];
         }
-    }
+    };
     const selected = filterColumns();
 
     function handleCopy({ sourceRow, sourceColumnKey }: CopyEvent<any>): void {
@@ -672,19 +630,17 @@ Description: ${errorObject.description}`}</pre>
     const suggestions = document.querySelector("#column-list");
 
     function autocomplete(input, list) {
-        let lastWord = input.value.split(" ").pop();
+        let lastWord = input.value.split(' ').pop();
 
         suggestions.innerHTML = "";
 
         for (let i = 0; i < list.length; i++) {
-            if (
-                list[i].toUpperCase().includes(lastWord.toUpperCase()) ||
-                lastWord === null
-            ) {
-                const suggestion = document.createElement("li");
+            if (list[i].toUpperCase().includes(lastWord.toUpperCase()) || lastWord === null) {
+
+                const suggestion = document.createElement('li');
                 suggestion.innerHTML = list[i];
 
-                suggestion.style.cursor = "pointer";
+                suggestion.style.cursor = 'pointer';
 
                 suggestions.appendChild(suggestion);
             }
@@ -692,40 +648,39 @@ Description: ${errorObject.description}`}</pre>
     }
 
     function addText(input, newText) {
-        let wordArray = input.value.split(" ");
+        let wordArray = input.value.split(' ');
         wordArray.pop();
-        input.value = "";
+        input.value = '';
         for (let i = 0; i < wordArray.length; i++) {
             input.value += wordArray[i];
-            input.value += " ";
+            input.value += ' ';
         }
         input.value += newText;
-        input.value += " ";
+        input.value += ' ';
         setWherePhrase(input.value);
     }
 
     function mouseoverListener() {
         document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
             item.addEventListener("mouseover", function () {
-                document
-                    .querySelectorAll(".autocomplete-list li")
-                    .forEach(function (item) {
-                        item.classList.remove("selected");
-                    });
+                document.querySelectorAll(".autocomplete-list li").forEach(function (item) {
+                    item.classList.remove("selected");
+                });
                 this.classList.add("selected");
             });
             item.addEventListener("click", function () {
                 addText(input, this.innerHTML);
-                document.getElementById("input").focus();
+                document.getElementById('input').focus();
                 setTimeout(() => {
-                    createListener(document.getElementById("input"), selectedColumns);
+                    createListener(document.getElementById('input'), selectedColumns);
                 }, 301);
+
             });
         });
     }
 
     function createListener(input, list) {
-        input.addEventListener("input", autocomplete(input, list));
+        input.addEventListener('input', autocomplete(input, list));
         mouseoverListener();
     }
 
