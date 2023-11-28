@@ -218,7 +218,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                                         var tempFilters = filters;
                                         tempFilters.columns[column.key] = event.target.value;
                                         setFilters(tempFilters);
-                                        if (configuration.filterAsYouType  === true) {
+                                        if (configuration.filterAsYouType === true) {
                                             handleKeyInputTimeout();
                                         }
                                     }
@@ -791,15 +791,18 @@ Description: ${errorObject.description}`}</pre>
                 sortColumns={sortColumns}
                 onSortColumnsChange={onSortClick}
                 className={filters.enabled ? "filter-cell" : undefined}
+
                 headerRowHeight={filters.enabled ? 70 : undefined}
-                style={{ height: windowHeight - 140, whiteSpace: "pre" }}
+                style={{ height: "fit-content", whiteSpace: "pre" }}
                 selectedRows={selectedRows}
                 onSelectedRowsChange={setSelectedRows}
                 rowKeyGetter={rowKeyGetter}
                 onRowDoubleClick={readRecord}
                 onCopy={handleCopy}
             ></DataGrid>
-            {getFooterTag()}
+            <div className="footer">
+                {getFooterTag()}
+            </div>
             {isLoading && <div>Loading more rows...</div>}
         </React.Fragment >
     );

@@ -119,6 +119,18 @@ body.vscode-dark .rdg-row-even {
     background-color: var(--vscode-list-activeSelectionBackground);
 }
 
+
+.footer {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--vscode-editorWidget-background);
+    padding: 10px;
+    text-align: center;
+    z-index: 2;
+}
+
 @media (max-width: 998px) {
     .textInputQuery {
         width: 200px;
