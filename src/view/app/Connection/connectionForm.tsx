@@ -46,6 +46,7 @@ function ConnectionForm({
   const onSaveClick = (event: React.MouseEvent<HTMLInputElement>) => {
     event.preventDefault();
     const id: string = "SaveClick";
+
     const config: IConfig = {
       id: vsState.config.id,
       label: label,
@@ -59,6 +60,7 @@ function ConnectionForm({
       params: params,
       connectionId: vsState.config.connectionId,
       type: vsState.config.type,
+      isReadOnly: params.includes("-RO"),
     };
     const command: ICommand = {
       id: id,
@@ -107,6 +109,7 @@ function ConnectionForm({
       params: params,
       connectionId: vsState.config.connectionId,
       type: vsState.config.type,
+      isReadOnly: params.includes("-RO"),
     };
     const command: ICommand = {
       id: id,
@@ -158,6 +161,7 @@ function ConnectionForm({
       params: "",
       connectionId: "LOCAL",
       type: 0,
+      isReadOnly: false,
     };
     const command: ICommand = {
       id: id,

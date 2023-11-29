@@ -40,6 +40,7 @@ export function parseOEFile(fileContent: string) {
       params: pfConfig.params,
       connectionId: "LOCAL",
       type: 0,
+      isReadOnly: pfConfig.isReadOnly,
     };
 
     configList.push(config);

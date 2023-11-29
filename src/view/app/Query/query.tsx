@@ -23,6 +23,7 @@ interface IConfigProps {
     tableData: IOETableData;
     tableName: string;
     configuration: ISettings;
+    isReadOnly: boolean;
 }
 
 interface IErrorObject {
@@ -36,7 +37,7 @@ interface IStatisticsObject {
     connectTime: number;
 }
 
-function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IConfigProps) {
+function QueryForm({ vscode, tableData, tableName, configuration, isReadOnly, ...props }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState(false);
 
@@ -59,7 +60,6 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     const [rowID, setRowID] = React.useState("");
     const [scrollHeight, setScrollHeight] = React.useState(() => 0);
     const [isWindowSmall, setIsWindowSmall] = React.useState(false);
-
 
     const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
         []
@@ -745,6 +745,7 @@ Description: ${errorObject.description}`}</pre>
                             startIcon={isFormatted ? <RawOffTwoToneIcon /> : <RawOnTwoToneIcon />}
                         > </ProBroButton>
                     </div>
+                    {!isReadOnly && (
                     <div className="query-options">
                         <UpdatePopup
                             vscode={vscode}
@@ -764,6 +765,7 @@ Description: ${errorObject.description}`}</pre>
                             defaultTrigger={configuration.useWriteTriggers}
                         ></UpdatePopup>
                     </div>
+                    )}
                 </div>
             </div >
             <DataGrid
