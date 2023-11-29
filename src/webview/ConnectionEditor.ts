@@ -176,6 +176,7 @@ export class ConnectionEditor {
       connectionId: "LOCAL",
       type: 0,
       workState: false,
+      isReadOnly: false,
     };
     if (this.id) {
       const connections = this.context.globalState.get<{
