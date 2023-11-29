@@ -15,6 +15,7 @@ export class PfParser {
       params: "",
       connectionId: "LOCAL",
       type: 0,
+      isReadOnly: false,
     };
 
     pfFile
@@ -51,6 +52,13 @@ export class PfParser {
               break;
             case "-S":
               config.port = keyVal[0].substring(key.length + 1);
+              break;
+            case "-RO":
+              config.isReadOnly = true;
+              if (config.params) {
+                config.params += " ";
+              }
+              config.params += keyVal[0];
               break;
             default:
               if (config.params) {

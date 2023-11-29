@@ -1,6 +1,6 @@
 import path = require("path");
 import * as vscode from "vscode";
-import { ICommand, CommandAction} from "../view/app/model";
+import { ICommand, CommandAction } from "../view/app/model";
 import { IOETableData } from "../db/Oe";
 import { TableNode } from "../treeview/TableNode";
 import { TablesListProvider } from "../treeview/TablesListProvider";
@@ -19,6 +19,7 @@ export class QueryEditor {
   private readonly configuration = vscode.workspace.getConfiguration(
     Constants.globalExtensionKey
   );
+  private readOnly = false;
   private logger = new Logger(this.configuration.get("logging.node")!);
 
   constructor(
@@ -30,6 +31,10 @@ export class QueryEditor {
     this.extensionPath = context.asAbsolutePath("");
     this.tableName = tableNode.tableName;
     this.fieldsProvider = fieldProvider;
+
+    if (tableListProvider.config) {
+      this.readOnly = tableListProvider.config?.isReadOnly;
+    }
 
     this.panel = vscode.window.createWebviewPanel(
       "queryOETable", // Identifies the type of the webview. Used internally
@@ -243,6 +248,7 @@ export class QueryEditor {
           window.tableData = ${JSON.stringify(tableData)};
           window.tableName = ${JSON.stringify(this.tableNode.tableName)};
           window.configuration = ${JSON.stringify(this.configuration)};
+          window.isReadOnly = ${JSON.stringify(this.readOnly)};
         </script>
     </head>
     <body>
