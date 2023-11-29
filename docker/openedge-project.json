@@ -24,14 +24,6 @@
             "connect": "-db notWorking -S 99999",
             "dumpFile": "",
             "aliases": []
-        },
-        {
-            "name": "mydb_RO",
-            "connect": "-db C:/WorkSpace/dbs/Sports/Sports -RO",
-            "dumpFile": "",
-            "aliases": [
-              "sports"
-            ]
         }
     ],
     "numThreads": 1,
