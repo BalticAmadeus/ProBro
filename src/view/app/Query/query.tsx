@@ -762,7 +762,7 @@ Description: ${errorObject.description}`}</pre>
                             copyRecord={copyRecord}
                             readRow={readRow}
                             logValue={configuration.logging.react}
-                            defaultTrigger={configuration.useWriteTriggers}
+                            defaultTrigger={!!configuration.useWriteTriggers} // !! fixes missing setting issue
                         ></UpdatePopup>
                     </div>
                     )}
