@@ -40,7 +40,7 @@ interface IStatisticsObject {
 function QueryForm({ vscode, tableData, tableName, configuration, isReadOnly, ...props }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState(false);
-
+    const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
     const [isFormatted, setIsFormatted] = React.useState(false);
     const [isError, setIsError] = React.useState(false);
     const [isDataRetrieved, setIsDataRetrieved] = React.useState(false);
@@ -91,6 +91,9 @@ function QueryForm({ vscode, tableData, tableName, configuration, isReadOnly, ..
         setIsFormatted(!isFormatted);
     };
 
+    const windowResize = () => {
+        setWindowHeight(window.innerHeight);
+    };
 
     let inputQuery: HTMLButtonElement = undefined;
     React.useEffect(() => {
@@ -99,6 +102,13 @@ function QueryForm({ vscode, tableData, tableName, configuration, isReadOnly, ..
         }
     }, []);
 
+    React.useEffect(() => {
+        window.addEventListener("resize", windowResize);
+
+        return () => {
+            window.removeEventListener("resize", windowResize);
+        };
+    }, []);
 
     React.useEffect(() => {
         const handleResize = () => {
@@ -746,25 +756,25 @@ Description: ${errorObject.description}`}</pre>
                         > </ProBroButton>
                     </div>
                     {!isReadOnly && (
-                    <div className="query-options">
-                        <UpdatePopup
-                            vscode={vscode}
-                            selectedRows={selectedRows}
-                            columns={columnsCRUD}
-                            rows={recordsCRUD}
-                            tableName={tableName}
-                            open={open}
-                            setOpen={setOpen}
-                            action={action}
-                            insertRecord={insertRecord}
-                            updateRecord={updateRecord}
-                            deleteRecord={deleteRecord}
-                            copyRecord={copyRecord}
-                            readRow={readRow}
-                            logValue={configuration.logging.react}
-                            defaultTrigger={configuration.useWriteTriggers}
-                        ></UpdatePopup>
-                    </div>
+                        <div className="query-options">
+                            <UpdatePopup
+                                vscode={vscode}
+                                selectedRows={selectedRows}
+                                columns={columnsCRUD}
+                                rows={recordsCRUD}
+                                tableName={tableName}
+                                open={open}
+                                setOpen={setOpen}
+                                action={action}
+                                insertRecord={insertRecord}
+                                updateRecord={updateRecord}
+                                deleteRecord={deleteRecord}
+                                copyRecord={copyRecord}
+                                readRow={readRow}
+                                logValue={configuration.logging.react}
+                                defaultTrigger={configuration.useWriteTriggers}
+                            ></UpdatePopup>
+                        </div>
                     )}
                 </div>
             </div >
@@ -780,7 +790,7 @@ Description: ${errorObject.description}`}</pre>
                 onSortColumnsChange={onSortClick}
                 className={filters.enabled ? "filter-cell" : undefined}
                 headerRowHeight={filters.enabled ? 70 : undefined}
-                style={{ height: "fit-content", whiteSpace: "pre" }}
+                style={{ height: windowHeight - 140, whiteSpace: "pre" }}
                 selectedRows={selectedRows}
                 onSelectedRowsChange={setSelectedRows}
                 rowKeyGetter={rowKeyGetter}
