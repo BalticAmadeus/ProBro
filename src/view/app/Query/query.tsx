@@ -698,6 +698,13 @@ Description: ${errorObject.description}`}</pre>
         }, 300);
     }
 
+    const calculateHeight = () => {
+        const rowCount = isFormatted ? formattedRows.length : rawRows.length;
+        const minHeight = 35;
+        const calculatedHeight = rowCount * minHeight;
+        return calculatedHeight;
+    };
+
     return (
         <React.Fragment>
             <div className="container">
@@ -778,25 +785,27 @@ Description: ${errorObject.description}`}</pre>
                     )}
                 </div>
             </div >
-            <DataGrid
-                columns={selected}
-                rows={isFormatted ? formattedRows : rawRows}
-                onScroll={handleScroll}
-                defaultColumnOptions={{
-                    sortable: true,
-                    resizable: true,
-                }}
-                sortColumns={sortColumns}
-                onSortColumnsChange={onSortClick}
-                className={filters.enabled ? "filter-cell" : undefined}
-                headerRowHeight={filters.enabled ? 70 : undefined}
-                style={{ height: windowHeight - 140, whiteSpace: "pre" }}
-                selectedRows={selectedRows}
-                onSelectedRowsChange={setSelectedRows}
-                rowKeyGetter={rowKeyGetter}
-                onRowDoubleClick={readRecord}
-                onCopy={handleCopy}
-            ></DataGrid>
+            <div>
+                <DataGrid
+                    columns={selected}
+                    rows={isFormatted ? formattedRows : rawRows}
+                    defaultColumnOptions={{
+                        sortable: true,
+                        resizable: true,
+                    }}
+                    sortColumns={sortColumns}
+                    onScroll={handleScroll}
+                    onSortColumnsChange={onSortClick}
+                    className={filters.enabled ? "filter-cell" : undefined}
+                    headerRowHeight={filters.enabled ? 70 : undefined}
+                    style={{ height: calculateHeight(), overflow: 'auto', maxHeight: windowHeight - 120, whiteSpace: "pre" }}
+                    selectedRows={selectedRows}
+                    onSelectedRowsChange={setSelectedRows}
+                    rowKeyGetter={rowKeyGetter}
+                    onRowDoubleClick={readRecord}
+                    onCopy={handleCopy}
+                ></DataGrid>
+            </div>
             <div className="footer">
                 {getFooterTag()}
             </div>
