@@ -124,8 +124,7 @@ body.vscode-dark .rdg-row-even {
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: var(--vscode-editorWidget-background);
-    padding: 10px;
+    padding: 2px;
     text-align: center;
     z-index: 2;
 }
