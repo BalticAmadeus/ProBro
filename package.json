@@ -30,10 +30,7 @@
     },
     "activationEvents": [
         "onCommand:pro-bro.connect",
-        "onView:pro-bro-databases",
-        "onView:pro-bro-tables",
-        "onView:pro-bro-fields",
-        "onView:pro-bro-indexes"
+        "onLanguage:abl"
     ],
     "main": "./out/extension.js",
     "contributes": {
