@@ -28,7 +28,7 @@ export class DatabaseProcessor implements IProcessor {
   }
 
   public getDBVersion(config: IConfig): Promise<any> {
-    var params: IOEParams = {
+    const params: IOEParams = {
       connectionString: this.getConnectionString(config),
       command: "get_version",
     };
@@ -36,7 +36,7 @@ export class DatabaseProcessor implements IProcessor {
   }
 
   public getTablesList(config: IConfig): Promise<any> {
-    var params: IOEParams = {
+    const params: IOEParams = {
       connectionString: this.getConnectionString(config),
       command: "get_tables",
     };
@@ -49,7 +49,7 @@ export class DatabaseProcessor implements IProcessor {
     inputParams: ITableData | undefined
   ) {
     if (config && tableName && inputParams) {
-      var params: IOEParams = {
+      const params: IOEParams = {
         connectionString: this.getConnectionString(config),
         command: "get_table_data",
         params: { tableName: tableName, ...inputParams },
@@ -66,7 +66,7 @@ export class DatabaseProcessor implements IProcessor {
     inputParams: ITableData | undefined
   ) {
     if (config && tableName && inputParams) {
-      var params: IOEParams = {
+      const params: IOEParams = {
         connectionString: this.getConnectionString(config),
         command: "submit_table_data",
         params: { tableName: tableName, ...inputParams },
@@ -82,7 +82,7 @@ export class DatabaseProcessor implements IProcessor {
     tableName: string | undefined
   ): Promise<TableDetails> {
     if (config && tableName) {
-      var params: IOEParams = {
+      const params: IOEParams = {
         connectionString: this.getConnectionString(config),
         command: "get_table_details",
         params: tableName,

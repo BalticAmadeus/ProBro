@@ -6,9 +6,6 @@ export class DumpFileFormatter {
     protected trailerInfo: string = "";
     protected dumpFile: string = "";
 
-    constructor() {
-    }
-
     public formatDumpFile (data: IExportDumpData, fileName: string, dbName: string): void {
       this.formatDumpData(data);
       this.formatTrailerInfo(data.psc, fileName, dbName, data.rawData.length);
@@ -49,6 +46,7 @@ export class DumpFileFormatter {
                       if (element[1] < 1 && element[1] > 0) {
                         return accumulator + element[1].toString().slice(1);
                       }
+                      break;
                     case "integer":
                     case "int64":
                       return accumulator + element[1];

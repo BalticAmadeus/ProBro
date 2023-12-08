@@ -214,9 +214,7 @@ async function getOEClient(): Promise<any> {
     client = new OEClient(port, host);
     return client.init();
   }
-  return new Promise((resolve) => {
-    resolve(client);
-  });
+  return Promise.resolve(client);
 }
 
 export default getOEClient;

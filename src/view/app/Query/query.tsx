@@ -23,12 +23,13 @@ interface IConfigProps {
     tableData: IOETableData;
     tableName: string;
     configuration: ISettings;
+    isReadOnly: boolean;
 }
 
 interface IErrorObject {
-    error: String;
-    description: String;
-    trace?: String;
+    error: string;
+    description: string;
+    trace?: string;
 }
 interface IStatisticsObject {
     recordsRetrieved: number;
@@ -36,10 +37,10 @@ interface IStatisticsObject {
     connectTime: number;
 }
 
-function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IConfigProps) {
+function QueryForm({ vscode, tableData, tableName, configuration, isReadOnly, ...props }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState(false);
-
+    const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
     const [isFormatted, setIsFormatted] = React.useState(false);
     const [isError, setIsError] = React.useState(false);
     const [isDataRetrieved, setIsDataRetrieved] = React.useState(false);
@@ -56,11 +57,9 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
     const [columnsCRUD, setColumnsCRUD] = React.useState(() => []);
     const [recordsCRUD, setRecordsCRUD] = React.useState(() => []);
     const [loaded, setLoaded] = React.useState(() => 0);
-    const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
     const [rowID, setRowID] = React.useState("");
     const [scrollHeight, setScrollHeight] = React.useState(() => 0);
     const [isWindowSmall, setIsWindowSmall] = React.useState(false);
-
 
     const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
         []
@@ -96,7 +95,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         setWindowHeight(window.innerHeight);
     };
 
-    var inputQuery: HTMLButtonElement = undefined;
+    let inputQuery: HTMLButtonElement = undefined;
     React.useEffect(() => {
         if (inputQuery) {
             inputQuery.click();
@@ -215,10 +214,10 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                                     }
 
                                     function handleInputKeyDown(event) {
-                                        var tempFilters = filters;
+                                        const tempFilters = filters;
                                         tempFilters.columns[column.key] = event.target.value;
                                         setFilters(tempFilters);
-                                        if (configuration.filterAsYouType  === true) {
+                                        if (configuration.filterAsYouType === true) {
                                             handleKeyInputTimeout();
                                         }
                                     }
@@ -386,10 +385,10 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
         prepareQuery();
     };
 
-    var input = document.getElementById('input');
+    let input = document.getElementById('input');
 
     const handleKeyDown = (e) => {
-        var selected = document.querySelector(".selected") as HTMLLIElement;
+        let selected = document.querySelector(".selected") as HTMLLIElement;
         if (e.key === "Enter" && selected === null) {
             e.preventDefault();
             prepareQuery();
@@ -418,7 +417,7 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                     selected.previousElementSibling.classList.add("selected");
                 }
             }
-            selected = document.querySelector(".selected") as HTMLLIElement;
+            selected = document.querySelector(".selected");
             selected.scrollIntoView();
             selected.focus();
         }
@@ -439,11 +438,11 @@ function QueryForm({ vscode, tableData, tableName, configuration, ...props }: IC
                     selected.nextElementSibling.classList.add("selected");
                 }
             }
-            selected = document.querySelector(".selected") as HTMLLIElement;
+            selected = document.querySelector(".selected");
             selected.scrollIntoView();
             selected.focus();
         }
-    }
+    };
 
     function reloadData(loaded: number) {
         setLoaded(0);
@@ -646,14 +645,11 @@ Description: ${errorObject.description}`}</pre>
 
         suggestions.innerHTML = "";
 
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].toUpperCase().includes(lastWord.toUpperCase()) || lastWord === null) {
-
+        for (const item of list) {
+            if (item.toUpperCase().includes(lastWord.toUpperCase()) || lastWord === null) {
                 const suggestion = document.createElement('li');
-                suggestion.innerHTML = list[i];
-
+                suggestion.innerHTML = item;
                 suggestion.style.cursor = 'pointer';
-
                 suggestions.appendChild(suggestion);
             }
         }
@@ -663,8 +659,8 @@ Description: ${errorObject.description}`}</pre>
         let wordArray = input.value.split(' ');
         wordArray.pop();
         input.value = '';
-        for (let i = 0; i < wordArray.length; i++) {
-            input.value += wordArray[i];
+        for (const word of wordArray) {
+            input.value += word;
             input.value += ' ';
         }
         input.value += newText;
@@ -701,6 +697,13 @@ Description: ${errorObject.description}`}</pre>
             suggestions.innerHTML = "";
         }, 300);
     }
+
+    const calculateHeight = () => {
+        const rowCount = isFormatted ? formattedRows.length : rawRows.length;
+        const minHeight = 35;
+        const calculatedHeight = rowCount * minHeight;
+        return calculatedHeight;
+    };
 
     return (
         <React.Fragment>
@@ -759,6 +762,7 @@ Description: ${errorObject.description}`}</pre>
                             startIcon={isFormatted ? <RawOffTwoToneIcon /> : <RawOnTwoToneIcon />}
                         > </ProBroButton>
                     </div>
+                    {!isReadOnly && (
                     <div className="query-options">
                         <UpdatePopup
                             vscode={vscode}
@@ -775,31 +779,36 @@ Description: ${errorObject.description}`}</pre>
                             copyRecord={copyRecord}
                             readRow={readRow}
                             logValue={configuration.logging.react}
-                            defaultTrigger={configuration.useWriteTriggers}
+                            defaultTrigger={!!configuration.useWriteTriggers} // !! fixes missing setting issue
                         ></UpdatePopup>
                     </div>
+                    )}
                 </div>
             </div >
-            <DataGrid
-                columns={selected}
-                rows={isFormatted ? formattedRows : rawRows}
-                onScroll={handleScroll}
-                defaultColumnOptions={{
-                    sortable: true,
-                    resizable: true,
-                }}
-                sortColumns={sortColumns}
-                onSortColumnsChange={onSortClick}
-                className={filters.enabled ? "filter-cell" : undefined}
-                headerRowHeight={filters.enabled ? 70 : undefined}
-                style={{ height: windowHeight - 140, whiteSpace: "pre" }}
-                selectedRows={selectedRows}
-                onSelectedRowsChange={setSelectedRows}
-                rowKeyGetter={rowKeyGetter}
-                onRowDoubleClick={readRecord}
-                onCopy={handleCopy}
-            ></DataGrid>
-            {getFooterTag()}
+            <div>
+                <DataGrid
+                    columns={selected}
+                    rows={isFormatted ? formattedRows : rawRows}
+                    defaultColumnOptions={{
+                        sortable: true,
+                        resizable: true,
+                    }}
+                    sortColumns={sortColumns}
+                    onScroll={handleScroll}
+                    onSortColumnsChange={onSortClick}
+                    className={filters.enabled ? "filter-cell" : undefined}
+                    headerRowHeight={filters.enabled ? 70 : undefined}
+                    style={{ height: calculateHeight(), overflow: 'auto', maxHeight: windowHeight - 120, whiteSpace: "pre" }}
+                    selectedRows={selectedRows}
+                    onSelectedRowsChange={setSelectedRows}
+                    rowKeyGetter={rowKeyGetter}
+                    onRowDoubleClick={readRecord}
+                    onCopy={handleCopy}
+                ></DataGrid>
+            </div>
+            <div className="footer">
+                {getFooterTag()}
+            </div>
             {isLoading && <div>Loading more rows...</div>}
         </React.Fragment >
     );

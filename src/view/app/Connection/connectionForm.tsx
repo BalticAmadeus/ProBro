@@ -46,6 +46,7 @@ function ConnectionForm({
   const onSaveClick = (event: React.MouseEvent<HTMLInputElement>) => {
     event.preventDefault();
     const id: string = "SaveClick";
+
     const config: IConfig = {
       id: vsState.config.id,
       label: label,
@@ -59,6 +60,7 @@ function ConnectionForm({
       params: params,
       connectionId: vsState.config.connectionId,
       type: vsState.config.type,
+      isReadOnly: params.includes("-RO"),
     };
     const command: ICommand = {
       id: id,
@@ -107,6 +109,7 @@ function ConnectionForm({
       params: params,
       connectionId: vsState.config.connectionId,
       type: vsState.config.type,
+      isReadOnly: params.includes("-RO"),
     };
     const command: ICommand = {
       id: id,
@@ -158,6 +161,7 @@ function ConnectionForm({
       params: "",
       connectionId: "LOCAL",
       type: 0,
+      isReadOnly: false,
     };
     const command: ICommand = {
       id: id,
@@ -168,7 +172,7 @@ function ConnectionForm({
   }
 
   const handleKeyDown = (e) => {
-    var selected = document.querySelector(".selected") as HTMLLIElement;
+    let selected = document.querySelector(".selected") as HTMLLIElement;
 
     if (e.key === "Enter" && selected !== null) {
       e.preventDefault();
@@ -196,7 +200,7 @@ function ConnectionForm({
           selected.previousElementSibling.classList.add("selected");
         }
       }
-      selected = document.querySelector(".selected") as HTMLLIElement;
+      selected = document.querySelector(".selected");
       selected.scrollIntoView();
       selected.focus();
     }
@@ -220,7 +224,7 @@ function ConnectionForm({
           selected.nextElementSibling.classList.add("selected");
         }
       }
-      selected = document.querySelector(".selected") as HTMLLIElement;
+      selected = document.querySelector(".selected");
       selected.scrollIntoView();
       selected.focus();
     }
@@ -231,11 +235,10 @@ function ConnectionForm({
   function autocomplete(list) {
     suggestions.innerHTML = "";
 
-    for (let i = 0; i < list.length; i++) {
+    for (const item of list) {
       const suggestion = document.createElement("li");
-      suggestion.innerHTML = list[i];
+      suggestion.innerHTML = item;
       suggestion.style.cursor = "pointer";
-
       suggestions.appendChild(suggestion);
     }
   }
@@ -278,11 +281,11 @@ function ConnectionForm({
           <div className="title">Connect to server</div>
           {!workState && (
             <ProBroButton
-                className="importPf"
-                onClick={importPf}
-                startIcon={<FileUploadRoundedIcon />}
+              className="importPf"
+              onClick={importPf}
+              startIcon={<FileUploadRoundedIcon />}
             >
-                Import .pf
+              Import .pf
             </ProBroButton>
           )}
         </div>
@@ -405,16 +408,16 @@ function ConnectionForm({
               </div>
             </div>
             <div className="buttons">
-                {!workState && (
-                    <div className="button-narrow">
-                        <input type="submit" value="Test" onClick={onTestClick} />
-                    </div>
-                )}
-                {!workState && (
-                    <div className="button-narrow">
-                        <input type="submit" value="Save" onClick={onSaveClick} />
-                    </div>
-                )}
+              {!workState && (
+                <div className="button-narrow">
+                  <input type="submit" value="Test" onClick={onTestClick} />
+                </div>
+              )}
+              {!workState && (
+                <div className="button-narrow">
+                  <input type="submit" value="Save" onClick={onSaveClick} />
+                </div>
+              )}
             </div>
           </form>
         </div>

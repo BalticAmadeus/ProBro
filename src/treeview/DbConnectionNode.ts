@@ -13,7 +13,6 @@ export class DbConnectionNode implements INode {
   public readonly id: string;
   public readonly config: IConfig;
   private readonly refreshCallback: IRefreshCallback;
-  
 
   constructor(
     id: string,
@@ -85,7 +84,7 @@ export class DbConnectionNode implements INode {
     dbConnectionUpdater.updateSingleConnectionStatusWithRefreshCallback(
       connectionId,
       context,
-      this.refreshCallback,
+      this.refreshCallback
     );
   }
 
@@ -103,6 +102,7 @@ export class DbConnectionNode implements INode {
       params: "",
       connectionId: "LOCAL",
       type: 0,
+      isReadOnly: false,
     };
 
     if (this.id) {

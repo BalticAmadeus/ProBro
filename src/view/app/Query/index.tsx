@@ -12,6 +12,7 @@ declare global {
         tableData: IOETableData;
         tableName: string;
         configuration: ISettings;
+        isReadOnly:boolean;
     }
 }
 
@@ -24,5 +25,6 @@ root.render(
         tableData={window.tableData}
         tableName={window.tableName}
         configuration={window.configuration}
+        isReadOnly={window.isReadOnly}
     />
 );

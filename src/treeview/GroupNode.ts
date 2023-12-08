@@ -16,7 +16,7 @@ export class GroupNode implements INode {
     }
 
     public async getChildren(): Promise<INode[]> {
-        return new DatabaseListProvider(this.context, this.groupName, this.refreshCallback).getChildren(undefined);
+        return new DatabaseListProvider(this.context, this.groupName, this.refreshCallback).getChildren();
     }
 
 }

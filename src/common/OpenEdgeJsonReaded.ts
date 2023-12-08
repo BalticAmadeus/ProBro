@@ -1,5 +1,6 @@
 import { PfParser } from "../view/app/utils/PfParser";
 import { IConfig } from "../view/app/model";
+import * as path from "path";
 
 export function readFile(fileName: string): string {
   while (fileName.charAt(0) === "/") {
@@ -11,13 +12,15 @@ export function readFile(fileName: string): string {
   return allFileContents;
 }
 
-export function parseOEFile(fileContent: string) {
+export function parseOEFile(fileContent: string, filePath: string) {
   const data = JSON.parse(fileContent);
   const { name, dbConnections } = data;
   let configList: IConfig[] = [];
 
   const groupName = name;
   let num = 0;
+
+  const directoryPath = path.dirname(filePath);
 
   dbConnections.forEach((connection: { name: any; connect: any }) => {
     const { name, connect } = connection;
@@ -26,6 +29,13 @@ export function parseOEFile(fileContent: string) {
     const pfConfig = pfParser.parse(connect);
 
     num++;
+
+    if (pfConfig.isReadOnly && !path.isAbsolute(pfConfig.name)) {
+      pfConfig.name = path.join(directoryPath, pfConfig.name);
+      if (pfConfig.name.startsWith("\\")) {
+        pfConfig.name = pfConfig.name.slice(1);
+      }
+    }
 
     const config: IConfig = {
       id: "local" + num,
@@ -40,6 +50,7 @@ export function parseOEFile(fileContent: string) {
       params: pfConfig.params,
       connectionId: "LOCAL",
       type: 0,
+      isReadOnly: pfConfig.isReadOnly,
     };
 
     configList.push(config);

@@ -183,7 +183,7 @@ export function activate(context: vscode.ExtensionContext) {
   function createJsonDatabases(uri: vscode.Uri) {
     allFileContent = readFile(uri.path);
 
-    const configs = parseOEFile(allFileContent);
+    const configs = parseOEFile(allFileContent, uri.path);
 
     let connections = context.workspaceState.get<{ [id: string]: IConfig }>(
       `${Constants.globalExtensionKey}.dbconfig`

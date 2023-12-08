@@ -19,6 +19,7 @@ export interface IConfig {
   params: string;
   conStatus?: ConnectionStatus;
   workState?: boolean;
+  isReadOnly: boolean;
 }
 
 export interface IRemoteConnectionConfig {

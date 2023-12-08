@@ -37,7 +37,7 @@ export class GroupListProvider
         });
 
         console.log("GroupList", configs);
-        (tablesListProvider as TablesListProvider).refresh(configs);
+        tablesListProvider.refresh(configs);
         return;
       }
     }
@@ -71,7 +71,7 @@ export class GroupListProvider
     }>(`${Constants.globalExtensionKey}.dbconfig`);
 
     const groupNodes: groupNode.GroupNode[] = [];
-    var groupNames: string[] = [];
+    const groupNames: string[] = [];
     if (connections) {
       for (const id of Object.keys(connections)) {
         let group = connections[id].group.toUpperCase();

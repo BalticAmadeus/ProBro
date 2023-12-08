@@ -1,7 +1,5 @@
 import {
-  ConnectionParams,
-  IConnectionConfig,
-  IRemoteConnectionConfig,
+  IRemoteConnectionConfig
 } from "../../../view/app/model";
 import { IClient } from "../IClient";
 import { RemoteClient } from "./RemoteClient";

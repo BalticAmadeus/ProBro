@@ -4,7 +4,6 @@ import { IRefreshCallback } from "./IRefreshCallback";
 import { ProcessorFactory } from "../repo/processor/ProcessorFactory";
 
 export class DbConnectionUpdater {
-  constructor() {}
   private locked: boolean = false;
   private context: vscode.ExtensionContext = {} as vscode.ExtensionContext;
   private callback: IRefreshCallback = {} as IRefreshCallback;
@@ -38,7 +37,7 @@ export class DbConnectionUpdater {
     }
 
     for (let id of Object.keys(connections)) {
-      connections![id].conStatus = ConnectionStatus.Connecting;
+      connections[id].conStatus = ConnectionStatus.Connecting;
       this.updateWorkStateStatus(connections);
       await this.wait();
 
@@ -71,7 +70,7 @@ export class DbConnectionUpdater {
     }
 
     for (let id of Object.keys(connections)) {
-      connections![id].conStatus = ConnectionStatus.Connecting;
+      connections[id].conStatus = ConnectionStatus.Connecting;
       this.updateStatus(connections);
       await this.wait();
 
