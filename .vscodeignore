@@ -2,6 +2,7 @@
 .vscode/**
 .vscode-test/**
 src/**
+docker/**
 node_modules/**
 .gitignore
 .yarnrc

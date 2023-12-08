@@ -225,6 +225,10 @@
             {
                 "command": "pro-bro.dblClickQuery",
                 "title": "DblClickQuery"
+            },
+            {
+                "command": "pro-bro.query2",
+                "title": "aaaaaaaaaaaaaaaa"
             }
         ],
         "menus": {

@@ -81,6 +81,14 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
   }
 
   public selectDbConfig(node: TableNode) {
+    console.log(
+      "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUNDEDEEDEDEEDDED" + node.tableName
+    );
+    if (node === undefined) {
+      console.log(
+        "UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUNDEDEEDEDEEDDEDdfsdgfdgfdgdgfdgdfgggfdfgdfggdggfdfgdgfgd"
+      );
+    }
     if (this.configs) {
       this.config = this.configs.find(
         (config) => config.name === node.connectionName
