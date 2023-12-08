@@ -1,0 +1,61 @@
+@startuml
+
+protocol oeSokcet
+
+interface IRequestHandler {
+    {method} proccessRequest(request)
+}
+
+class RequestHandlerFactory {
+    {method} getHandlerByType(request)
+}
+
+abstract ARequestHandler {
+
+}
+
+class RequestHandlerUtil {
+
+}
+
+class VersionRequestHandler {
+
+}
+
+class TablesRequestHandler {
+    
+}
+
+class TableDataReadRequestHandler {
+    
+}
+
+class TableDataWriteRequestHandler {
+    
+}
+
+class TableDetailsRequestHandler {
+    
+}
+
+oeSokcet o-> RequestHandlerFactory
+IRequestHandler <- oeSokcet
+IRequestHandler <|-[dashed]- VersionRequestHandler
+IRequestHandler <|-[dashed]- TablesRequestHandler
+IRequestHandler <|-[dashed]- TableDataReadRequestHandler
+IRequestHandler <|-[dashed]- TableDataWriteRequestHandler
+IRequestHandler <|-[dashed]- TableDetailsRequestHandler
+
+RequestHandlerFactory o--> VersionRequestHandler
+RequestHandlerFactory o--> TablesRequestHandler
+RequestHandlerFactory o--> TableDataReadRequestHandler
+RequestHandlerFactory o--> TableDataWriteRequestHandler
+RequestHandlerFactory o-->  TableDetailsRequestHandler
+
+VersionRequestHandler --|> ARequestHandler
+TablesRequestHandler --|> ARequestHandler
+TableDataReadRequestHandler --|> ARequestHandler
+TableDataWriteRequestHandler --|> ARequestHandler
+TableDetailsRequestHandler --|> ARequestHandler
+
+@enduml
