@@ -91,6 +91,7 @@
                 "defaultValue": 5259
             }
         ],
-        "mode": "Update"
+        "mode": "Update",
+        "useTriggers": false
     }
 }

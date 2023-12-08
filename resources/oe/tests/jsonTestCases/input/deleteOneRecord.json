@@ -10,6 +10,7 @@
             "0x000000000000c403"
         ],
         "data": [],
-        "mode": "Delete"
+        "mode": "Delete",
+        "useTriggers": false
     }
 }

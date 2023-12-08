@@ -106,6 +106,7 @@
                 "defaultValue": ""
             }
         ],
-        "mode": "Update"
+        "mode": "Update",
+        "useTriggers": false
     }
 }

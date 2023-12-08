@@ -26,6 +26,7 @@
                 "defaultValue": "Shipping"
             }
         ],
-        "mode": "Update"
+        "mode": "Update",
+        "useTriggers": false
     }
 }

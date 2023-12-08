@@ -18,6 +18,7 @@
             },
             "enabled": true
         },
-        "timeOut": 0
+        "timeOut": 0,
+        "useTriggers": false
     }
 }

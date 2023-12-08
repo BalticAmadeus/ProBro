@@ -12,6 +12,7 @@
             "0x0000000000002c03"
         ],
         "data": [],
-        "mode": "Delete"
+        "mode": "Delete",
+        "useTriggers": false
     }
 }

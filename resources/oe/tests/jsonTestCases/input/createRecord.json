@@ -24,6 +24,7 @@
                 "defaultValue": ""
             }
         ],
-        "mode": "Insert"
+        "mode": "Insert",
+        "useTriggers": false
     }
 }

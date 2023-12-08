@@ -324,7 +324,7 @@ PROCEDURE GetJsonInputObject:
     DEFINE VARIABLE oParser      AS ObjectModelParser NO-UNDO.
 
     oParser = NEW ObjectModelParser().
-    inputObject = CAST(oParser:ParseFile(SUBSTITUTE("..\tests\jsonTestCases\input\&1.json", cJsonInputTableName)), JsonObject).
+    inputObject = CAST(oParser:ParseFile(SUBSTITUTE("resources\oe\tests\jsonTestCases\input\&1.json", cJsonInputTableName)), JsonObject).
 END PROCEDURE.
 
 PROCEDURE AssertOutputJson:
@@ -339,7 +339,7 @@ PROCEDURE AssertOutputJson:
     DEFINE VARIABLE oOutputObject AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 
     oParser = NEW ObjectModelParser().
-    oOutputObject = CAST(oParser:ParseFile(SUBSTITUTE("..\tests\jsonTestCases\output\&1.json", cJsonOutputTableName)), JsonObject).
+    oOutputObject = CAST(oParser:ParseFile(SUBSTITUTE("resources\oe\tests\jsonTestCases\output\&1.json", cJsonOutputTableName)), JsonObject).
 
     cObjectNames = oOutputObject:GetNames().
 

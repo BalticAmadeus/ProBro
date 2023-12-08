@@ -10,6 +10,7 @@
             "0x0000000000003c1a"
         ],
         "data": [],
-        "mode": "Delete"
+        "mode": "Delete",
+        "useTriggers": false
     }
 }

@@ -11,6 +11,7 @@
             "columns": {},
             "enabled": true
         },
-        "timeOut": 500
+        "timeOut": 500,
+        "useTriggers": false
     }
 }

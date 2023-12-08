@@ -9,6 +9,7 @@
         "crud": [
             "0x0000000000009402"
         ],
-        "mode": "Update"
+        "mode": "Update",
+        "useTriggers": false
     }
 }
