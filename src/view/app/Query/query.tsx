@@ -40,7 +40,7 @@ interface IStatisticsObject {
 function QueryForm({ vscode, tableData, tableName, configuration, isReadOnly, ...props }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = React.useState<string>("");
     const [isLoading, setIsLoading] = React.useState(false);
-
+    const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
     const [isFormatted, setIsFormatted] = React.useState(false);
     const [isError, setIsError] = React.useState(false);
     const [isDataRetrieved, setIsDataRetrieved] = React.useState(false);
@@ -91,6 +91,9 @@ function QueryForm({ vscode, tableData, tableName, configuration, isReadOnly, ..
         setIsFormatted(!isFormatted);
     };
 
+    const windowResize = () => {
+        setWindowHeight(window.innerHeight);
+    };
 
     let inputQuery: HTMLButtonElement = undefined;
     React.useEffect(() => {
@@ -99,6 +102,13 @@ function QueryForm({ vscode, tableData, tableName, configuration, isReadOnly, ..
         }
     }, []);
 
+    React.useEffect(() => {
+        window.addEventListener("resize", windowResize);
+
+        return () => {
+            window.removeEventListener("resize", windowResize);
+        };
+    }, []);
 
     React.useEffect(() => {
         const handleResize = () => {
@@ -688,6 +698,13 @@ Description: ${errorObject.description}`}</pre>
         }, 300);
     }
 
+    const calculateHeight = () => {
+        const rowCount = isFormatted ? formattedRows.length : rawRows.length;
+        const minHeight = 35;
+        const calculatedHeight = rowCount * minHeight;
+        return calculatedHeight;
+    };
+
     return (
         <React.Fragment>
             <div className="container">
@@ -768,25 +785,27 @@ Description: ${errorObject.description}`}</pre>
                     )}
                 </div>
             </div >
-            <DataGrid
-                columns={selected}
-                rows={isFormatted ? formattedRows : rawRows}
-                onScroll={handleScroll}
-                defaultColumnOptions={{
-                    sortable: true,
-                    resizable: true,
-                }}
-                sortColumns={sortColumns}
-                onSortColumnsChange={onSortClick}
-                className={filters.enabled ? "filter-cell" : undefined}
-                headerRowHeight={filters.enabled ? 70 : undefined}
-                style={{ height: "fit-content", whiteSpace: "pre" }}
-                selectedRows={selectedRows}
-                onSelectedRowsChange={setSelectedRows}
-                rowKeyGetter={rowKeyGetter}
-                onRowDoubleClick={readRecord}
-                onCopy={handleCopy}
-            ></DataGrid>
+            <div>
+                <DataGrid
+                    columns={selected}
+                    rows={isFormatted ? formattedRows : rawRows}
+                    defaultColumnOptions={{
+                        sortable: true,
+                        resizable: true,
+                    }}
+                    sortColumns={sortColumns}
+                    onScroll={handleScroll}
+                    onSortColumnsChange={onSortClick}
+                    className={filters.enabled ? "filter-cell" : undefined}
+                    headerRowHeight={filters.enabled ? 70 : undefined}
+                    style={{ height: calculateHeight(), overflow: 'auto', maxHeight: windowHeight - 120, whiteSpace: "pre" }}
+                    selectedRows={selectedRows}
+                    onSelectedRowsChange={setSelectedRows}
+                    rowKeyGetter={rowKeyGetter}
+                    onRowDoubleClick={readRecord}
+                    onCopy={handleCopy}
+                ></DataGrid>
+            </div>
             <div className="footer">
                 {getFooterTag()}
             </div>
