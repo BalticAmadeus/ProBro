@@ -41,6 +41,13 @@ END.
 
 // LOCAL_GET_TABLES
 @Test.
+PROCEDURE fakeTest:
+    // undo, throw new Progress.Lang.AppError("aaa").
+    Assert:Equals("AAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAA").
+END.
+
+// LOCAL_GET_TABLES
+@Test.
 PROCEDURE testTableListIsEquals:
     cTestCase = "jsonTables".
     RUN LOCAL_GET_TABLES.
@@ -193,40 +200,54 @@ END.
 @Test.
 PROCEDURE testIsRecordLockedForDeleting:
     DEFINE VARIABLE cRowId AS CHARACTER NO-UNDO INITIAL "0x0000000000003c1a".
+    DEFINE VARIABLE oErr AS Progress.Lang.Error NO-UNDO.
+
     cTestCase = "deleteRecordLocked".
     RUN GetJsonInputObject(cTestCase).
 
     DEFINE BUFFER bFamily FOR Family.
 
-    DO TRANSACTION:
+    DO TRANSACTION ON ERROR UNDO, THROW:
         FIND bFamily EXCLUSIVE-LOCK WHERE ROWID(bFamily) = TO-ROWID(cRowId).
         RUN LOCAL_SUBMIT_TABLE_DATA.
         UNDO, LEAVE.
     END.
     CATCH err AS Progress.Lang.Error:
-        Assert:Equals("Record is locked", err:GetMessage(1)).
-        Assert:Equals(503, err:GetMessageNum(1)).
+        oErr = err.
+        message err:GetMessage(1).
     END CATCH.
+    FINALLY:
+        Assert:NotNull(oErr).
+        Assert:Equals("Record not found", oErr:GetMessage(1)).
+        Assert:Equals(505, oErr:GetMessageNum(1)).
+    END FINALLY.
 END.
 
 @Test.
 PROCEDURE testIsRecordNotFoundForDeleting:
-    DEFINE VARIABLE cRowId AS CHARACTER NO-UNDO INITIAL "0x0000000000000c04".
+    DEFINE VARIABLE cRowId AS CHARACTER NO-UNDO INITIAL "0x0000000000003c1a".
+    DEFINE VARIABLE oErr AS Progress.Lang.Error NO-UNDO.
+
     cTestCase = "deleteRecordNotFound".
     RUN GetJsonInputObject(cTestCase).
 
-    DEFINE BUFFER bBen FOR Benefits.
+    DEFINE BUFFER bFamily FOR Family.
 
-    DO TRANSACTION:
-        FIND bBen EXCLUSIVE-LOCK WHERE ROWID(bBen) = TO-ROWID(cRowId).
-        DELETE bBen.
+    DO TRANSACTION ON ERROR UNDO, THROW:
+        FIND bFamily EXCLUSIVE-LOCK WHERE ROWID(bFamily) = TO-ROWID(cRowId).
+        DELETE bFamily.
         RUN LOCAL_SUBMIT_TABLE_DATA.
         UNDO, LEAVE.
     END.
     CATCH err AS Progress.Lang.Error:
-        Assert:Equals("Record not found", err:GetMessage(1)).
-        Assert:Equals(505, err:GetMessageNum(1)).
+        oErr = err.
+        message err:GetMessage(1).
     END CATCH.
+    FINALLY:
+        Assert:NotNull(oErr).
+        Assert:Equals("Record not found", oErr:GetMessage(1)).
+        Assert:Equals(505, oErr:GetMessageNum(1)).
+    END FINALLY.
 END.
 
 @Test.
@@ -340,6 +361,8 @@ PROCEDURE AssertOutputJson:
     DEFINE VARIABLE oParser      AS ObjectModelParser NO-UNDO.
     DEFINE VARIABLE oOutputObject AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
 
+    jsonObject:WriteFile("my.json", true).
+
     oParser = NEW ObjectModelParser().
     oOutputObject = CAST(oParser:ParseFile(SUBSTITUTE("resources\oe\tests\jsonTestCases\output\&1.json", cJsonOutputTableName)), JsonObject).
 
@@ -347,18 +370,23 @@ PROCEDURE AssertOutputJson:
 
     message "WTF".
 
-    DO i=2 TO EXTENT(cObjectNames):
+    DO i = 2 TO EXTENT(cObjectNames):
         EXTENT(cInnerObjectNames) = ?.
         cInnerObjectNames = oOutputObject:GetJsonArray(cObjectNames[i]):GetJsonObject(1):GetNames().
-        DO j=1 TO oOutputObject:GetJsonArray(cObjectNames[i]):Length:
-            DO k=1 TO EXTENT(cInnerObjectNames):
-                message "compare" oOutputObject:GetJsonArray(cObjectNames[i]):GetJsonObject(j):GetJsonText(cInnerObjectNames[k]) jsonObject:GetJsonArray(cObjectNames[i]):GetJsonObject(j):GetJsonText(cInnerObjectNames[k]).
+        DO j = 1 TO oOutputObject:GetJsonArray(cObjectNames[i]):Length:
+            DO k = 1 TO EXTENT(cInnerObjectNames):
+                message oOutputObject:GetJsonArray(cObjectNames[i]):Length jsonObject:GetJsonArray(cObjectNames[i]):Length.
                 Assert:Equals(oOutputObject:GetJsonArray(cObjectNames[i]):GetJsonObject(j):GetJsonText(cInnerObjectNames[k]),
                     jsonObject:GetJsonArray(cObjectNames[i]):GetJsonObject(j):GetJsonText(cInnerObjectNames[k])
                     ).
             END.
         END.
     END.
+
+    catch err as Progress.Lang.Error:
+        message err:GetMessage(1).
+        Assert:RaiseError(err:GetMessage(1)).
+    end.
 END PROCEDURE.
 
 {src/oeCore.i}

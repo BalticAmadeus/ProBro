@@ -1,8 +1,7 @@
 {
     "debug": {
-        "startConnect": "2022-10-24T12:52:55.476+03:00",
-        "endConnect": "2022-10-24T12:52:55.489+03:00",
-        "timeConnect": 13
+        "recordsRetrieved": 27,
+        "recordsRetrievalTime": 30
     },
     "columns": [
         {
@@ -313,243 +312,243 @@
             "EmpNum": "        12",
             "RelativeName": "Stan Morris    ",
             "Relation": "Son            ",
-            "BirthDate": "05\/13\/1987",
+            "BirthDate": "13\/05\/1987",
             "CoveredOnBenefits": "yes",
-            "BenefitDate": "10\/27\/2015"
+            "BenefitDate": "27\/10\/2015"
         },
         {
             "ROWID": "0x0000000000003c0b",
             "EmpNum": "         5",
             "RelativeName": "Jason Bradford ",
             "Relation": "Son            ",
-            "BirthDate": "06\/18\/1993",
+            "BirthDate": "18\/06\/1993",
             "CoveredOnBenefits": "yes",
-            "BenefitDate": "11\/24\/2015"
+            "BenefitDate": "24\/11\/2015"
         },
         {
             "ROWID": "0x0000000000003c42",
             "EmpNum": "        50",
             "RelativeName": "Joe Berry      ",
             "Relation": "Son            ",
-            "BirthDate": "02\/16\/1998",
+            "BirthDate": "16\/02\/1998",
             "CoveredOnBenefits": "yes",
-            "BenefitDate": "08\/19\/2015"
+            "BenefitDate": "19\/08\/2015"
         },
         {
             "ROWID": "0x0000000000003c15",
             "EmpNum": "        10",
             "RelativeName": "Mark Davis     ",
             "Relation": "Son            ",
-            "BirthDate": "01\/27\/2003",
+            "BirthDate": "27\/01\/2003",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "01\/27\/2016"
+            "BenefitDate": "27\/01\/2016"
         },
         {
             "ROWID": "0x0000000000003c32",
             "EmpNum": "        32",
             "RelativeName": "Ben Shultz     ",
             "Relation": "Son            ",
-            "BirthDate": "01\/20\/2008",
+            "BirthDate": "20\/01\/2008",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "03\/21\/2016"
+            "BenefitDate": "21\/03\/2016"
         },
         {
             "ROWID": "0x0000000000003c37",
             "EmpNum": "        38",
             "RelativeName": "Ron Tedford    ",
             "Relation": "Son            ",
-            "BirthDate": "01\/28\/2008",
+            "BirthDate": "28\/01\/2008",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "07\/25\/2015"
+            "BenefitDate": "25\/07\/2015"
         },
         {
             "ROWID": "0x0000000000003c07",
             "EmpNum": "         3",
             "RelativeName": "Sam Smith      ",
             "Relation": "Son            ",
-            "BirthDate": "05\/18\/2008",
+            "BirthDate": "18\/05\/2008",
             "CoveredOnBenefits": "yes",
-            "BenefitDate": "05\/17\/2016"
+            "BenefitDate": "17\/05\/2016"
         },
         {
             "ROWID": "0x0000000000003c35",
             "EmpNum": "        33",
             "RelativeName": "Scott Shay     ",
             "Relation": "Son            ",
-            "BirthDate": "08\/14\/2008",
+            "BirthDate": "14\/08\/2008",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "07\/11\/2015"
+            "BenefitDate": "11\/07\/2015"
         },
         {
             "ROWID": "0x0000000000003c30",
             "EmpNum": "        30",
             "RelativeName": "Ken Raymond    ",
             "Relation": "Son            ",
-            "BirthDate": "09\/12\/2008",
+            "BirthDate": "12\/09\/2008",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "08\/09\/2015"
+            "BenefitDate": "09\/08\/2015"
         },
         {
             "ROWID": "0x0000000000003c31",
             "EmpNum": "        30",
             "RelativeName": "Mark Raymond   ",
             "Relation": "Son            ",
-            "BirthDate": "09\/12\/2008",
+            "BirthDate": "12\/09\/2008",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "08\/09\/2015"
+            "BenefitDate": "09\/08\/2015"
         },
         {
             "ROWID": "0x0000000000003c2f",
             "EmpNum": "        28",
             "RelativeName": "Andy Parker    ",
             "Relation": "Son            ",
-            "BirthDate": "10\/02\/2008",
+            "BirthDate": "02\/10\/2008",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "04\/13\/2015"
+            "BenefitDate": "13\/04\/2015"
         },
         {
             "ROWID": "0x0000000000003c03",
             "EmpNum": "         2",
             "RelativeName": "Bill Andrews   ",
             "Relation": "Son            ",
-            "BirthDate": "12\/21\/2008",
+            "BirthDate": "21\/12\/2008",
             "CoveredOnBenefits": "yes",
-            "BenefitDate": "11\/03\/2015"
+            "BenefitDate": "03\/11\/2015"
         },
         {
             "ROWID": "0x0000000000003c34",
             "EmpNum": "        33",
             "RelativeName": "Matthew Shay   ",
             "Relation": "Son            ",
-            "BirthDate": "01\/28\/2010",
+            "BirthDate": "28\/01\/2010",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "07\/11\/2015"
+            "BenefitDate": "11\/07\/2015"
         },
         {
             "ROWID": "0x0000000000003c43",
             "EmpNum": "        52",
             "RelativeName": "Mark Brown     ",
             "Relation": "Son            ",
-            "BirthDate": "09\/16\/2010",
+            "BirthDate": "16\/09\/2010",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "07\/13\/2015"
+            "BenefitDate": "13\/07\/2015"
         },
         {
             "ROWID": "0x0000000000003c20",
             "EmpNum": "        17",
             "RelativeName": "Harry Barry    ",
             "Relation": "Son            ",
-            "BirthDate": "09\/18\/2010",
+            "BirthDate": "18\/09\/2010",
             "CoveredOnBenefits": "yes",
-            "BenefitDate": "10\/14\/2015"
+            "BenefitDate": "14\/10\/2015"
         },
         {
             "ROWID": "0x0000000000003c46",
             "EmpNum": "        54",
             "RelativeName": "Kyle Kayhill   ",
             "Relation": "Son            ",
-            "BirthDate": "02\/17\/2013",
+            "BirthDate": "17\/02\/2013",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "02\/17\/2016"
+            "BenefitDate": "17\/02\/2016"
         },
         {
             "ROWID": "0x0000000000003c09",
             "EmpNum": "         4",
             "RelativeName": "Sam Shaw       ",
             "Relation": "Son            ",
-            "BirthDate": "03\/16\/2013",
+            "BirthDate": "16\/03\/2013",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "01\/29\/2016"
+            "BenefitDate": "29\/01\/2016"
         },
         {
             "ROWID": "0x0000000000003c0f",
             "EmpNum": "         7",
             "RelativeName": "Ken Weiss      ",
             "Relation": "Son            ",
-            "BirthDate": "08\/05\/2013",
+            "BirthDate": "05\/08\/2013",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "01\/29\/2016"
+            "BenefitDate": "29\/01\/2016"
         },
         {
             "ROWID": "0x0000000000003c39",
             "EmpNum": "        44",
             "RelativeName": "Bill Young     ",
             "Relation": "Son            ",
-            "BirthDate": "08\/12\/2013",
+            "BirthDate": "12\/08\/2013",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "02\/18\/2016"
+            "BenefitDate": "18\/02\/2016"
         },
         {
             "ROWID": "0x0000000000003c40",
             "EmpNum": "        49",
             "RelativeName": "Larry Ahern    ",
             "Relation": "Son            ",
-            "BirthDate": "09\/12\/2013",
+            "BirthDate": "12\/09\/2013",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "08\/17\/2015"
+            "BenefitDate": "17\/08\/2015"
         },
         {
             "ROWID": "0x0000000000003c3d",
             "EmpNum": "        47",
             "RelativeName": "Sam Anderson   ",
             "Relation": "Son            ",
-            "BirthDate": "02\/16\/2014",
+            "BirthDate": "16\/02\/2014",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "03\/27\/2016"
+            "BenefitDate": "27\/03\/2016"
         },
         {
             "ROWID": "0x0000000000003c3b",
             "EmpNum": "        46",
             "RelativeName": "Don Abbott     ",
             "Relation": "Son            ",
-            "BirthDate": "05\/18\/2014",
+            "BirthDate": "18\/05\/2014",
             "CoveredOnBenefits": "yes",
-            "BenefitDate": "10\/19\/2015"
+            "BenefitDate": "19\/10\/2015"
         },
         {
             "ROWID": "0x0000000000003c2b",
             "EmpNum": "        22",
             "RelativeName": "Martin Green   ",
             "Relation": "Son            ",
-            "BirthDate": "09\/12\/2014",
+            "BirthDate": "12\/09\/2014",
             "CoveredOnBenefits": "no ",
-            "BenefitDate": "06\/03\/2015"
+            "BenefitDate": "03\/06\/2015"
         },
         {
             "ROWID": "0x0000000000003c2d",
             "EmpNum": "        25",
             "RelativeName": "Rodger Davis   ",
             "Relation": "Son            ",
-            "BirthDate": "02\/21\/2015",
+            "BirthDate": "21\/02\/2015",
             "CoveredOnBenefits": "yes",
-            "BenefitDate": "12\/20\/2015"
+            "BenefitDate": "20\/12\/2015"
         },
         {
             "ROWID": "0x0000000000003c0e",
             "EmpNum": "         6",
             "RelativeName": "Jack Petersen  ",
             "Relation": "Son            ",
-            "BirthDate": "08\/17\/2016",
+            "BirthDate": "17\/08\/2016",
             "CoveredOnBenefits": "yes",
-            "BenefitDate": "08\/17\/2016"
+            "BenefitDate": "17\/08\/2016"
         },
         {
             "ROWID": "0x0000000000003c29",
             "EmpNum": "        21",
             "RelativeName": "Sam Burton     ",
             "Relation": "Son            ",
-            "BirthDate": "09\/12\/2016",
+            "BirthDate": "12\/09\/2016",
             "CoveredOnBenefits": "yes",
-            "BenefitDate": "09\/12\/2016"
+            "BenefitDate": "12\/09\/2016"
         },
         {
             "ROWID": "0x0000000000003c3e",
             "EmpNum": "        48",
             "RelativeName": "Tom Alden      ",
             "Relation": "Son            ",
-            "BirthDate": "09\/18\/2016",
+            "BirthDate": "18\/09\/2016",
             "CoveredOnBenefits": "yes",
-            "BenefitDate": "09\/18\/2016"
+            "BenefitDate": "18\/09\/2016"
         }
     ]
 }

@@ -13,7 +13,7 @@
         {
             "test": "tests/oeCoreTest.p",
             "cases": [
-                "testwholeTableIsEquals"
+                "testIsRecordNotFoundForUpdating"
             ]
         }
     ]

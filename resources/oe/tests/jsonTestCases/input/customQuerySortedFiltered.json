@@ -2,7 +2,7 @@
     "command": "get_table_data",
     "params": {
         "tableName": "OrderLine",
-        "wherePhrase": "discount >20",
+        "wherePhrase": "discount > 25",
         "start": 0,
         "pageLength": 100,
         "lastRowID": "",
@@ -20,6 +20,6 @@
         },
         "timeOut": 0,
         "useTriggers": false,
-        "minTime": 100
+        "minTime": 500
     }
 }

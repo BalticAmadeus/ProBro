@@ -18,6 +18,6 @@
         },
         "timeOut": 0,
         "useTriggers": false,
-        "minTime": 100
+        "minTime": 500
     }
 }

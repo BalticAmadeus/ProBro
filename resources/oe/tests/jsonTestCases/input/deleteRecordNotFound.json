@@ -1,16 +1,16 @@
 {
     "command": "submit_table_data",
     "params": {
-        "tableName": "Benefits",
+        "tableName": "Family",
         "start": 0,
         "pageLength": 0,
         "timeOut": 1000,
         "lastRowID": "",
         "crud": [
-            "0x0000000000000c04"
+            "0x0000000000003c1a"
         ],
         "data": [],
         "mode": "Delete",
-        "useTriggers": false
+        "useTriggers": true
     }
 }

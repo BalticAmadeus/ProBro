@@ -11,6 +11,6 @@
         ],
         "mode": "Update",
         "useTriggers": false,
-        "minTime": 100
+        "minTime": 500
     }
 }

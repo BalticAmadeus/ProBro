@@ -11,6 +11,6 @@
         ],
         "data": [],
         "mode": "Delete",
-        "useTriggers": false
+        "useTriggers": true
     }
 }

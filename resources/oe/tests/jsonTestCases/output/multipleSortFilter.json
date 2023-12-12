@@ -1,8 +1,7 @@
 {
     "debug": {
-        "startConnect": "2022-10-24T13:31:40.509+03:00",
-        "endConnect": "2022-10-24T13:31:40.525+03:00",
-        "timeConnect": 16
+        "recordsRetrieved": 60,
+        "recordsRetrievalTime": 80
     },
     "columns": [
         {
@@ -729,7 +728,7 @@
             "OrderLineStatus": "Shipped"
         },
         {
-            "ROWID": "0x0000000000015b2c",
+            "ROWID": "0x0000000000015b2a",
             "OrderNum": 29330,
             "LineNum": 1,
             "ItemNum": 22,
@@ -1391,7 +1390,7 @@
             "OrderLineStatus": "Shipped             "
         },
         {
-            "ROWID": "0x0000000000015b2c",
+            "ROWID": "0x0000000000015b2a",
             "OrderNum": "     29330",
             "LineNum": "  1",
             "ItemNum": "        22",
