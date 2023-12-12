@@ -67,7 +67,6 @@ function QueryForm({ vscode, tableData, tableName, configuration, isReadOnly, ..
     const [sortAction, setSortAction] = React.useState(false);
     const [initialDataLoad, setInitialDataLoad] = React.useState(true);
     const [recordColor, setRecordColor] = React.useState("red");
-    const [textSize, setTextSize] = React.useState('Medium');
     const logger = new Logger(configuration.logging.react);
 
     window.addEventListener('contextmenu', e => {
@@ -706,17 +705,6 @@ Description: ${errorObject.description}`}</pre>
         return calculatedHeight;
     };
 
-    React.useEffect(() => {
-        const updateTextSizeFromSettings = async () => {
-            const config = await vscode.workspace.getConfiguration('pro-bro');
-            const gridTextSize = config.inspect('gridTextSize')?.workspaceValue;
-            console.log('Grid Text Size:', gridTextSize);
-            setTextSize(gridTextSize || 'Medium');
-        };
-
-        updateTextSizeFromSettings();
-    }, []);
-
     return (
         <React.Fragment>
             <div className="container">
@@ -809,9 +797,9 @@ Description: ${errorObject.description}`}</pre>
                     onScroll={handleScroll}
                     onSortColumnsChange={onSortClick}
                     className={`${filters.enabled ? "filter-cell" : ""
-                        } ${textSize === 'Large' ? "font-size-large" : ""
-                        } ${textSize === 'Medium' ? "font-size-medium" : ""
-                        } ${textSize === 'Small' ? "font-size-small" : ""
+                        } ${configuration.gridTextSize === 'Large' ? "font-size-large" : ""
+                        } ${configuration.gridTextSize === 'Medium' ? "font-size-medium" : ""
+                        } ${configuration.gridTextSize === 'Small' ? "font-size-small" : ""
                         }`}
                     headerRowHeight={filters.enabled ? 70 : undefined}
                     style={{
