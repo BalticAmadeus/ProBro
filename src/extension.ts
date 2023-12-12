@@ -16,6 +16,7 @@ import { readFile, parseOEFile } from "./common/OpenEdgeJsonReaded";
 import { VersionChecker } from "./view/app/Welcome/VersionChecker";
 import { WelcomePageProvider } from "./webview/WelcomePageProvider";
 import { AblHoverProvider } from "./webview/AblHoverProvider";
+import { ServiceFactory } from "./services/ServiceFactory";
 
 export function activate(context: vscode.ExtensionContext) {
   let extensionPort: number;
@@ -283,13 +284,9 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       `${Constants.globalExtensionKey}.query2`,
       () => {
-        console.log("000000000000000000000000000000");
         if (tablesListProvider.node === undefined) {
           return;
         }
-        console.log(
-          "AAAAAAAAAAAAAAAAAAAAAA" + tablesListProvider.node.tableName
-        );
         new QueryEditor(
           context,
           tablesListProvider.node,
@@ -410,70 +407,17 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  ServiceFactory.init(context);
+  const portsService = ServiceFactory.getPortsService();
+
   vscode.commands.registerCommand(
     `${Constants.globalExtensionKey}.getPort`,
-    async (): Promise<number | undefined> => {
-      const portList = context.globalState.get<{ [id: string]: IPort }>(
-        `${Constants.globalExtensionKey}.portList`
-      )!;
-      if (!portList) {
-        await vscode.window
-          .showErrorMessage(
-            "No port provided for connection. Provide port and restart. You can use default port number.",
-            "default",
-            "settings"
-          )
-          .then((selection) => {
-            if (selection === "default") {
-              extensionPort = 23456;
-            } else if (selection === "settings") {
-              vscode.commands.executeCommand("workbench.action.openSettings");
-            }
-          });
-      } else {
-        for (const id of Object.keys(portList)) {
-          if (!portList[id].isInUse) {
-            extensionPort = portList[id].port;
-            portList[id].isInUse = true;
-            portList[id].timestamp = Date.now();
-            context.globalState.update(
-              `${Constants.globalExtensionKey}.portList`,
-              portList
-            );
-            break;
-          }
-        }
-      }
-      return extensionPort;
-    }
+    () => portsService.reservePort()
   );
 
   vscode.commands.registerCommand(
     `${Constants.globalExtensionKey}.releasePort`,
-    () => {
-      const portList = context.globalState.get<{ [id: string]: IPort }>(
-        `${Constants.globalExtensionKey}.portList`
-      );
-
-      if (!portList) {
-        return;
-      }
-
-      for (const id of Object.keys(portList)) {
-        if (
-          portList[id].isInUse &&
-          Date.now() - portList[id].timestamp! > 35000
-        ) {
-          portList[id].isInUse = false;
-          portList[id].timestamp = undefined;
-          createJsonDatabases;
-          context.globalState.update(
-            `${Constants.globalExtensionKey}.portList`,
-            portList
-          );
-        }
-      }
-    }
+    () => portsService.releasePort()
   );
 
   const hoverProvider = new AblHoverProvider(tablesListProvider);
