@@ -1,3 +1,5 @@
+BLOCK-LEVEL ON ERROR UNDO, THROW.
+
 USING OpenEdge.Core.Assert.
 USING Progress.Json.ObjectModel.ObjectModelParser.
 USING Progress.Json.ObjectModel.JsonObject.
@@ -343,11 +345,14 @@ PROCEDURE AssertOutputJson:
 
     cObjectNames = oOutputObject:GetNames().
 
+    message "WTF".
+
     DO i=2 TO EXTENT(cObjectNames):
         EXTENT(cInnerObjectNames) = ?.
         cInnerObjectNames = oOutputObject:GetJsonArray(cObjectNames[i]):GetJsonObject(1):GetNames().
         DO j=1 TO oOutputObject:GetJsonArray(cObjectNames[i]):Length:
             DO k=1 TO EXTENT(cInnerObjectNames):
+                message "compare" oOutputObject:GetJsonArray(cObjectNames[i]):GetJsonObject(j):GetJsonText(cInnerObjectNames[k]) jsonObject:GetJsonArray(cObjectNames[i]):GetJsonObject(j):GetJsonText(cInnerObjectNames[k]).
                 Assert:Equals(oOutputObject:GetJsonArray(cObjectNames[i]):GetJsonObject(j):GetJsonText(cInnerObjectNames[k]),
                     jsonObject:GetJsonArray(cObjectNames[i]):GetJsonObject(j):GetJsonText(cInnerObjectNames[k])
                     ).

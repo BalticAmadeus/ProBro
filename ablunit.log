@@ -1,0 +1,31 @@
+[23/12/12@11:48:13.267+0200] P-015960 T-020188 1 4GL -- Logging level set to = 1
+[23/12/12@11:50:59.737+0200] P-025548 T-017860 1 4GL -- Logging level set to = 4
+[23/12/12@11:51:01.541+0200] P-025548 T-017860 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'SETUP' in 'tests/oeCoreTest.p' uses @Setup annotation which will be deprecated, please use @BeforeEach.
+[23/12/12@11:51:01.543+0200] P-025548 T-017860 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'CLEAN_ENVIRONMENT' in 'tests/oeCoreTest.p' uses @TearDown annotation which will be deprecated, please use @AfterEach.
+[23/12/12@11:52:09.519+0200] P-027748 T-022256 1 4GL -- Logging level set to = 4
+[23/12/12@11:52:11.121+0200] P-027748 T-022256 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'SETUP' in 'tests/oeCoreTest.p' uses @Setup annotation which will be deprecated, please use @BeforeEach.
+[23/12/12@11:52:11.123+0200] P-027748 T-022256 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'CLEAN_ENVIRONMENT' in 'tests/oeCoreTest.p' uses @TearDown annotation which will be deprecated, please use @AfterEach.
+[23/12/12@11:52:48.329+0200] P-031924 T-004864 1 4GL -- Logging level set to = 4
+[23/12/12@11:52:49.860+0200] P-031924 T-004864 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'SETUP' in 'tests/oeCoreTest.p' uses @Setup annotation which will be deprecated, please use @BeforeEach.
+[23/12/12@11:52:49.862+0200] P-031924 T-004864 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'CLEAN_ENVIRONMENT' in 'tests/oeCoreTest.p' uses @TearDown annotation which will be deprecated, please use @AfterEach.
+[23/12/12@11:53:35.579+0200] P-020864 T-018104 1 4GL -- Logging level set to = 4
+[23/12/12@11:53:37.123+0200] P-020864 T-018104 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'SETUP' in 'tests/oeCoreTest.p' uses @Setup annotation which will be deprecated, please use @BeforeEach.
+[23/12/12@11:53:37.125+0200] P-020864 T-018104 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'CLEAN_ENVIRONMENT' in 'tests/oeCoreTest.p' uses @TearDown annotation which will be deprecated, please use @AfterEach.
+[23/12/12@11:53:49.567+0200] P-020424 T-019700 1 4GL -- Logging level set to = 4
+[23/12/12@11:53:51.123+0200] P-020424 T-019700 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'SETUP' in 'tests/oeCoreTest.p' uses @Setup annotation which will be deprecated, please use @BeforeEach.
+[23/12/12@11:53:51.126+0200] P-020424 T-019700 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'CLEAN_ENVIRONMENT' in 'tests/oeCoreTest.p' uses @TearDown annotation which will be deprecated, please use @AfterEach.
+[23/12/12@11:55:18.646+0200] P-004284 T-024636 1 4GL -- Logging level set to = 4
+[23/12/12@11:55:20.210+0200] P-004284 T-024636 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'SETUP' in 'tests/oeCoreTest.p' uses @Setup annotation which will be deprecated, please use @BeforeEach.
+[23/12/12@11:55:20.213+0200] P-004284 T-024636 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'CLEAN_ENVIRONMENT' in 'tests/oeCoreTest.p' uses @TearDown annotation which will be deprecated, please use @AfterEach.
+[23/12/12@11:55:28.485+0200] P-027780 T-032328 1 4GL -- Logging level set to = 4
+[23/12/12@11:55:30.069+0200] P-027780 T-032328 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'SETUP' in 'tests/oeCoreTest.p' uses @Setup annotation which will be deprecated, please use @BeforeEach.
+[23/12/12@11:55:30.071+0200] P-027780 T-032328 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'CLEAN_ENVIRONMENT' in 'tests/oeCoreTest.p' uses @TearDown annotation which will be deprecated, please use @AfterEach.
+[23/12/12@11:56:25.362+0200] P-018840 T-018956 1 4GL -- Logging level set to = 4
+[23/12/12@11:56:26.897+0200] P-018840 T-018956 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'SETUP' in 'tests/oeCoreTest.p' uses @Setup annotation which will be deprecated, please use @BeforeEach.
+[23/12/12@11:56:26.899+0200] P-018840 T-018956 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'CLEAN_ENVIRONMENT' in 'tests/oeCoreTest.p' uses @TearDown annotation which will be deprecated, please use @AfterEach.
+[23/12/12@11:56:35.792+0200] P-022688 T-029044 1 4GL -- Logging level set to = 4
+[23/12/12@11:56:37.327+0200] P-022688 T-029044 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'SETUP' in 'tests/oeCoreTest.p' uses @Setup annotation which will be deprecated, please use @BeforeEach.
+[23/12/12@11:56:37.329+0200] P-022688 T-029044 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'CLEAN_ENVIRONMENT' in 'tests/oeCoreTest.p' uses @TearDown annotation which will be deprecated, please use @AfterEach.
+[23/12/12@11:56:54.669+0200] P-019036 T-033024 1 4GL -- Logging level set to = 4
+[23/12/12@11:56:56.229+0200] P-019036 T-033024 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'SETUP' in 'tests/oeCoreTest.p' uses @Setup annotation which will be deprecated, please use @BeforeEach.
+[23/12/12@11:56:56.232+0200] P-019036 T-033024 1 4GL LogMgrWrtr     [ABLUnit WARN] Test procedure 'CLEAN_ENVIRONMENT' in 'tests/oeCoreTest.p' uses @TearDown annotation which will be deprecated, please use @AfterEach.

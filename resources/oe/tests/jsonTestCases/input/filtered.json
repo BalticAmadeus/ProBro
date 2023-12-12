@@ -14,6 +14,7 @@
             "enabled": true
         },
         "timeOut": 0,
-        "useTriggers": false
+        "useTriggers": false,
+        "minTime": 100
     }
 }

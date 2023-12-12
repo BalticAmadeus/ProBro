@@ -10,6 +10,7 @@
             "0x0000000000009402"
         ],
         "mode": "Update",
-        "useTriggers": false
+        "useTriggers": false,
+        "minTime": 100
     }
 }
