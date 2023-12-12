@@ -129,6 +129,18 @@ body.vscode-dark .rdg-row-even {
     z-index: 2;
 }
 
+.font-size-large {
+    font-size: 3em;
+}
+
+.font-size-medium {
+    font-size: 2em;
+}
+
+.font-size-small {
+    font-size: 1em;
+}
+
 @media (max-width: 998px) {
     .textInputQuery {
         width: 200px;
