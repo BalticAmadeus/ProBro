@@ -701,7 +701,8 @@ Description: ${errorObject.description}`}</pre>
     const calculateHeight = () => {
         const rowCount = isFormatted ? formattedRows.length : rawRows.length;
         const minHeight = 35;
-        const calculatedHeight = rowCount * minHeight;
+        const startingHeight = 85;
+        const calculatedHeight = startingHeight + rowCount * minHeight;
         return calculatedHeight;
     };
 
@@ -763,25 +764,25 @@ Description: ${errorObject.description}`}</pre>
                         > </ProBroButton>
                     </div>
                     {!isReadOnly && (
-                    <div className="query-options">
-                        <UpdatePopup
-                            vscode={vscode}
-                            selectedRows={selectedRows}
-                            columns={columnsCRUD}
-                            rows={recordsCRUD}
-                            tableName={tableName}
-                            open={open}
-                            setOpen={setOpen}
-                            action={action}
-                            insertRecord={insertRecord}
-                            updateRecord={updateRecord}
-                            deleteRecord={deleteRecord}
-                            copyRecord={copyRecord}
-                            readRow={readRow}
-                            logValue={configuration.logging.react}
-                            defaultTrigger={!!configuration.useWriteTriggers} // !! fixes missing setting issue
-                        ></UpdatePopup>
-                    </div>
+                        <div className="query-options">
+                            <UpdatePopup
+                                vscode={vscode}
+                                selectedRows={selectedRows}
+                                columns={columnsCRUD}
+                                rows={recordsCRUD}
+                                tableName={tableName}
+                                open={open}
+                                setOpen={setOpen}
+                                action={action}
+                                insertRecord={insertRecord}
+                                updateRecord={updateRecord}
+                                deleteRecord={deleteRecord}
+                                copyRecord={copyRecord}
+                                readRow={readRow}
+                                logValue={configuration.logging.react}
+                                defaultTrigger={!!configuration.useWriteTriggers} // !! fixes missing setting issue
+                            ></UpdatePopup>
+                        </div>
                     )}
                 </div>
             </div >
@@ -798,7 +799,13 @@ Description: ${errorObject.description}`}</pre>
                     onSortColumnsChange={onSortClick}
                     className={filters.enabled ? "filter-cell" : undefined}
                     headerRowHeight={filters.enabled ? 70 : undefined}
-                    style={{ height: calculateHeight(), overflow: 'auto', maxHeight: windowHeight - 120, whiteSpace: "pre" }}
+                    style={{
+                        height: calculateHeight(),
+                        overflow: 'auto',
+                        minHeight: 105,
+                        maxHeight: windowHeight - 120,
+                        whiteSpace: "pre"
+                    }}
                     selectedRows={selectedRows}
                     onSelectedRowsChange={setSelectedRows}
                     rowKeyGetter={rowKeyGetter}
