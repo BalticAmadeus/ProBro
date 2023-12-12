@@ -5,7 +5,6 @@ import {
   MarkdownString,
   Position,
   ProviderResult,
-  Range,
   TextDocument,
 } from "vscode";
 import { TablesListProvider } from "../treeview/TablesListProvider";
@@ -25,16 +24,15 @@ export class AblHoverProvider implements HoverProvider {
     const str = new MarkdownString();
     str.isTrusted = true;
 
-    //take text from whole line
-    const lineRange = new Range(
-      new Position(position.line, 0),
-      new Position(position.line, 1000000000)
-    );
+    const wordRange = document.getWordRangeAtPosition(position);
 
-    const text = document.getText(lineRange);
+    const text = document.getText(wordRange);
 
     this.tableListProvider.tableNodes.forEach((tableNode) => {
-      if (text.indexOf(tableNode.tableName) !== -1) {
+      const index = text
+        .toLowerCase()
+        .indexOf(tableNode.tableName.toLowerCase());
+      if (index >= 0) {
         this.tableListProvider.selectDbConfig(tableNode);
         this.tableListProvider.node = tableNode;
         str.value =
