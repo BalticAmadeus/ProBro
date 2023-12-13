@@ -1,16 +1,27 @@
 # Change Log
 
+## 1.5.1 (2023-12-08)
+
+### Changed
+
+- Query window adjustments.
+- Fixed various small bugs.
+
+### Added
+
+- Read only connection support.
+
 ## 1.5.0 (2023-11-10)
 
 ### Changed
 
-- Settings naming consistency
-- Fixed various small bugs
+- Settings naming consistency.
+- Fixed various small bugs.
 
 ### Added
 
-- Connection multi select for databases
-- Read ony screen for databases imported from openedge-project.json
+- Connection multi select for databases.
+- Read ony screen for databases imported from openedge-project.json.
 - New setting to disable filtering as you type.
 - Individual refresh for connections.
 
@@ -18,11 +29,11 @@
 
 ### Changed
 
-- Changed proBro logo
+- Changed proBro logo.
 
 ### Added
 
-- possibility to disable automatic database import
+- possibility to disable automatic database import.
 
 ## 1.4.0 (2023-08-03)
 
