@@ -700,9 +700,30 @@ Description: ${errorObject.description}`}</pre>
 
     const calculateHeight = () => {
         const rowCount = isFormatted ? formattedRows.length : rawRows.length;
-        const minHeight = 35;
+        let minHeight
+        if (configuration.gridTextSize === 'Large') {
+            minHeight = 35;
+        } else if (configuration.gridTextSize === 'Medium') {
+            minHeight = 25;
+        } else if (configuration.gridTextSize === 'Small') {
+            minHeight = 10;
+        }
         const calculatedHeight = rowCount * minHeight;
         return calculatedHeight;
+    };
+
+    const setRowHeight = () => {
+        let height = 0;
+
+        if (configuration.gridTextSize === 'Large') {
+            height = 35;
+        } else if (configuration.gridTextSize === 'Medium') {
+            height = 20;
+        } else if (configuration.gridTextSize === 'Small') {
+            height = 10;
+        }
+
+        return height;
     };
 
     return (
@@ -796,11 +817,7 @@ Description: ${errorObject.description}`}</pre>
                     sortColumns={sortColumns}
                     onScroll={handleScroll}
                     onSortColumnsChange={onSortClick}
-                    className={`${filters.enabled ? "filter-cell" : ""
-                        } ${configuration.gridTextSize === 'Large' ? "font-size-large" : ""
-                        } ${configuration.gridTextSize === 'Medium' ? "font-size-medium" : ""
-                        } ${configuration.gridTextSize === 'Small' ? "font-size-small" : ""
-                        }`}
+                    className={filters.enabled ? "filter-cell" : ""}
                     headerRowHeight={filters.enabled ? 70 : undefined}
                     style={{
                         height: calculateHeight(),
@@ -813,6 +830,7 @@ Description: ${errorObject.description}`}</pre>
                     rowKeyGetter={rowKeyGetter}
                     onRowDoubleClick={readRecord}
                     onCopy={handleCopy}
+                    rowHeight={setRowHeight}
                 ></DataGrid>
             </div>
             <div className="footer">
