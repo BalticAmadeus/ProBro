@@ -23,5 +23,8 @@
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "ablunit.params": "-pf test.pf -clientlog ablunit.log -logginglevel 4"
+    "ablunit.params": "-pf ablunit.pf",
+    "ablunit.tempDir": ".abltesting",
+    "ablunit.profilerOptions.listings": "true",
+    "ablunit.configJson.configPath": "./ablunit.json"
 }

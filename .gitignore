@@ -1,6 +1,7 @@
 out
 dist
 node_modules
+.testing
 .vscode-test/
 *.vsix
 resources/oe/oeSocket.pro
