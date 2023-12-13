@@ -700,7 +700,7 @@ Description: ${errorObject.description}`}</pre>
 
     const calculateHeight = () => {
         const rowCount = isFormatted ? formattedRows.length : rawRows.length;
-        let minHeight
+        let minHeight;
         if (configuration.gridTextSize === 'Large') {
             minHeight = 35;
         } else if (configuration.gridTextSize === 'Medium') {
@@ -708,8 +708,9 @@ Description: ${errorObject.description}`}</pre>
         } else if (configuration.gridTextSize === 'Small') {
             minHeight = 10;
         }
-        const calculateHeight = rowCount * minHeight;
-        return calculateHeight;
+        const startingHeight = 85;
+        const calculatedHeight = startingHeight + rowCount * minHeight;
+        return calculatedHeight;
     };
 
     const setRowHeight = () => {
@@ -822,8 +823,9 @@ Description: ${errorObject.description}`}</pre>
                     style={{
                         height: calculateHeight(),
                         overflow: 'auto',
+                        minHeight: 105,
                         maxHeight: windowHeight - 120,
-                        whiteSpace: "pre",
+                        whiteSpace: "pre"
                     }}
                     selectedRows={selectedRows}
                     onSelectedRowsChange={setSelectedRows}
