@@ -8,15 +8,17 @@ import { ProBroButton } from "../../assets/button";
 import { Logger } from "../../../../common/Logger";
 
 export default function ExportPopup({
-    wherePhrase,
-    vscode,
-    sortColumns,
-    filters,
-    selectedRows,
-    logValue
+  wherePhrase,
+  vscode,
+  sortColumns,
+  filters,
+  selectedRows,
+  logValue
 }) {
-  const [exportFormat, setExportFormat] = React.useState("");
-  const [radioSelection, setRadioSelection] = React.useState("");
+  const [exportFormat, setExportFormat] = React.useState("dumpFile");
+  const [radioSelection, setRadioSelection] = React.useState(
+    Object.keys(DataToExport).filter((key) => Number.isNaN(+key))[0]
+  );
   const [isWindowSmall, setIsWindowSmall] = React.useState(false);
   const [isSaving, setIsSaving] = React.useState(false);
   const logger = new Logger(logValue);
@@ -26,106 +28,103 @@ export default function ExportPopup({
     console.log(currentTarget.value);
   };
 
+  const exportList = ["dumpFile", "json", "csv", "xls"];
 
-
-    const exportList = ["dumpFile", "json", "csv", "xls"];
-
-    
-
-    const getData = () => {
-        console.log("get data");
-        const command: ICommand = {
-            id: "GetData",
-            action: CommandAction.Export,
-        };
-        switch (radioSelection) {
-            case DataToExport[DataToExport.Table]:
-                command.params = {
-                    wherePhrase: wherePhrase,
-                    start: 0,
-                    pageLength: 100000,
-                    lastRowID: "",
-                    sortColumns: sortColumns,
-                    exportType: exportFormat,
-                    timeOut: 0,
-                    minTime: 0,
-                };
-                break;
-            case DataToExport[DataToExport.Filter]:
-                command.params = {
-                    wherePhrase: wherePhrase,
-                    start: 0,
-                    pageLength: 100000,
-                    lastRowID: "",
-                    sortColumns: sortColumns,
-                    filters: filters,
-                    exportType: exportFormat,
-                    timeOut: 0,
-                    minTime: 0,
-                };
-                break;
-            case DataToExport[DataToExport.Selection]:
-                const rowids: string[] = [];
-                selectedRows.forEach((element) => {
-                    rowids.push(element);
-                });
-                command.params = {
-                    wherePhrase: wherePhrase,
-                    start: 0,
-                    pageLength: 100000,
-                    lastRowID: "",
-                    sortColumns: sortColumns,
-                    filters: filters,
-                    exportType: exportFormat,
-                    timeOut: 0,
-                    crud: rowids,
-                    minTime: 0
-                };
-                break;
-            default:
-                break;
-        }
-        logger.log("export request", command);
-        vscode.postMessage(command);
+  const getData = () => {
+    console.log("get data");
+    const command: ICommand = {
+      id: "GetData",
+      action: CommandAction.Export,
     };
+    switch (radioSelection) {
+      case DataToExport[DataToExport.Table]:
+        command.params = {
+          wherePhrase: wherePhrase,
+          start: 0,
+          pageLength: 100000,
+          lastRowID: "",
+          sortColumns: sortColumns,
+          exportType: exportFormat,
+          timeOut: 0,
+          minTime: 0,
+        };
+        break;
+      case DataToExport[DataToExport.Filter]:
+        command.params = {
+          wherePhrase: wherePhrase,
+          start: 0,
+          pageLength: 100000,
+          lastRowID: "",
+          sortColumns: sortColumns,
+          filters: filters,
+          exportType: exportFormat,
+          timeOut: 0,
+          minTime: 0,
+        };
+        break;
+      case DataToExport[DataToExport.Selection]:
+        const rowids: string[] = [];
+        selectedRows.forEach((element) => {
+          rowids.push(element);
+        });
+        command.params = {
+          wherePhrase: wherePhrase,
+          start: 0,
+          pageLength: 100000,
+          lastRowID: "",
+          sortColumns: sortColumns,
+          filters: filters,
+          exportType: exportFormat,
+          timeOut: 0,
+          crud: rowids,
+          minTime: 0
+        };
+        break;
+      default:
+        break;
+    }
+    logger.log("export request", command);
+    vscode.postMessage(command);
+  };
 
-    const handleMessage = (event) => {
-      const message = event.data;
-      logger.log("got export data", message);
-      switch (message.command) {
-        case "export":
-          if (message.format === "dumpFile") {
-            logger.log("dumpfile export got.");
-            exportFromJSON({
-              data: message.data,
-              fileName: message.tableName,
-              exportType: exportFromJSON.types.txt,
-              extension: "d",
-            });
-            break;
-          }
-          const exportData = message.data.rawData.map(({ ROWID, ...rest }) => {
-            return rest;
-          });
+  const handleMessage = (event) => {
+    const message = event.data;
+    logger.log("got export data", message);
+    switch (message.command) {
+      case "export":
+        if (message.format === "dumpFile") {
+          logger.log("dumpfile export got.");
           exportFromJSON({
-            data: exportData,
+            data: message.data,
             fileName: message.tableName,
-            exportType: exportFromJSON.types[message.format],
+            exportType: exportFromJSON.types.txt,
+            extension: "d",
           });
           setIsSaving(false);
           break;
-        default:
-          break;
-      }
+        }
+        const exportData = message.data.rawData.map(({ ROWID, ...rest }) => {
+          return rest;
+        });
+        exportFromJSON({
+          data: exportData,
+          fileName: message.tableName,
+          exportType: exportFromJSON.types[message.format],
+        });
+        setIsSaving(false);
+        break;
+      default:
+        break;
+    }
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      return window.removeEventListener("message", handleMessage);
     };
-
-    React.useEffect(() => {
-        window.addEventListener("message", handleMessage);
-
-        return () => {
-            return window.removeEventListener("message", handleMessage);
-        };
-    }, []);
+  }, []);
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -165,6 +164,7 @@ export default function ExportPopup({
             <select
               id="dropdown"
               onChange={(val) => setExportFormat(val.target.value)}
+              value={exportFormat}
             >
               {exportList.map((val) => (
                 <option key={val} value={val}>{val}</option>
@@ -184,6 +184,7 @@ export default function ExportPopup({
                     name="exportdata"
                     onChange={(e) => handleChange(e)}
                     value={key}
+                    checked={radioSelection === key}
                   />
                   {key}
                 </label>
@@ -191,25 +192,25 @@ export default function ExportPopup({
             </div>
           </div>
           <div className="btn-container">
-          <ProBroButton
-            className="button"
-            onClick={() => {
-              setIsSaving(true);
-              getData();
-            }}
-            disabled={isSaving}
-          >
-            Export
-          </ProBroButton>
-          <ProBroButton className="button" onClick={() => close()}>
-            Cancel
-          </ProBroButton>
+            <ProBroButton
+              className="button"
+              onClick={() => {
+                setIsSaving(true);
+                getData();
+              }}
+              disabled={isSaving}
+            >
+              Export
+            </ProBroButton>
+            <ProBroButton className="button" onClick={() => close()}>
+              Cancel
+            </ProBroButton>
+          </div>
+          {isSaving ? (
+            <span className="export-saving">Saving...</span>
+          ) : null}
         </div>
-        {isSaving ? (
-          <span className="export-saving">Saving...</span>
-        ) : null}
-      </div>
-    )}
+      )}
     </Popup>
   );
 }
