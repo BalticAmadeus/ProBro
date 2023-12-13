@@ -708,8 +708,8 @@ Description: ${errorObject.description}`}</pre>
         } else if (configuration.gridTextSize === 'Small') {
             minHeight = 10;
         }
-        const calculatedHeight = rowCount * minHeight;
-        return calculatedHeight;
+        const calculateHeight = rowCount * minHeight;
+        return calculateHeight;
     };
 
     const setRowHeight = () => {
