@@ -36,7 +36,9 @@ export class AblHoverProvider implements HoverProvider {
         this.tableListProvider.selectDbConfig(tableNode);
         this.tableListProvider.node = tableNode;
         str.value =
-          "[Run Query for " + tableNode.tableName + "](command:pro-bro.query2)";
+          "[Run Query for " +
+          tableNode.tableName +
+          "](command:pro-bro.queryFromCode)";
       }
     });
 

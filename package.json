@@ -29,8 +29,7 @@
         "theme": "dark"
     },
     "activationEvents": [
-        "onCommand:pro-bro.connect",
-        "onLanguage:abl"
+        "onCommand:pro-bro.connect"
     ],
     "main": "./out/extension.js",
     "contributes": {
@@ -225,10 +224,6 @@
             {
                 "command": "pro-bro.dblClickQuery",
                 "title": "DblClickQuery"
-            },
-            {
-                "command": "pro-bro.query2",
-                "title": "aaaaaaaaaaaaaaaa"
             }
         ],
         "menus": {

@@ -15,7 +15,7 @@ import { readFile, parseOEFile } from "./common/OpenEdgeJsonReaded";
 
 import { VersionChecker } from "./view/app/Welcome/VersionChecker";
 import { WelcomePageProvider } from "./webview/WelcomePageProvider";
-import { AblHoverProvider } from "./webview/AblHoverProvider";
+import { AblHoverProvider } from "./providers/AblHoverProvider";
 
 export function activate(context: vscode.ExtensionContext) {
   let extensionPort: number;
@@ -281,16 +281,13 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      `${Constants.globalExtensionKey}.query2`,
+      `${Constants.globalExtensionKey}.queryFromCode`,
       () => {
-        console.log("000000000000000000000000000000");
         if (tablesListProvider.node === undefined) {
           return;
         }
-        console.log(
-          "AAAAAAAAAAAAAAAAAAAAAA" + tablesListProvider.node.tableName
-        );
-        new QueryEditor(
+
+        return new QueryEditor(
           context,
           tablesListProvider.node,
           tablesListProvider,
