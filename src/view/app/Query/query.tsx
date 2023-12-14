@@ -702,11 +702,11 @@ Description: ${errorObject.description}`}</pre>
         const rowCount = isFormatted ? formattedRows.length : rawRows.length;
         let minHeight;
         if (configuration.gridTextSize === 'Large') {
-            minHeight = 35;
+            minHeight = 40;
         } else if (configuration.gridTextSize === 'Medium') {
-            minHeight = 25;
+            minHeight = 30;
         } else if (configuration.gridTextSize === 'Small') {
-            minHeight = 10;
+            minHeight = 20;
         }
         const startingHeight = 85;
         const calculatedHeight = startingHeight + rowCount * minHeight;
@@ -717,11 +717,11 @@ Description: ${errorObject.description}`}</pre>
         let height = 0;
 
         if (configuration.gridTextSize === 'Large') {
-            height = 35;
+            height = 40;
         } else if (configuration.gridTextSize === 'Medium') {
-            height = 20;
+            height = 30;
         } else if (configuration.gridTextSize === 'Small') {
-            height = 10;
+            height = 20;
         }
 
         return height;
