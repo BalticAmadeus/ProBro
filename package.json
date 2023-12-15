@@ -29,11 +29,7 @@
         "theme": "dark"
     },
     "activationEvents": [
-        "onCommand:pro-bro.connect",
-        "onView:pro-bro-databases",
-        "onView:pro-bro-tables",
-        "onView:pro-bro-fields",
-        "onView:pro-bro-indexes"
+        "onCommand:pro-bro.connect"
     ],
     "main": "./out/extension.js",
     "contributes": {
