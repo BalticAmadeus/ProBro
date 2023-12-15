@@ -21,6 +21,7 @@ export function parseOEFile(fileContent: string, filePath: string) {
   let num = 0;
 
   const directoryPath = path.dirname(filePath);
+  
   dbConnections.forEach((connection: { name: any; connect: any }) => {
     const { name, connect } = connection;
 
@@ -29,7 +30,7 @@ export function parseOEFile(fileContent: string, filePath: string) {
 
     num++;
 
-        if (pfConfig.isReadOnly && !path.isAbsolute(pfConfig.name)) {
+    if (pfConfig.isReadOnly && !path.isAbsolute(pfConfig.name)) {
       pfConfig.name = path.join(directoryPath, pfConfig.name);
       if (pfConfig.name.startsWith("\\")) {
         pfConfig.name = pfConfig.name.slice(1);
