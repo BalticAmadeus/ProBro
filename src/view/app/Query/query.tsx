@@ -763,7 +763,6 @@ Description: ${errorObject.description}`}</pre>
                             startIcon={isFormatted ? <RawOffTwoToneIcon /> : <RawOnTwoToneIcon />}
                         > </ProBroButton>
                     </div>
-                    {!isReadOnly && (
                         <div className="query-options">
                             <UpdatePopup
                                 vscode={vscode}
@@ -781,9 +780,9 @@ Description: ${errorObject.description}`}</pre>
                                 readRow={readRow}
                                 logValue={configuration.logging.react}
                                 defaultTrigger={!!configuration.useWriteTriggers} // !! fixes missing setting issue
+                                isReadOnly={isReadOnly}
                             ></UpdatePopup>
                         </div>
-                    )}
                 </div>
             </div >
             <div>
