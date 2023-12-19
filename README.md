@@ -1,4 +1,4 @@
-# ProBro
+# ProBro [![CircleCI](https://dl.circleci.com/status-badge/img/circleci/A3TQhXgouuMQZcaApCXuLs/5TzkrPCZ2G3KXMTaVZGcn3/tree/main.png?style=svg&circle-token=bdac1b7587849654dc77f4ce7d640313c3319e16)](https://dl.circleci.com/status-badge/redirect/circleci/A3TQhXgouuMQZcaApCXuLs/5TzkrPCZ2G3KXMTaVZGcn3/tree/main)
 
 An extension for Progress DB browsing.
 
