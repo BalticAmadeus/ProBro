@@ -76,7 +76,7 @@
 			"label": "Build and watch",
 			"dependsOn": [
 				"Default watch",
-				"Docker: Start"
+				// "Docker: Start"
 			]
 		},
 		{
@@ -89,7 +89,7 @@
 			"label": "Stop Docker and terminate all",
 			"dependsOrder": "sequence",
 			"dependsOn": [
-				"Docker: Stop",
+				// "Docker: Stop",
 				"Terminate All Tasks"
 			]
 		},

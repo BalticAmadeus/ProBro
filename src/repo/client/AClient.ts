@@ -18,17 +18,13 @@ export class AClient {
     return new Promise((resolve) => {
       console.log("V2: Starting TCP listener");
       this.client = new Net.Socket();
-      this.client.connect(
-        this.connectionParams.port,
-        this.connectionParams.host,
-        () => {
-          console.log(
-            "V2: TCP connection established with the server at " +
-              this.connectionParams.port.toString() +
-              "."
-          );
-        }
-      );
+      this.client.connect(23456, "localhost", () => {
+        console.log(
+          "V2: TCP connection established with the server at " +
+            " this.connectionParams.port.toString()" +
+            "."
+        );
+      });
 
       this.client.on("data", (chunk) => {
         console.log("V2: Data received from the server");

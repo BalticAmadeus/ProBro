@@ -119,13 +119,7 @@ export class LocalClient extends AClient implements IClient {
   ];
 
   protected async startAndListen(): Promise<any> {
-    return this.start()
-      .then(() => {
-        this.listen();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    return this.listen();
   }
 
   protected async start(): Promise<any> {
