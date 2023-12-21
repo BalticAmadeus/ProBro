@@ -24,6 +24,7 @@ export default function UpdatePopup({
   readRow,
   logValue,
   defaultTrigger,
+  isReadOnly,
 }) {
   const [isWindowSmall, setIsWindowSmall] = React.useState(false);
   const [useTriggers, setUseTriggers] = React.useState(defaultTrigger);
@@ -225,10 +226,10 @@ export default function UpdatePopup({
           </div>
         )}
       </Popup>
-
       {isWindowSmall ? (
         <>
-          <ProBroButton
+        {!isReadOnly && (
+          <><ProBroButton
             startIcon={<AddIcon />}
             onClick={selectedRows.size === 1 ? copyRecord : insertRecord}
             disabled={selectedRows.size > 0 ? false : false}
@@ -243,30 +244,35 @@ export default function UpdatePopup({
             onClick={deleteRecord}
             disabled={selectedRows.size > 0 ? false : true}
           ></ProBroButton>
+          </>
+        )}
         </>
       ) : (
         <>
-          <ProBroButton
+        {!isReadOnly && (
+          <><ProBroButton
             startIcon={<AddIcon />}
             onClick={selectedRows.size === 1 ? copyRecord : insertRecord}
             disabled={selectedRows.size > 0 ? false : false}
           >
-            {selectedRows.size === 1 ? "Copy" : "Create"}
+          {selectedRows.size === 1 ? "Copy" : "Create"}
           </ProBroButton>
           <ProBroButton
             startIcon={<EditIcon />}
             onClick={updateRecord}
             disabled={selectedRows.size === 1 ? false : true}
           >
-            Update
+          Update
           </ProBroButton>
           <ProBroButton
             startIcon={<DeleteIcon />}
             onClick={deleteRecord}
             disabled={selectedRows.size > 0 ? false : true}
           >
-            Delete
+          Delete
           </ProBroButton>
+          </>
+        )}
         </>
       )}
     </React.Fragment>

@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.5.2 (2023-12-21)
+
+### Changed
+
+- Fixed table size issues.
+- Fixed issues with export.
+
+### Added
+
+- Can jump to query editor form abl code (feature preview).
+
 ## 1.5.1 (2023-12-08)
 
 ### Changed

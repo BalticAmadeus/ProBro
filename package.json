@@ -9,7 +9,7 @@
         "DB",
         "Explorer"
     ],
-    "version": "1.5.1",
+    "version": "1.5.2",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -29,11 +29,7 @@
         "theme": "dark"
     },
     "activationEvents": [
-        "onCommand:pro-bro.connect",
-        "onView:pro-bro-databases",
-        "onView:pro-bro-tables",
-        "onView:pro-bro-fields",
-        "onView:pro-bro-indexes"
+        "onCommand:pro-bro.connect"
     ],
     "main": "./out/extension.js",
     "contributes": {
