@@ -700,10 +700,31 @@ Description: ${errorObject.description}`}</pre>
 
     const calculateHeight = () => {
         const rowCount = isFormatted ? formattedRows.length : rawRows.length;
-        const minHeight = 35;
+        let minHeight;
+        if (configuration.gridTextSize === 'Large') {
+            minHeight = 40;
+        } else if (configuration.gridTextSize === 'Medium') {
+            minHeight = 30;
+        } else if (configuration.gridTextSize === 'Small') {
+            minHeight = 20;
+        }
         const startingHeight = 85;
         const calculatedHeight = startingHeight + rowCount * minHeight;
         return calculatedHeight;
+    };
+
+    const setRowHeight = () => {
+        let height = 0;
+
+        if (configuration.gridTextSize === 'Large') {
+            height = 40;
+        } else if (configuration.gridTextSize === 'Medium') {
+            height = 30;
+        } else if (configuration.gridTextSize === 'Small') {
+            height = 20;
+        }
+
+        return height;
     };
 
     return (
@@ -796,7 +817,7 @@ Description: ${errorObject.description}`}</pre>
                     sortColumns={sortColumns}
                     onScroll={handleScroll}
                     onSortColumnsChange={onSortClick}
-                    className={filters.enabled ? "filter-cell" : undefined}
+                    className={filters.enabled ? "filter-cell" : ""}
                     headerRowHeight={filters.enabled ? 70 : undefined}
                     style={{
                         height: calculateHeight(),
@@ -810,6 +831,7 @@ Description: ${errorObject.description}`}</pre>
                     rowKeyGetter={rowKeyGetter}
                     onRowDoubleClick={readRecord}
                     onCopy={handleCopy}
+                    rowHeight={setRowHeight}
                 ></DataGrid>
             </div>
             <div className="footer">
