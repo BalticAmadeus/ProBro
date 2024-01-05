@@ -275,7 +275,7 @@ export default function UpdatePopup({
                 onClick={updateRecord}
                 disabled={selectedRows.size === 1 ? false : true}
               >
-                Update'as
+                Update
               </ProBroButton>
               <ProBroButton
                 startIcon={<DeleteIcon />}
