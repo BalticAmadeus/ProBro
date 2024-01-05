@@ -176,14 +176,6 @@ export default function UpdatePopup({
     };
   }, []);
 
-  const changeToUpdateMode = () => {
-    console.log(
-      selectedRows,
-      "UPDATEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
-    );
-    updateRecord();
-  };
-
   return (
     <React.Fragment>
       <Popup open={open} onClose={() => setOpen(false)} modal>
@@ -226,7 +218,18 @@ export default function UpdatePopup({
                 <ProBroButton className="button" onClick={onSubmitClick}>
                   {ProcessAction[action]}
                 </ProBroButton>
-              ) : null}
+              ) : (
+                <ProBroButton
+                  className="button"
+                  startIcon={<EditIcon />}
+                  onClick={() => {
+                    setOpen(false);
+                    updateRecord();
+                  }}
+                >
+                  UPDATE
+                </ProBroButton>
+              )}
               <ProBroButton
                 className="button"
                 onClick={() => {
@@ -235,12 +238,6 @@ export default function UpdatePopup({
                 }}
               >
                 Cancel
-              </ProBroButton>
-              <ProBroButton
-                startIcon={<EditIcon />}
-                onClick={changeToUpdateMode}
-              >
-                UPDATE
               </ProBroButton>
             </div>
           </div>

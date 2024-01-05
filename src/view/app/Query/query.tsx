@@ -619,18 +619,6 @@ Description: ${errorObject.description}`}</pre>
   const [readRow, setReadRow] = React.useState([]);
 
   const readRecord = (row) => {
-    console.log(selectedRows, "SELECTEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-    // setSelectedRows(new Set());
-    let selectedRowsSet = new Set<string>();
-    selectedRowsSet.add(row.ROWID);
-    console.log(row.ROWID, "rowIDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-    console.log(
-      selectedRowsSet,
-      "selectedRowsSETTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT"
-    );
-    setSelectedRows(selectedRowsSet);
-    console.log(selectedRows, "AFTERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR SET");
-
     setActionMode(ProcessAction.Read);
     setReadRow(row);
     setOpen(true);
@@ -640,10 +628,6 @@ Description: ${errorObject.description}`}</pre>
     processRecord(ProcessAction.Insert);
   };
   const updateRecord = () => {
-    // console.log(readRow, "ROWASSSSSSSSSSSSSSSSSSSSSSSS");
-    // console.log(selectedRows, "SELECTEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-    setSelectedRows(new Set());
-    console.log(selectedRows, "AFTERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR SET");
     processRecord(ProcessAction.Update);
   };
 
@@ -660,10 +644,6 @@ Description: ${errorObject.description}`}</pre>
     selectedRows.forEach((element) => {
       rowids.push(element);
     });
-    console.log(
-      selectedRows,
-      "ProcessRECORDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
-    );
 
     const command: ICommand = {
       id: "CRUD",
