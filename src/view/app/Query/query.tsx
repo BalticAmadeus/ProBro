@@ -615,6 +615,9 @@ Description: ${errorObject.description}`}</pre>
   const [readRow, setReadRow] = React.useState([]);
 
   const readRecord = (row) => {
+    let selectedRowsSet = new Set<string>();
+    selectedRowsSet.add(row.ROWID);
+    setSelectedRows(selectedRowsSet);
     setActionMode(ProcessAction.Read);
     setReadRow(row);
     setOpen(true);
@@ -624,6 +627,7 @@ Description: ${errorObject.description}`}</pre>
     processRecord(ProcessAction.Insert);
   };
   const updateRecord = () => {
+    setSelectedRows(new Set());
     processRecord(ProcessAction.Update);
   };
 
@@ -851,7 +855,7 @@ Description: ${errorObject.description}`}</pre>
               tableName={tableName}
               open={open}
               setOpen={setOpen}
-              action={setActionMode}
+              action={actionMode}
               insertRecord={insertRecord}
               updateRecord={updateRecord}
               deleteRecord={deleteRecord}
@@ -875,7 +879,7 @@ Description: ${errorObject.description}`}</pre>
           sortColumns={sortColumns}
           onScroll={handleScroll}
           onSortColumnsChange={onSortClick}
-          className={filters.enabled ? "filter-cell" : ""}
+          className={filters.enabled ? "filter-cell" : undefined}
           headerRowHeight={filters.enabled ? 70 : undefined}
           style={{
             height: calculateHeight(),
