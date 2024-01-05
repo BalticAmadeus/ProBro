@@ -122,6 +122,7 @@
                         "Small"
                     ],
                     "description": "Set the grid text size."
+                }
             }
         },
         "viewsContainers": {
