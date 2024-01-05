@@ -112,7 +112,16 @@
                     "type": "boolean",
                     "default": "false",
                     "markdownDescription": "Use New DB Client implementation"
-                }
+                },
+                "pro-bro.gridTextSize": {
+                    "type": "string",
+                    "default": "Medium",
+                    "enum": [
+                        "Large",
+                        "Medium",
+                        "Small"
+                    ],
+                    "description": "Set the grid text size."
             }
         },
         "viewsContainers": {
