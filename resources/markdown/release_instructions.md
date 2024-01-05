@@ -4,7 +4,7 @@
 | ------ | ------------------------------------------------------------------------------------------------------------ | -------- |
 | 1      | Create a new task in git for release plan (if it is not created already)                                     | Everyone |
 | 2      | Create release plan branch                                                                                   | Everyone |
-| 3      | Write all completed tasks to release plan like this: - [] #405                                               | Everyone |
+| 3      | Write all completed tasks to release plan like this: - [ ] #405                                              | Everyone |
 | 4      | Update version in package.json (small update by 0.0.1 and big one by 0.1)                                    | Everyone |
 | 5      | Add main information to CHANGELOG. Changed for main bug fixes and Added for main new enhancement             | Everyone |
 | 6      | Add features to README                                                                                       | Everyone |
