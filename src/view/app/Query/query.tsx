@@ -168,10 +168,6 @@ function QueryForm({
           setIsDataRetrieved(false);
         } else {
           setColumnsCRUD(message.data.columns);
-          console.log(
-            message.data.columns,
-            "CRUDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
-          );
           setRecordsCRUD(message.data.rawData);
           setOpen(true);
         }
@@ -835,7 +831,6 @@ Description: ${errorObject.description}`}</pre>
               open={open}
               setOpen={setOpen}
               action={actionMode}
-              setAction={setActionMode}
               insertRecord={insertRecord}
               updateRecord={updateRecord}
               deleteRecord={deleteRecord}
