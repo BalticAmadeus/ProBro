@@ -870,12 +870,7 @@ Description: ${errorObject.description}`}</pre>
                 <ListItemIcon>
                   {selectedOption === "OE" && <CheckIcon />}
                 </ListItemIcon>
-                <ListItemText
-                  sx={{
-                    fontSize: "small",
-                  }}
-                  primary="OE Format"
-                />
+                <ListItemText primary="OE Format" />
               </MenuItem>
               <MenuItem
                 onClick={() => handleFormat("RAW")}
@@ -886,12 +881,7 @@ Description: ${errorObject.description}`}</pre>
                 <ListItemIcon>
                   {selectedOption === "RAW" && <CheckIcon />}
                 </ListItemIcon>
-                <ListItemText
-                  sx={{
-                    fontSize: "small",
-                  }}
-                  primary="RAW Format"
-                />
+                <ListItemText primary="RAW Format" />
               </MenuItem>
             </Menu>
           </>
