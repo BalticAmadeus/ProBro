@@ -7,12 +7,25 @@
         "lib": ["es6", "dom"],
         "jsx": "react",
         "sourceMap": true,
-        "rootDir": "..",
+        "rootDir": "../",
         "noUnusedLocals": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         "experimentalDecorators": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "baseUrl": ".",
+        "paths": {
+            "@assets/*": ["app/assets/*"],
+            "@Connection/*": ["app/Connection/*"],
+            "@Fields/*": ["app/Fields/*"],
+            "@Indexes/*": ["app/Indexes/*"],
+            "@Query/*": ["app/Query/*"],
+            "@utils/*": ["app/utils/*"],
+            "@Welcome/*": ["app/Welcome/*"],
+            "@app/*": ["app/*"],
+            "@view/*": ["./*"],
+            "@src/*": ["../*"]
+        }
     },
     "exclude": ["node_modules"]
 }
