@@ -75,7 +75,7 @@ function QueryForm({
   const [initialDataLoad, setInitialDataLoad] = React.useState(true);
   const [recordColor, setRecordColor] = React.useState("red");
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [selectedOption, setSelectedOption] = React.useState("OE");
+  const [selectedOption, setSelectedOption] = React.useState("JSON");
   const logger = new Logger(configuration.logging.react);
 
   window.addEventListener(
@@ -749,9 +749,9 @@ Description: ${errorObject.description}`}</pre>
   }
 
   const handleFormat = (format) => {
-    if (format === "OE") {
+    if (format === "JSON") {
       setIsFormatted(false);
-    } else if (format === "RAW") {
+    } else if (format === "PROGRESS") {
       setIsFormatted(true);
     }
     setSelectedOption(format);
@@ -862,26 +862,26 @@ Description: ${errorObject.description}`}</pre>
               }}
             >
               <MenuItem
-                onClick={() => handleFormat("OE")}
+                onClick={() => handleFormat("JSON")}
                 sx={{
                   color: "var(--vscode-input-foreground)",
                 }}
               >
                 <ListItemIcon>
-                  {selectedOption === "OE" && <CheckIcon />}
+                  {selectedOption === "JSON" && <CheckIcon />}
                 </ListItemIcon>
-                <ListItemText primary="OE Format" />
+                <ListItemText primary="JSON" />
               </MenuItem>
               <MenuItem
-                onClick={() => handleFormat("RAW")}
+                onClick={() => handleFormat("PROGRESS")}
                 sx={{
                   color: "var(--vscode-input-foreground)",
                 }}
               >
                 <ListItemIcon>
-                  {selectedOption === "RAW" && <CheckIcon />}
+                  {selectedOption === "PROGRESS" && <CheckIcon />}
                 </ListItemIcon>
-                <ListItemText primary="RAW Format" />
+                <ListItemText primary="Progress" />
               </MenuItem>
             </Menu>
           </>
