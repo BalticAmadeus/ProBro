@@ -6,6 +6,7 @@ export interface ISettings {
   logging: ILogging;
   useWriteTriggers: boolean;
   filterAsYouType: boolean;
+  gridTextSize: string;
 }
 
 export interface ILogging {

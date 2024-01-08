@@ -152,7 +152,7 @@ function QueryForm({
         } else {
           setSelectedRows(new Set());
           setOpen(false);
-          reloadData(loaded + (action === ProcessAction.Insert ? 1 : 0));
+          reloadData(loaded + (actionMode === ProcessAction.Insert ? 1 : 0));
         }
         break;
       case "crud":
@@ -609,11 +609,14 @@ Description: ${errorObject.description}`}</pre>
 
   // CRUD operations
   const [open, setOpen] = React.useState(false);
-  const [action, setAction] = React.useState<ProcessAction>();
+  const [actionMode, setActionMode] = React.useState<ProcessAction>();
   const [readRow, setReadRow] = React.useState([]);
 
-  const readRecord = (row: string[]) => {
-    setAction(ProcessAction.Read);
+  const readRecord = (row) => {
+    let selectedRowsSet = new Set<string>();
+    selectedRowsSet.add(row.ROWID);
+    setSelectedRows(selectedRowsSet);
+    setActionMode(ProcessAction.Read);
     setReadRow(row);
     setOpen(true);
   };
@@ -622,8 +625,10 @@ Description: ${errorObject.description}`}</pre>
     processRecord(ProcessAction.Insert);
   };
   const updateRecord = () => {
+    setSelectedRows(new Set());
     processRecord(ProcessAction.Update);
   };
+
   const deleteRecord = () => {
     processRecord(ProcessAction.Delete);
   };
@@ -632,7 +637,7 @@ Description: ${errorObject.description}`}</pre>
   };
 
   const processRecord = (mode: ProcessAction) => {
-    setAction(mode);
+    setActionMode(mode);
     const rowids: string[] = [];
     selectedRows.forEach((element) => {
       rowids.push(element);
@@ -743,14 +748,6 @@ Description: ${errorObject.description}`}</pre>
     }, 300);
   }
 
-  const calculateHeight = () => {
-    const rowCount = isFormatted ? formattedRows.length : rawRows.length;
-    const minHeight = 35;
-    const startingHeight = 85;
-    const calculatedHeight = startingHeight + rowCount * minHeight;
-    return calculatedHeight;
-  };
-
   const handleFormat = (format) => {
     if (format === "OE") {
       setIsFormatted(false);
@@ -759,6 +756,34 @@ Description: ${errorObject.description}`}</pre>
     }
     setSelectedOption(format);
     setAnchorEl(null);
+  };
+  const calculateHeight = () => {
+    const rowCount = isFormatted ? formattedRows.length : rawRows.length;
+    let minHeight;
+    if (configuration.gridTextSize === "Large") {
+      minHeight = 40;
+    } else if (configuration.gridTextSize === "Medium") {
+      minHeight = 30;
+    } else if (configuration.gridTextSize === "Small") {
+      minHeight = 20;
+    }
+    const startingHeight = 85;
+    const calculatedHeight = startingHeight + rowCount * minHeight;
+    return calculatedHeight;
+  };
+
+  const setRowHeight = () => {
+    let height = 0;
+
+    if (configuration.gridTextSize === "Large") {
+      height = 40;
+    } else if (configuration.gridTextSize === "Medium") {
+      height = 30;
+    } else if (configuration.gridTextSize === "Small") {
+      height = 20;
+    }
+
+    return height;
   };
 
   return (
@@ -879,7 +904,7 @@ Description: ${errorObject.description}`}</pre>
               tableName={tableName}
               open={open}
               setOpen={setOpen}
-              action={action}
+              action={actionMode}
               insertRecord={insertRecord}
               updateRecord={updateRecord}
               deleteRecord={deleteRecord}
@@ -917,6 +942,7 @@ Description: ${errorObject.description}`}</pre>
           rowKeyGetter={rowKeyGetter}
           onRowDoubleClick={readRecord}
           onCopy={handleCopy}
+          rowHeight={setRowHeight}
         ></DataGrid>
       </div>
       <div className="footer">{getFooterTag()}</div>
