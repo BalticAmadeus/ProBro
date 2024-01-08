@@ -6,7 +6,7 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Run Extension",
+			"name": "Run Extension with Docker",
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
@@ -18,6 +18,19 @@
 			],
 			"preLaunchTask": "Build and watch",
 			"postDebugTask": "Stop Docker and terminate all"
+		},
+		{
+			"name": "Run Extension without Docker",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}",
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"preLaunchTask": "Default watch",
+			"postDebugTask": "Terminate All Tasks"
 		},
 		{
 			"name": "Extension Tests",
