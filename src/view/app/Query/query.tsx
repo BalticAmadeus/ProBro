@@ -10,14 +10,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
 import { Logger } from "../../../common/Logger";
 import { ISettings } from "../../../common/IExtensionSettings";
-import {
-  Button,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  ListItemText,
-  Menu,
-  MenuItem,
-} from "@mui/material";
+import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 
 const filterCSS: React.CSSProperties = {
   inlineSize: "100%",
@@ -106,10 +99,6 @@ function QueryForm({
   const [selectedRows, setSelectedRows] = React.useState(
     (): ReadonlySet<string> => new Set()
   );
-
-  const getDataFormat = () => {
-    setIsFormatted(!isFormatted);
-  };
 
   const windowResize = () => {
     setWindowHeight(window.innerHeight);
