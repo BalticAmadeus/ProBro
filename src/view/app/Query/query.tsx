@@ -6,11 +6,11 @@ import { CommandAction, ICommand, ProcessAction } from "../model";
 import ExportData from "./Export";
 import UpdatePopup from "./Update";
 import { ProBroButton } from "../assets/button";
-import RawOnTwoToneIcon from "@mui/icons-material/RawOnTwoTone";
-import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
+import CheckIcon from "@mui/icons-material/Check";
 import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
 import { Logger } from "../../../common/Logger";
 import { ISettings } from "../../../common/IExtensionSettings";
+import { ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 
 const filterCSS: React.CSSProperties = {
   inlineSize: "100%",
@@ -74,6 +74,8 @@ function QueryForm({
   const [sortAction, setSortAction] = React.useState(false);
   const [initialDataLoad, setInitialDataLoad] = React.useState(true);
   const [recordColor, setRecordColor] = React.useState("red");
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedOption, setSelectedOption] = React.useState("JSON");
   const logger = new Logger(configuration.logging.react);
 
   window.addEventListener(
@@ -97,10 +99,6 @@ function QueryForm({
   const [selectedRows, setSelectedRows] = React.useState(
     (): ReadonlySet<string> => new Set()
   );
-
-  const getDataFormat = () => {
-    setIsFormatted(!isFormatted);
-  };
 
   const windowResize = () => {
     setWindowHeight(window.innerHeight);
@@ -750,6 +748,15 @@ Description: ${errorObject.description}`}</pre>
     }, 300);
   }
 
+  const handleFormat = (format) => {
+    if (format === "JSON") {
+      setIsFormatted(false);
+    } else if (format === "PROGRESS") {
+      setIsFormatted(true);
+    }
+    setSelectedOption(format);
+    setAnchorEl(null);
+  };
   const calculateHeight = () => {
     const rowCount = isFormatted ? formattedRows.length : rawRows.length;
     let minHeight;
@@ -837,15 +844,47 @@ Description: ${errorObject.description}`}</pre>
               selectedRows={selectedRows}
               logValue={configuration.logging.react}
             />
-            <ProBroButton
-              onClick={getDataFormat}
-              startIcon={
-                isFormatted ? <RawOffTwoToneIcon /> : <RawOnTwoToneIcon />
-              }
-            >
-              {" "}
-            </ProBroButton>
           </div>
+          <>
+            <ProBroButton onClick={(event) => setAnchorEl(event.currentTarget)}>
+              FORMAT
+            </ProBroButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={() => setAnchorEl(null)}
+              sx={{
+                "& .MuiPaper-root": {
+                  backgroundColor: "var(--vscode-input-background)",
+                  maxWidth: "200px",
+                  fontSize: "small",
+                },
+              }}
+            >
+              <MenuItem
+                onClick={() => handleFormat("JSON")}
+                sx={{
+                  color: "var(--vscode-input-foreground)",
+                }}
+              >
+                <ListItemIcon>
+                  {selectedOption === "JSON" && <CheckIcon />}
+                </ListItemIcon>
+                <ListItemText primary="JSON" />
+              </MenuItem>
+              <MenuItem
+                onClick={() => handleFormat("PROGRESS")}
+                sx={{
+                  color: "var(--vscode-input-foreground)",
+                }}
+              >
+                <ListItemIcon>
+                  {selectedOption === "PROGRESS" && <CheckIcon />}
+                </ListItemIcon>
+                <ListItemText primary="Progress" />
+              </MenuItem>
+            </Menu>
+          </>
           <div className="query-options">
             <UpdatePopup
               vscode={vscode}
