@@ -1,23 +1,23 @@
-import * as React from "react";
-import DataGrid, { SortColumn, SelectColumn, CopyEvent } from "react-data-grid";
+import * as React from 'react';
+import DataGrid, { SortColumn, SelectColumn, CopyEvent } from 'react-data-grid';
 
-import { IOETableData } from "@src/db/Oe";
-import { CommandAction, ICommand, ProcessAction } from "../model";
-import ExportData from "./Export";
-import UpdatePopup from "./Update";
-import { ProBroButton } from "@assets/button";
-import RawOnTwoToneIcon from "@mui/icons-material/RawOnTwoTone";
-import RawOffTwoToneIcon from "@mui/icons-material/RawOffTwoTone";
-import PlayArrowTwoToneIcon from "@mui/icons-material/PlayArrowTwoTone";
-import { Logger } from "@src/common/Logger";
-import { ISettings } from "@src/common/IExtensionSettings";
-import { getOEFormatLength } from "@utils/oe/format/oeFormat";
-import { OEDataTypePrimitive } from "@utils/oe/oeDataTypeEnum";
+import { IOETableData } from '@src/db/Oe';
+import { CommandAction, ICommand, ProcessAction } from '../model';
+import ExportData from './Export';
+import UpdatePopup from './Update';
+import { ProBroButton } from '@assets/button';
+import RawOnTwoToneIcon from '@mui/icons-material/RawOnTwoTone';
+import RawOffTwoToneIcon from '@mui/icons-material/RawOffTwoTone';
+import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
+import { Logger } from '@src/common/Logger';
+import { ISettings } from '@src/common/IExtensionSettings';
+import { getOEFormatLength } from '@utils/oe/format/oeFormat';
+import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 
 const filterCSS: React.CSSProperties = {
-    inlineSize: "100%",
-    padding: "4px",
-    fontSize: "14px",
+    inlineSize: '100%',
+    padding: '4px',
+    fontSize: '14px',
 };
 
 interface IConfigProps {
@@ -47,7 +47,7 @@ function QueryForm({
     isReadOnly,
     ...props
 }: IConfigProps) {
-    const [wherePhrase, setWherePhrase] = React.useState<string>("");
+    const [wherePhrase, setWherePhrase] = React.useState<string>('');
     const [isLoading, setIsLoading] = React.useState(false);
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
     const [isFormatted, setIsFormatted] = React.useState(false);
@@ -66,7 +66,7 @@ function QueryForm({
     const [columnsCRUD, setColumnsCRUD] = React.useState(() => []);
     const [recordsCRUD, setRecordsCRUD] = React.useState(() => []);
     const [loaded, setLoaded] = React.useState(() => 0);
-    const [rowID, setRowID] = React.useState("");
+    const [rowID, setRowID] = React.useState('');
     const [scrollHeight, setScrollHeight] = React.useState(() => 0);
     const [isWindowSmall, setIsWindowSmall] = React.useState(false);
 
@@ -75,11 +75,11 @@ function QueryForm({
     );
     const [sortAction, setSortAction] = React.useState(false);
     const [initialDataLoad, setInitialDataLoad] = React.useState(true);
-    const [recordColor, setRecordColor] = React.useState("red");
+    const [recordColor, setRecordColor] = React.useState('red');
     const logger = new Logger(configuration.logging.react);
 
     window.addEventListener(
-        "contextmenu",
+        'contextmenu',
         (e) => {
             e.stopImmediatePropagation();
         },
@@ -116,10 +116,10 @@ function QueryForm({
     }, []);
 
     React.useEffect(() => {
-        window.addEventListener("resize", windowResize);
+        window.addEventListener('resize', windowResize);
 
         return () => {
-            window.removeEventListener("resize", windowResize);
+            window.removeEventListener('resize', windowResize);
         };
     }, []);
 
@@ -128,22 +128,22 @@ function QueryForm({
             setIsWindowSmall(window.innerWidth <= 828); // Adjust the breakpoint value as needed
         };
 
-        window.addEventListener("resize", handleResize);
+        window.addEventListener('resize', handleResize);
         handleResize();
 
         return () => {
-            window.removeEventListener("resize", handleResize);
+            window.removeEventListener('resize', handleResize);
         };
     }, []);
 
     const messageEvent = (event) => {
         const message = event.data;
-        logger.log("got query data", message);
+        logger.log('got query data', message);
         switch (message.command) {
-            case "columns":
+            case 'columns':
                 setSelectedColumns([...message.columns]);
                 break;
-            case "submit":
+            case 'submit':
                 if (message.data.error) {
                     // should be displayed in UpdatePopup window
                     setErrorObject({
@@ -161,7 +161,7 @@ function QueryForm({
                     );
                 }
                 break;
-            case "crud":
+            case 'crud':
                 if (message.data.error) {
                     setErrorObject({
                         error: message.data.error,
@@ -176,7 +176,7 @@ function QueryForm({
                     setOpen(true);
                 }
                 break;
-            case "data":
+            case 'data':
                 if (message.data.error) {
                     setErrorObject({
                         error: message.data.error,
@@ -190,10 +190,10 @@ function QueryForm({
                         const fontSize = +window
                             .getComputedStyle(
                                 document.getElementsByClassName(
-                                    "rdg-header-row"
+                                    'rdg-header-row'
                                 )[0]
                             )
-                            .getPropertyValue("font-size")
+                            .getPropertyValue('font-size')
                             .match(/\d+[.]?\d+/);
                         message.data.columns.forEach((column) => {
                             if (column.key !== OEDataTypePrimitive.Rowid) {
@@ -206,8 +206,8 @@ function QueryForm({
                                 }) {
                                     function handleKeyDown(event) {
                                         if (
-                                            event.key === " " ||
-                                            event.key === "Enter"
+                                            event.key === ' ' ||
+                                            event.key === 'Enter'
                                         ) {
                                             event.preventDefault();
                                             onSort(
@@ -230,7 +230,7 @@ function QueryForm({
                                         }, 500);
                                     }
                                     function testKeyDown(event) {
-                                        if (event.key === "Enter") {
+                                        if (event.key === 'Enter') {
                                             event.preventDefault();
                                             reloadData(
                                                 configuration.initialBatchSizeLoad
@@ -256,15 +256,15 @@ function QueryForm({
                                             <div
                                                 className={
                                                     filters.enabled
-                                                        ? "filter-cell"
+                                                        ? 'filter-cell'
                                                         : undefined
                                                 }
                                             >
                                                 <span
                                                     tabIndex={-1}
                                                     style={{
-                                                        cursor: "pointer",
-                                                        display: "flex",
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
                                                     }}
                                                     className='rdg-header-sort-cell'
                                                     onClick={handleClick}
@@ -273,10 +273,10 @@ function QueryForm({
                                                     <span
                                                         className='rdg-header-sort-name'
                                                         style={{
-                                                            flexGrow: "1",
-                                                            overflow: "clip",
+                                                            flexGrow: '1',
+                                                            overflow: 'clip',
                                                             textOverflow:
-                                                                "ellipsis",
+                                                                'ellipsis',
                                                         }}
                                                     >
                                                         {column.name}
@@ -288,15 +288,15 @@ function QueryForm({
                                                             height='8'
                                                             className='rdg-sort-arrow'
                                                             style={{
-                                                                fill: "currentcolor",
+                                                                fill: 'currentcolor',
                                                             }}
                                                         >
                                                             {sortDirection ===
-                                                                "ASC" && (
+                                                                'ASC' && (
                                                                 <path d='M0 8 6 0 12 8'></path>
                                                             )}
                                                             {sortDirection ===
-                                                                "DESC" && (
+                                                                'DESC' && (
                                                                 <path d='M0 0 6 8 12 0'></path>
                                                             )}
                                                         </svg>
@@ -305,7 +305,7 @@ function QueryForm({
                                                 </span>
                                             </div>
                                             {filters.enabled && (
-                                                <div className={"filter-cell"}>
+                                                <div className={'filter-cell'}>
                                                     <input
                                                         className='textInput'
                                                         autoFocus={
@@ -330,14 +330,14 @@ function QueryForm({
                             }
                             column.minWidth = column.name.length * fontSize;
                             column.width =
-                                getOEFormatLength(column.format ?? "") *
+                                getOEFormatLength(column.format ?? '') *
                                 (fontSize - 4);
                             switch (column.type.toUpperCase()) {
                                 case OEDataTypePrimitive.Integer:
                                 case OEDataTypePrimitive.Decimal:
                                 case OEDataTypePrimitive.Int64:
-                                    column.cellClass = "rightAlign";
-                                    column.headerCellClass = "rightAlign";
+                                    column.cellClass = 'rightAlign';
+                                    column.headerCellClass = 'rightAlign';
                                     break;
                                 default:
                                     break;
@@ -404,9 +404,9 @@ function QueryForm({
     };
 
     React.useEffect(() => {
-        window.addEventListener("message", messageEvent);
+        window.addEventListener('message', messageEvent);
         return () => {
-            window.removeEventListener("message", messageEvent);
+            window.removeEventListener('message', messageEvent);
         };
     });
 
@@ -422,7 +422,7 @@ function QueryForm({
         makeQuery(
             0,
             configuration.initialBatchSizeLoad /*number of records for first load*/,
-            "",
+            '',
             sortColumns,
             filters,
             configuration.batchMaxTimeout /*ms for data retrieval*/,
@@ -435,45 +435,45 @@ function QueryForm({
         prepareQuery();
     };
 
-    let input = document.getElementById("input");
+    let input = document.getElementById('input');
 
     const handleKeyDown = (e) => {
-        let selected = document.querySelector(".selected") as HTMLLIElement;
-        if (e.key === "Enter" && selected === null) {
+        let selected = document.querySelector('.selected') as HTMLLIElement;
+        if (e.key === 'Enter' && selected === null) {
             e.preventDefault();
             prepareQuery();
         }
 
-        if (e.key === "Enter" && selected !== null) {
+        if (e.key === 'Enter' && selected !== null) {
             e.preventDefault();
             const selectedText =
-                document.querySelector(".selected").textContent;
+                document.querySelector('.selected').textContent;
 
             addText(input, selectedText);
-            createListener(document.getElementById("input"), selectedColumns);
+            createListener(document.getElementById('input'), selectedColumns);
         }
 
         if (e.keyCode === 38) {
             if (selected === null) {
                 document
-                    .querySelectorAll(".autocomplete-list li")
+                    .querySelectorAll('.autocomplete-list li')
                     .item(0)
-                    .classList.add("selected");
+                    .classList.add('selected');
             } else {
                 document
-                    .querySelectorAll(".autocomplete-list li")
+                    .querySelectorAll('.autocomplete-list li')
                     .forEach(function (item) {
-                        item.classList.remove("selected");
+                        item.classList.remove('selected');
                     });
                 if (selected.previousElementSibling === null) {
                     selected.parentElement.lastElementChild.classList.add(
-                        "selected"
+                        'selected'
                     );
                 } else {
-                    selected.previousElementSibling.classList.add("selected");
+                    selected.previousElementSibling.classList.add('selected');
                 }
             }
-            selected = document.querySelector(".selected");
+            selected = document.querySelector('.selected');
             selected.scrollIntoView();
             selected.focus();
         }
@@ -481,25 +481,25 @@ function QueryForm({
         if (e.keyCode === 40) {
             if (selected === null) {
                 document
-                    .querySelectorAll(".autocomplete-list li")
+                    .querySelectorAll('.autocomplete-list li')
                     .item(0)
-                    .classList.add("selected");
+                    .classList.add('selected');
             } else {
                 document
-                    .querySelectorAll(".autocomplete-list li")
+                    .querySelectorAll('.autocomplete-list li')
                     .forEach(function (item) {
-                        item.classList.remove("selected");
+                        item.classList.remove('selected');
                     });
 
                 if (selected.nextElementSibling === null) {
                     selected.parentElement.firstElementChild.classList.add(
-                        "selected"
+                        'selected'
                     );
                 } else {
-                    selected.nextElementSibling.classList.add("selected");
+                    selected.nextElementSibling.classList.add('selected');
                 }
             }
-            selected = document.querySelector(".selected");
+            selected = document.querySelector('.selected');
             selected.scrollIntoView();
             selected.focus();
         }
@@ -509,7 +509,7 @@ function QueryForm({
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
-        makeQuery(0, loaded, "", sortColumns, filters, 0, 0);
+        makeQuery(0, loaded, '', sortColumns, filters, 0, 0);
     }
 
     function makeQuery(
@@ -522,7 +522,7 @@ function QueryForm({
         minTime
     ) {
         const command: ICommand = {
-            id: "Query",
+            id: 'Query',
             action: CommandAction.Query,
             params: {
                 wherePhrase: wherePhrase,
@@ -535,7 +535,7 @@ function QueryForm({
                 minTime: minTime,
             },
         };
-        logger.log("make query", command);
+        logger.log('make query', command);
         vscode.postMessage(command);
     }
 
@@ -580,7 +580,7 @@ function QueryForm({
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
-        makeQuery(0, loaded, "", inputSortColumns, filters, 0, 0);
+        makeQuery(0, loaded, '', inputSortColumns, filters, 0, 0);
     }
 
     function allRecordsRetrieved(
@@ -595,8 +595,8 @@ function QueryForm({
             setRecordColor(
                 recentRecords < currentBatchSize &&
                     recentRetrievalTime < configuration.batchMaxTimeout
-                    ? "green"
-                    : "red"
+                    ? 'green'
+                    : 'red'
             );
         } else {
             setSortAction(false);
@@ -604,8 +604,8 @@ function QueryForm({
     }
 
     function getLoaded() {
-        if (recordColor === "red") {
-            return "> " + loaded;
+        if (recordColor === 'red') {
+            return '> ' + loaded;
         } else {
             return loaded;
         }
@@ -614,7 +614,7 @@ function QueryForm({
     function getFooterTag() {
         if (isError) {
             return (
-                <div style={{ color: "red" }}>
+                <div style={{ color: 'red' }}>
                     <pre>{`Error: ${errorObject.error}
 Description: ${errorObject.description}`}</pre>
                 </div>
@@ -623,24 +623,24 @@ Description: ${errorObject.description}`}</pre>
             return (
                 <div
                     style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        flexWrap: "wrap",
+                        display: 'flex',
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
                     }}
                 >
-                    <pre style={{ marginRight: "auto" }}>
-                        {`Records in grid:`}
+                    <pre style={{ marginRight: 'auto' }}>
+                        {'Records in grid:'}
                         <span style={{ color: recordColor }}>
                             {getLoaded()}
                         </span>
                     </pre>
                     {isWindowSmall ? null : (
-                        <pre style={{ marginLeft: "auto" }}>
+                        <pre style={{ marginLeft: 'auto' }}>
                             {`Recent records numbers: ${statisticsObject.recordsRetrieved}`}
                         </pre>
                     )}
                     <pre
-                        style={{ marginLeft: "auto" }}
+                        style={{ marginLeft: 'auto' }}
                     >{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 </div>
             );
@@ -685,7 +685,7 @@ Description: ${errorObject.description}`}</pre>
         });
 
         const command: ICommand = {
-            id: "CRUD",
+            id: 'CRUD',
             action: CommandAction.CRUD,
             params: {
                 start: 0,
@@ -697,7 +697,7 @@ Description: ${errorObject.description}`}</pre>
                 mode: ProcessAction[mode],
             },
         };
-        logger.log("crud data request", command);
+        logger.log('crud data request', command);
         vscode.postMessage(command);
     };
 
@@ -710,7 +710,7 @@ Description: ${errorObject.description}`}</pre>
                 }
                 return (
                     selectedColumns.includes(testColumn) ||
-                    testColumn === "select-row"
+                    testColumn === 'select-row'
                 );
             });
             return selection;
@@ -726,57 +726,57 @@ Description: ${errorObject.description}`}</pre>
         }
     }
 
-    const suggestions = document.querySelector("#column-list");
+    const suggestions = document.querySelector('#column-list');
 
     function autocomplete(input, list) {
-        let lastWord = input.value.split(" ").pop();
+        let lastWord = input.value.split(' ').pop();
 
-        suggestions.innerHTML = "";
+        suggestions.innerHTML = '';
 
         for (const item of list) {
             if (
                 item.toUpperCase().includes(lastWord.toUpperCase()) ||
                 lastWord === null
             ) {
-                const suggestion = document.createElement("li");
+                const suggestion = document.createElement('li');
                 suggestion.innerHTML = item;
-                suggestion.style.cursor = "pointer";
+                suggestion.style.cursor = 'pointer';
                 suggestions.appendChild(suggestion);
             }
         }
     }
 
     function addText(input, newText) {
-        let wordArray = input.value.split(" ");
+        let wordArray = input.value.split(' ');
         wordArray.pop();
-        input.value = "";
+        input.value = '';
         for (const word of wordArray) {
             input.value += word;
-            input.value += " ";
+            input.value += ' ';
         }
         input.value += newText;
-        input.value += " ";
+        input.value += ' ';
         setWherePhrase(input.value);
     }
 
     function mouseoverListener() {
         document
-            .querySelectorAll(".autocomplete-list li")
+            .querySelectorAll('.autocomplete-list li')
             .forEach(function (item) {
-                item.addEventListener("mouseover", function () {
+                item.addEventListener('mouseover', function () {
                     document
-                        .querySelectorAll(".autocomplete-list li")
+                        .querySelectorAll('.autocomplete-list li')
                         .forEach(function (item) {
-                            item.classList.remove("selected");
+                            item.classList.remove('selected');
                         });
-                    this.classList.add("selected");
+                    this.classList.add('selected');
                 });
-                item.addEventListener("click", function () {
+                item.addEventListener('click', function () {
                     addText(input, this.innerHTML);
-                    document.getElementById("input").focus();
+                    document.getElementById('input').focus();
                     setTimeout(() => {
                         createListener(
-                            document.getElementById("input"),
+                            document.getElementById('input'),
                             selectedColumns
                         );
                     }, 301);
@@ -785,24 +785,24 @@ Description: ${errorObject.description}`}</pre>
     }
 
     function createListener(input, list) {
-        input.addEventListener("input", autocomplete(input, list));
+        input.addEventListener('input', autocomplete(input, list));
         mouseoverListener();
     }
 
     function hideSuggestions() {
         setTimeout(() => {
-            suggestions.innerHTML = "";
+            suggestions.innerHTML = '';
         }, 300);
     }
 
     const calculateHeight = () => {
         const rowCount = isFormatted ? formattedRows.length : rawRows.length;
         let minHeight;
-        if (configuration.gridTextSize === "Large") {
+        if (configuration.gridTextSize === 'Large') {
             minHeight = 40;
-        } else if (configuration.gridTextSize === "Medium") {
+        } else if (configuration.gridTextSize === 'Medium') {
             minHeight = 30;
-        } else if (configuration.gridTextSize === "Small") {
+        } else if (configuration.gridTextSize === 'Small') {
             minHeight = 20;
         }
         const startingHeight = 85;
@@ -813,11 +813,11 @@ Description: ${errorObject.description}`}</pre>
     const setRowHeight = () => {
         let height = 0;
 
-        if (configuration.gridTextSize === "Large") {
+        if (configuration.gridTextSize === 'Large') {
             height = 40;
-        } else if (configuration.gridTextSize === "Medium") {
+        } else if (configuration.gridTextSize === 'Medium') {
             height = 30;
-        } else if (configuration.gridTextSize === "Small") {
+        } else if (configuration.gridTextSize === 'Small') {
             height = 20;
         }
 
@@ -840,14 +840,14 @@ Description: ${errorObject.description}`}</pre>
                                     value={wherePhrase}
                                     onFocus={() => {
                                         createListener(
-                                            document.getElementById("input"),
+                                            document.getElementById('input'),
                                             selectedColumns
                                         );
                                     }}
                                     onBlur={hideSuggestions}
                                     onChange={(event) => {
                                         createListener(
-                                            document.getElementById("input"),
+                                            document.getElementById('input'),
                                             selectedColumns
                                         );
                                         setWherePhrase(event.target.value);
@@ -892,7 +892,7 @@ Description: ${errorObject.description}`}</pre>
                                 )
                             }
                         >
-                            {" "}
+                            {' '}
                         </ProBroButton>
                     </div>
                     <div className='query-options'>
@@ -928,14 +928,14 @@ Description: ${errorObject.description}`}</pre>
                     sortColumns={sortColumns}
                     onScroll={handleScroll}
                     onSortColumnsChange={onSortClick}
-                    className={filters.enabled ? "filter-cell" : ""}
+                    className={filters.enabled ? 'filter-cell' : ''}
                     headerRowHeight={filters.enabled ? 70 : undefined}
                     style={{
                         height: calculateHeight(),
-                        overflow: "auto",
+                        overflow: 'auto',
                         minHeight: 105,
                         maxHeight: windowHeight - 120,
-                        whiteSpace: "pre",
+                        whiteSpace: 'pre',
                     }}
                     selectedRows={selectedRows}
                     onSelectedRowsChange={setSelectedRows}
