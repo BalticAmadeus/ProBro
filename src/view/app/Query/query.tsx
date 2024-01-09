@@ -1,4 +1,13 @@
-import * as React from 'react';
+import {
+    CSSProperties,
+    Fragment,
+    MouseEvent,
+    UIEvent,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
+
 import DataGrid, { SortColumn, SelectColumn, CopyEvent } from 'react-data-grid';
 
 import { IOETableData } from '@src/db/Oe';
@@ -14,7 +23,7 @@ import { ISettings } from '@src/common/IExtensionSettings';
 import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 
-const filterCSS: React.CSSProperties = {
+const filterCSS: CSSProperties = {
     inlineSize: '100%',
     padding: '4px',
     fontSize: '14px',
@@ -47,35 +56,31 @@ function QueryForm({
     isReadOnly,
     ...props
 }: IConfigProps) {
-    const [wherePhrase, setWherePhrase] = React.useState<string>('');
-    const [isLoading, setIsLoading] = React.useState(false);
-    const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
-    const [isFormatted, setIsFormatted] = React.useState(false);
-    const [isError, setIsError] = React.useState(false);
-    const [isDataRetrieved, setIsDataRetrieved] = React.useState(false);
-    const [errorObject, setErrorObject] = React.useState<IErrorObject>();
+    const [wherePhrase, setWherePhrase] = useState<string>('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+    const [isFormatted, setIsFormatted] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [isDataRetrieved, setIsDataRetrieved] = useState(false);
+    const [errorObject, setErrorObject] = useState<IErrorObject>();
     const [statisticsObject, setStatisticsObject] =
-        React.useState<IStatisticsObject>();
+        useState<IStatisticsObject>();
 
-    const [rawRows, setRawRows] = React.useState(() => tableData.data);
-    const [formattedRows, setFormattedRows] = React.useState(
-        () => tableData.data
-    );
-    const [columns, setColumns] = React.useState(() => tableData.columns);
-    const [selectedColumns, setSelectedColumns] = React.useState([]);
-    const [columnsCRUD, setColumnsCRUD] = React.useState(() => []);
-    const [recordsCRUD, setRecordsCRUD] = React.useState(() => []);
-    const [loaded, setLoaded] = React.useState(() => 0);
-    const [rowID, setRowID] = React.useState('');
-    const [scrollHeight, setScrollHeight] = React.useState(() => 0);
-    const [isWindowSmall, setIsWindowSmall] = React.useState(false);
+    const [rawRows, setRawRows] = useState(() => tableData.data);
+    const [formattedRows, setFormattedRows] = useState(() => tableData.data);
+    const [columns, setColumns] = useState(() => tableData.columns);
+    const [selectedColumns, setSelectedColumns] = useState([]);
+    const [columnsCRUD, setColumnsCRUD] = useState(() => []);
+    const [recordsCRUD, setRecordsCRUD] = useState(() => []);
+    const [loaded, setLoaded] = useState(() => 0);
+    const [rowID, setRowID] = useState('');
+    const [scrollHeight, setScrollHeight] = useState(() => 0);
+    const [isWindowSmall, setIsWindowSmall] = useState(false);
 
-    const [sortColumns, setSortColumns] = React.useState<readonly SortColumn[]>(
-        []
-    );
-    const [sortAction, setSortAction] = React.useState(false);
-    const [initialDataLoad, setInitialDataLoad] = React.useState(true);
-    const [recordColor, setRecordColor] = React.useState('red');
+    const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
+    const [sortAction, setSortAction] = useState(false);
+    const [initialDataLoad, setInitialDataLoad] = useState(true);
+    const [recordColor, setRecordColor] = useState('red');
     const logger = new Logger(configuration.logging.react);
 
     window.addEventListener(
@@ -86,17 +91,17 @@ function QueryForm({
         true
     );
 
-    const [filters, _setFilters] = React.useState({
+    const [filters, _setFilters] = useState({
         columns: {},
         enabled: true,
     });
-    const filtersRef = React.useRef(filters);
+    const filtersRef = useRef(filters);
     const setFilters = (data) => {
         filtersRef.current = data;
         _setFilters(data);
     };
 
-    const [selectedRows, setSelectedRows] = React.useState(
+    const [selectedRows, setSelectedRows] = useState(
         (): ReadonlySet<string> => new Set()
     );
 
@@ -109,13 +114,13 @@ function QueryForm({
     };
 
     let inputQuery: HTMLButtonElement = undefined;
-    React.useEffect(() => {
+    useEffect(() => {
         if (inputQuery) {
             inputQuery.click();
         }
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         window.addEventListener('resize', windowResize);
 
         return () => {
@@ -123,7 +128,7 @@ function QueryForm({
         };
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const handleResize = () => {
             setIsWindowSmall(window.innerWidth <= 828); // Adjust the breakpoint value as needed
         };
@@ -252,7 +257,7 @@ function QueryForm({
                                     }
 
                                     return (
-                                        <React.Fragment>
+                                        <Fragment>
                                             <div
                                                 className={
                                                     filters.enabled
@@ -324,7 +329,7 @@ function QueryForm({
                                                     />
                                                 </div>
                                             )}
-                                        </React.Fragment>
+                                        </Fragment>
                                     );
                                 };
                             }
@@ -403,7 +408,7 @@ function QueryForm({
         setIsLoading(false);
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         window.addEventListener('message', messageEvent);
         return () => {
             window.removeEventListener('message', messageEvent);
@@ -430,7 +435,7 @@ function QueryForm({
         );
     };
 
-    const onQueryClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const onQueryClick = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         prepareQuery();
     };
@@ -539,9 +544,7 @@ function QueryForm({
         vscode.postMessage(command);
     }
 
-    function isAtBottom({
-        currentTarget,
-    }: React.UIEvent<HTMLDivElement>): boolean {
+    function isAtBottom({ currentTarget }: UIEvent<HTMLDivElement>): boolean {
         return (
             currentTarget.scrollTop + 10 >=
             currentTarget.scrollHeight - currentTarget.clientHeight
@@ -550,11 +553,11 @@ function QueryForm({
 
     function isHorizontalScroll({
         currentTarget,
-    }: React.UIEvent<HTMLDivElement>): boolean {
+    }: UIEvent<HTMLDivElement>): boolean {
         return currentTarget.scrollTop === scrollHeight;
     }
 
-    async function handleScroll(event: React.UIEvent<HTMLDivElement>) {
+    async function handleScroll(event: UIEvent<HTMLDivElement>) {
         if (isLoading || !isAtBottom(event) || isHorizontalScroll(event)) {
             return;
         }
@@ -654,9 +657,9 @@ Description: ${errorObject.description}`}</pre>
     }
 
     // CRUD operations
-    const [open, setOpen] = React.useState(false);
-    const [action, setAction] = React.useState<ProcessAction>();
-    const [readRow, setReadRow] = React.useState([]);
+    const [open, setOpen] = useState(false);
+    const [action, setAction] = useState<ProcessAction>();
+    const [readRow, setReadRow] = useState([]);
 
     const readRecord = (row: string[]) => {
         setAction(ProcessAction.Read);
@@ -825,7 +828,7 @@ Description: ${errorObject.description}`}</pre>
     };
 
     return (
-        <React.Fragment>
+        <Fragment>
             <div className='container'>
                 <div className='title'>Query</div>
                 <div className='content'>
@@ -947,7 +950,7 @@ Description: ${errorObject.description}`}</pre>
             </div>
             <div className='footer'>{getFooterTag()}</div>
             {isLoading && <div>Loading more rows...</div>}
-        </React.Fragment>
+        </Fragment>
     );
 }
 

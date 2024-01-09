@@ -5,7 +5,7 @@
         "target": "es6",
         "outDir": "out/view/app",
         "lib": ["es6", "dom"],
-        "jsx": "react",
+        "jsx": "react-jsx",
         "sourceMap": true,
         "rootDir": "../",
         "noUnusedLocals": true,
@@ -24,7 +24,8 @@
             "@Welcome/*": ["app/Welcome/*"],
             "@app/*": ["app/*"],
             "@view/*": ["./*"],
-            "@src/*": ["../*"]
+            "@src/*": ["../*"],
+            "@root/*": ["../../*"]
         }
     },
     "exclude": ["node_modules"]
