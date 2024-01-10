@@ -212,18 +212,7 @@ export default function UpdatePopup({
                 <ProBroButton className="button" onClick={onSubmitClick}>
                   {ProcessAction[action]}
                 </ProBroButton>
-              ) : (
-                <ProBroButton
-                  className="button"
-                  startIcon={<EditIcon />}
-                  onClick={() => {
-                    setOpen(false);
-                    updateRecord();
-                  }}
-                >
-                  UPDATE
-                </ProBroButton>
-              )}
+              ) : null}
               <ProBroButton
                 className="button"
                 onClick={() => {
@@ -239,53 +228,51 @@ export default function UpdatePopup({
       </Popup>
       {isWindowSmall ? (
         <>
-          {!isReadOnly && (
-            <>
-              <ProBroButton
-                startIcon={<AddIcon />}
-                onClick={selectedRows.size === 1 ? copyRecord : insertRecord}
-                disabled={selectedRows.size > 0 ? false : false}
-              ></ProBroButton>
-              <ProBroButton
-                startIcon={<EditIcon />}
-                onClick={updateRecord}
-                disabled={selectedRows.size === 1 ? false : true}
-              ></ProBroButton>
-              <ProBroButton
-                startIcon={<DeleteIcon />}
-                onClick={deleteRecord}
-                disabled={selectedRows.size > 0 ? false : true}
-              ></ProBroButton>
-            </>
-          )}
+        {!isReadOnly && (
+          <><ProBroButton
+            startIcon={<AddIcon />}
+            onClick={selectedRows.size === 1 ? copyRecord : insertRecord}
+            disabled={selectedRows.size > 0 ? false : false}
+          ></ProBroButton>
+          <ProBroButton
+            startIcon={<EditIcon />}
+            onClick={updateRecord}
+            disabled={selectedRows.size === 1 ? false : true}
+          ></ProBroButton>
+          <ProBroButton
+            startIcon={<DeleteIcon />}
+            onClick={deleteRecord}
+            disabled={selectedRows.size > 0 ? false : true}
+          ></ProBroButton>
+          </>
+        )}
         </>
       ) : (
         <>
-          {!isReadOnly && (
-            <>
-              <ProBroButton
-                startIcon={<AddIcon />}
-                onClick={selectedRows.size === 1 ? copyRecord : insertRecord}
-                disabled={selectedRows.size > 0 ? false : false}
-              >
-                {selectedRows.size === 1 ? "Copy" : "Create"}
-              </ProBroButton>
-              <ProBroButton
-                startIcon={<EditIcon />}
-                onClick={updateRecord}
-                disabled={selectedRows.size === 1 ? false : true}
-              >
-                Update
-              </ProBroButton>
-              <ProBroButton
-                startIcon={<DeleteIcon />}
-                onClick={deleteRecord}
-                disabled={selectedRows.size > 0 ? false : true}
-              >
-                Delete
-              </ProBroButton>
-            </>
-          )}
+        {!isReadOnly && (
+          <><ProBroButton
+            startIcon={<AddIcon />}
+            onClick={selectedRows.size === 1 ? copyRecord : insertRecord}
+            disabled={selectedRows.size > 0 ? false : false}
+          >
+          {selectedRows.size === 1 ? "Copy" : "Create"}
+          </ProBroButton>
+          <ProBroButton
+            startIcon={<EditIcon />}
+            onClick={updateRecord}
+            disabled={selectedRows.size === 1 ? false : true}
+          >
+          Update
+          </ProBroButton>
+          <ProBroButton
+            startIcon={<DeleteIcon />}
+            onClick={deleteRecord}
+            disabled={selectedRows.size > 0 ? false : true}
+          >
+          Delete
+          </ProBroButton>
+          </>
+        )}
         </>
       )}
     </React.Fragment>
