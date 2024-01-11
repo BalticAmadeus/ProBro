@@ -1,7 +1,6 @@
-import { IErrorObject } from '@app/common/types';
 import { Box, Grid, Typography, TypographyProps } from '@mui/material';
 import { red } from '@mui/material/colors';
-import { isError } from '@utils/errorHelper';
+import { IErrorObject, isError } from '@utils/error';
 
 interface ErrorFooterProps {
     errorObj: IErrorObject;

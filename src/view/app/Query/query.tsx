@@ -23,7 +23,7 @@ import { ISettings } from '@src/common/IExtensionSettings';
 import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { IErrorObject, emptyErrorObj } from '@utils/error';
-import QueryFormFooter from '@app/components/layout/query/QueryFormFooter';
+import QueryFormFooter from '@app/Components/Layout/Query/QueryFormFooter';
 
 const filterCSS: CSSProperties = {
     inlineSize: '100%',
