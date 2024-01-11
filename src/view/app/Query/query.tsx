@@ -22,8 +22,7 @@ import { Logger } from '@src/common/Logger';
 import { ISettings } from '@src/common/IExtensionSettings';
 import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
-import { IErrorObject } from '@app/common/types';
-import { emptyErrorObj } from '@utils/errorHelper';
+import { IErrorObject, emptyErrorObj } from '@utils/error';
 import QueryFormFooter from '@app/components/layout/query/QueryFormFooter';
 
 const filterCSS: CSSProperties = {

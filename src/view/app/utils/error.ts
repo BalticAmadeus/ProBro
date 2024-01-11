@@ -1,4 +1,11 @@
-import { IErrorObject } from '@app/common/types';
+/**
+ * Error object with descriptive error information
+ */
+export interface IErrorObject {
+    error: string;
+    description: string;
+    trace?: string;
+}
 
 /**
  * Returns if the error is present in error object
