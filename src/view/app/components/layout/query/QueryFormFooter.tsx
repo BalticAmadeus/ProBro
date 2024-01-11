@@ -1,5 +1,5 @@
 import { IErrorObject } from '@app/common/types';
-import { Box, Typography } from '@mui/material';
+import { Box, Grid, Typography, TypographyProps } from '@mui/material';
 import { red } from '@mui/material/colors';
 import { isError } from '@utils/errorHelper';
 
@@ -16,10 +16,22 @@ interface QueryFormFooterProps extends ErrorFooterProps {
     show?: boolean;
 }
 
-const ErrorTypography = ({ children }) => (
-    <Typography sx={{ color: red[600] }} variant='overline'>
+const MonospaceTypography: React.FC<TypographyProps> = ({
+    children,
+    ...otherProps
+}) => (
+    <Typography fontFamily={'monospace'} fontSize={'0.8rem'} {...otherProps}>
         {children}
     </Typography>
+);
+
+const ErrorTypography: React.FC<TypographyProps> = ({
+    children,
+    ...otherProps
+}) => (
+    <MonospaceTypography sx={{ color: red[600] }} {...otherProps}>
+        {children}
+    </MonospaceTypography>
 );
 
 /**
@@ -58,29 +70,38 @@ const QueryFormFooter: React.FC<QueryFormFooterProps> = ({
         return <></>;
     }
     return (
-        <div className='footer'>
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                }}
+        <Box className='footer' sx={{ padding: '2px' }}>
+            <Grid
+                container
+                spacing={0}
+                direction='row'
+                justifyContent='space-between'
+                alignItems='flex-start'
             >
-                <pre style={{ marginRight: 'auto' }}>
-                    {'Records in grid: '}
-                    <span style={{ color: recordColor }}>{totalRecords}</span>
-                    {/* <span>{totalRecords}</span> */}
-                </pre>
+                <Grid item>
+                    <MonospaceTypography>
+                        Records in grid:{' '}
+                        <MonospaceTypography
+                            sx={{ color: recordColor, display: 'inline-block' }}
+                        >
+                            {totalRecords}
+                        </MonospaceTypography>
+                    </MonospaceTypography>
+                </Grid>
                 {showRecentNumbers ? null : (
-                    <pre style={{ marginLeft: 'auto' }}>
-                        {`Recent records numbers: ${newRecords}`}
-                    </pre>
+                    <Grid item>
+                        <MonospaceTypography>
+                            Recent records numbers: {newRecords}
+                        </MonospaceTypography>
+                    </Grid>
                 )}
-                <pre style={{ marginLeft: 'auto' }}>
-                    {`Recent retrieval time: ${retrievalTime}`} ms
-                </pre>
-            </div>
-        </div>
+                <Grid item>
+                    <MonospaceTypography>
+                        Recent retrieval time: {retrievalTime} ms
+                    </MonospaceTypography>
+                </Grid>
+            </Grid>
+        </Box>
     );
 };
 
