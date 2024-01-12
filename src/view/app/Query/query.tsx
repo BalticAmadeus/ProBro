@@ -141,7 +141,6 @@ function QueryForm({
         };
     }, []);
 
-
     const messageEvent = (event) => {
         const message = event.data;
         logger.log('got query data', message);
@@ -202,138 +201,136 @@ function QueryForm({
                             .getPropertyValue('font-size')
                             .match(/\d+[.]?\d+/);
                         message.data.columns.forEach((column) => {
-                            if (column.key !== OEDataTypePrimitive.Rowid) {
-                                column.headerRenderer = function ({
-                                    column,
-                                    sortDirection,
-                                    priority,
-                                    onSort,
-                                    isCellSelected,
-                                }) {
-                                    function handleKeyDown(event) {
-                                        if (
-                                            event.key === ' ' ||
-                                            event.key === 'Enter'
-                                        ) {
-                                            event.preventDefault();
+                            column.headerRenderer = function ({
+                                column,
+                                sortDirection,
+                                priority,
+                                onSort,
+                                isCellSelected,
+                            }) {
+                                function handleKeyDown(event) {
+                                    if (
+                                        event.key === ' ' ||
+                                        event.key === 'Enter'
+                                    ) {
+                                        event.preventDefault();
                                             onSort(
                                                 event.ctrlKey || event.metaKey
                                             );
-                                        }
                                     }
+                                }
 
-                                    function handleClick(event) {
-                                        onSort(event.ctrlKey || event.metaKey);
-                                    }
+                                function handleClick(event) {
+                                    onSort(event.ctrlKey || event.metaKey);
+                                }
 
-                                    var timer;
-                                    function handleKeyInputTimeout() {
-                                        clearTimeout(timer);
-                                        timer = setTimeout(() => {
-                                            reloadData(
-                                                configuration.initialBatchSizeLoad
-                                            );
-                                        }, 500);
+                                var timer;
+                                function handleKeyInputTimeout() {
+                                    clearTimeout(timer);
+                                    timer = setTimeout(() => {
+                                        reloadData(
+                                            configuration.initialBatchSizeLoad
+                                        );
+                                    }, 500);
+                                }
+                                function testKeyDown(event) {
+                                    if (event.key === 'Enter') {
+                                        event.preventDefault();
+                                        reloadData(
+                                            configuration.initialBatchSizeLoad
+                                        );
                                     }
-                                    function testKeyDown(event) {
-                                        if (event.key === 'Enter') {
-                                            event.preventDefault();
-                                            reloadData(
-                                                configuration.initialBatchSizeLoad
-                                            );
-                                        }
-                                    }
+                                }
 
-                                    function handleInputKeyDown(event) {
-                                        const tempFilters = filters;
-                                        tempFilters.columns[column.key] =
-                                            event.target.value;
-                                        setFilters(tempFilters);
-                                        if (
+                                function handleInputKeyDown(event) {
+                                    const tempFilters = filters;
+                                    tempFilters.columns[column.key] =
+                                        event.target.value;
+                                    setFilters(tempFilters);
+                                    if (
                                             configuration.filterAsYouType ===
                                             true
-                                        ) {
-                                            handleKeyInputTimeout();
-                                        }
+                                    ) {
+                                        handleKeyInputTimeout();
                                     }
+                                }
 
-                                    return (
-                                        <Fragment>
-                                            <div
-                                                className={
-                                                    filters.enabled
-                                                        ? 'filter-cell'
-                                                        : undefined
-                                                }
+                                return (
+                                    <Fragment>
+                                        <div
+                                            className={
+                                                filters.enabled
+                                                    ? 'filter-cell'
+                                                    : undefined
+                                            }
+                                        >
+                                            <span
+                                                tabIndex={-1}
+                                                style={{
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                }}
+                                                className='rdg-header-sort-cell'
+                                                onClick={handleClick}
+                                                onKeyDown={handleKeyDown}
                                             >
                                                 <span
-                                                    tabIndex={-1}
+                                                    className='rdg-header-sort-name'
                                                     style={{
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
+                                                        flexGrow: '1',
+                                                        overflow: 'clip',
+                                                        textOverflow:
+                                                            'ellipsis',
                                                     }}
-                                                    className='rdg-header-sort-cell'
-                                                    onClick={handleClick}
-                                                    onKeyDown={handleKeyDown}
                                                 >
-                                                    <span
-                                                        className='rdg-header-sort-name'
+                                                    {column.name}
+                                                </span>
+                                                <span>
+                                                    <svg
+                                                        viewBox='0 0 12 8'
+                                                        width='12'
+                                                        height='8'
+                                                        className='rdg-sort-arrow'
                                                         style={{
-                                                            flexGrow: '1',
-                                                            overflow: 'clip',
-                                                            textOverflow:
-                                                                'ellipsis',
+                                                            fill: 'currentcolor',
                                                         }}
                                                     >
-                                                        {column.name}
-                                                    </span>
-                                                    <span>
-                                                        <svg
-                                                            viewBox='0 0 12 8'
-                                                            width='12'
-                                                            height='8'
-                                                            className='rdg-sort-arrow'
-                                                            style={{
-                                                                fill: 'currentcolor',
-                                                            }}
-                                                        >
-                                                            {sortDirection ===
-                                                                'ASC' && (
-                                                                <path d='M0 8 6 0 12 8'></path>
-                                                            )}
-                                                            {sortDirection ===
-                                                                'DESC' && (
-                                                                <path d='M0 0 6 8 12 0'></path>
-                                                            )}
-                                                        </svg>
-                                                        {priority}
-                                                    </span>
+                                                        {sortDirection ===
+                                                            'ASC' && (
+                                                            <path d='M0 8 6 0 12 8'></path>
+                                                        )}
+                                                        {sortDirection ===
+                                                            'DESC' && (
+                                                            <path d='M0 0 6 8 12 0'></path>
+                                                        )}
+                                                    </svg>
+                                                    {priority}
                                                 </span>
-                                            </div>
-                                            {filters.enabled && (
-                                                <div className={'filter-cell'}>
-                                                    <input
-                                                        className='textInput'
+                                            </span>
+                                        </div>
+                                        {filters.enabled && (
+                                            <div className={'filter-cell'}>
+                                                <input
+                                                    className='textInput'
                                                         autoFocus={
                                                             isCellSelected
                                                         }
-                                                        style={filterCSS}
-                                                        defaultValue={
-                                                            filters.columns[
-                                                                column.key
-                                                            ]
-                                                        }
-                                                        onChange={
-                                                            handleInputKeyDown
-                                                        }
-                                                        onKeyDown={testKeyDown}
-                                                    />
-                                                </div>
-                                            )}
-                                        </Fragment>
-                                    );
-                                };
-                            }
+                                                    style={filterCSS}
+                                                    defaultValue={
+                                                        filters.columns[
+                                                            column.key
+                                                        ]
+                                                    }
+                                                    onChange={
+                                                        handleInputKeyDown
+                                                    }
+                                                    onKeyDown={testKeyDown}
+                                                />
+                                            </div>
+                                        )}
+                                    </Fragment>
+                                );
+                            };
                             column.minWidth = column.name.length * fontSize;
                             column.width =
                                 getOEFormatLength(column.format ?? '') *
@@ -355,14 +352,10 @@ function QueryForm({
                         } else {
                             setSelectedColumns(
                                 [
-                                    ...message.data.columns.map(
-                                        (column) => column.name
-                                    ),
-                                ].filter(
-                                    (column) =>
-                                        column !== OEDataTypePrimitive.Rowid
-                                )
-                            );
+                                ...message.data.columns.map(
+                                    (column) => column.name
+                                ),
+                            ]);
                         }
                     }
                     const boolField = message.data.columns.filter(
@@ -457,7 +450,6 @@ function QueryForm({
 
             addText(input, selectedText);
             createListener(document.getElementById('input'), selectedColumns);
-
         }
 
         if (e.keyCode === 38) {
@@ -648,9 +640,6 @@ Description: ${errorObject.description}`}</pre>
                         style={{ marginLeft: 'auto' }}
                     >{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
                 </div>
-
-
-
             );
         } else {
             return <></>;
