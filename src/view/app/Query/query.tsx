@@ -22,6 +22,8 @@ import { Logger } from '@src/common/Logger';
 import { ISettings } from '@src/common/IExtensionSettings';
 import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
+import { IErrorObject, emptyErrorObj } from '@utils/error';
+import QueryFormFooter from '@app/Components/Layout/Query/QueryFormFooter';
 
 const filterCSS: CSSProperties = {
     inlineSize: '100%',
@@ -37,11 +39,6 @@ interface IConfigProps {
     isReadOnly: boolean;
 }
 
-interface IErrorObject {
-    error: string;
-    description: string;
-    trace?: string;
-}
 interface IStatisticsObject {
     recordsRetrieved: number;
     recordsRetrievalTime: number;
@@ -60,11 +57,11 @@ function QueryForm({
     const [isLoading, setIsLoading] = useState(false);
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [isFormatted, setIsFormatted] = useState(false);
-    const [isError, setIsError] = useState(false);
     const [isDataRetrieved, setIsDataRetrieved] = useState(false);
-    const [errorObject, setErrorObject] = useState<IErrorObject>();
-    const [statisticsObject, setStatisticsObject] =
-        useState<IStatisticsObject>();
+    const [errorObject, setErrorObject] = useState<IErrorObject>(emptyErrorObj);
+    const [statisticsObject, setStatisticsObject] = useState<IStatisticsObject>(
+        { recordsRetrieved: 0, recordsRetrievalTime: 0, connectTime: 0 }
+    );
 
     const [rawRows, setRawRows] = useState(() => tableData.data);
     const [formattedRows, setFormattedRows] = useState(() => tableData.data);
@@ -156,7 +153,6 @@ function QueryForm({
                         description: message.data.description,
                         trace: message.data.trace,
                     });
-                    setIsError(true);
                     setIsDataRetrieved(false);
                 } else {
                     setSelectedRows(new Set());
@@ -173,7 +169,6 @@ function QueryForm({
                         description: message.data.description,
                         trace: message.data.trace,
                     });
-                    setIsError(true);
                     setIsDataRetrieved(false);
                 } else {
                     setColumnsCRUD(message.data.columns);
@@ -188,7 +183,6 @@ function QueryForm({
                         description: message.data.description,
                         trace: message.data.trace,
                     });
-                    setIsError(true);
                     setIsDataRetrieved(false);
                 } else {
                     if (message.data.columns.length !== columns.length) {
@@ -385,7 +379,7 @@ function QueryForm({
                         ...message.data.formattedData,
                     ]);
                     setLoaded(loaded + message.data.formattedData.length);
-                    setIsError(false);
+                    setErrorObject(emptyErrorObj);
                     setIsDataRetrieved(true);
                     setStatisticsObject({
                         recordsRetrieved: message.data.debug.recordsRetrieved,
@@ -605,44 +599,6 @@ function QueryForm({
             return '> ' + loaded;
         } else {
             return loaded;
-        }
-    }
-
-    function getFooterTag() {
-        if (isError) {
-            return (
-                <div style={{ color: 'red' }}>
-                    <pre>{`Error: ${errorObject.error}
-Description: ${errorObject.description}`}</pre>
-                </div>
-            );
-        } else if (isDataRetrieved) {
-            return (
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                    }}
-                >
-                    <pre style={{ marginRight: 'auto' }}>
-                        {'Records in grid:'}
-                        <span style={{ color: recordColor }}>
-                            {getLoaded()}
-                        </span>
-                    </pre>
-                    {isWindowSmall ? null : (
-                        <pre style={{ marginLeft: 'auto' }}>
-                            {`Recent records numbers: ${statisticsObject.recordsRetrieved}`}
-                        </pre>
-                    )}
-                    <pre
-                        style={{ marginLeft: 'auto' }}
-                    >{`Recent retrieval time: ${statisticsObject.recordsRetrievalTime}`}</pre>
-                </div>
-            );
-        } else {
-            return <></>;
         }
     }
 
@@ -942,7 +898,15 @@ Description: ${errorObject.description}`}</pre>
                     rowHeight={setRowHeight}
                 ></DataGrid>
             </div>
-            <div className='footer'>{getFooterTag()}</div>
+            <QueryFormFooter
+                errorObj={errorObject}
+                totalRecords={getLoaded()}
+                newRecords={statisticsObject.recordsRetrieved}
+                retrievalTime={statisticsObject.recordsRetrievalTime}
+                showRecentNumbers={isWindowSmall}
+                recordColor={recordColor}
+                show={isDataRetrieved}
+            />
             {isLoading && <div>Loading more rows...</div>}
         </Fragment>
     );
