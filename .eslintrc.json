@@ -6,7 +6,8 @@
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "react"
     ],
     "rules": {
         "@typescript-eslint/naming-convention": [
@@ -27,5 +28,10 @@
         "out",
         "dist",
         "**/*.d.ts"
-    ]
+    ],
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    }
 }
