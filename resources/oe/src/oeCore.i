@@ -576,9 +576,6 @@ PROCEDURE LOCAL_GET_TABLE_DATA:
         cOrderPhrase = GET_ORDER_PHRASE().
 
         jsonCrud = GET_CRUD().
-
-        message "order: " cOrderPhrase.
-        message "where: " cWherePhrase.
     END.
 
     IF CAN-DO("UPDATE,DATA,COPY", cMode) THEN DO:
