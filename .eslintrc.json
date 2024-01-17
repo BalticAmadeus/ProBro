@@ -9,6 +9,7 @@
         "@typescript-eslint",
         "react"
     ],
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
     "rules": {
         "@typescript-eslint/naming-convention": [
             "warn",
@@ -21,8 +22,9 @@
         "curly": "warn",
         "eqeqeq": "warn",
         "no-throw-literal": "warn",
-        "semi": "off",
-        "quotes": [1, "single", { "avoidEscape": true }]
+        "semi": ["warn", "always"],
+        "quotes": ["warn", "single"],
+        "indent": ["warn", 4]
     },
     "ignorePatterns": [
         "out",
