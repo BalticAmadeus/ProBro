@@ -1,7 +1,6 @@
 import {
     CSSProperties,
     Fragment,
-    MouseEvent,
     UIEvent,
     useEffect,
     useRef,
@@ -12,18 +11,16 @@ import DataGrid, { SortColumn, SelectColumn, CopyEvent } from 'react-data-grid';
 
 import { IOETableData } from '@src/db/Oe';
 import { CommandAction, ICommand, ProcessAction } from '../model';
-import ExportData from './Export';
-import UpdatePopup from './Update';
-import { ProBroButton } from '@assets/button';
-import RawOnTwoToneIcon from '@mui/icons-material/RawOnTwoTone';
-import RawOffTwoToneIcon from '@mui/icons-material/RawOffTwoTone';
-import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
 import { Logger } from '@src/common/Logger';
-import { ISettings } from '@src/common/IExtensionSettings';
 import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { IErrorObject, emptyErrorObj } from '@utils/error';
 import QueryFormFooter from '@app/Components/Layout/Query/QueryFormFooter';
+import { Box } from '@mui/material';
+import QueryFormHead from '@app/Components/Layout/Query/QueryFormHead';
+import { IFilters } from '@app/common/types';
+import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
+import { green, red } from '@mui/material/colors';
 
 const filterCSS: CSSProperties = {
     inlineSize: '100%',
@@ -32,10 +29,8 @@ const filterCSS: CSSProperties = {
 };
 
 interface IConfigProps {
-    vscode: any;
     tableData: IOETableData;
     tableName: string;
-    configuration: ISettings;
     isReadOnly: boolean;
 }
 
@@ -46,10 +41,8 @@ interface IStatisticsObject {
 }
 
 function QueryForm({
-    vscode,
     tableData,
     tableName,
-    configuration,
     isReadOnly,
     ...props
 }: IConfigProps) {
@@ -66,19 +59,23 @@ function QueryForm({
     const [rawRows, setRawRows] = useState(() => tableData.data);
     const [formattedRows, setFormattedRows] = useState(() => tableData.data);
     const [columns, setColumns] = useState(() => tableData.columns);
-    const [selectedColumns, setSelectedColumns] = useState([]);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
     const [columnsCRUD, setColumnsCRUD] = useState(() => []);
-    const [recordsCRUD, setRecordsCRUD] = useState(() => []);
+    const [rowsCRUD, setRecordsCRUD] = useState(() => []);
     const [loaded, setLoaded] = useState(() => 0);
     const [rowID, setRowID] = useState('');
     const [scrollHeight, setScrollHeight] = useState(() => 0);
     const [isWindowSmall, setIsWindowSmall] = useState(false);
 
-    const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
+    const [sortColumns, setSortColumns] = useState<SortColumn[]>([]);
     const [sortAction, setSortAction] = useState(false);
     const [initialDataLoad, setInitialDataLoad] = useState(true);
     const [recordColor, setRecordColor] = useState('red');
+    const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+
+    const configuration = getVSCodeConfiguration();
     const logger = new Logger(configuration.logging.react);
+    const vscode = getVSCodeAPI();
 
     window.addEventListener(
         'contextmenu',
@@ -88,7 +85,7 @@ function QueryForm({
         true
     );
 
-    const [filters, _setFilters] = useState({
+    const [filters, _setFilters] = useState<IFilters>({
         columns: {},
         enabled: true,
     });
@@ -96,14 +93,6 @@ function QueryForm({
     const setFilters = (data) => {
         filtersRef.current = data;
         _setFilters(data);
-    };
-
-    const [selectedRows, setSelectedRows] = useState(
-        (): ReadonlySet<string> => new Set()
-    );
-
-    const getDataFormat = () => {
-        setIsFormatted(!isFormatted);
     };
 
     const windowResize = () => {
@@ -127,7 +116,7 @@ function QueryForm({
 
     useEffect(() => {
         const handleResize = () => {
-            setIsWindowSmall(window.innerWidth <= 828); // Adjust the breakpoint value as needed
+            setIsWindowSmall(window.innerWidth <= 920); // Adjust the breakpoint value as needed
         };
 
         window.addEventListener('resize', handleResize);
@@ -429,81 +418,6 @@ function QueryForm({
         );
     };
 
-    const onQueryClick = (event: MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        prepareQuery();
-    };
-
-    let input = document.getElementById('input');
-
-    const handleKeyDown = (e) => {
-        let selected = document.querySelector('.selected') as HTMLLIElement;
-        if (e.key === 'Enter' && selected === null) {
-            e.preventDefault();
-            prepareQuery();
-        }
-
-        if (e.key === 'Enter' && selected !== null) {
-            e.preventDefault();
-            const selectedText =
-                document.querySelector('.selected').textContent;
-
-            addText(input, selectedText);
-            createListener(document.getElementById('input'), selectedColumns);
-        }
-
-        if (e.keyCode === 38) {
-            if (selected === null) {
-                document
-                    .querySelectorAll('.autocomplete-list li')
-                    .item(0)
-                    .classList.add('selected');
-            } else {
-                document
-                    .querySelectorAll('.autocomplete-list li')
-                    .forEach(function (item) {
-                        item.classList.remove('selected');
-                    });
-                if (selected.previousElementSibling === null) {
-                    selected.parentElement.lastElementChild.classList.add(
-                        'selected'
-                    );
-                } else {
-                    selected.previousElementSibling.classList.add('selected');
-                }
-            }
-            selected = document.querySelector('.selected');
-            selected.scrollIntoView();
-            selected.focus();
-        }
-
-        if (e.keyCode === 40) {
-            if (selected === null) {
-                document
-                    .querySelectorAll('.autocomplete-list li')
-                    .item(0)
-                    .classList.add('selected');
-            } else {
-                document
-                    .querySelectorAll('.autocomplete-list li')
-                    .forEach(function (item) {
-                        item.classList.remove('selected');
-                    });
-
-                if (selected.nextElementSibling === null) {
-                    selected.parentElement.firstElementChild.classList.add(
-                        'selected'
-                    );
-                } else {
-                    selected.nextElementSibling.classList.add('selected');
-                }
-            }
-            selected = document.querySelector('.selected');
-            selected.scrollIntoView();
-            selected.focus();
-        }
-    };
-
     function reloadData(loaded: number) {
         setLoaded(0);
         setRawRows([]);
@@ -592,19 +506,11 @@ function QueryForm({
             setRecordColor(
                 recentRecords < currentBatchSize &&
                     recentRetrievalTime < configuration.batchMaxTimeout
-                    ? 'green'
-                    : 'red'
+                    ? green[500]
+                    : red[500]
             );
         } else {
             setSortAction(false);
-        }
-    }
-
-    function getLoaded() {
-        if (recordColor === 'red') {
-            return '> ' + loaded;
-        } else {
-            return loaded;
         }
     }
 
@@ -615,49 +521,12 @@ function QueryForm({
     // CRUD operations
     const [open, setOpen] = useState(false);
     const [action, setAction] = useState<ProcessAction>();
-    const [readRow, setReadRow] = useState([]);
+    const [readRow, setReadRow] = useState<string[]>([]);
 
     const readRecord = (row: string[]) => {
         setAction(ProcessAction.Read);
         setReadRow(row);
         setOpen(true);
-    };
-
-    const insertRecord = () => {
-        processRecord(ProcessAction.Insert);
-    };
-    const updateRecord = () => {
-        processRecord(ProcessAction.Update);
-    };
-    const deleteRecord = () => {
-        processRecord(ProcessAction.Delete);
-    };
-    const copyRecord = () => {
-        processRecord(ProcessAction.Copy);
-    };
-
-    const processRecord = (mode: ProcessAction) => {
-        setAction(mode);
-        const rowids: string[] = [];
-        selectedRows.forEach((element) => {
-            rowids.push(element);
-        });
-
-        const command: ICommand = {
-            id: 'CRUD',
-            action: CommandAction.CRUD,
-            params: {
-                start: 0,
-                pageLength: selectedRows.size,
-                timeOut: 1000,
-                minTime: 1000,
-                lastRowID: selectedRows.values().next().value,
-                crud: rowids,
-                mode: ProcessAction[mode],
-            },
-        };
-        logger.log('crud data request', command);
-        vscode.postMessage(command);
     };
 
     function filterColumns() {
@@ -683,75 +552,6 @@ function QueryForm({
         if (window.isSecureContext) {
             navigator.clipboard.writeText(sourceRow[sourceColumnKey]);
         }
-    }
-
-    const suggestions = document.querySelector('#column-list');
-
-    function autocomplete(input, list) {
-        let lastWord = input.value.split(' ').pop();
-
-        suggestions.innerHTML = '';
-
-        for (const item of list) {
-            if (
-                item.toUpperCase().includes(lastWord.toUpperCase()) ||
-                lastWord === null
-            ) {
-                const suggestion = document.createElement('li');
-                suggestion.innerHTML = item;
-                suggestion.style.cursor = 'pointer';
-                suggestions.appendChild(suggestion);
-            }
-        }
-    }
-
-    function addText(input, newText) {
-        let wordArray = input.value.split(' ');
-        wordArray.pop();
-        input.value = '';
-        for (const word of wordArray) {
-            input.value += word;
-            input.value += ' ';
-        }
-        input.value += newText;
-        input.value += ' ';
-        setWherePhrase(input.value);
-    }
-
-    function mouseoverListener() {
-        document
-            .querySelectorAll('.autocomplete-list li')
-            .forEach(function (item) {
-                item.addEventListener('mouseover', function () {
-                    document
-                        .querySelectorAll('.autocomplete-list li')
-                        .forEach(function (item) {
-                            item.classList.remove('selected');
-                        });
-                    this.classList.add('selected');
-                });
-                item.addEventListener('click', function () {
-                    addText(input, this.innerHTML);
-                    document.getElementById('input').focus();
-                    setTimeout(() => {
-                        createListener(
-                            document.getElementById('input'),
-                            selectedColumns
-                        );
-                    }, 301);
-                });
-            });
-    }
-
-    function createListener(input, list) {
-        input.addEventListener('input', autocomplete(input, list));
-        mouseoverListener();
-    }
-
-    function hideSuggestions() {
-        setTimeout(() => {
-            suggestions.innerHTML = '';
-        }, 300);
     }
 
     const calculateHeight = () => {
@@ -785,98 +585,35 @@ function QueryForm({
 
     return (
         <Fragment>
-            <div className='container'>
-                <div className='title'>Query</div>
-                <div className='content'>
-                    <form className='form' action='#'>
-                        <div className='connection-details'>
-                            <div className='input-box'>
-                                <input
-                                    id='input'
-                                    className='textInputQuery'
-                                    type='text'
-                                    placeholder='WHERE ...'
-                                    value={wherePhrase}
-                                    onFocus={() => {
-                                        createListener(
-                                            document.getElementById('input'),
-                                            selectedColumns
-                                        );
-                                    }}
-                                    onBlur={hideSuggestions}
-                                    onChange={(event) => {
-                                        createListener(
-                                            document.getElementById('input'),
-                                            selectedColumns
-                                        );
-                                        setWherePhrase(event.target.value);
-                                    }}
-                                    onKeyDown={handleKeyDown}
-                                />
-                                {isWindowSmall ? (
-                                    <ProBroButton
-                                        ref={(input) => (inputQuery = input)}
-                                        startIcon={<PlayArrowTwoToneIcon />}
-                                        onClick={onQueryClick}
-                                    />
-                                ) : (
-                                    <ProBroButton
-                                        ref={(input) => (inputQuery = input)}
-                                        startIcon={<PlayArrowTwoToneIcon />}
-                                        onClick={onQueryClick}
-                                    >
-                                        Query
-                                    </ProBroButton>
-                                )}
-                            </div>
-                        </div>
-                        <ul className='autocomplete-list' id='column-list'></ul>
-                    </form>
-                    <div className='query-options'>
-                        <ExportData
-                            wherePhrase={wherePhrase}
-                            vscode={vscode}
-                            sortColumns={sortColumns}
-                            filters={filters}
-                            selectedRows={selectedRows}
-                            logValue={configuration.logging.react}
-                        />
-                        <ProBroButton
-                            onClick={getDataFormat}
-                            startIcon={
-                                isFormatted ? (
-                                    <RawOffTwoToneIcon />
-                                ) : (
-                                    <RawOnTwoToneIcon />
-                                )
-                            }
-                        >
-                            {' '}
-                        </ProBroButton>
-                    </div>
-                    <div className='query-options'>
-                        <UpdatePopup
-                            vscode={vscode}
-                            selectedRows={selectedRows}
-                            columns={columnsCRUD}
-                            rows={recordsCRUD}
-                            tableName={tableName}
-                            open={open}
-                            setOpen={setOpen}
-                            action={action}
-                            insertRecord={insertRecord}
-                            updateRecord={updateRecord}
-                            deleteRecord={deleteRecord}
-                            copyRecord={copyRecord}
-                            readRow={readRow}
-                            logValue={configuration.logging.react}
-                            defaultTrigger={!!configuration.useWriteTriggers} // !! fixes missing setting issue
-                            isReadOnly={isReadOnly}
-                        ></UpdatePopup>
-                    </div>
-                </div>
-            </div>
-            <div>
+            <QueryFormHead
+                wherePhrase={wherePhrase}
+                setWherePhrase={setWherePhrase}
+                suggestions={selectedColumns}
+                isWindowSmall={isWindowSmall}
+                onEnter={prepareQuery}
+                onButtonClick={(event) => {
+                    event.preventDefault();
+                    prepareQuery();
+                }}
+                onLoad={prepareQuery}
+                sortColumns={sortColumns}
+                filters={filters}
+                selectedRows={selectedRows}
+                formatButtonOnClick={() => {
+                    setIsFormatted(!isFormatted);
+                }}
+                isFormatted={isFormatted}
+                tableName={tableName}
+                columns={columnsCRUD}
+                rows={rowsCRUD}
+                open={open}
+                setOpen={setOpen}
+                action={action}
+                setAction={setAction}
+                readRow={readRow}
+                isReadOnly={isReadOnly}
+            />
+            <Box>
                 <DataGrid
                     columns={selected}
                     rows={isFormatted ? formattedRows : rawRows}
@@ -903,10 +640,10 @@ function QueryForm({
                     onCopy={handleCopy}
                     rowHeight={setRowHeight}
                 ></DataGrid>
-            </div>
+            </Box>
             <QueryFormFooter
                 errorObj={errorObject}
-                totalRecords={getLoaded()}
+                totalRecords={loaded}
                 newRecords={statisticsObject.recordsRetrieved}
                 retrievalTime={statisticsObject.recordsRetrievalTime}
                 showRecentNumbers={isWindowSmall}

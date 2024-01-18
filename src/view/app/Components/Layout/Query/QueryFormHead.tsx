@@ -1,0 +1,96 @@
+import ExportPopup from '@Query/Export';
+import { ExportPopupProps } from '@Query/Export/export';
+import { ProBroButton } from '@assets/button';
+import RawOffTwoToneIcon from '@mui/icons-material/RawOffTwoTone';
+import RawOnTwoToneIcon from '@mui/icons-material/RawOnTwoTone';
+import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
+import { MouseEventHandler, useEffect } from 'react';
+import UpdatePopup from '@Query/Update';
+import { UpdatePopupProps } from '@Query/Update/update';
+import { Box, Stack, Typography } from '@mui/material';
+import QueryAutocompleteInput, {
+    QueryAutocompleteInputProps,
+} from './QueryAutocompleteInput';
+
+interface QueryFormHeadProps
+    extends QueryAutocompleteInputProps,
+        ExportPopupProps,
+        UpdatePopupProps {
+    isWindowSmall: boolean;
+    onLoad?: () => void;
+    onButtonClick?: MouseEventHandler<HTMLButtonElement>;
+    formatButtonOnClick: MouseEventHandler<HTMLButtonElement>;
+    isFormatted: boolean;
+}
+
+/**
+ * Table Query form head
+ * @component QueryFormHead
+ */
+const QueryFormHead: React.FC<QueryFormHeadProps> = ({
+    isWindowSmall,
+    onLoad,
+    onButtonClick,
+    formatButtonOnClick,
+    isFormatted,
+    ...otherProps
+}) => {
+    useEffect(() => {
+        if (onLoad) {
+            onLoad();
+        }
+    }, []);
+
+    return (
+        <Box>
+            <Typography fontSize={'0.8rem'}>Query</Typography>
+            <Stack direction={'row'} alignItems={'center'}>
+                <QueryAutocompleteInput
+                    suggestions={otherProps.suggestions}
+                    setWherePhrase={otherProps.setWherePhrase}
+                    onEnter={otherProps.onEnter}
+                ></QueryAutocompleteInput>
+                <Box minWidth={isWindowSmall ? '400px' : '550px'}>
+                    <ProBroButton
+                        startIcon={<PlayArrowTwoToneIcon />}
+                        onClick={onButtonClick}
+                    >
+                        {isWindowSmall ? '' : 'Query'}
+                    </ProBroButton>
+                    <ExportPopup
+                        wherePhrase={otherProps.wherePhrase}
+                        sortColumns={otherProps.sortColumns}
+                        filters={otherProps.filters}
+                        selectedRows={otherProps.selectedRows}
+                        isWindowSmall={isWindowSmall}
+                    />
+                    <ProBroButton
+                        onClick={formatButtonOnClick}
+                        startIcon={
+                            isFormatted ? (
+                                <RawOffTwoToneIcon />
+                            ) : (
+                                <RawOnTwoToneIcon />
+                            )
+                        }
+                    />
+                    <UpdatePopup
+                        selectedRows={otherProps.selectedRows}
+                        columns={otherProps.columns}
+                        rows={otherProps.rows}
+                        tableName={otherProps.tableName}
+                        open={otherProps.open}
+                        setOpen={otherProps.setOpen}
+                        action={otherProps.action}
+                        setAction={otherProps.setAction}
+                        readRow={otherProps.readRow}
+                        isReadOnly={otherProps.isReadOnly}
+                        isWindowSmall={isWindowSmall}
+                    ></UpdatePopup>
+                </Box>
+            </Stack>
+        </Box>
+    );
+};
+
+export default QueryFormHead;

@@ -1,4 +1,5 @@
 import { ICommand } from '@app/model';
+import { ISettings } from '@src/common/IExtensionSettings';
 
 /**
  * Active interface for vscode api variable
@@ -9,7 +10,8 @@ export interface VSCode {
     setState(state: any): void;
 }
 
-let vsCodeAPI: VSCode = null;
+let vsCodeAPI: VSCode = undefined;
+let configuration: ISettings = undefined;
 
 /**
  * method that returns the vsCodeAPI
@@ -21,4 +23,15 @@ export const getVSCodeAPI = () => {
         vsCodeAPI = window.acquireVsCodeApi() as VSCode;
     }
     return vsCodeAPI;
+};
+
+/**
+ * method that returns the vscode configuration
+ * @returns configuration
+ */
+export const getVSCodeConfiguration = () => {
+    if (!configuration) {
+        configuration = window.configuration;
+    }
+    return configuration;
 };
