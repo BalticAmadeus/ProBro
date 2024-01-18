@@ -308,8 +308,8 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
         "jestTest": "jest",
         "vsce": "vsce package",
-        "lint": "eslint src/**",
-        "lint:fix": "eslint src/** --fix"
+        "lint": "eslint \"src/**/*.{ts,tsx}\"",
+        "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix"
     },
     "devDependencies": {
         "@babel/core": "^7.21.0",

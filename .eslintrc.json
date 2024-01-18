@@ -1,6 +1,5 @@
 {
     "root": true,
-    "parser": "@typescript-eslint/parser",
     "env": {
         "node": true,
         "browser": true
@@ -9,11 +8,17 @@
         "ecmaVersion": 6,
         "sourceType": "module"
     },
-    "plugins": [
-        "@typescript-eslint",
-        "react"
+    "overrides": [
+        {
+          "files": ["*.ts", "*.tsx"],
+          "parser": "@typescript-eslint/parser",
+          "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
+          "plugins": [
+              "@typescript-eslint",
+              "react"
+          ]
+        }
     ],
-    "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
     "rules": {
         "@typescript-eslint/naming-convention": [
             "warn",

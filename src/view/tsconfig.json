@@ -1,32 +1,32 @@
 {
-    'compilerOptions': {
-        'module': 'esnext',
-        'moduleResolution': 'node',
-        'target': 'es6',
-        'outDir': 'out/view/app',
-        'lib': ['es6', 'dom'],
-        'jsx': 'react-jsx',
-        'sourceMap': true,
-        'rootDir': '../',
-        'noUnusedLocals': true,
-        'noImplicitReturns': true,
-        'noFallthroughCasesInSwitch': true,
-        'experimentalDecorators': true,
-        'resolveJsonModule': true,
-        'baseUrl': '.',
-        'paths': {
-            '@assets/*': ['app/assets/*'],
-            '@Connection/*': ['app/Connection/*'],
-            '@Fields/*': ['app/Fields/*'],
-            '@Indexes/*': ['app/Indexes/*'],
-            '@Query/*': ['app/Query/*'],
-            '@utils/*': ['app/utils/*'],
-            '@Welcome/*': ['app/Welcome/*'],
-            '@app/*': ['app/*'],
-            '@view/*': ['./*'],
-            '@src/*': ['../*'],
-            '@root/*': ['../../*']
+    "compilerOptions": {
+        "module": "esnext",
+        "moduleResolution": "node",
+        "target": "es6",
+        "outDir": "out/view/app",
+        "lib": ["es6", "dom"],
+        "jsx": "react-jsx",
+        "sourceMap": true,
+        "rootDir": "../",
+        "noUnusedLocals": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "experimentalDecorators": true,
+        "resolveJsonModule": true,
+        "baseUrl": ".",
+        "paths": {
+            "@assets/*": ["app/assets/*"],
+            "@Connection/*": ["app/Connection/*"],
+            "@Fields/*": ["app/Fields/*"],
+            "@Indexes/*": ["app/Indexes/*"],
+            "@Query/*": ["app/Query/*"],
+            "@utils/*": ["app/utils/*"],
+            "@Welcome/*": ["app/Welcome/*"],
+            "@app/*": ["app/*"],
+            "@view/*": ["./*"],
+            "@src/*": ["../*"],
+            "@root/*": ["../../*"]
         }
     },
-    'exclude': ['node_modules']
-};
+    "exclude": ["node_modules"]
+}
