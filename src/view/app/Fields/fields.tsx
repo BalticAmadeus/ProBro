@@ -151,7 +151,7 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
                     setFilteredRows(rows);
                 } else {
                     setFilteredRows(rows.filter((row) => {
-                        for (let [key] of Object.entries(filters.columns)) {
+                        for (const [key] of Object.entries(filters.columns)) {
                             if (!row[key].toString().toLowerCase().includes(filters.columns[key].toLowerCase())) {
                                 return false;
                             }

@@ -30,7 +30,7 @@ implements vscode.TreeDataProvider<INode>, IRefreshCallback
         tablesListProvider instanceof TablesListProvider
             ) {
                 const nodes = e.selection as DbConnectionNode[];
-                let configs: IConfig[] = [];
+                const configs: IConfig[] = [];
 
                 nodes.forEach((node) => {
                     configs.push(node.config);

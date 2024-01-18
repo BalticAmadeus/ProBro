@@ -89,7 +89,7 @@ export class DbConnectionNode implements INode {
     }
 
     private getAllConnections() {
-        let configDB: IConfig = {
+        const configDB: IConfig = {
             id: uuid(),
             label: '',
             name: '',

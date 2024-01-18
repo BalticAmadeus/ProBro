@@ -45,7 +45,7 @@ function ConnectionForm({
 
     const onSaveClick = (event: React.MouseEvent<HTMLInputElement>) => {
         event.preventDefault();
-        const id: string = 'SaveClick';
+        const id = 'SaveClick';
 
         const config: IConfig = {
             id: vsState.config.id,
@@ -95,7 +95,7 @@ function ConnectionForm({
 
     const onTestClick = (event: React.MouseEvent<HTMLInputElement>) => {
         event.preventDefault();
-        const id: string = 'TestClick';
+        const id = 'TestClick';
         const config: IConfig = {
             id: vsState.config.id,
             label: label,
@@ -121,12 +121,12 @@ function ConnectionForm({
     };
 
     const importPf = () => {
-        let input = document.createElement('input');
+        const input = document.createElement('input');
         input.id = 'inputVal';
         input.type = 'file';
         input.accept = '.pf';
         input.onchange = (ev) => {
-            let [file] = Array.from(input.files);
+            const [file] = Array.from(input.files);
             const reader = new FileReader();
             reader.addEventListener('load', () => {
                 const pfParser = new PfParser();
@@ -147,7 +147,7 @@ function ConnectionForm({
     };
 
     function getGroups() {
-        const id: string = 'getGroup';
+        const id = 'getGroup';
         const config: IConfig = {
             id: '',
             label: '',

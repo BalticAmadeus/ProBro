@@ -195,7 +195,7 @@ let client: OEClient;
 
 async function getOEClient(): Promise<any> {
     let port: number | undefined;
-    let host: string = 'localhost';
+    const host = 'localhost';
     if (!client) {
         await vscode.commands.executeCommand(
             `${Constants.globalExtensionKey}.releasePort`

@@ -9,7 +9,7 @@ import { Constants } from '../common/Constants';
 export class DatabaseProcessor implements IProcessor {
     private static instance: DatabaseProcessor; // singleton
     private static processStartTime: number | undefined = undefined; // undefined means process is not running
-    private static processTimeout: number = 5000; // 5 seconds
+    private static processTimeout = 5000; // 5 seconds
     private static errObj = { errMessage: '', isError: false };
 
     private readonly configuration = vscode.workspace.getConfiguration(
@@ -114,7 +114,7 @@ export class DatabaseProcessor implements IProcessor {
 
         DatabaseProcessor.processStartTime = Date.now();
         this.logger.log('execShell params', params);
-        var timeInMs = Date.now();
+        const timeInMs = Date.now();
 
         return getOEClient()
             .then((client) => {
@@ -122,7 +122,7 @@ export class DatabaseProcessor implements IProcessor {
                 return client.sendCommand(cmd);
             })
             .then((data) => {
-                var json = JSON.parse(data);
+                const json = JSON.parse(data);
                 console.log(
                     `Process time: ${Date.now() - timeInMs}, OE time: ${
                         json.debug.time
@@ -152,7 +152,7 @@ export class DatabaseProcessor implements IProcessor {
             }
         }
 
-        var connectionString = `-db ${config.name} ${
+        const connectionString = `-db ${config.name} ${
             config.user ? '-U ' + config.user : ''
         } ${config.password ? '-P ' + config.password : ''} ${
             config.host ? '-H ' + config.host : ''

@@ -16,7 +16,7 @@ import { Constants } from '../../../common/Constants';
 export class DbProcessor implements IProcessor {
     private static instance: DbProcessor | undefined = undefined; // singleton
     private processStartTime: number | undefined = undefined; // undefined means process is not running
-    private processTimeout: number = 5000; // 5 seconds
+    private processTimeout = 5000; // 5 seconds
     private errObj = { errMessage: '', isError: false };
 
     private readonly configuration = vscode.workspace.getConfiguration(
@@ -39,7 +39,7 @@ export class DbProcessor implements IProcessor {
             return this.getDBVersion(config);
         }
 
-        let params: IOEParams = {
+        const params: IOEParams = {
             connectionString: (
                 await ClientFactory.getClientHelperInstance(config)
             ).formConnectionString(config),
@@ -50,7 +50,7 @@ export class DbProcessor implements IProcessor {
     }
 
     public async getDBVersion(config: IConnectionConfig): Promise<any> {
-        let params: IOEParams = {
+        const params: IOEParams = {
             connectionString: (
                 await ClientFactory.getClientHelperInstance(config)
             ).formConnectionString(config),
@@ -61,7 +61,7 @@ export class DbProcessor implements IProcessor {
     }
 
     public async getTablesList(config: IConfig): Promise<any> {
-        let params: IOEParams = {
+        const params: IOEParams = {
             connectionString: (
                 await ClientFactory.getClientHelperInstance(config)
             ).formConnectionString(config),
@@ -76,7 +76,7 @@ export class DbProcessor implements IProcessor {
         inputParams: ITableData | undefined
     ): Promise<any> {
         if (config && tableName && inputParams) {
-            let params: IOEParams = {
+            const params: IOEParams = {
                 connectionString: (
                     await ClientFactory.getClientHelperInstance(config)
                 ).formConnectionString(config),
@@ -95,7 +95,7 @@ export class DbProcessor implements IProcessor {
         inputParams: ITableData | undefined
     ): Promise<any> {
         if (config && tableName && inputParams) {
-            let params: IOEParams = {
+            const params: IOEParams = {
                 connectionString: (
                     await ClientFactory.getClientHelperInstance(config)
                 ).formConnectionString(config),
@@ -113,7 +113,7 @@ export class DbProcessor implements IProcessor {
         tableName: string | undefined
     ): Promise<TableDetails> {
         if (config && tableName) {
-            let params: IOEParams = {
+            const params: IOEParams = {
                 connectionString: (
                     await ClientFactory.getClientHelperInstance(config)
                 ).formConnectionString(config),
@@ -150,7 +150,7 @@ export class DbProcessor implements IProcessor {
 
         this.processStartTime = Date.now();
         this.logger.log('execShell params', params);
-        let timeInMs = Date.now();
+        const timeInMs = Date.now();
 
         return ClientFactory.getInstance(config)
             .then((client) => {
@@ -160,7 +160,7 @@ export class DbProcessor implements IProcessor {
             })
             .then((data) => {
                 console.log('data: ', data);
-                let json = JSON.parse(data);
+                const json = JSON.parse(data);
                 console.log(
                     `Process time: ${Date.now() - timeInMs}, OE time: ${
                         json.debug.time

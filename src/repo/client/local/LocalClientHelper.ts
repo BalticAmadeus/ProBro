@@ -22,7 +22,7 @@ export class LocalClientHelper implements IClientHelper {
             }
         }
 
-        let connectionString = `-db ${config.name} ${
+        const connectionString = `-db ${config.name} ${
             config.user ? '-U ' + config.user : ''
         } ${config.password ? '-P ' + config.password : ''} ${
             config.host ? '-H ' + config.host : ''

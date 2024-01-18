@@ -13,9 +13,9 @@ afterEach(() => {
 
 test('formatDumpFile calls other methods ', () => {
     const dumpFileFormatterTest = new DumpFileFormatterTest();
-    let spyDumpData = jest.spyOn(dumpFileFormatterTest, 'formatDumpData');
-    let spyTrailerInfo = jest.spyOn(dumpFileFormatterTest, 'formatTrailerInfo');
-    let spyDumpFile = jest.spyOn(dumpFileFormatterTest, 'combineDumpFile');
+    const spyDumpData = jest.spyOn(dumpFileFormatterTest, 'formatDumpData');
+    const spyTrailerInfo = jest.spyOn(dumpFileFormatterTest, 'formatTrailerInfo');
+    const spyDumpFile = jest.spyOn(dumpFileFormatterTest, 'combineDumpFile');
 
     dumpFileFormatterTest.formatDumpFile(testObjInput, 'test', 'test');
     expect(spyDumpData).toHaveBeenCalled();

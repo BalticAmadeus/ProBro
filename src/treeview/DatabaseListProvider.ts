@@ -53,7 +53,7 @@ export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
                     group = '<EMPTY>';
                 }
                 if (group === this.groupName) {
-                    let node = new connectionNode.DbConnectionNode(
+                    const node = new connectionNode.DbConnectionNode(
                         id,
                         connections[id],
                         this.refreshCallback,
@@ -71,7 +71,7 @@ export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
                     group = '<EMPTY>';
                 }
                 if (group === this.groupName) {
-                    let node = new connectionNode.DbConnectionNode(
+                    const node = new connectionNode.DbConnectionNode(
                         id,
                         workspaceConnections[id],
                         this.refreshCallback,

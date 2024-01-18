@@ -50,10 +50,10 @@ export default function UpdatePopup({
                 ) {
                     rows[0][column.key] = '?';
                 }
-                let fieldType = typeof (rows && rows[0] && String(rows[0][column.key])
+                const fieldType = typeof (rows && rows[0] && String(rows[0][column.key])
                     ? rows[0][column.key]
                     : '');
-                let fieldValue =
+                const fieldValue =
             rows && rows[0] && String(rows[0][column.key])
                 ? String(rows[0][column.key])
                 : '';

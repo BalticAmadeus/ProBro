@@ -4,7 +4,7 @@ import { IRefreshCallback } from './IRefreshCallback';
 import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
 
 export class DbConnectionUpdater {
-    private locked: boolean = false;
+    private locked = false;
     private context: vscode.ExtensionContext = {} as vscode.ExtensionContext;
     private callback: IRefreshCallback = {} as IRefreshCallback;
 
@@ -27,7 +27,7 @@ export class DbConnectionUpdater {
     }
 
     private async updateWorkStateStatuses() {
-        let connections = this.context.workspaceState.get<{
+        const connections = this.context.workspaceState.get<{
       [id: string]: IConfig;
     }>('pro-bro.dbconfig');
 
@@ -36,7 +36,7 @@ export class DbConnectionUpdater {
             return;
         }
 
-        for (let id of Object.keys(connections)) {
+        for (const id of Object.keys(connections)) {
             connections[id].conStatus = ConnectionStatus.Connecting;
             this.updateWorkStateStatus(connections);
             await this.wait();
@@ -60,7 +60,7 @@ export class DbConnectionUpdater {
     }
 
     private async updateStatuses() {
-        let connections = this.context.globalState.get<{ [id: string]: IConfig }>(
+        const connections = this.context.globalState.get<{ [id: string]: IConfig }>(
             'pro-bro.dbconfig'
         );
 
@@ -69,7 +69,7 @@ export class DbConnectionUpdater {
             return;
         }
 
-        for (let id of Object.keys(connections)) {
+        for (const id of Object.keys(connections)) {
             connections[id].conStatus = ConnectionStatus.Connecting;
             this.updateStatus(connections);
             await this.wait();
@@ -106,7 +106,7 @@ export class DbConnectionUpdater {
     }
   
     private async updateSingleConnectionStatus(connectionId: string) {
-        let connections = this.context.globalState.get<{ [id: string]: IConfig }>(
+        const connections = this.context.globalState.get<{ [id: string]: IConfig }>(
             'pro-bro.dbconfig'
         );
   

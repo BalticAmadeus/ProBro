@@ -1,6 +1,10 @@
 {
     "root": true,
     "parser": "@typescript-eslint/parser",
+    "env": {
+        "node": true,
+        "browser": true
+    },
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module"
@@ -9,7 +13,7 @@
         "@typescript-eslint",
         "react"
     ],
-    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
     "rules": {
         "@typescript-eslint/naming-convention": [
             "warn",
@@ -24,7 +28,9 @@
         "no-throw-literal": "warn",
         "semi": ["warn", "always"],
         "quotes": ["warn", "single"],
-        "indent": ["warn", 4]
+        "indent": ["warn", 4],
+        "react/jsx-uses-react": "off",
+        "react/react-in-jsx-scope": "off"
     },
     "ignorePatterns": [
         "out",

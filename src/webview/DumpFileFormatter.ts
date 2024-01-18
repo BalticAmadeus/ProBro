@@ -1,9 +1,9 @@
 import { IExportDumpData, IOePsc } from '../db/Oe';
 
 export class DumpFileFormatter {
-    protected dumpData: string = '';
-    protected trailerInfo: string = '';
-    protected dumpFile: string = '';
+    protected dumpData = '';
+    protected trailerInfo = '';
+    protected dumpFile = '';
 
     public formatDumpFile(
         data: IExportDumpData,

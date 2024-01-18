@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
         new WelcomePageProvider(context, versionChecker.versionFromPackage);
     }
 
-    let allFileContent: string = '';
+    let allFileContent = '';
 
     vscode.workspace.onDidChangeConfiguration((event) => {
         const affected = event.affectsConfiguration(

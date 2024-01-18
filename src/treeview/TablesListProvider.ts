@@ -142,7 +142,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     private async getGroupNodes(): Promise<void> {
         this.tableNodes = [];
         if (this.configs) {
-            for (let config of this.configs) {
+            for (const config of this.configs) {
                 await ProcessorFactory.getProcessorInstance()
                     .getTablesList(config)
                     .then((oeTables) => {

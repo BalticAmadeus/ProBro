@@ -15,7 +15,7 @@ export function readFile(fileName: string): string {
 export function parseOEFile(fileContent: string, filePath: string) {
     const data = JSON.parse(fileContent);
     const { name, dbConnections } = data;
-    let configList: IConfig[] = [];
+    const configList: IConfig[] = [];
 
     const groupName = name;
     let num = 0;

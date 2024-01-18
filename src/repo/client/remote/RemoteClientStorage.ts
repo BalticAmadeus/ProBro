@@ -22,7 +22,7 @@ export class RemoteClientStorage {
             );
         }
 
-        let remoteClient = RemoteClientStorage.remoteClientMap.get(
+        const remoteClient = RemoteClientStorage.remoteClientMap.get(
             connectionConfig.connectionId
         );
 

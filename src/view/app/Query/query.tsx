@@ -219,7 +219,7 @@ function QueryForm({
                                     onSort(event.ctrlKey || event.metaKey);
                                 }
 
-                                var timer;
+                                let timer;
                                 function handleKeyInputTimeout() {
                                     clearTimeout(timer);
                                     timer = setTimeout(() => {
@@ -434,7 +434,7 @@ function QueryForm({
         prepareQuery();
     };
 
-    let input = document.getElementById('input');
+    const input = document.getElementById('input');
 
     const handleKeyDown = (e) => {
         let selected = document.querySelector('.selected') as HTMLLIElement;
@@ -688,7 +688,7 @@ function QueryForm({
     const suggestions = document.querySelector('#column-list');
 
     function autocomplete(input, list) {
-        let lastWord = input.value.split(' ').pop();
+        const lastWord = input.value.split(' ').pop();
 
         suggestions.innerHTML = '';
 
@@ -706,7 +706,7 @@ function QueryForm({
     }
 
     function addText(input, newText) {
-        let wordArray = input.value.split(' ');
+        const wordArray = input.value.split(' ');
         wordArray.pop();
         input.value = '';
         for (const word of wordArray) {

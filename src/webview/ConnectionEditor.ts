@@ -10,7 +10,7 @@ export class ConnectionEditor {
     private readonly panel: vscode.WebviewPanel | undefined;
     private readonly extensionPath: string;
     private disposables: vscode.Disposable[] = [];
-    private isTestedSuccesfully: boolean = false;
+    private isTestedSuccesfully = false;
     private readonly id?: string;
     private readonly configuration = vscode.workspace.getConfiguration(
         Constants.globalExtensionKey
@@ -114,7 +114,7 @@ export class ConnectionEditor {
                         const uniqueGroups = new Set<string>(); // Specify that the Set will contain strings
 
                         for (const id of Object.keys(connections)) {
-                            let group = connections[id].group.toUpperCase();
+                            const group = connections[id].group.toUpperCase();
                             uniqueGroups.add(group);
                         }
 
