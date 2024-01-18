@@ -1,19 +1,19 @@
 {
-    "columns": [
+    'columns': [
         {
-            "key": "cName",
-            "name": "Name",
-            "width": 200
+            'key': 'cName',
+            'name': 'Name',
+            'width': 200
         },
         {
-            "key": "cFlags",
-            "name": "Flags",
-            "width": 80
+            'key': 'cFlags',
+            'name': 'Flags',
+            'width': 80
         },
         {
-            "key": "cFields",
-            "name": "Fields",
-            "width": "auto"
+            'key': 'cFields',
+            'name': 'Fields',
+            'width': 'auto'
         }
     ]
-}
+};

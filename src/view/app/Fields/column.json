@@ -1,84 +1,84 @@
 {
-    "columns": [
+    'columns': [
         {
-            "key": "order",
-            "name": "Order",
-            "width": 80
+            'key': 'order',
+            'name': 'Order',
+            'width': 80
         },
         {
-            "key": "name",
-            "name": "Name",
-            "width": 150
+            'key': 'name',
+            'name': 'Name',
+            'width': 150
         },
         {
-            "key": "type",
-            "name": "Type",
-            "width": 80
+            'key': 'type',
+            'name': 'Type',
+            'width': 80
         },
         {
-            "key": "format",
-            "name": "Format",
-            "width": 150
+            'key': 'format',
+            'name': 'Format',
+            'width': 150
         },
         {
-            "key": "label",
-            "name": "Label",
-            "width": 200
+            'key': 'label',
+            'name': 'Label',
+            'width': 200
         },
         {
-            "key": "initial",
-            "name": "Initial",
-            "width": 80
+            'key': 'initial',
+            'name': 'Initial',
+            'width': 80
         },
         {
-            "key": "columnLabel",
-            "name": "Column Label",
-            "width": 100
+            'key': 'columnLabel',
+            'name': 'Column Label',
+            'width': 100
         },
         {
-            "key": "mandatory",
-            "name": "Mandatory",
-            "width": 100
+            'key': 'mandatory',
+            'name': 'Mandatory',
+            'width': 100
         },
         {
-            "key": "extent",
-            "name": "Extent",
-            "width": 80
+            'key': 'extent',
+            'name': 'Extent',
+            'width': 80
         },
         {
-            "key": "decimals",
-            "name": "Decimals",
-            "width": 80
+            'key': 'decimals',
+            'name': 'Decimals',
+            'width': 80
         },
         {
-            "key": "rpos",
-            "name": "R-pos",
-            "width": 80
+            'key': 'rpos',
+            'name': 'R-pos',
+            'width': 80
         },
         {
-            "key": "valexp",
-            "name": "Val Expr",
-            "width": 80
+            'key': 'valexp',
+            'name': 'Val Expr',
+            'width': 80
         },
         {
-            "key": "valMessage",
-            "name": "Val Message",
-            "width": 150
+            'key': 'valMessage',
+            'name': 'Val Message',
+            'width': 150
         },
         {
-            "key": "helpMsg",
-            "name": "Help message",
-            "width": 250
+            'key': 'helpMsg',
+            'name': 'Help message',
+            'width': 250
         },
         {
-            "key": "description",
-            "name": "Description",
-            "width": 250
+            'key': 'description',
+            'name': 'Description',
+            'width': 250
         },
         {
-            "key": "viewAs",
-            "name": "ViewAs",
-            "width": 250
+            'key': 'viewAs',
+            'name': 'ViewAs',
+            'width': 250
         }
     ]
-}
+};
