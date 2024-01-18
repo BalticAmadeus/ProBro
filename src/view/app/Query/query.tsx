@@ -142,262 +142,262 @@ function QueryForm({
         const message = event.data;
         logger.log('got query data', message);
         switch (message.command) {
-            case 'columns':
-                setSelectedColumns([...message.columns]);
-                break;
-            case 'submit':
-                if (message.data.error) {
-                    // should be displayed in UpdatePopup window
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsDataRetrieved(false);
-                } else {
-                    setSelectedRows(new Set());
-                    setOpen(false);
-                    reloadData(
-                        loaded + (action === ProcessAction.Insert ? 1 : 0)
-                    );
-                }
-                break;
-            case 'crud':
-                if (message.data.error) {
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsDataRetrieved(false);
-                } else {
-                    setColumnsCRUD(message.data.columns);
-                    setRecordsCRUD(message.data.rawData);
-                    setOpen(true);
-                }
-                break;
-            case 'data':
-                if (message.data.error) {
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsDataRetrieved(false);
-                } else {
-                    if (message.data.columns.length !== columns.length) {
-                        const fontSize = +window
-                            .getComputedStyle(
-                                document.getElementsByClassName(
-                                    'rdg-header-row'
-                                )[0]
-                            )
-                            .getPropertyValue('font-size')
-                            .match(/\d+[.]?\d+/);
-                        message.data.columns.forEach((column) => {
-                            if (column.key !== OEDataTypePrimitive.Rowid) {
-                                column.headerRenderer = function ({
-                                    column,
-                                    sortDirection,
-                                    priority,
-                                    onSort,
-                                    isCellSelected,
-                                }) {
-                                    function handleKeyDown(event) {
-                                        if (
-                                            event.key === ' ' ||
+        case 'columns':
+            setSelectedColumns([...message.columns]);
+            break;
+        case 'submit':
+            if (message.data.error) {
+                // should be displayed in UpdatePopup window
+                setErrorObject({
+                    error: message.data.error,
+                    description: message.data.description,
+                    trace: message.data.trace,
+                });
+                setIsDataRetrieved(false);
+            } else {
+                setSelectedRows(new Set());
+                setOpen(false);
+                reloadData(
+                    loaded + (action === ProcessAction.Insert ? 1 : 0)
+                );
+            }
+            break;
+        case 'crud':
+            if (message.data.error) {
+                setErrorObject({
+                    error: message.data.error,
+                    description: message.data.description,
+                    trace: message.data.trace,
+                });
+                setIsDataRetrieved(false);
+            } else {
+                setColumnsCRUD(message.data.columns);
+                setRecordsCRUD(message.data.rawData);
+                setOpen(true);
+            }
+            break;
+        case 'data':
+            if (message.data.error) {
+                setErrorObject({
+                    error: message.data.error,
+                    description: message.data.description,
+                    trace: message.data.trace,
+                });
+                setIsDataRetrieved(false);
+            } else {
+                if (message.data.columns.length !== columns.length) {
+                    const fontSize = +window
+                        .getComputedStyle(
+                            document.getElementsByClassName(
+                                'rdg-header-row'
+                            )[0]
+                        )
+                        .getPropertyValue('font-size')
+                        .match(/\d+[.]?\d+/);
+                    message.data.columns.forEach((column) => {
+                        if (column.key !== OEDataTypePrimitive.Rowid) {
+                            column.headerRenderer = function ({
+                                column,
+                                sortDirection,
+                                priority,
+                                onSort,
+                                isCellSelected,
+                            }) {
+                                function handleKeyDown(event) {
+                                    if (
+                                        event.key === ' ' ||
                                             event.key === 'Enter'
-                                        ) {
-                                            event.preventDefault();
-                                            onSort(
-                                                event.ctrlKey || event.metaKey
-                                            );
-                                        }
+                                    ) {
+                                        event.preventDefault();
+                                        onSort(
+                                            event.ctrlKey || event.metaKey
+                                        );
                                     }
+                                }
 
-                                    function handleClick(event) {
-                                        onSort(event.ctrlKey || event.metaKey);
-                                    }
+                                function handleClick(event) {
+                                    onSort(event.ctrlKey || event.metaKey);
+                                }
 
-                                    var timer;
-                                    function handleKeyInputTimeout() {
-                                        clearTimeout(timer);
-                                        timer = setTimeout(() => {
-                                            reloadData(
-                                                configuration.initialBatchSizeLoad
-                                            );
-                                        }, 500);
+                                let timer;
+                                function handleKeyInputTimeout() {
+                                    clearTimeout(timer);
+                                    timer = setTimeout(() => {
+                                        reloadData(
+                                            configuration.initialBatchSizeLoad
+                                        );
+                                    }, 500);
+                                }
+                                function testKeyDown(event) {
+                                    if (event.key === 'Enter') {
+                                        event.preventDefault();
+                                        reloadData(
+                                            configuration.initialBatchSizeLoad
+                                        );
                                     }
-                                    function testKeyDown(event) {
-                                        if (event.key === 'Enter') {
-                                            event.preventDefault();
-                                            reloadData(
-                                                configuration.initialBatchSizeLoad
-                                            );
-                                        }
-                                    }
+                                }
 
-                                    function handleInputKeyDown(event) {
-                                        const tempFilters = filters;
-                                        tempFilters.columns[column.key] =
+                                function handleInputKeyDown(event) {
+                                    const tempFilters = filters;
+                                    tempFilters.columns[column.key] =
                                             event.target.value;
-                                        setFilters(tempFilters);
-                                        if (
-                                            configuration.filterAsYouType ===
+                                    setFilters(tempFilters);
+                                    if (
+                                        configuration.filterAsYouType ===
                                             true
-                                        ) {
-                                            handleKeyInputTimeout();
-                                        }
+                                    ) {
+                                        handleKeyInputTimeout();
                                     }
+                                }
 
-                                    return (
-                                        <Fragment>
-                                            <div
-                                                className={
-                                                    filters.enabled
-                                                        ? 'filter-cell'
-                                                        : undefined
-                                                }
+                                return (
+                                    <Fragment>
+                                        <div
+                                            className={
+                                                filters.enabled
+                                                    ? 'filter-cell'
+                                                    : undefined
+                                            }
+                                        >
+                                            <span
+                                                tabIndex={-1}
+                                                style={{
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                }}
+                                                className='rdg-header-sort-cell'
+                                                onClick={handleClick}
+                                                onKeyDown={handleKeyDown}
                                             >
                                                 <span
-                                                    tabIndex={-1}
+                                                    className='rdg-header-sort-name'
                                                     style={{
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
-                                                    }}
-                                                    className='rdg-header-sort-cell'
-                                                    onClick={handleClick}
-                                                    onKeyDown={handleKeyDown}
-                                                >
-                                                    <span
-                                                        className='rdg-header-sort-name'
-                                                        style={{
-                                                            flexGrow: '1',
-                                                            overflow: 'clip',
-                                                            textOverflow:
+                                                        flexGrow: '1',
+                                                        overflow: 'clip',
+                                                        textOverflow:
                                                                 'ellipsis',
+                                                    }}
+                                                >
+                                                    {column.name}
+                                                </span>
+                                                <span>
+                                                    <svg
+                                                        viewBox='0 0 12 8'
+                                                        width='12'
+                                                        height='8'
+                                                        className='rdg-sort-arrow'
+                                                        style={{
+                                                            fill: 'currentcolor',
                                                         }}
                                                     >
-                                                        {column.name}
-                                                    </span>
-                                                    <span>
-                                                        <svg
-                                                            viewBox='0 0 12 8'
-                                                            width='12'
-                                                            height='8'
-                                                            className='rdg-sort-arrow'
-                                                            style={{
-                                                                fill: 'currentcolor',
-                                                            }}
-                                                        >
-                                                            {sortDirection ===
+                                                        {sortDirection ===
                                                                 'ASC' && (
-                                                                <path d='M0 8 6 0 12 8'></path>
-                                                            )}
-                                                            {sortDirection ===
+                                                            <path d='M0 8 6 0 12 8'></path>
+                                                        )}
+                                                        {sortDirection ===
                                                                 'DESC' && (
-                                                                <path d='M0 0 6 8 12 0'></path>
-                                                            )}
-                                                        </svg>
-                                                        {priority}
-                                                    </span>
+                                                            <path d='M0 0 6 8 12 0'></path>
+                                                        )}
+                                                    </svg>
+                                                    {priority}
                                                 </span>
+                                            </span>
+                                        </div>
+                                        {filters.enabled && (
+                                            <div className={'filter-cell'}>
+                                                <input
+                                                    className='textInput'
+                                                    autoFocus={
+                                                        isCellSelected
+                                                    }
+                                                    style={filterCSS}
+                                                    defaultValue={
+                                                        filters.columns[
+                                                            column.key
+                                                        ]
+                                                    }
+                                                    onChange={
+                                                        handleInputKeyDown
+                                                    }
+                                                    onKeyDown={testKeyDown}
+                                                />
                                             </div>
-                                            {filters.enabled && (
-                                                <div className={'filter-cell'}>
-                                                    <input
-                                                        className='textInput'
-                                                        autoFocus={
-                                                            isCellSelected
-                                                        }
-                                                        style={filterCSS}
-                                                        defaultValue={
-                                                            filters.columns[
-                                                                column.key
-                                                            ]
-                                                        }
-                                                        onChange={
-                                                            handleInputKeyDown
-                                                        }
-                                                        onKeyDown={testKeyDown}
-                                                    />
-                                                </div>
-                                            )}
-                                        </Fragment>
-                                    );
-                                };
-                            }
-                            column.minWidth = column.name.length * fontSize;
-                            column.width =
+                                        )}
+                                    </Fragment>
+                                );
+                            };
+                        }
+                        column.minWidth = column.name.length * fontSize;
+                        column.width =
                                 getOEFormatLength(column.format ?? '') *
                                 (fontSize - 4);
-                            switch (column.type.toUpperCase()) {
-                                case OEDataTypePrimitive.Integer:
-                                case OEDataTypePrimitive.Decimal:
-                                case OEDataTypePrimitive.Int64:
-                                    column.cellClass = 'rightAlign';
-                                    column.headerCellClass = 'rightAlign';
-                                    break;
-                                default:
-                                    break;
+                        switch (column.type.toUpperCase()) {
+                        case OEDataTypePrimitive.Integer:
+                        case OEDataTypePrimitive.Decimal:
+                        case OEDataTypePrimitive.Int64:
+                            column.cellClass = 'rightAlign';
+                            column.headerCellClass = 'rightAlign';
+                            break;
+                        default:
+                            break;
+                        }
+                    });
+                    setColumns([SelectColumn, ...message.data.columns]);
+                    if (message.columns !== undefined) {
+                        setSelectedColumns([...message.columns]);
+                    } else {
+                        setSelectedColumns(
+                            [
+                                ...message.data.columns.map(
+                                    (column) => column.name
+                                ),
+                            ].filter(
+                                (column) =>
+                                    column !== OEDataTypePrimitive.Rowid
+                            )
+                        );
+                    }
+                }
+                const boolField = message.data.columns.filter(
+                    (field) => field.type === OEDataTypePrimitive.Logical
+                );
+                if (boolField.length !== 0) {
+                    message.data.rawData.forEach((row) => {
+                        boolField.forEach((field) => {
+                            if (row[field.name] !== null) {
+                                row[field.name] =
+                                        row[field.name].toString();
                             }
                         });
-                        setColumns([SelectColumn, ...message.data.columns]);
-                        if (message.columns !== undefined) {
-                            setSelectedColumns([...message.columns]);
-                        } else {
-                            setSelectedColumns(
-                                [
-                                    ...message.data.columns.map(
-                                        (column) => column.name
-                                    ),
-                                ].filter(
-                                    (column) =>
-                                        column !== OEDataTypePrimitive.Rowid
-                                )
-                            );
-                        }
-                    }
-                    const boolField = message.data.columns.filter(
-                        (field) => field.type === OEDataTypePrimitive.Logical
-                    );
-                    if (boolField.length !== 0) {
-                        message.data.rawData.forEach((row) => {
-                            boolField.forEach((field) => {
-                                if (row[field.name] !== null) {
-                                    row[field.name] =
-                                        row[field.name].toString();
-                                }
-                            });
-                        });
-                    }
-                    setRawRows([...rawRows, ...message.data.rawData]);
-                    setRowID(
-                        message.data.rawData.length > 0
-                            ? message.data.rawData[
-                                  message.data.rawData.length - 1
-                              ].ROWID
-                            : rowID
-                    );
-                    setLoaded(loaded + message.data.rawData.length);
-                    setFormattedRows([
-                        ...formattedRows,
-                        ...message.data.formattedData,
-                    ]);
-                    setLoaded(loaded + message.data.formattedData.length);
-                    setErrorObject(emptyErrorObj);
-                    setIsDataRetrieved(true);
-                    setStatisticsObject({
-                        recordsRetrieved: message.data.debug.recordsRetrieved,
-                        recordsRetrievalTime:
-                            message.data.debug.recordsRetrievalTime,
-                        connectTime: message.data.debug.timeConnect,
                     });
-                    allRecordsRetrieved(
-                        message.data.debug.recordsRetrieved,
-                        message.data.debug.recordsRetrievalTime
-                    );
                 }
+                setRawRows([...rawRows, ...message.data.rawData]);
+                setRowID(
+                    message.data.rawData.length > 0
+                        ? message.data.rawData[
+                            message.data.rawData.length - 1
+                        ].ROWID
+                        : rowID
+                );
+                setLoaded(loaded + message.data.rawData.length);
+                setFormattedRows([
+                    ...formattedRows,
+                    ...message.data.formattedData,
+                ]);
+                setLoaded(loaded + message.data.formattedData.length);
+                setErrorObject(emptyErrorObj);
+                setIsDataRetrieved(true);
+                setStatisticsObject({
+                    recordsRetrieved: message.data.debug.recordsRetrieved,
+                    recordsRetrievalTime:
+                            message.data.debug.recordsRetrievalTime,
+                    connectTime: message.data.debug.timeConnect,
+                });
+                allRecordsRetrieved(
+                    message.data.debug.recordsRetrieved,
+                    message.data.debug.recordsRetrievalTime
+                );
+            }
         }
         setIsLoading(false);
     };
@@ -434,7 +434,7 @@ function QueryForm({
         prepareQuery();
     };
 
-    let input = document.getElementById('input');
+    const input = document.getElementById('input');
 
     const handleKeyDown = (e) => {
         let selected = document.querySelector('.selected') as HTMLLIElement;
@@ -688,7 +688,7 @@ function QueryForm({
     const suggestions = document.querySelector('#column-list');
 
     function autocomplete(input, list) {
-        let lastWord = input.value.split(' ').pop();
+        const lastWord = input.value.split(' ').pop();
 
         suggestions.innerHTML = '';
 
@@ -706,7 +706,7 @@ function QueryForm({
     }
 
     function addText(input, newText) {
-        let wordArray = input.value.split(' ');
+        const wordArray = input.value.split(' ');
         wordArray.pop();
         input.value = '';
         for (const word of wordArray) {

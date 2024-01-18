@@ -1,12 +1,12 @@
-import { SortColumn } from "react-data-grid";
+import { SortColumn } from 'react-data-grid';
 
 export class ConnectionParams {
-  constructor(public host: string, public port: number) {}
+    constructor(public host: string, public port: number) {}
 }
 
 export interface IConfig {
   type: ConnectionType.Local;
-  connectionId: "LOCAL";
+  connectionId: 'LOCAL';
   id: string;
   label: string;
   name: string;

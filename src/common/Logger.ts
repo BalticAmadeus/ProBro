@@ -8,7 +8,7 @@ export class Logger{
 
     log(message: string, additionalData?: any): void{
         if (this.isLoggingEnabled){
-            console.log(message, ": ", additionalData);
+            console.log(message, ': ', additionalData);
         }
     }
 }

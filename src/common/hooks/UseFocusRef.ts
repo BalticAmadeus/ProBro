@@ -5,7 +5,7 @@ export function useFocusRef<T extends HTMLOrSVGElement>(isSelected: boolean) {
     const ref = useRef<T>(null);
 
     useLayoutEffect(() => {
-        if (!isSelected) return;
+        if (!isSelected) {return;}
         ref.current?.focus({ preventScroll: true });
     }, [isSelected]);
 
