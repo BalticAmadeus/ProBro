@@ -13,25 +13,25 @@ export const getOEFormatLength = (formatStr: string): number => {
         const char = formatStr[i];
 
         switch (char) {
-            case "(":
-                // Handle the (n) format
-                const closingParenIndex = formatStr.indexOf(")", i + 1);
-                if (closingParenIndex !== -1) {
-                    const repeatCount = parseInt(
-                        formatStr.slice(i + 1, closingParenIndex),
-                        10
-                    );
-                    length += Math.max(repeatCount - 1, 0); // Ensure repeatCount is non-negative
-                    i = closingParenIndex; // Skip the characters inside the parentheses
-                }
-                break;
-            case ",":
-            case ".":
-                // do nothing
-                break;
-            default:
-                length++;
-                break;
+        case '(':
+            // Handle the (n) format
+            const closingParenIndex = formatStr.indexOf(')', i + 1);
+            if (closingParenIndex !== -1) {
+                const repeatCount = parseInt(
+                    formatStr.slice(i + 1, closingParenIndex),
+                    10
+                );
+                length += Math.max(repeatCount - 1, 0); // Ensure repeatCount is non-negative
+                i = closingParenIndex; // Skip the characters inside the parentheses
+            }
+            break;
+        case ',':
+        case '.':
+            // do nothing
+            break;
+        default:
+            length++;
+            break;
         }
     }
 

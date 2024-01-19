@@ -43,6 +43,7 @@ export default function ExportPopup({
     }
 
     const exportList = ['dumpFile', 'json', 'csv', 'xls'];
+    const exportList = ['dumpFile', 'json', 'csv', 'xls'];
 
     const getData = () => {
         console.log('get data');
@@ -134,6 +135,8 @@ export default function ExportPopup({
         }
     };
 
+    React.useEffect(() => {
+        window.addEventListener('message', handleMessage);
     React.useEffect(() => {
         window.addEventListener('message', handleMessage);
 

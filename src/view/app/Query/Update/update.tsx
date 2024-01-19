@@ -169,6 +169,10 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
         selectedRows.forEach((element) => {
             rowids.push(element);
         });
+        const rowids: string[] = [];
+        selectedRows.forEach((element) => {
+            rowids.push(element);
+        });
 
         inputs.forEach((input) => {
             submitData.push({
@@ -205,6 +209,10 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
             },
         };
 
+        setUseTriggers(defaultTrigger);
+        logger.log('crud submit data', command);
+        vscode.postMessage(command);
+    };
         setUseTriggers(defaultTrigger);
         logger.log('crud submit data', command);
         vscode.postMessage(command);
