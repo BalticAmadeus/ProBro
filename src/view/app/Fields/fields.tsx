@@ -8,6 +8,7 @@ import { Logger } from '../../../common/Logger';
 
 import * as columnName from './column.json';
 import { ISettings } from '../../../common/IExtensionSettings';
+import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 
 interface IConfigProps {
     vscode: any;
@@ -260,8 +261,8 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
                                 new Set(
                                     message.data.fields.map((field) => {
                                         if (
-                                            field.name !== 'ROWID' &&
-                                            field.name !== 'RECID'
+                                            field.name !== OEDataTypePrimitive.Rowid &&
+                                            field.name !== OEDataTypePrimitive.Recid
                                         ) {
                                             return field.order;
                                         }

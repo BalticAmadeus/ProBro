@@ -146,7 +146,7 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
         DEFINE VARIABLE cFieldQuery AS CHARACTER NO-UNDO.
         DEFINE VARIABLE cIndexQuery AS CHARACTER NO-UNDO.
         DEFINE VARIABLE iFieldOrder AS INTEGER NO-UNDO.
-        DEFINE VARIABLE i AS INTEGER NO-UNDO.
+        DEFINE VARIABLE iCount AS INTEGER NO-UNDO.
 
 
         jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
@@ -197,13 +197,13 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
         DELETE OBJECT qhField.
         DELETE OBJECT bhFile.
 
-        DO i = 1 TO 2:
+        DO iCount = 1 TO 2:
             iFieldOrder = iFieldOrder + 10.
             jsonField = NEW Progress.Json.ObjectModel.JsonObject().
             jsonField:Add("order", iFieldOrder).
-            jsonField:Add("name", ENTRY(i,"RECID,ROWID")).
+            jsonField:Add("name", ENTRY(iCount,"RECID,ROWID")).
             jsonField:Add("type", 'character').
-            jsonField:Add("format", ENTRY(i,"x(20),x(24)")).
+            jsonField:Add("format", ENTRY(iCount,"x(20),x(24)")).
             jsonField:Add("label", jsonField:GetCharacter("name")).
             jsonField:Add("initial", "").
             jsonField:Add("columnLabel", jsonField:GetCharacter("name")).
@@ -352,7 +352,7 @@ FUNCTION GET_COLUMNS RETURNS Progress.Json.ObjectModel.JsonArray (lDumpFile AS L
     DEFINE VARIABLE bhField AS HANDLE  NO-UNDO.
 
     DEFINE VARIABLE iFieldExtentCount AS INTEGER NO-UNDO.
-    DEFINE VARIABLE i AS INTEGER NO-UNDO.
+    DEFINE VARIABLE iCount AS INTEGER NO-UNDO.
 
     DEFINE BUFFER bttColumn FOR ttColumn.
 
@@ -404,13 +404,13 @@ FUNCTION GET_COLUMNS RETURNS Progress.Json.ObjectModel.JsonArray (lDumpFile AS L
             END.
         END.
         // Add ROWID and RECID 
-        DO i = 1 TO 2:  
+        DO iCount = 1 TO 2:  
             CREATE bttColumn.
-            bttColumn.cName = ENTRY(i,"RECID,ROWID").
+            bttColumn.cName = ENTRY(iCount,"RECID,ROWID").
             bttColumn.cKey = bttColumn.cName.
             bttColumn.cLabel = bttColumn.cName.
             bttColumn.cType = bttColumn.cName.
-            bttColumn.cFormat = ENTRY(i,"X(20),X(24)").
+            bttColumn.cFormat = ENTRY(iCount,"X(20),X(24)").
         END.
 
         jsonFields:Read(TEMP-TABLE bttColumn:HANDLE).
@@ -432,7 +432,7 @@ FUNCTION GET_MODE RETURNS CHARACTER ():
     RETURN inputObject:GetJsonObject("params"):GetCharacter("mode").
 END FUNCTION.
 
-FUNCTION IS_RECID_OR_ROWID RETURNS CHARACTER (cTableName AS CHARACTER, cColumnKey AS CHARACTER):
+FUNCTION GET_FORMATTED_COLUMN_NAME RETURNS CHARACTER (cTableName AS CHARACTER, cColumnKey AS CHARACTER):
     IF cColumnKey NE "ROWID" 
     AND cColumnKey NE "RECID" THEN DO:
         RETURN SUBSTITUTE("&1.&2", cTableName, cColumnKey).
@@ -477,7 +477,7 @@ FUNCTION GET_WHERE_PHRASE RETURNS CHARACTER ():
 
                 cWherePhrase = SUBSTITUTE("&1 STRING(&2) BEGINS ~"&3~"",
                                         cWherePhrase,
-                                        IS_RECID_OR_ROWID(inputObject:GetJsonObject("params"):GetCharacter("tableName"),
+                                        GET_FORMATTED_COLUMN_NAME(inputObject:GetJsonObject("params"):GetCharacter("tableName"),
                                                           cFilterNames[iFilterNameCount]),
                                         jsonFilter:GetCharacter(cFilterNames[iFilterNameCount])
                                         ).
@@ -500,7 +500,7 @@ FUNCTION GET_ORDER_PHRASE RETURNS CHARACTER ():
         DO iChar = 1 TO jsonSort:Length:      
             cOrderPhrase = SUBSTITUTE("&1 BY &2 &3",
                         cOrderPhrase,
-                        IS_RECID_OR_ROWID(inputObject:GetJsonObject("params"):GetCharacter("tableName"),
+                        GET_FORMATTED_COLUMN_NAME(inputObject:GetJsonObject("params"):GetCharacter("tableName"),
                                           jsonSort:GetJsonObject(iChar):GetCharacter("columnKey")),
                         IF jsonSort:GetJsonObject(iChar):GetCharacter("direction") = "ASC" THEN "" ELSE "DESCENDING").
         END.
