@@ -478,7 +478,7 @@ FUNCTION GET_WHERE_PHRASE RETURNS CHARACTER ():
                 cWherePhrase = SUBSTITUTE("&1 STRING(&2) BEGINS ~"&3~"",
                                         cWherePhrase,
                                         GET_FORMATTED_COLUMN_NAME(inputObject:GetJsonObject("params"):GetCharacter("tableName"),
-                                                          cFilterNames[iFilterNameCount]),
+                                                                  cFilterNames[iFilterNameCount]),
                                         jsonFilter:GetCharacter(cFilterNames[iFilterNameCount])
                                         ).
             END.
@@ -501,7 +501,7 @@ FUNCTION GET_ORDER_PHRASE RETURNS CHARACTER ():
             cOrderPhrase = SUBSTITUTE("&1 BY &2 &3",
                         cOrderPhrase,
                         GET_FORMATTED_COLUMN_NAME(inputObject:GetJsonObject("params"):GetCharacter("tableName"),
-                                          jsonSort:GetJsonObject(iChar):GetCharacter("columnKey")),
+                                                  jsonSort:GetJsonObject(iChar):GetCharacter("columnKey")),
                         IF jsonSort:GetJsonObject(iChar):GetCharacter("direction") = "ASC" THEN "" ELSE "DESCENDING").
         END.
     END.
