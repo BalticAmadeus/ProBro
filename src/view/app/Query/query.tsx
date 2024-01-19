@@ -208,9 +208,9 @@ function QueryForm({
                                         event.key === 'Enter'
                                     ) {
                                         event.preventDefault();
-                                            onSort(
-                                                event.ctrlKey || event.metaKey
-                                            );
+                                        onSort(
+                                            event.ctrlKey || event.metaKey
+                                        );
                                     }
                                 }
 
@@ -218,7 +218,7 @@ function QueryForm({
                                     onSort(event.ctrlKey || event.metaKey);
                                 }
 
-                                var timer;
+                                let timer;
                                 function handleKeyInputTimeout() {
                                     clearTimeout(timer);
                                     timer = setTimeout(() => {
@@ -227,6 +227,7 @@ function QueryForm({
                                         );
                                     }, 500);
                                 }
+                              
                                 function testKeyDown(event) {
                                     if (event.key === 'Enter') {
                                         event.preventDefault();
@@ -242,8 +243,8 @@ function QueryForm({
                                         event.target.value;
                                     setFilters(tempFilters);
                                     if (
-                                            configuration.filterAsYouType ===
-                                            true
+                                        configuration.filterAsYouType ===
+                                        true
                                     ) {
                                         handleKeyInputTimeout();
                                     }
@@ -306,9 +307,7 @@ function QueryForm({
                                             <div className={'filter-cell'}>
                                                 <input
                                                     className='textInput'
-                                                        autoFocus={
-                                                            isCellSelected
-                                                        }
+                                                    autoFocus={isCellSelected}
                                                     style={filterCSS}
                                                     defaultValue={
                                                         filters.columns[
@@ -351,47 +350,48 @@ function QueryForm({
                                 ),
                             ]);
                         }
-                    }
-                    const boolField = message.data.columns.filter(
-                        (field) => field.type === OEDataTypePrimitive.Logical
-                    );
-                    if (boolField.length !== 0) {
-                        message.data.rawData.forEach((row) => {
-                            boolField.forEach((field) => {
-                                if (row[field.name] !== null) {
-                                    row[field.name] =
-                                        row[field.name].toString();
-                                }
-                            });
-                        });
-                    }
-                    setRawRows([...rawRows, ...message.data.rawData]);
-                    setRowID(
-                        message.data.rawData.length > 0
-                            ? message.data.rawData[
-                                  message.data.rawData.length - 1
-                              ].ROWID
-                            : rowID
-                    );
-                    setLoaded(loaded + message.data.rawData.length);
-                    setFormattedRows([
-                        ...formattedRows,
-                        ...message.data.formattedData,
-                    ]);
-                    setLoaded(loaded + message.data.formattedData.length);
-                    setErrorObject(emptyErrorObj);
-                    setIsDataRetrieved(true);
-                    setStatisticsObject({
-                        recordsRetrieved: message.data.debug.recordsRetrieved,
-                        recordsRetrievalTime:
-                            message.data.debug.recordsRetrievalTime,
-                        connectTime: message.data.debug.timeConnect,
                     });
-                    allRecordsRetrieved(
-                        message.data.debug.recordsRetrieved,
-                        message.data.debug.recordsRetrievalTime
-                    );
                 }
+                const boolField = message.data.columns.filter(
+                    (field) => field.type === OEDataTypePrimitive.Logical
+                );
+                if (boolField.length !== 0) {
+                    message.data.rawData.forEach((row) => {
+                        boolField.forEach((field) => {
+                            if (row[field.name] !== null) {
+                                row[field.name] =
+                                        row[field.name].toString();
+                            }
+                        });
+                    });
+                }
+                setRawRows([...rawRows, ...message.data.rawData]);
+                setRowID(
+                    message.data.rawData.length > 0
+                        ? message.data.rawData[
+                            message.data.rawData.length - 1
+                        ].ROWID
+                        : rowID
+                );
+                setLoaded(loaded + message.data.rawData.length);
+                setFormattedRows([
+                    ...formattedRows,
+                    ...message.data.formattedData,
+                ]);
+                setLoaded(loaded + message.data.formattedData.length);
+                setErrorObject(emptyErrorObj);
+                setIsDataRetrieved(true);
+                setStatisticsObject({
+                    recordsRetrieved: message.data.debug.recordsRetrieved,
+                    recordsRetrievalTime:
+                            message.data.debug.recordsRetrievalTime,
+                    connectTime: message.data.debug.timeConnect,
+                });
+                allRecordsRetrieved(
+                    message.data.debug.recordsRetrieved,
+                    message.data.debug.recordsRetrievalTime
+                );
+            }
         }
         setIsLoading(false);
     };
@@ -428,7 +428,7 @@ function QueryForm({
         prepareQuery();
     };
 
-    let input = document.getElementById('input');
+    const input = document.getElementById('input');
 
     const handleKeyDown = (e) => {
         let selected = document.querySelector('.selected') as HTMLLIElement;
@@ -682,7 +682,7 @@ function QueryForm({
     const suggestions = document.querySelector('#column-list');
 
     function autocomplete(input, list) {
-        let lastWord = input.value.split(' ').pop();
+        const lastWord = input.value.split(' ').pop();
 
         suggestions.innerHTML = '';
 
@@ -700,7 +700,7 @@ function QueryForm({
     }
 
     function addText(input, newText) {
-        let wordArray = input.value.split(' ');
+        const wordArray = input.value.split(' ');
         wordArray.pop();
         input.value = '';
         for (const word of wordArray) {

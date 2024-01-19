@@ -91,13 +91,9 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
         setWindowHeight(window.innerHeight);
     };
 
-    window.addEventListener(
-        'contextmenu',
-        (e) => {
-            e.stopImmediatePropagation();
-        },
-        true
-    );
+    window.addEventListener('contextmenu', e => {
+        e.stopImmediatePropagation();
+    }, true);
 
     React.useEffect(() => {
         window.addEventListener('resize', windowRezise);
@@ -176,9 +172,7 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
 
             return (
                 <React.Fragment>
-                    <div
-                        className={filters.enabled ? 'filter-cell' : undefined}
-                    >
+                    <div className={filters.enabled ? 'filter-cell' : undefined}>
                         <span
                             tabIndex={-1}
                             style={{
@@ -287,7 +281,7 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
             action: CommandAction.UpdateColumns,
             columns: rows
                 .filter((row) => selectedRows.has(row.order))
-                .map((row) => row.name),
+                .map((row) => row.name)
         };
         logger.log('fields columns update', obj);
         vscode.postMessage(obj);

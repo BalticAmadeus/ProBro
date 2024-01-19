@@ -1,7 +1,7 @@
-import * as vscode from "vscode";
-import { DatabaseListProvider } from "./DatabaseListProvider";
-import { INode } from "./INode";
-import { IRefreshCallback } from "./IRefreshCallback";
+import * as vscode from 'vscode';
+import { DatabaseListProvider } from './DatabaseListProvider';
+import { INode } from './INode';
+import { IRefreshCallback } from './IRefreshCallback';
 
 export class GroupNode implements INode {
     constructor(private context: vscode.ExtensionContext, private readonly groupName: string, private readonly refreshCallback: IRefreshCallback) {}
@@ -11,7 +11,7 @@ export class GroupNode implements INode {
         return {
             label: this.groupName,
             collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-            contextValue: "group",
+            contextValue: 'group',
         };
     }
 
