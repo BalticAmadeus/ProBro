@@ -1,35 +1,35 @@
-import { IProcessor } from "../IProcessor";
+import { IProcessor } from '../IProcessor';
 
 export class MockProcessor implements IProcessor {
-  private static instance: MockProcessor | undefined = undefined; // singleton
+    private static instance: MockProcessor | undefined = undefined; // singleton
 
-  private constructor() {}
+    private constructor() {}
 
-  public static getInstance(): MockProcessor {
-    if (MockProcessor.instance === undefined) {
-      MockProcessor.instance = new MockProcessor();
+    public static getInstance(): MockProcessor {
+        if (MockProcessor.instance === undefined) {
+            MockProcessor.instance = new MockProcessor();
+        }
+
+        return MockProcessor.instance;
     }
 
-    return MockProcessor.instance;
-  }
+    getDBVersion(): Promise<any> {
+        return Promise.resolve('Mock DB Version');
+    }
 
-  getDBVersion(): Promise<any> {
-    return Promise.resolve("Mock DB Version");
-  }
-
-  getTablesList(): Promise<any> {
-    return Promise.resolve("Mock Tables List");
-  }
+    getTablesList(): Promise<any> {
+        return Promise.resolve('Mock Tables List');
+    }
   
-  getTableData(): Promise<any> {
-    return Promise.resolve("Mock Table Data");
-  }
+    getTableData(): Promise<any> {
+        return Promise.resolve('Mock Table Data');
+    }
   
-  submitTableData(): Promise<any> {
-    return Promise.resolve("Mock Submit Table Data");
-  }
+    submitTableData(): Promise<any> {
+        return Promise.resolve('Mock Submit Table Data');
+    }
   
-  getTableDetails(): Promise<any> {
-    return Promise.resolve("Mock Table Details");
-  }
+    getTableDetails(): Promise<any> {
+        return Promise.resolve('Mock Table Details');
+    }
 }
