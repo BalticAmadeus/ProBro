@@ -208,9 +208,7 @@ function QueryForm({
                                         event.key === 'Enter'
                                     ) {
                                         event.preventDefault();
-                                        onSort(
-                                            event.ctrlKey || event.metaKey
-                                        );
+                                        onSort(event.ctrlKey || event.metaKey);
                                     }
                                 }
 
@@ -227,7 +225,7 @@ function QueryForm({
                                         );
                                     }, 500);
                                 }
-                              
+
                                 function testKeyDown(event) {
                                     if (event.key === 'Enter') {
                                         event.preventDefault();
@@ -243,8 +241,7 @@ function QueryForm({
                                         event.target.value;
                                     setFilters(tempFilters);
                                     if (
-                                        configuration.filterAsYouType ===
-                                        true
+                                        configuration.filterAsYouType === true
                                     ) {
                                         handleKeyInputTimeout();
                                     }
@@ -343,14 +340,13 @@ function QueryForm({
                         if (message.columns !== undefined) {
                             setSelectedColumns([...message.columns]);
                         } else {
-                            setSelectedColumns(
-                                [
+                            setSelectedColumns([
                                 ...message.data.columns.map(
                                     (column) => column.name
                                 ),
                             ]);
                         }
-                    });
+                    }
                 }
                 const boolField = message.data.columns.filter(
                     (field) => field.type === OEDataTypePrimitive.Logical
@@ -359,8 +355,7 @@ function QueryForm({
                     message.data.rawData.forEach((row) => {
                         boolField.forEach((field) => {
                             if (row[field.name] !== null) {
-                                row[field.name] =
-                                        row[field.name].toString();
+                                row[field.name] = row[field.name].toString();
                             }
                         });
                     });
@@ -368,9 +363,8 @@ function QueryForm({
                 setRawRows([...rawRows, ...message.data.rawData]);
                 setRowID(
                     message.data.rawData.length > 0
-                        ? message.data.rawData[
-                            message.data.rawData.length - 1
-                        ].ROWID
+                        ? message.data.rawData[message.data.rawData.length - 1]
+                              .ROWID
                         : rowID
                 );
                 setLoaded(loaded + message.data.rawData.length);
@@ -384,14 +378,13 @@ function QueryForm({
                 setStatisticsObject({
                     recordsRetrieved: message.data.debug.recordsRetrieved,
                     recordsRetrievalTime:
-                            message.data.debug.recordsRetrievalTime,
+                        message.data.debug.recordsRetrievalTime,
                     connectTime: message.data.debug.timeConnect,
                 });
                 allRecordsRetrieved(
                     message.data.debug.recordsRetrieved,
                     message.data.debug.recordsRetrievalTime
                 );
-            }
         }
         setIsLoading(false);
     };
