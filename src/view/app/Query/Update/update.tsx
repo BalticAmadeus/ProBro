@@ -1,13 +1,13 @@
-import Popup from 'reactjs-popup';
 import { CommandAction, ICommand, ProcessAction } from '../../model';
-import AddIcon from '@mui/icons-material/AddTwoTone';
-import DeleteIcon from '@mui/icons-material/DeleteTwoTone';
-import EditIcon from '@mui/icons-material/EditTwoTone';
-import { ProBroButton } from '../../assets/button';
 import './update.css';
 import { Logger } from '../../../../common/Logger';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { Fragment, useState } from 'react';
+import { ProBroButton } from '@assets/button';
+import AddIcon from '@mui/icons-material/AddTwoTone';
+import DeleteIcon from '@mui/icons-material/DeleteTwoTone';
+import EditIcon from '@mui/icons-material/EditTwoTone';
+import Popup from 'reactjs-popup';
 
 export interface UpdatePopupProps {
     selectedRows: Set<string>;
@@ -100,12 +100,12 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                     ) {
                         rows[0][column.key] = '?';
                     }
-                    let fieldType = typeof (rows &&
+                    const fieldType = typeof (rows &&
                     rows[0] &&
                     String(rows[0][column.key])
                         ? rows[0][column.key]
                         : '');
-                    let fieldValue =
+                    const fieldValue =
                         rows && rows[0] && String(rows[0][column.key])
                             ? String(rows[0][column.key])
                             : '';
@@ -169,10 +169,6 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
         selectedRows.forEach((element) => {
             rowids.push(element);
         });
-        const rowids: string[] = [];
-        selectedRows.forEach((element) => {
-            rowids.push(element);
-        });
 
         inputs.forEach((input) => {
             submitData.push({
@@ -209,10 +205,6 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
             },
         };
 
-        setUseTriggers(defaultTrigger);
-        logger.log('crud submit data', command);
-        vscode.postMessage(command);
-    };
         setUseTriggers(defaultTrigger);
         logger.log('crud submit data', command);
         vscode.postMessage(command);

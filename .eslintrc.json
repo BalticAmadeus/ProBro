@@ -10,21 +10,25 @@
     },
     "overrides": [
         {
-          "files": ["*.ts", "*.tsx"],
-          "parser": "@typescript-eslint/parser",
-          "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
-          "plugins": [
-              "@typescript-eslint",
-              "react"
-          ]
+            "files": ["*.ts", "*.tsx"],
+            "parser": "@typescript-eslint/parser",
+            "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended", "plugin:react/jsx-runtime"],
+            "plugins": [
+                "@typescript-eslint",
+                "react"
+            ],
+            "rules": {
+                "react/prop-types": "off",
+                "indent": ["off", 4] // deprecated, need to fix later: https://github.com/BalticAmadeus/ProBro/issues/518
+            }
         }
     ],
     "rules": {
         "@typescript-eslint/naming-convention": [
             "warn",
             {
-              "selector": "enumMember",
-              "format": ["PascalCase"]
+                "selector": "enumMember",
+                "format": ["PascalCase"]
             }
         ],
         "@typescript-eslint/semi": "warn",
@@ -32,10 +36,7 @@
         "eqeqeq": "warn",
         "no-throw-literal": "warn",
         "semi": ["warn", "always"],
-        "quotes": ["warn", "single"],
-        "indent": ["warn", 4],
-        "react/jsx-uses-react": "off",
-        "react/react-in-jsx-scope": "off"
+        "quotes": ["warn", "single"]
     },
     "ignorePatterns": [
         "out",
