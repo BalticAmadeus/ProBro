@@ -79,12 +79,15 @@ const QueryFormFooter: React.FC<QueryFormFooterProps> = ({
             >
                 <Grid item>
                     <MonospaceTypography>
-                        Records in grid:{' '}
-                        <MonospaceTypography
-                            sx={{ color: recordColor, display: 'inline-block' }}
+                        Records in grid:
+                        <span
+                            style={{
+                                color: recordColor,
+                                display: 'inline-block',
+                            }}
                         >
                             {totalRecords}
-                        </MonospaceTypography>
+                        </span>
                     </MonospaceTypography>
                 </Grid>
                 {showRecentNumbers ? null : (
