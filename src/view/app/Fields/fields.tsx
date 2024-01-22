@@ -8,11 +8,12 @@ import { Logger } from '../../../common/Logger';
 
 import * as columnName from './column.json';
 import { ISettings } from '../../../common/IExtensionSettings';
+import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 
 interface IConfigProps {
-	vscode: any;
-	tableDetails: TableDetails
-	configuration: ISettings;
+    vscode: any;
+    tableDetails: TableDetails;
+    configuration: ISettings;
 }
 
 const filterCSS: React.CSSProperties = {
@@ -24,49 +25,48 @@ const filterCSS: React.CSSProperties = {
 type Comparator = (a: FieldRow, b: FieldRow) => number;
 function getComparator(sortColumn: string): Comparator {
     switch (sortColumn) {
-    case 'order':
-    case 'extent':
-    case 'decimals':
-    case 'rpos':
-        return (a, b) => {
-            return a[sortColumn] - b[sortColumn];
-        };
-    case 'name':
-    case 'type':
-    case 'format':
-    case 'label':
-    case 'initial':
-    case 'columnLabel':
-        return (a, b) => {
-            const valueA = a[sortColumn] || '';
-            const valueB = b[sortColumn] || '';
-            return valueA.localeCompare(valueB);
-        };
-    case 'mandatory':
-    case 'valexp':
-        return (a, b) => {
-            const valueA = a[sortColumn] || '';
-            const valueB = b[sortColumn] || '';
-            return valueA.localeCompare(valueB);
-        };
-    case 'valMessage':
-    case 'helpMsg':
-    case 'description':
-    case 'viewAs':
-        return (a, b) => {
-            const valueA = a[sortColumn] || '';
-            const valueB = b[sortColumn] || '';
-            return valueA.localeCompare(valueB);
-        };
-    default:
-        throw new Error(`unsupported sortColumn: "${sortColumn}"`);
+        case 'order':
+        case 'extent':
+        case 'decimals':
+        case 'rpos':
+            return (a, b) => {
+                return a[sortColumn] - b[sortColumn];
+            };
+        case 'name':
+        case 'type':
+        case 'format':
+        case 'label':
+        case 'initial':
+        case 'columnLabel':
+            return (a, b) => {
+                const valueA = a[sortColumn] || '';
+                const valueB = b[sortColumn] || '';
+                return valueA.localeCompare(valueB);
+            };
+        case 'mandatory':
+        case 'valexp':
+            return (a, b) => {
+                const valueA = a[sortColumn] || '';
+                const valueB = b[sortColumn] || '';
+                return valueA.localeCompare(valueB);
+            };
+        case 'valMessage':
+        case 'helpMsg':
+        case 'description':
+        case 'viewAs':
+            return (a, b) => {
+                const valueA = a[sortColumn] || '';
+                const valueB = b[sortColumn] || '';
+                return valueA.localeCompare(valueB);
+            };
+        default:
+            throw new Error(`unsupported sortColumn: "${sortColumn}"`);
     }
 }
 
 function rowKeyGetter(row: FieldRow) {
     return row.order;
 }
-
 
 function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
     const [rows, setRows] = useState(tableDetails.fields);
@@ -150,14 +150,23 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
                 if (Object.keys(filters.columns).length === 0) {
                     setFilteredRows(rows);
                 } else {
-                    setFilteredRows(rows.filter((row) => {
-                        for (const [key] of Object.entries(filters.columns)) {
-                            if (!row[key].toString().toLowerCase().includes(filters.columns[key].toLowerCase())) {
-                                return false;
+                    setFilteredRows(
+                        rows.filter((row) => {
+                            for (let [key] of Object.entries(filters.columns)) {
+                                if (
+                                    !row[key]
+                                        .toString()
+                                        .toLowerCase()
+                                        .includes(
+                                            filters.columns[key].toLowerCase()
+                                        )
+                                ) {
+                                    return false;
+                                }
                             }
-                        }
-                        return true;
-                    }));
+                            return true;
+                        })
+                    );
                 }
             }
 
@@ -170,12 +179,12 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
                                 cursor: 'pointer',
                                 display: 'flex',
                             }}
-                            className="rdg-header-sort-cell"
+                            className='rdg-header-sort-cell'
                             onClick={handleClick}
                             onKeyDown={handleKeyDown}
                         >
                             <span
-                                className="rdg-header-sort-name"
+                                className='rdg-header-sort-name'
                                 style={{
                                     flexGrow: '1',
                                     overflow: 'clip',
@@ -186,16 +195,20 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
                             </span>
                             <span>
                                 <svg
-                                    viewBox="0 0 12 8"
-                                    width="12"
-                                    height="8"
-                                    className="rdg-sort-arrow"
+                                    viewBox='0 0 12 8'
+                                    width='12'
+                                    height='8'
+                                    className='rdg-sort-arrow'
                                     style={{
                                         fill: 'currentcolor',
                                     }}
                                 >
-                                    {sortDirection === 'ASC' && <path d="M0 8 6 0 12 8"></path>}
-                                    {sortDirection === 'DESC' && <path d="M0 0 6 8 12 0"></path>}
+                                    {sortDirection === 'ASC' && (
+                                        <path d='M0 8 6 0 12 8'></path>
+                                    )}
+                                    {sortDirection === 'DESC' && (
+                                        <path d='M0 0 6 8 12 0'></path>
+                                    )}
                                 </svg>
                                 {priority}
                             </span>
@@ -204,7 +217,7 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
                     {filters.enabled && (
                         <div className={'filter-cell'}>
                             <input
-                                className="textInput"
+                                className='textInput'
                                 autoFocus={isCellSelected}
                                 style={filterCSS}
                                 defaultValue={filters.columns[column.key]}
@@ -222,34 +235,43 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
             const message = event.data;
             logger.log('fields explorer data', message);
             switch (message.command) {
-            case 'data':
-                message.data.fields.forEach(field => {
-                    if (field.mandatory !== null) {
-                        field.mandatory = field.mandatory ? 'yes' : 'no';
-                    }
-                });
-                setRows(message.data.fields);
-                setFilteredRows(message.data.fields);
-                setDataLoaded(true);
-                setFilters({
-                    columns: {},
-                    enabled: true
-                });
+                case 'data':
+                    message.data.fields.forEach((field) => {
+                        if (field.mandatory !== null) {
+                            field.mandatory = field.mandatory ? 'yes' : 'no';
+                        }
+                    });
+                    setRows(message.data.fields);
+                    setFilteredRows(message.data.fields);
+                    setDataLoaded(true);
+                    setFilters({
+                        columns: {},
+                        enabled: true,
+                    });
 
-                if (message.data.selectedColumns === undefined) {
-                    setSelectedRows(
-                        (): ReadonlySet<number> =>
-                            new Set(message.data.fields.map((field) => field.order))
-                    );
-                } else {
-                    const selected = message.data.fields.filter((row) =>
-                        message.data.selectedColumns.includes(row.name)
-                    );
-                    setSelectedRows(
-                        (): ReadonlySet<number> =>
-                            new Set(selected.map((row) => row.order))
-                    );
-                }
+                    if (message.data.selectedColumns === undefined) {
+                        setSelectedRows(
+                            (): ReadonlySet<number> =>
+                                new Set(
+                                    message.data.fields.map((field) => {
+                                        if (
+                                            field.name !== OEDataTypePrimitive.Rowid &&
+                                            field.name !== OEDataTypePrimitive.Recid
+                                        ) {
+                                            return field.order;
+                                        }
+                                    })
+                                )
+                        );
+                    } else {
+                        const selected = message.data.fields.filter((row) =>
+                            message.data.selectedColumns.includes(row.name)
+                        );
+                        setSelectedRows(
+                            (): ReadonlySet<number> =>
+                                new Set(selected.map((row) => row.order))
+                        );
+                    }
             }
         });
     });
@@ -276,9 +298,8 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
     return (
         <div>
             {!dataLoaded ? (
-                <button
-                    className="refreshButton"
-                    onClick={refresh}>Refresh
+                <button className='refreshButton' onClick={refresh}>
+                    Refresh
                 </button>
             ) : rows.length > 0 ? (
                 <DataGrid
@@ -303,5 +324,3 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
 }
 
 export default Fields;
-
-

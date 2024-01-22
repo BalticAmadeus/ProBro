@@ -131,60 +131,59 @@ function QueryForm({
         const message = event.data;
         logger.log('got query data', message);
         switch (message.command) {
-        case 'columns':
-            setSelectedColumns([...message.columns]);
-            break;
-        case 'submit':
-            if (message.data.error) {
-                // should be displayed in UpdatePopup window
-                setErrorObject({
-                    error: message.data.error,
-                    description: message.data.description,
-                    trace: message.data.trace,
-                });
-                setIsDataRetrieved(false);
-            } else {
-                setSelectedRows(new Set());
-                setOpen(false);
-                reloadData(
-                    loaded + (action === ProcessAction.Insert ? 1 : 0)
-                );
-            }
-            break;
-        case 'crud':
-            if (message.data.error) {
-                setErrorObject({
-                    error: message.data.error,
-                    description: message.data.description,
-                    trace: message.data.trace,
-                });
-                setIsDataRetrieved(false);
-            } else {
-                setColumnsCRUD(message.data.columns);
-                setRecordsCRUD(message.data.rawData);
-                setOpen(true);
-            }
-            break;
-        case 'data':
-            if (message.data.error) {
-                setErrorObject({
-                    error: message.data.error,
-                    description: message.data.description,
-                    trace: message.data.trace,
-                });
-                setIsDataRetrieved(false);
-            } else {
-                if (message.data.columns.length !== columns.length) {
-                    const fontSize = +window
-                        .getComputedStyle(
-                            document.getElementsByClassName(
-                                'rdg-header-row'
-                            )[0]
-                        )
-                        .getPropertyValue('font-size')
-                        .match(/\d+[.]?\d+/);
-                    message.data.columns.forEach((column) => {
-                        if (column.key !== OEDataTypePrimitive.Rowid) {
+            case 'columns':
+                setSelectedColumns([...message.columns]);
+                break;
+            case 'submit':
+                if (message.data.error) {
+                    // should be displayed in UpdatePopup window
+                    setErrorObject({
+                        error: message.data.error,
+                        description: message.data.description,
+                        trace: message.data.trace,
+                    });
+                    setIsDataRetrieved(false);
+                } else {
+                    setSelectedRows(new Set());
+                    setOpen(false);
+                    reloadData(
+                        loaded + (action === ProcessAction.Insert ? 1 : 0)
+                    );
+                }
+                break;
+            case 'crud':
+                if (message.data.error) {
+                    setErrorObject({
+                        error: message.data.error,
+                        description: message.data.description,
+                        trace: message.data.trace,
+                    });
+                    setIsDataRetrieved(false);
+                } else {
+                    setColumnsCRUD(message.data.columns);
+                    setRecordsCRUD(message.data.rawData);
+                    setOpen(true);
+                }
+                break;
+            case 'data':
+                if (message.data.error) {
+                    setErrorObject({
+                        error: message.data.error,
+                        description: message.data.description,
+                        trace: message.data.trace,
+                    });
+                    setIsDataRetrieved(false);
+                } else {
+                    if (message.data.columns.length !== columns.length) {
+                        const fontSize = +window
+                            .getComputedStyle(
+                                document.getElementsByClassName(
+                                    'rdg-header-row'
+                                )[0]
+                            )
+                            .getPropertyValue('font-size')
+                            .match(/\d+[.]?\d+/);
+                        message.data.columns.forEach((column) => {
                             column.headerRenderer = function ({
                                 column,
                                 sortDirection,
@@ -195,12 +194,10 @@ function QueryForm({
                                 function handleKeyDown(event) {
                                     if (
                                         event.key === ' ' ||
-                                            event.key === 'Enter'
+                                        event.key === 'Enter'
                                     ) {
                                         event.preventDefault();
-                                        onSort(
-                                            event.ctrlKey || event.metaKey
-                                        );
+                                        onSort(event.ctrlKey || event.metaKey);
                                     }
                                 }
 
@@ -217,6 +214,7 @@ function QueryForm({
                                         );
                                     }, 500);
                                 }
+
                                 function testKeyDown(event) {
                                     if (event.key === 'Enter') {
                                         event.preventDefault();
@@ -229,11 +227,10 @@ function QueryForm({
                                 function handleInputKeyDown(event) {
                                     const tempFilters = filters;
                                     tempFilters.columns[column.key] =
-                                            event.target.value;
+                                        event.target.value;
                                     setFilters(tempFilters);
                                     if (
-                                        configuration.filterAsYouType ===
-                                            true
+                                        configuration.filterAsYouType === true
                                     ) {
                                         handleKeyInputTimeout();
                                     }
@@ -264,7 +261,7 @@ function QueryForm({
                                                         flexGrow: '1',
                                                         overflow: 'clip',
                                                         textOverflow:
-                                                                'ellipsis',
+                                                            'ellipsis',
                                                     }}
                                                 >
                                                     {column.name}
@@ -280,11 +277,11 @@ function QueryForm({
                                                         }}
                                                     >
                                                         {sortDirection ===
-                                                                'ASC' && (
+                                                            'ASC' && (
                                                             <path d='M0 8 6 0 12 8'></path>
                                                         )}
                                                         {sortDirection ===
-                                                                'DESC' && (
+                                                            'DESC' && (
                                                             <path d='M0 0 6 8 12 0'></path>
                                                         )}
                                                     </svg>
@@ -296,9 +293,7 @@ function QueryForm({
                                             <div className={'filter-cell'}>
                                                 <input
                                                     className='textInput'
-                                                    autoFocus={
-                                                        isCellSelected
-                                                    }
+                                                    autoFocus={isCellSelected}
                                                     style={filterCSS}
                                                     defaultValue={
                                                         filters.columns[
@@ -315,36 +310,31 @@ function QueryForm({
                                     </Fragment>
                                 );
                             };
-                        }
-                        column.minWidth = column.name.length * fontSize;
-                        column.width =
+                            column.minWidth = column.name.length * fontSize;
+                            column.width =
                                 getOEFormatLength(column.format ?? '') *
                                 (fontSize - 4);
-                        switch (column.type.toUpperCase()) {
-                        case OEDataTypePrimitive.Integer:
-                        case OEDataTypePrimitive.Decimal:
-                        case OEDataTypePrimitive.Int64:
-                            column.cellClass = 'rightAlign';
-                            column.headerCellClass = 'rightAlign';
-                            break;
-                        default:
-                            break;
-                        }
-                    });
-                    setColumns([SelectColumn, ...message.data.columns]);
-                    if (message.columns !== undefined) {
-                        setSelectedColumns([...message.columns]);
-                    } else {
-                        setSelectedColumns(
-                            [
+                            switch (column.type.toUpperCase()) {
+                                case OEDataTypePrimitive.Integer:
+                                case OEDataTypePrimitive.Decimal:
+                                case OEDataTypePrimitive.Int64:
+                                    column.cellClass = 'rightAlign';
+                                    column.headerCellClass = 'rightAlign';
+                                    break;
+                                default:
+                                    break;
+                            }
+                        });
+                        setColumns([SelectColumn, ...message.data.columns]);
+                        if (message.columns !== undefined) {
+                            setSelectedColumns([...message.columns]);
+                        } else {
+                            setSelectedColumns([
                                 ...message.data.columns.map(
                                     (column) => column.name
                                 ),
-                            ].filter(
-                                (column) =>
-                                    column !== OEDataTypePrimitive.Rowid
-                            )
-                        );
+                            ]);
+                        }
                     }
                 }
                 const boolField = message.data.columns.filter(
@@ -354,8 +344,7 @@ function QueryForm({
                     message.data.rawData.forEach((row) => {
                         boolField.forEach((field) => {
                             if (row[field.name] !== null) {
-                                row[field.name] =
-                                        row[field.name].toString();
+                                row[field.name] = row[field.name].toString();
                             }
                         });
                     });
@@ -363,9 +352,8 @@ function QueryForm({
                 setRawRows([...rawRows, ...message.data.rawData]);
                 setRowID(
                     message.data.rawData.length > 0
-                        ? message.data.rawData[
-                            message.data.rawData.length - 1
-                        ].ROWID
+                        ? message.data.rawData[message.data.rawData.length - 1]
+                              .ROWID
                         : rowID
                 );
                 setLoaded(loaded + message.data.rawData.length);
@@ -379,14 +367,13 @@ function QueryForm({
                 setStatisticsObject({
                     recordsRetrieved: message.data.debug.recordsRetrieved,
                     recordsRetrievalTime:
-                            message.data.debug.recordsRetrievalTime,
+                        message.data.debug.recordsRetrievalTime,
                     connectTime: message.data.debug.timeConnect,
                 });
                 allRecordsRetrieved(
                     message.data.debug.recordsRetrieved,
                     message.data.debug.recordsRetrievalTime
                 );
-            }
         }
         setIsLoading(false);
     };

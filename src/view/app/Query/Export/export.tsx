@@ -118,7 +118,7 @@ export default function ExportPopup({
                     break;
                 }
                 const exportData = message.data.rawData.map(
-                    ({ ROWID, ...rest }) => {
+                    ({ ROWID, RECID, ...rest }) => {
                         return rest;
                     }
                 );
@@ -172,7 +172,6 @@ export default function ExportPopup({
                             ))}
                         </select>
                         <br />
-
                         <div className='checkbox'>
                             <label>
                                 <b>Data to export:</b>
