@@ -15,15 +15,11 @@ declare global {
     }
 }
 
-const vscode = window.acquireVsCodeApi();
-
 const root = createRoot(document.getElementById('root'));
 root.render(
     <QueryForm
-        vscode={vscode}
         tableData={window.tableData}
         tableName={window.tableName}
-        configuration={window.configuration}
         isReadOnly={window.isReadOnly}
     />
 );

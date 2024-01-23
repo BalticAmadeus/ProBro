@@ -6,22 +6,34 @@ import ExportIcon from '@mui/icons-material/FileDownloadTwoTone';
 import './export.css';
 import { ProBroButton } from '../../assets/button';
 import { Logger } from '../../../../common/Logger';
+import { SortColumn } from 'react-data-grid';
+import { IFilters } from '@app/common/types';
+import { getVSCodeAPI } from '@utils/vscode';
+
+export interface ExportPopupProps {
+    wherePhrase: string;
+    sortColumns: SortColumn[];
+    filters: IFilters;
+    selectedRows: Set<string>;
+    isWindowSmall: boolean;
+}
 
 export default function ExportPopup({
     wherePhrase,
-    vscode,
     sortColumns,
     filters,
     selectedRows,
-    logValue,
+    isWindowSmall,
 }) {
     const [exportFormat, setExportFormat] = React.useState('dumpFile');
     const [radioSelection, setRadioSelection] = React.useState(
         Object.keys(DataToExport).filter((key) => Number.isNaN(+key))[0]
     );
-    const [isWindowSmall, setIsWindowSmall] = React.useState(false);
     const [isSaving, setIsSaving] = React.useState(false);
+
+    const logValue = window.configuration.logging.react;
     const logger = new Logger(logValue);
+    const vscode = getVSCodeAPI();
 
     function handleChange({
         currentTarget,
@@ -130,29 +142,12 @@ export default function ExportPopup({
         };
     }, []);
 
-    React.useEffect(() => {
-        const handleResize = () => {
-            setIsWindowSmall(window.innerWidth <= 828); // Adjust the breakpoint value as needed
-        };
-
-        window.addEventListener('resize', handleResize);
-        handleResize();
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
     return (
         <Popup
             trigger={
-                isWindowSmall ? (
-                    <ProBroButton startIcon={<ExportIcon />} />
-                ) : (
-                    <ProBroButton startIcon={<ExportIcon />}>
-                        Export
-                    </ProBroButton>
-                )
+                <ProBroButton startIcon={<ExportIcon />}>
+                    {isWindowSmall ? '' : 'Export'}
+                </ProBroButton>
             }
             modal
         >
@@ -177,7 +172,6 @@ export default function ExportPopup({
                             ))}
                         </select>
                         <br />
-
                         <div className='checkbox'>
                             <label>
                                 <b>Data to export:</b>
@@ -226,4 +220,3 @@ export default function ExportPopup({
         </Popup>
     );
 }
-
