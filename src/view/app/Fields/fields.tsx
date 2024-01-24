@@ -91,9 +91,13 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
         setWindowHeight(window.innerHeight);
     };
 
-    window.addEventListener('contextmenu', e => {
-        e.stopImmediatePropagation();
-    }, true);
+    window.addEventListener(
+        'contextmenu',
+        (e) => {
+            e.stopImmediatePropagation();
+        },
+        true
+    );
 
     React.useEffect(() => {
         window.addEventListener('resize', windowRezise);
@@ -152,7 +156,9 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
                 } else {
                     setFilteredRows(
                         rows.filter((row) => {
-                            for (let [key] of Object.entries(filters.columns)) {
+                            for (const [key] of Object.entries(
+                                filters.columns
+                            )) {
                                 if (
                                     !row[key]
                                         .toString()
@@ -172,7 +178,9 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
 
             return (
                 <React.Fragment>
-                    <div className={filters.enabled ? 'filter-cell' : undefined}>
+                    <div
+                        className={filters.enabled ? 'filter-cell' : undefined}
+                    >
                         <span
                             tabIndex={-1}
                             style={{
@@ -255,8 +263,10 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
                                 new Set(
                                     message.data.fields.map((field) => {
                                         if (
-                                            field.name !== OEDataTypePrimitive.Rowid &&
-                                            field.name !== OEDataTypePrimitive.Recid
+                                            field.name !==
+                                                OEDataTypePrimitive.Rowid &&
+                                            field.name !==
+                                                OEDataTypePrimitive.Recid
                                         ) {
                                             return field.order;
                                         }
@@ -274,14 +284,14 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
                     }
             }
         });
-    });
+    }, []);
 
     React.useEffect(() => {
         const obj = {
             action: CommandAction.UpdateColumns,
             columns: rows
                 .filter((row) => selectedRows.has(row.order))
-                .map((row) => row.name)
+                .map((row) => row.name),
         };
         logger.log('fields columns update', obj);
         vscode.postMessage(obj);
