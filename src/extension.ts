@@ -48,9 +48,9 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
         let newGlobalStatePortList: IPort[] = [];
-        const globalStatePorts = context.globalState.get<{ [id: string]: IPort }>(
-            `${Constants.globalExtensionKey}.portList`
-        )!;
+        const globalStatePorts = context.globalState.get<{
+            [id: string]: IPort;
+        }>(`${Constants.globalExtensionKey}.portList`)!;
         if (globalStatePorts) {
             newGlobalStatePortList = Object.values(globalStatePorts).filter(
                 (gPort) => {
@@ -103,7 +103,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     setInterval(updatePortList, 30000);
 
-    const fieldsProvider = new FieldsViewProvider(context, 'fields');
+    const fieldsProvider = new FieldsViewProvider('fields');
     const fields = vscode.window.registerWebviewViewProvider(
         `${Constants.globalExtensionKey}-fields`,
         fieldsProvider,
@@ -111,7 +111,7 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(fields);
 
-    const indexesProvider = new IndexesViewProvider(context, 'indexes');
+    const indexesProvider = new IndexesViewProvider('indexes');
     const indexes = vscode.window.registerWebviewViewProvider(
         `${Constants.globalExtensionKey}-indexes`,
         indexesProvider,
@@ -131,9 +131,9 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const defaultRuntime =
-    oeRuntimes.length === 1
-        ? oeRuntimes[0]
-        : oeRuntimes.find((runtime) => runtime.default);
+        oeRuntimes.length === 1
+            ? oeRuntimes[0]
+            : oeRuntimes.find((runtime) => runtime.default);
     if (defaultRuntime !== undefined) {
         Constants.dlc = defaultRuntime.path;
     }
@@ -172,9 +172,11 @@ export function activate(context: vscode.ExtensionContext) {
                 .getConfiguration(Constants.globalExtensionKey)
                 .get('importConnections');
             if (importConnections) {
-                vscode.workspace.findFiles('**/openedge-project.json').then((list) => {
-                    list.forEach((uri) => createJsonDatabases(uri));
-                });
+                vscode.workspace
+                    .findFiles('**/openedge-project.json')
+                    .then((list) => {
+                        list.forEach((uri) => createJsonDatabases(uri));
+                    });
             } else {
                 clearDatabaseConfigState();
             }
@@ -200,7 +202,9 @@ export function activate(context: vscode.ExtensionContext) {
                 `${Constants.globalExtensionKey}.dbconfig`,
                 connections
             );
-            vscode.window.showInformationMessage('Connection saved succesfully.');
+            vscode.window.showInformationMessage(
+                'Connection saved succesfully.'
+            );
             vscode.commands.executeCommand(
                 `${Constants.globalExtensionKey}.refreshList`
             );
@@ -218,7 +222,6 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const tablesListProvider = new TablesListProvider(
-        context,
         fieldsProvider,
         indexesProvider
     );
@@ -274,7 +277,12 @@ export function activate(context: vscode.ExtensionContext) {
             `${Constants.globalExtensionKey}.query`,
             (node: TableNode) => {
                 tablesListProvider.selectDbConfig(node);
-                new QueryEditor(context, node, tablesListProvider, fieldsProvider);
+                new QueryEditor(
+                    context,
+                    node,
+                    tablesListProvider,
+                    fieldsProvider
+                );
             }
         )
     );
@@ -365,7 +373,9 @@ export function activate(context: vscode.ExtensionContext) {
         async () => {
             const options: QuickPickItem[] = [
                 ...new Set([
-                    ...tablesListProvider.tableNodes.map((table) => table.tableType),
+                    ...tablesListProvider.tableNodes.map(
+                        (table) => table.tableType
+                    ),
                 ]),
             ].map((label) => ({ label }));
             options.forEach((option) => {
@@ -379,7 +389,9 @@ export function activate(context: vscode.ExtensionContext) {
             quickPick.onDidAccept(() => quickPick.dispose());
 
             if (tablesListProvider.filters) {
-                quickPick.selectedItems = options.filter((option) => option.picked);
+                quickPick.selectedItems = options.filter(
+                    (option) => option.picked
+                );
             }
 
             quickPick.onDidChangeSelection(async (selection) => {
@@ -399,9 +411,9 @@ export function activate(context: vscode.ExtensionContext) {
             if (tablesListProvider.tableClicked.count === 2) {
                 new QueryEditor(
                     context,
-          tablesListProvider.node as TableNode,
-          tablesListProvider,
-          fieldsProvider
+                    tablesListProvider.node as TableNode,
+                    tablesListProvider,
+                    fieldsProvider
                 );
             }
         }
@@ -424,7 +436,9 @@ export function activate(context: vscode.ExtensionContext) {
                         if (selection === 'default') {
                             extensionPort = 23456;
                         } else if (selection === 'settings') {
-                            vscode.commands.executeCommand('workbench.action.openSettings');
+                            vscode.commands.executeCommand(
+                                'workbench.action.openSettings'
+                            );
                         }
                     });
             } else {
@@ -459,7 +473,7 @@ export function activate(context: vscode.ExtensionContext) {
             for (const id of Object.keys(portList)) {
                 if (
                     portList[id].isInUse &&
-          Date.now() - portList[id].timestamp! > 35000
+                    Date.now() - portList[id].timestamp! > 35000
                 ) {
                     portList[id].isInUse = false;
                     portList[id].timestamp = undefined;

@@ -14,10 +14,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
         Constants.globalExtensionKey
     );
 
-    constructor(
-    protected context: vscode.ExtensionContext,
-    private _type: string
-    ) {}
+    constructor(private _type: string) {}
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView
@@ -26,7 +23,9 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [
-                vscode.Uri.file(path.join(this.context.asAbsolutePath(''), 'out')),
+                vscode.Uri.file(
+                    path.join(Constants.context.asAbsolutePath(''), 'out')
+                ),
             ],
         };
         this._view.webview.html = this.getWebviewContent({
@@ -43,30 +42,31 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
             }
         });
 
-    this._view!.webview.onDidReceiveMessage((command: ICommand) => {
-        console.log('Command:', command);
-        switch (command.action) {
-        case CommandAction.RefreshTableData:
-            if (this.tableNode) {
-                this.tableListProvider?.displayData(this.tableNode);
+        this._view?.webview.onDidReceiveMessage((command: ICommand) => {
+            console.log('Command:', command);
+            switch (command.action) {
+                case CommandAction.RefreshTableData:
+                    if (this.tableNode) {
+                        this.tableListProvider?.displayData(this.tableNode);
+                    }
             }
-        }
-    });
+        });
     }
 
     private getWebviewContent(data: TableDetails): string {
-    // Local path to main script run in the webview
+        // Local path to main script run in the webview
         const reactAppPathOnDisk = vscode.Uri.file(
             path.join(
                 vscode.Uri.file(
-                    this.context.asAbsolutePath(
+                    Constants.context.asAbsolutePath(
                         path.join('out/view/app', `${this._type}.js`)
                     )
                 ).fsPath
             )
         );
 
-        const reactAppUri = this._view?.webview.asWebviewUri(reactAppPathOnDisk);
+        const reactAppUri =
+            this._view?.webview.asWebviewUri(reactAppPathOnDisk);
         const cspSource = this._view?.webview.cspSource;
 
         return `<!DOCTYPE html>

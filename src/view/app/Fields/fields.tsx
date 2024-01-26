@@ -1,19 +1,32 @@
-import * as React from 'react';
-import { useState, useMemo } from 'react';
+import {
+    useState,
+    useMemo,
+    useRef,
+    useEffect,
+    Fragment,
+    useLayoutEffect,
+    ChangeEvent,
+    MouseEvent,
+    KeyboardEvent,
+} from 'react';
 
-import { FieldRow, CommandAction, TableDetails } from '../model';
+import { FieldRow, CommandAction, TableDetails, ICommand } from '../model';
 import DataGrid, { SelectColumn } from 'react-data-grid';
 import type { SortColumn } from 'react-data-grid';
 import { Logger } from '../../../common/Logger';
 
 import * as columnName from './column.json';
-import { ISettings } from '../../../common/IExtensionSettings';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
+import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
+
+interface FieldsExplorerEvent {
+    id: string;
+    command: 'data';
+    data: TableDetails;
+}
 
 interface IConfigProps {
-    vscode: any;
     tableDetails: TableDetails;
-    configuration: ISettings;
 }
 
 const filterCSS: React.CSSProperties = {
@@ -36,20 +49,10 @@ function getComparator(sortColumn: string): Comparator {
         case 'type':
         case 'format':
         case 'label':
+        case 'mandatory':
         case 'initial':
         case 'columnLabel':
-            return (a, b) => {
-                const valueA = a[sortColumn] || '';
-                const valueB = b[sortColumn] || '';
-                return valueA.localeCompare(valueB);
-            };
-        case 'mandatory':
         case 'valexp':
-            return (a, b) => {
-                const valueA = a[sortColumn] || '';
-                const valueB = b[sortColumn] || '';
-                return valueA.localeCompare(valueB);
-            };
         case 'valMessage':
         case 'helpMsg':
         case 'description':
@@ -68,23 +71,26 @@ function rowKeyGetter(row: FieldRow) {
     return row.order;
 }
 
-function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
+function Fields({ tableDetails }: Readonly<IConfigProps>) {
     const [rows, setRows] = useState(tableDetails.fields);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [filteredRows, setFilteredRows] = useState(rows);
+
+    const vscode = getVSCodeAPI();
+    const configuration = getVSCodeConfiguration();
     const logger = new Logger(configuration.logging.react);
 
-    const [filters, _setFilters] = React.useState({
+    const [filters, setFilters] = useState({
         columns: {},
         enabled: true,
     });
-    const filtersRef = React.useRef(filters);
-    const setFilters = (data) => {
-        filtersRef.current = data;
-        _setFilters(data);
+    const filtersRef = useRef(filters);
+    const updateFilters = (filters: { columns: object; enabled: boolean }) => {
+        filtersRef.current = filters;
+        setFilters(filters);
     };
 
     const windowRezise = () => {
@@ -99,7 +105,7 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
         true
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
         window.addEventListener('resize', windowRezise);
         return () => {
             window.removeEventListener('resize', windowRezise);
@@ -131,25 +137,25 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
             onSort,
             isCellSelected,
         }) {
-            function handleKeyDown(event) {
+            function handleKeyDown(event: KeyboardEvent<HTMLSpanElement>) {
                 if (event.key === ' ' || event.key === 'Enter') {
                     event.preventDefault();
                     onSort(event.ctrlKey || event.metaKey);
                 }
             }
 
-            function handleClick(event) {
+            function handleClick(event: MouseEvent<HTMLSpanElement>) {
                 onSort(event.ctrlKey || event.metaKey);
             }
 
-            function handleInputKeyDown(event) {
+            function handleInputKeyDown(event: ChangeEvent<HTMLInputElement>) {
                 const tempFilters = filters;
                 if (event.target.value === '') {
                     delete tempFilters.columns[column.key];
                 } else {
                     tempFilters.columns[column.key] = event.target.value;
                 }
-                setFilters(tempFilters);
+                updateFilters(tempFilters);
 
                 if (Object.keys(filters.columns).length === 0) {
                     setFilteredRows(rows);
@@ -177,7 +183,7 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
             }
 
             return (
-                <React.Fragment>
+                <Fragment>
                     <div
                         className={filters.enabled ? 'filter-cell' : undefined}
                     >
@@ -233,61 +239,81 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
                             />
                         </div>
                     )}
-                </React.Fragment>
+                </Fragment>
             );
         };
     });
 
-    React.useLayoutEffect(() => {
-        window.addEventListener('message', (event) => {
-            const message = event.data;
-            logger.log('fields explorer data', message);
-            switch (message.command) {
-                case 'data':
-                    message.data.fields.forEach((field) => {
-                        if (field.mandatory !== null) {
-                            field.mandatory = field.mandatory ? 'yes' : 'no';
-                        }
-                    });
-                    setRows(message.data.fields);
-                    setFilteredRows(message.data.fields);
-                    setDataLoaded(true);
-                    setFilters({
-                        columns: {},
-                        enabled: true,
-                    });
+    useLayoutEffect(() => {
+        window.addEventListener(
+            'message',
+            (event: MessageEvent<FieldsExplorerEvent>) => {
+                const message = event.data;
+                logger.log('fields explorer data', message);
+                switch (message.command) {
+                    case 'data':
+                        message.data.fields.forEach((field) => {
+                            if (
+                                field.mandatory !== null &&
+                                typeof field.mandatory === 'boolean'
+                            ) {
+                                field.mandatory = field.mandatory
+                                    ? 'yes'
+                                    : 'no';
+                            }
+                        });
+                        setRows(message.data.fields);
+                        setFilteredRows(message.data.fields);
+                        setDataLoaded(true);
+                        updateFilters({
+                            columns: {},
+                            enabled: true,
+                        });
 
-                    if (message.data.selectedColumns === undefined) {
-                        setSelectedRows(
-                            (): ReadonlySet<number> =>
-                                new Set(
-                                    message.data.fields.map((field) => {
-                                        if (
-                                            field.name !==
-                                                OEDataTypePrimitive.Rowid &&
-                                            field.name !==
-                                                OEDataTypePrimitive.Recid
-                                        ) {
-                                            return field.order;
-                                        }
-                                    })
-                                )
-                        );
-                    } else {
-                        const selected = message.data.fields.filter((row) =>
-                            message.data.selectedColumns.includes(row.name)
-                        );
-                        setSelectedRows(
-                            (): ReadonlySet<number> =>
-                                new Set(selected.map((row) => row.order))
-                        );
-                    }
+                        if (message.data.selectedColumns === undefined) {
+                            setSelectedRows(
+                                (): ReadonlySet<number> =>
+                                    new Set(
+                                        message.data.fields.map(
+                                            (field: FieldRow) => {
+                                                console.log('field!!!', field);
+                                                if (
+                                                    field.name ===
+                                                        OEDataTypePrimitive.Rowid ||
+                                                    field.name ===
+                                                        OEDataTypePrimitive.Recid
+                                                ) {
+                                                    return -1;
+                                                }
+                                                return field.order;
+                                            }
+                                        )
+                                    )
+                            );
+                        } else {
+                            const selected = message.data.fields.filter(
+                                (row: { name: any }) =>
+                                    message.data.selectedColumns.includes(
+                                        row.name
+                                    )
+                            );
+                            setSelectedRows(
+                                (): ReadonlySet<number> =>
+                                    new Set(
+                                        selected.map(
+                                            (row: { order: any }) => row.order
+                                        )
+                                    )
+                            );
+                        }
+                }
             }
-        });
+        );
     }, []);
 
-    React.useEffect(() => {
-        const obj = {
+    useEffect(() => {
+        const obj: ICommand = {
+            id: '1',
             action: CommandAction.UpdateColumns,
             columns: rows
                 .filter((row) => selectedRows.has(row.order))
@@ -298,7 +324,8 @@ function Fields({ tableDetails, configuration, vscode }: IConfigProps) {
     });
 
     const refresh = () => {
-        const obj = {
+        const obj: ICommand = {
+            id: '2',
             action: CommandAction.RefreshTableData,
         };
         logger.log('Refresh Table Data', obj);

@@ -1,18 +1,14 @@
-import path = require('path');
 import * as vscode from 'vscode';
 import { QueryEditor } from './QueryEditor';
 import { CommandAction, ICommand } from '../view/app/model';
 import { PanelViewProvider } from './PanelViewProvider';
 import { Logger } from '../common/Logger';
+import { updateSelectedColumnsCache } from '../repo/utils/cache';
 
 export class FieldsViewProvider extends PanelViewProvider {
     private queryEditors: QueryEditor[] = [];
 
     private logger = new Logger(this.configuration.get('logging.node')!);
-
-    constructor(context: vscode.ExtensionContext, _type: string) {
-        super(context, _type);
-    }
 
     public addQueryEditor(queryEditor: QueryEditor) {
         this.queryEditors.push(queryEditor);
@@ -37,30 +33,30 @@ export class FieldsViewProvider extends PanelViewProvider {
     ): void | Thenable<void> {
         super.resolveWebviewView(webviewView);
 
-    this._view!.webview.onDidReceiveMessage((command: ICommand) => {
-        this.logger.log('Command:', command);
-        switch (command.action) {
-        case CommandAction.UpdateColumns:
-            if (command.columns?.length === 0) {
-                break;
+        this._view?.webview.onDidReceiveMessage((command: ICommand) => {
+            this.logger.log('Command:', command);
+            switch (command.action) {
+                case CommandAction.UpdateColumns:
+                    if (command.columns?.length === 0) {
+                        break;
+                    }
+
+                    if (this.tableNode?.cache) {
+                        this.tableNode.cache.selectedColumns = command.columns;
+                    }
+
+                    updateSelectedColumnsCache(
+                        this.tableNode,
+                        command.columns ?? []
+                    );
+
+                    this.logger.log(
+                        'this.tableNode.cache.selectedColumns:',
+                        command.columns
+                    );
+                    this.notifyQueryEditors();
+                    break;
             }
-
-            if (
-                this.tableNode !== undefined &&
-            this.tableNode.cache !== undefined
-            ) {
-                this.tableNode.cache.selectedColumns = command.columns;
-            }
-
-            this.context.globalState.update(`selectedColumns.${this.tableNode!.getFullName()}`, command.columns);
-
-            this.logger.log(
-                'this.tableNode.cache.selectedColumns:',
-                command.columns
-            );
-            this.notifyQueryEditors();
-            break;
-        }
-    });
+        });
     }
 }
