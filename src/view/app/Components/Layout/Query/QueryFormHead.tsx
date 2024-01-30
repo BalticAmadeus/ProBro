@@ -1,16 +1,24 @@
 import ExportPopup from '@Query/Export';
 import { ExportPopupProps } from '@Query/Export/export';
 import { ProBroButton } from '@assets/button';
-import RawOffTwoToneIcon from '@mui/icons-material/RawOffTwoTone';
-import RawOnTwoToneIcon from '@mui/icons-material/RawOnTwoTone';
 import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
 import { MouseEventHandler, useEffect } from 'react';
 import UpdatePopup from '@Query/Update';
 import { UpdatePopupProps } from '@Query/Update/update';
-import { Box, Stack, Typography } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import {
+    Box,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    Stack,
+    Typography,
+} from '@mui/material';
 import QueryAutocompleteInput, {
     QueryAutocompleteInputProps,
 } from './QueryAutocompleteInput';
+import * as React from 'react';
 
 interface QueryFormHeadProps
     extends QueryAutocompleteInputProps,
@@ -21,6 +29,7 @@ interface QueryFormHeadProps
     onButtonClick?: MouseEventHandler<HTMLButtonElement>;
     formatButtonOnClick: MouseEventHandler<HTMLButtonElement>;
     isFormatted: boolean;
+    setIsFormatted: (value: boolean) => void;
 }
 
 /**
@@ -33,6 +42,7 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
     onButtonClick,
     formatButtonOnClick,
     isFormatted,
+    setIsFormatted,
     ...otherProps
 }) => {
     useEffect(() => {
@@ -40,6 +50,19 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
             onLoad();
         }
     }, []);
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [selectedOption, setSelectedOption] = React.useState('JSON');
+
+    const handleFormat = (format) => {
+        if (format === 'JSON') {
+            setIsFormatted(false);
+        } else if (format === 'PROGRESS') {
+            setIsFormatted(true);
+        }
+        setSelectedOption(format);
+        setAnchorEl(null);
+    };
 
     return (
         <Box>
@@ -64,16 +87,53 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                         selectedRows={otherProps.selectedRows}
                         isWindowSmall={isWindowSmall}
                     />
-                    <ProBroButton
-                        onClick={formatButtonOnClick}
-                        startIcon={
-                            isFormatted ? (
-                                <RawOffTwoToneIcon />
-                            ) : (
-                                <RawOnTwoToneIcon />
-                            )
-                        }
-                    />
+                    <>
+                        <ProBroButton
+                            onClick={(event) =>
+                                setAnchorEl(event.currentTarget)
+                            }
+                        >
+                            FORMAT
+                        </ProBroButton>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={() => setAnchorEl(null)}
+                            sx={{
+                                '& .MuiPaper-root': {
+                                    backgroundColor:
+                                        'var(--vscode-input-background)',
+                                    maxWidth: '200px',
+                                    fontSize: 'small',
+                                },
+                            }}
+                        >
+                            <MenuItem
+                                onClick={() => handleFormat('JSON')}
+                                sx={{
+                                    color: 'var(--vscode-input-foreground)',
+                                }}
+                            >
+                                <ListItemIcon>
+                                    {selectedOption === 'JSON' && <CheckIcon />}
+                                </ListItemIcon>
+                                <ListItemText primary='JSON' />
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => handleFormat('PROGRESS')}
+                                sx={{
+                                    color: 'var(--vscode-input-foreground)',
+                                }}
+                            >
+                                <ListItemIcon>
+                                    {selectedOption === 'PROGRESS' && (
+                                        <CheckIcon />
+                                    )}
+                                </ListItemIcon>
+                                <ListItemText primary='Progress' />
+                            </MenuItem>
+                        </Menu>
+                    </>
                     <UpdatePopup
                         selectedRows={otherProps.selectedRows}
                         columns={otherProps.columns}
