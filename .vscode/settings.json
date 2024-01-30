@@ -4,10 +4,7 @@
         "PowerShell": {
             "source": "PowerShell",
             "icon": "terminal-powershell",
-            "args": [
-                "-ExecutionPolicy",
-                "Bypass"
-            ]
+            "args": ["-ExecutionPolicy", "Bypass"]
         }
     },
     "terminal.integrated.defaultProfile.windows": "PowerShell",
@@ -29,5 +26,5 @@
     },
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
+    }
 }

@@ -5,6 +5,12 @@ import { IConfig, TableCount } from '../view/app/model';
 import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
 import { TableNode } from './TableNode';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
+import {
+    getAllColumnsCache,
+    getSelectedColumnsCache,
+    updateAllColumnsCache,
+} from '../repo/utils/cache';
+import { Constants } from '../common/Constants';
 
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     public config: IConfig | undefined;
@@ -15,16 +21,15 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     public tableClicked: TableCount = { tableName: undefined, count: 0 };
 
     constructor(
-    private context: vscode.ExtensionContext,
-    private fieldsProvider: PanelViewProvider,
-    private indexesProvider: PanelViewProvider
+        private fieldsProvider: PanelViewProvider,
+        private indexesProvider: PanelViewProvider
     ) {}
 
-    public displayData(node: TableNode) {
+    public displayData(node: TableNode, useCache = true) {
         this.fieldsProvider.tableNode = node;
         this.indexesProvider.tableNode = node;
         console.log('displayData', node.tableName);
-        if (node.cache) {
+        if (useCache && node.cache) {
             this.fieldsProvider._view?.webview.postMessage({
                 id: '1',
                 command: 'data',
@@ -39,10 +44,42 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
             return ProcessorFactory.getProcessorInstance()
                 .getTableDetails(this.config, node.tableName)
                 .then((oeTableDetails) => {
-                    oeTableDetails.selectedColumns = this.context.globalState.get<
-            string[]
-          >(`selectedColumns.${node.getFullName()}`);
+                    const previouslySelectedColumns = getSelectedColumnsCache(
+                        this.node
+                    );
+
+                    const fieldNames = oeTableDetails.fields.map(
+                        (field) => field.name
+                    );
+
+                    const cachedColumns = getAllColumnsCache(this.node);
+
+                    const defaultDeselections = ['RECID', 'ROWID'];
+
+                    const newFields = fieldNames
+                        .filter(
+                            (fieldName) => !cachedColumns.includes(fieldName)
+                        )
+                        .filter(
+                            (fieldName) =>
+                                !defaultDeselections.includes(fieldName)
+                        );
+
+                    // If there is no previously selected columns, select all by default, except RECID, ROWID
+                    if (!previouslySelectedColumns) {
+                        oeTableDetails.selectedColumns = newFields;
+                    } else {
+                        // Selected columns are previously selected ones plus the new columns
+                        oeTableDetails.selectedColumns = [
+                            ...previouslySelectedColumns,
+                            ...newFields,
+                        ];
+                    }
+
                     node.cache = oeTableDetails;
+
+                    updateAllColumnsCache(this.node, fieldNames);
+
                     this.fieldsProvider._view?.webview.postMessage({
                         id: '3',
                         command: 'data',
@@ -70,12 +107,12 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
         }
     }
 
-    onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>): any {
+    onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>): void {
         if (e.selection.length && this.configs) {
             if (e.selection[0] instanceof TableNode) {
                 this.node = e.selection[0];
                 this.selectDbConfig(this.node);
-                this.displayData(this.node);
+                this.displayData(this.node, false);
             }
         }
     }
@@ -158,14 +195,19 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
                         }
 
                         if (config) {
-                            console.log(`Requested tables list of DB: ${config.name}`);
+                            console.log(
+                                `Requested tables list of DB: ${config.name}`
+                            );
                             const connectionLabel = config.label;
                             const connectionName = config.name;
                             oeTables.tables.forEach(
-                                (table: { name: string; tableType: string }) => {
+                                (table: {
+                                    name: string;
+                                    tableType: string;
+                                }) => {
                                     this.tableNodes?.push(
                                         new tableNode.TableNode(
-                                            this.context,
+                                            Constants.context,
                                             table.name,
                                             table.tableType,
                                             connectionName,
