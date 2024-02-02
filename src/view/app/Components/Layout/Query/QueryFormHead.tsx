@@ -5,15 +5,7 @@ import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import UpdatePopup from '@Query/Update';
 import { UpdatePopupProps } from '@Query/Update/update';
-import {
-    Box,
-    ListItemIcon,
-    ListItemText,
-    Menu,
-    MenuItem,
-    Stack,
-    Typography,
-} from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import QueryAutocompleteInput, {
     QueryAutocompleteInputProps,
 } from './QueryAutocompleteInput';
