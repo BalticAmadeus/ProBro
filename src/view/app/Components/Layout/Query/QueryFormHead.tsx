@@ -2,10 +2,9 @@ import ExportPopup from '@Query/Export';
 import { ExportPopupProps } from '@Query/Export/export';
 import { ProBroButton } from '@assets/button';
 import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
-import { MouseEventHandler, useEffect } from 'react';
+import { MouseEventHandler, useEffect, useState } from 'react';
 import UpdatePopup from '@Query/Update';
 import { UpdatePopupProps } from '@Query/Update/update';
-import CheckIcon from '@mui/icons-material/Check';
 import {
     Box,
     ListItemIcon,
@@ -18,8 +17,7 @@ import {
 import QueryAutocompleteInput, {
     QueryAutocompleteInputProps,
 } from './QueryAutocompleteInput';
-import * as React from 'react';
-
+import QueryDropdownMenu from './QueryDropdownMenu';
 interface QueryFormHeadProps
     extends QueryAutocompleteInputProps,
         ExportPopupProps,
@@ -51,8 +49,8 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
         }
     }, []);
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [selectedOption, setSelectedOption] = React.useState('JSON');
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>(null);
+    const [selectedOption, setSelectedOption] = useState<string>('JSON');
 
     const handleFormat = (format) => {
         if (format === 'JSON') {
@@ -95,44 +93,12 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                         >
                             FORMAT
                         </ProBroButton>
-                        <Menu
+                        <QueryDropdownMenu
                             anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={() => setAnchorEl(null)}
-                            sx={{
-                                '& .MuiPaper-root': {
-                                    backgroundColor:
-                                        'var(--vscode-input-background)',
-                                    maxWidth: '200px',
-                                    fontSize: 'small',
-                                },
-                            }}
-                        >
-                            <MenuItem
-                                onClick={() => handleFormat('JSON')}
-                                sx={{
-                                    color: 'var(--vscode-input-foreground)',
-                                }}
-                            >
-                                <ListItemIcon>
-                                    {selectedOption === 'JSON' && <CheckIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary='JSON' />
-                            </MenuItem>
-                            <MenuItem
-                                onClick={() => handleFormat('PROGRESS')}
-                                sx={{
-                                    color: 'var(--vscode-input-foreground)',
-                                }}
-                            >
-                                <ListItemIcon>
-                                    {selectedOption === 'PROGRESS' && (
-                                        <CheckIcon />
-                                    )}
-                                </ListItemIcon>
-                                <ListItemText primary='Progress' />
-                            </MenuItem>
-                        </Menu>
+                            setAnchorEl={setAnchorEl}
+                            selectedOption={selectedOption}
+                            handleFormat={handleFormat}
+                        />
                     </>
                     <UpdatePopup
                         selectedRows={otherProps.selectedRows}
