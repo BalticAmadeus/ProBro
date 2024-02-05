@@ -124,7 +124,7 @@ export function activate(context: vscode.ExtensionContext) {
     oeRuntimes = vscode.workspace
         .getConfiguration('abl.configuration')
         .get<Array<any>>('runtimes')!;
-    if (!oeRuntimes || oeRuntimes.length === 0) {
+    if (oeRuntimes === undefined || oeRuntimes.length === 0) {
         vscode.window.showWarningMessage(
             'No OpenEdge runtime configured on this machine'
         );
