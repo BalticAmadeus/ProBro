@@ -1,4 +1,4 @@
-import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
+import { Box, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import { useState } from 'react';
 import { ProBroButton } from '@assets/button';
@@ -31,7 +31,7 @@ const QueryDropdownMenu: React.FC<QueryDropdownMenuProps> = ({
     };
 
     return (
-        <>
+        <Box display='inline-flex'>
             <ProBroButton onClick={(event) => setAnchorEl(event.currentTarget)}>
                 FORMAT
             </ProBroButton>
@@ -51,7 +51,7 @@ const QueryDropdownMenu: React.FC<QueryDropdownMenuProps> = ({
                     </MenuItem>
                 ))}
             </Menu>
-        </>
+        </Box>
     );
 };
 
