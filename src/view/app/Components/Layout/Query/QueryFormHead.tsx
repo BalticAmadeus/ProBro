@@ -1,8 +1,6 @@
 import ExportPopup from '@Query/Export';
 import { ExportPopupProps } from '@Query/Export/export';
 import { ProBroButton } from '@assets/button';
-import RawOffTwoToneIcon from '@mui/icons-material/RawOffTwoTone';
-import RawOnTwoToneIcon from '@mui/icons-material/RawOnTwoTone';
 import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
 import { MouseEventHandler, useEffect } from 'react';
 import UpdatePopup from '@Query/Update';
@@ -11,6 +9,7 @@ import { Box, Stack, Typography } from '@mui/material';
 import QueryAutocompleteInput, {
     QueryAutocompleteInputProps,
 } from './QueryAutocompleteInput';
+import QueryDropdownMenu from './QueryDropdownMenu';
 
 interface QueryFormHeadProps
     extends QueryAutocompleteInputProps,
@@ -21,6 +20,7 @@ interface QueryFormHeadProps
     onButtonClick?: MouseEventHandler<HTMLButtonElement>;
     formatButtonOnClick: MouseEventHandler<HTMLButtonElement>;
     isFormatted: boolean;
+    setIsFormatted: (value: boolean) => void;
 }
 
 /**
@@ -33,6 +33,7 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
     onButtonClick,
     formatButtonOnClick,
     isFormatted,
+    setIsFormatted,
     ...otherProps
 }) => {
     useEffect(() => {
@@ -64,16 +65,7 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                         selectedRows={otherProps.selectedRows}
                         isWindowSmall={isWindowSmall}
                     />
-                    <ProBroButton
-                        onClick={formatButtonOnClick}
-                        startIcon={
-                            isFormatted ? (
-                                <RawOffTwoToneIcon />
-                            ) : (
-                                <RawOnTwoToneIcon />
-                            )
-                        }
-                    />
+                    <QueryDropdownMenu setIsFormatted={setIsFormatted} />
                     <UpdatePopup
                         selectedRows={otherProps.selectedRows}
                         columns={otherProps.columns}

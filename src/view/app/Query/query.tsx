@@ -99,7 +99,7 @@ function QueryForm({
         setWindowHeight(window.innerHeight);
     };
 
-    let inputQuery: HTMLButtonElement = undefined;
+    const inputQuery: HTMLButtonElement = undefined;
     useEffect(() => {
         if (inputQuery) {
             inputQuery.click();
@@ -586,6 +586,7 @@ function QueryForm({
                 sortColumns={sortColumns}
                 filters={filters}
                 selectedRows={selectedRows}
+                setIsFormatted={setIsFormatted}
                 formatButtonOnClick={() => {
                     setIsFormatted(!isFormatted);
                 }}
