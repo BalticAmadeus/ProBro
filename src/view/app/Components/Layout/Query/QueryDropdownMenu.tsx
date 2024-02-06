@@ -1,11 +1,10 @@
 import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
+import { useState } from 'react';
+import { ProBroButton } from '@assets/button';
 
 interface QueryDropdownMenuProps {
-    anchorEl: HTMLElement | null;
-    setAnchorEl: (anchorEl: HTMLElement | null) => void;
-    selectedOption: string;
-    handleFormat: (format: string) => void;
+    setIsFormatted: (isFormatted: boolean) => void; // Prop to set formatting state in parent
 }
 
 enum FormatType {
@@ -14,39 +13,45 @@ enum FormatType {
 }
 
 const QueryDropdownMenu: React.FC<QueryDropdownMenuProps> = ({
-    anchorEl,
-    setAnchorEl,
-    selectedOption,
-    handleFormat,
+    setIsFormatted,
 }) => {
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [selectedOption, setSelectedOption] = useState<FormatType>(
+        FormatType.JSON
+    );
+
+    const handleFormat = (format: FormatType) => {
+        if (format === FormatType.JSON) {
+            setIsFormatted(false);
+        } else if (format === FormatType.PROGRESS) {
+            setIsFormatted(true);
+        }
+        setSelectedOption(format);
+        setAnchorEl(null);
+    };
+
     return (
-        <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={() => setAnchorEl(null)}
-            sx={{
-                '& .MuiPaper-root': {
-                    backgroundColor: 'var(--vscode-input-background)',
-                    maxWidth: '200px',
-                    fontSize: 'small',
-                },
-            }}
-        >
-            {Object.values(FormatType).map((format) => (
-                <MenuItem
-                    key={format}
-                    onClick={() => handleFormat(format)}
-                    sx={{
-                        color: 'var(--vscode-input-foreground)',
-                    }}
-                >
-                    <ListItemIcon>
-                        {selectedOption === format && <CheckIcon />}
-                    </ListItemIcon>
-                    <ListItemText primary={format} />
-                </MenuItem>
-            ))}
-        </Menu>
+        <>
+            <ProBroButton onClick={(event) => setAnchorEl(event.currentTarget)}>
+                FORMAT
+            </ProBroButton>
+            <Menu
+                id='format-menu'
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={() => setAnchorEl(null)}
+            >
+                {Object.values(FormatType).map((format) => (
+                    <MenuItem key={format} onClick={() => handleFormat(format)}>
+                        <ListItemIcon>
+                            {selectedOption === format && <CheckIcon />}
+                        </ListItemIcon>
+                        <ListItemText primary={format} />
+                    </MenuItem>
+                ))}
+            </Menu>
+        </>
     );
 };
 

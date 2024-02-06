@@ -10,6 +10,7 @@ import QueryAutocompleteInput, {
     QueryAutocompleteInputProps,
 } from './QueryAutocompleteInput';
 import QueryDropdownMenu from './QueryDropdownMenu';
+
 interface QueryFormHeadProps
     extends QueryAutocompleteInputProps,
         ExportPopupProps,
@@ -41,19 +42,6 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
         }
     }, []);
 
-    const [anchorEl, setAnchorEl] = useState<HTMLElement>(null);
-    const [selectedOption, setSelectedOption] = useState<string>('JSON');
-
-    const handleFormat = (format) => {
-        if (format === 'JSON') {
-            setIsFormatted(false);
-        } else if (format === 'PROGRESS') {
-            setIsFormatted(true);
-        }
-        setSelectedOption(format);
-        setAnchorEl(null);
-    };
-
     return (
         <Box>
             <Typography fontSize={'0.8rem'}>Query</Typography>
@@ -78,19 +66,7 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                         isWindowSmall={isWindowSmall}
                     />
                     <>
-                        <ProBroButton
-                            onClick={(event) =>
-                                setAnchorEl(event.currentTarget)
-                            }
-                        >
-                            FORMAT
-                        </ProBroButton>
-                        <QueryDropdownMenu
-                            anchorEl={anchorEl}
-                            setAnchorEl={setAnchorEl}
-                            selectedOption={selectedOption}
-                            handleFormat={handleFormat}
-                        />
+                        <QueryDropdownMenu setIsFormatted={setIsFormatted} />
                     </>
                     <UpdatePopup
                         selectedRows={otherProps.selectedRows}
