@@ -31,7 +31,7 @@ const QueryDropdownMenu: React.FC<QueryDropdownMenuProps> = ({
     };
 
     return (
-        <Box display='inline-flex'>
+        <Box display='inline-block'>
             <ProBroButton onClick={(event) => setAnchorEl(event.currentTarget)}>
                 FORMAT
             </ProBroButton>
