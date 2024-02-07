@@ -23,7 +23,7 @@ This open source project is in active development. Our goal is to simplify the a
   - Hidden tables
   - Launch query
   - Launch query on double click
-  - Select tables form multiple databases (_new_)
+  - Select tables form multiple databases
 - Indexes
 - Fields
   - Filtering
@@ -36,7 +36,8 @@ This open source project is in active development. Our goal is to simplify the a
   - Custom queries
   - Suggest field names
   - View record on double-click
-  - Enable/disable filtering as you type (_new_)
+  - Enable/disable filtering as you type
+  - Query grid table size management (_new_)
 - Export
   - Formats
     - .D file

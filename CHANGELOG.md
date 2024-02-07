@@ -1,5 +1,18 @@
 # Change Log
 
+## 1.6.0 (2024-02-07)
+
+### Changed
+
+- Fixed updating issue when creating new fields.
+- Fixed column width formatting.
+- Fixed various small bugs.
+
+### Added
+
+- Show ROWID ( and RECID) in query data table.
+- Query grid table size management.
+
 ## 1.5.2 (2023-12-21)
 
 ### Changed
