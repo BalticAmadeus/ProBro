@@ -1,10 +1,9 @@
-import * as React from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot } from 'react-dom/client';
 
-import "./query.css";
-import QueryForm from "./query";
-import { IOETableData } from "../../../db/Oe";
-import { ISettings } from "../../../common/IExtensionSettings";
+import './query.css';
+import QueryForm from './query';
+import { IOETableData } from '@src/db/Oe';
+import { ISettings } from '@src/common/IExtensionSettings';
 
 declare global {
     interface Window {
@@ -12,19 +11,15 @@ declare global {
         tableData: IOETableData;
         tableName: string;
         configuration: ISettings;
-        isReadOnly:boolean;
+        isReadOnly: boolean;
     }
 }
 
-const vscode = window.acquireVsCodeApi();
-
-const root = createRoot(document.getElementById("root"));
+const root = createRoot(document.getElementById('root'));
 root.render(
     <QueryForm
-        vscode={vscode}
         tableData={window.tableData}
         tableName={window.tableName}
-        configuration={window.configuration}
         isReadOnly={window.isReadOnly}
     />
 );

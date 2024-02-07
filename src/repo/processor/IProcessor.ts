@@ -1,4 +1,4 @@
-import { IConfig, ITableData, TableDetails } from "../../view/app/model";
+import { IConfig, ITableData, TableDetails } from '../../view/app/model';
 
 export interface IProcessor {
   getDBVersion(config: IConfig): Promise<any>;

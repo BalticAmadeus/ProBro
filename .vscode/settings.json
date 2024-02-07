@@ -4,10 +4,7 @@
         "PowerShell": {
             "source": "PowerShell",
             "icon": "terminal-powershell",
-            "args": [
-                "-ExecutionPolicy",
-                "Bypass"
-            ]
+            "args": ["-ExecutionPolicy", "Bypass"]
         }
     },
     "terminal.integrated.defaultProfile.windows": "PowerShell",
@@ -20,7 +17,14 @@
     // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
     "typescript.tsc.autoDetect": "off",
     "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

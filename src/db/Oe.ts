@@ -1,4 +1,4 @@
-import { Column } from "react-data-grid";
+import { Column } from 'react-data-grid';
 
 export interface IOEVersion {
   dbversion: string;
