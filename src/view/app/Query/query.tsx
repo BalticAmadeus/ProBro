@@ -510,7 +510,10 @@ function QueryForm({
     const [action, setAction] = useState<ProcessAction>();
     const [readRow, setReadRow] = useState<string[]>([]);
 
-    const readRecord = (row: string[]) => {
+    const readRecord = (row) => {
+        const selectedRowsSet = new Set<string>();
+        selectedRowsSet.add(row.ROWID);
+        setSelectedRows(selectedRowsSet);
         setAction(ProcessAction.Read);
         setReadRow(row);
         setOpen(true);

@@ -266,7 +266,18 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                                 >
                                     {ProcessAction[action]}
                                 </ProBroButton>
-                            ) : null}
+                            ) : (
+                                <ProBroButton
+                                    className='button'
+                                    startIcon={<EditIcon />}
+                                    onClick={() => {
+                                        setOpen(false);
+                                        updateRecord();
+                                    }}
+                                >
+                                    UPDATE
+                                </ProBroButton>
+                            )}
                             <ProBroButton
                                 className='button'
                                 onClick={() => {
