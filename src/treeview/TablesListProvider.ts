@@ -208,6 +208,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
                                     this.tableNodes?.push(
                                         new tableNode.TableNode(
                                             Constants.context,
+                                            config.id,
                                             table.name,
                                             table.tableType,
                                             connectionName,

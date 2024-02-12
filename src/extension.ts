@@ -16,6 +16,7 @@ import { readFile, parseOEFile } from './common/OpenEdgeJsonReaded';
 import { VersionChecker } from './view/app/Welcome/VersionChecker';
 import { WelcomePageProvider } from './webview/WelcomePageProvider';
 import { AblHoverProvider } from './providers/AblHoverProvider';
+import { queryEditorCache } from './webview/queryEditor/queryEditorCache';
 
 export function activate(context: vscode.ExtensionContext) {
     let extensionPort: number;
@@ -252,6 +253,30 @@ export function activate(context: vscode.ExtensionContext) {
         groupListProvider.onDidChangeSelection(e, tablesListProvider)
     );
 
+    /**
+     * Creates a new query editor or if already open, then reveals it from cache and refetch data
+     */
+    const loadQueryEditor = (node: TableNode): void => {
+        const key = tablesListProvider.node?.getFullName(true) ?? '';
+
+        const cachedQueryEditor = queryEditorCache.getQueryEditor(key);
+
+        if (cachedQueryEditor) {
+            cachedQueryEditor.panel?.reveal();
+            cachedQueryEditor.refetchData();
+            return;
+        }
+
+        const newQueryEditor = new QueryEditor(
+            context,
+            node,
+            tablesListProvider,
+            fieldsProvider
+        );
+
+        queryEditorCache.setQueryEditor(key, newQueryEditor);
+    };
+
     context.subscriptions.push(
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.addEntry`,
@@ -277,12 +302,7 @@ export function activate(context: vscode.ExtensionContext) {
             `${Constants.globalExtensionKey}.query`,
             (node: TableNode) => {
                 tablesListProvider.selectDbConfig(node);
-                new QueryEditor(
-                    context,
-                    node,
-                    tablesListProvider,
-                    fieldsProvider
-                );
+                loadQueryEditor(node);
             }
         )
     );
@@ -295,12 +315,7 @@ export function activate(context: vscode.ExtensionContext) {
                     return;
                 }
 
-                return new QueryEditor(
-                    context,
-                    tablesListProvider.node,
-                    tablesListProvider,
-                    fieldsProvider
-                );
+                loadQueryEditor(tablesListProvider.node);
             }
         )
     );
@@ -407,14 +422,13 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
         `${Constants.globalExtensionKey}.dblClickQuery`,
         (_) => {
+            if (tablesListProvider.node === undefined) {
+                return;
+            }
+
             tablesListProvider.countClick();
             if (tablesListProvider.tableClicked.count === 2) {
-                new QueryEditor(
-                    context,
-                    tablesListProvider.node as TableNode,
-                    tablesListProvider,
-                    fieldsProvider
-                );
+                loadQueryEditor(tablesListProvider.node);
             }
         }
     );
