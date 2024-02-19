@@ -54,13 +54,23 @@ const QueryDropdownMenu: React.FC<QueryDropdownMenuProps> = ({
                         onClick={() => handleFormat(format)}
                         sx={{
                             color: 'var(--vscode-input-foreground)',
-                            fontSize: '0.8em',
                         }}
                     >
-                        <ListItemIcon>
-                            {selectedOption === format && <CheckIcon />}
+                        <ListItemIcon
+                            sx={{
+                                color: 'var(--vscode-input-foreground)',
+                            }}
+                        >
+                            {selectedOption === format && (
+                                <CheckIcon fontSize='small' />
+                            )}
                         </ListItemIcon>
-                        <ListItemText primary={format} />
+                        <ListItemText
+                            primary={format}
+                            primaryTypographyProps={{
+                                sx: { fontSize: '0.8em' },
+                            }}
+                        />
                     </MenuItem>
                 ))}
             </Menu>
