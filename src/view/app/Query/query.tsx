@@ -134,6 +134,9 @@ function QueryForm({
             case 'columns':
                 setSelectedColumns([...message.columns]);
                 break;
+            case 'refetch':
+                prepareQuery();
+                break;
             case 'submit':
                 if (message.data.error) {
                     // should be displayed in UpdatePopup window
