@@ -19,7 +19,13 @@ This document provides guidelines how to use ProBro extension.
 
 The icon indicates current status of the connection. Every db connection on the start of the extension or upon refreshing are tested to check if they are connected. Otherwise near the OpenEdge logo a red circle appears which indicates that the connection is unsuccessful (Disabled).
 
-## **2. Creating new connection**
+## **2 Creating new connection**
+
+### **2.1 Importing connections through openedge-project.json**
+
+Connections defined in **_openedge-project.json_** are automatically imported in the extension under seperate connections group. **_dbConnections_** Key must be defined for the connections to be imported.
+
+### **2.2 Creating new connection through the extension**
 
 For creating and editing db connections is used same structure. For editing new tab with selected database information will be displayed.
 
@@ -36,7 +42,7 @@ For creating and editing db connections is used same structure. For editing new 
 
 ## **3. Table explorer**
 
-Once the database is selected, table list is displayed.
+Once the database is selected, table list is displayed. When clicked on the table list view, press CTRL + F for the ability to search for a certain table.
 
 ![table Explorer](../images/tableExplorer.png)
 
@@ -46,16 +52,17 @@ Once the database is selected, table list is displayed.
 
 ## 4. Fields and Indexes explorer
 
--   Select table to see fields and indexes. Fields and Indexes are displayed in panel view. By default, they are on separate tabs, but can be merged by dragging.
+-   Select table to see fields and indexes. Fields and Indexes are displayed in the panel view. By default, they are on separate tabs, but can be merged by dragging.
 
 <img src="../images/mergeFieldsIndexes.gif" height="150">
 
--   In fields explorer has multi-sorting and multi-filtering options.
+-   Fields explorer has multi-sorting and multi-filtering options.
     Multi-sorting can be used by holding CTRL key and selecting preferred columns.
 
 <img src="../images/multisorting.gif">
 
 -   By selecting field rows, query columns can be shown/hidden.
+    -   RECID, ROWID fields are hidden by default. They can be enabled through the fields explorer.
 
 ## **5. Query window**
 
@@ -68,9 +75,10 @@ ProBro extension uses server-side multi-sorting and multi-filtering.
 1. **Custom query** request can be written to filter records. Query should be formatted like WHERE statement.
 2. **Export of records:**
     - formats available for exporting:
-        - JSON;
-        - Excel;
+        - JSON.
+        - Excel.
         - CSV.
+        - dumpFile.
     - The scope for exporting records can be selected:
         - table: export all records. ;
         - Filter: export only filtered records;
