@@ -169,8 +169,8 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
         DO WHILE qhField:GET-NEXT():
 
             IF bhField::_order > iFieldOrder
-            THEN ASSIGN 
-                iFieldOrder = bhField::_order. 
+            THEN ASSIGN
+                iFieldOrder = bhField::_order.
 
             jsonField = NEW Progress.Json.ObjectModel.JsonObject().
             jsonField:Add("order", bhField::_order).
@@ -403,8 +403,8 @@ FUNCTION GET_COLUMNS RETURNS Progress.Json.ObjectModel.JsonArray (lDumpFile AS L
                 END.
             END.
         END.
-        // Add ROWID and RECID 
-        DO iCount = 1 TO 2:  
+        // Add ROWID and RECID
+        DO iCount = 1 TO 2:
             CREATE bttColumn.
             bttColumn.cName = ENTRY(iCount,"RECID,ROWID").
             bttColumn.cKey = bttColumn.cName.
@@ -433,7 +433,7 @@ FUNCTION GET_MODE RETURNS CHARACTER ():
 END FUNCTION.
 
 FUNCTION GET_FORMATTED_COLUMN_NAME RETURNS CHARACTER (cTableName AS CHARACTER, cColumnKey AS CHARACTER):
-    IF cColumnKey NE "ROWID" 
+    IF cColumnKey NE "ROWID"
     AND cColumnKey NE "RECID" THEN DO:
         RETURN SUBSTITUTE("&1.&2", cTableName, cColumnKey).
     END.
@@ -497,7 +497,7 @@ FUNCTION GET_ORDER_PHRASE RETURNS CHARACTER ():
 
     IF inputObject:GetJsonObject("params"):has("sortColumns") THEN DO:
         jsonSort = inputObject:GetJsonObject("params"):GetJsonArray("sortColumns").
-        DO iChar = 1 TO jsonSort:Length:      
+        DO iChar = 1 TO jsonSort:Length:
             cOrderPhrase = SUBSTITUTE("&1 BY &2 &3",
                         cOrderPhrase,
                         GET_FORMATTED_COLUMN_NAME(inputObject:GetJsonObject("params"):GetCharacter("tableName"),
@@ -771,7 +771,8 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
     DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
     DEFINE VARIABLE fhKey AS HANDLE NO-UNDO.
     DEFINE VARIABLE cMode AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE lUseTriggers AS LOGICAL NO-UNDO.
+    DEFINE VARIABLE lUseWriteTriggers AS LOGICAL NO-UNDO.
+    DEFINE VARIABLE lUseDeleteTriggers AS LOGICAL NO-UNDO.
 
     DEFINE VARIABLE i AS INTEGER NO-UNDO.
 
@@ -787,9 +788,15 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
 
     cMode = inputObject:GetJsonObject("params"):GetCharacter("mode").
 
-    lUseTriggers = inputObject:GetJsonObject("params"):GetLogical("useTriggers").
+    lUseWriteTriggers = inputObject:GetJsonObject("params"):GetLogical("useWriteTriggers").
+    lUseDeleteTriggers = inputObject:GetJsonObject("params"):GetLogical("useDeleteTriggers").
 
     IF cMode = "DELETE" THEN DO:
+        IF lUseDeleteTriggers = false THEN DO:
+            bh:DISABLE-LOAD-TRIGGERS(FALSE).
+            bh:DISABLE-DUMP-TRIGGERS( ).
+        END.
+
         DO i = 1 TO jsonCrud:Length:
             IF qh:REPOSITION-TO-ROWID(TO-ROWID(jsonCrud:GetCharacter(i))) THEN DO:
                 IF qh:GET-NEXT(EXCLUSIVE-LOCK, NO-WAIT) THEN DO:
@@ -810,7 +817,7 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
     END.
     ELSE DO:
         IF cMode = "INSERT" OR cMode = "COPY" THEN DO:
-            IF lUseTriggers = false THEN DO:
+            IF lUseWriteTriggers = false THEN DO:
                 bh:DISABLE-LOAD-TRIGGERS(FALSE).
                 bh:DISABLE-DUMP-TRIGGERS( ).
             END.
@@ -818,7 +825,7 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
             bh:BUFFER-CREATE().
         END.
         ELSE IF cMode = "UPDATE" THEN DO:
-            IF lUseTriggers = false THEN DO:
+            IF lUseWriteTriggers = false THEN DO:
                 bh:DISABLE-LOAD-TRIGGERS(FALSE).
                 bh:DISABLE-DUMP-TRIGGERS( ).
             END.
@@ -850,4 +857,3 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
         END.
     END.
 END PROCEDURE.
-

@@ -2,12 +2,19 @@ import { CommandAction, ICommand, ProcessAction } from '../../model';
 import './update.css';
 import { Logger } from '../../../../common/Logger';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
-import { Fragment, useState } from 'react';
+import { Fragment, MouseEvent, ReactNode, useState } from 'react';
 import { ProBroButton } from '@assets/button';
 import AddIcon from '@mui/icons-material/AddTwoTone';
 import DeleteIcon from '@mui/icons-material/DeleteTwoTone';
 import EditIcon from '@mui/icons-material/EditTwoTone';
 import Popup from 'reactjs-popup';
+import {
+    Box,
+    Checkbox,
+    CheckboxProps,
+    FormControlLabel,
+    Typography,
+} from '@mui/material';
 
 export interface UpdatePopupProps {
     selectedRows: Set<string>;
@@ -23,6 +30,28 @@ export interface UpdatePopupProps {
     isWindowSmall: boolean;
 }
 
+interface UpdateCheckboxProps extends CheckboxProps {
+    children: ReactNode;
+}
+
+const UpdateCheckbox: React.FC<UpdateCheckboxProps> = ({
+    children,
+    ...otherProps
+}) => {
+    return (
+        <Box>
+            <FormControlLabel
+                label={
+                    <Typography sx={{ fontSize: '0.85rem' }}>
+                        {children}
+                    </Typography>
+                }
+                control={<Checkbox size='small' {...otherProps} />}
+            ></FormControlLabel>
+        </Box>
+    );
+};
+
 const UpdatePopup: React.FC<UpdatePopupProps> = ({
     selectedRows,
     tableName,
@@ -37,9 +66,13 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
     isWindowSmall,
 }) => {
     const configuration = getVSCodeConfiguration();
-    const defaultTrigger = !!configuration.useWriteTriggers;
+    const defaultWriteTrigger = configuration.useWriteTriggers ?? true;
+    const defaultDeleteTrigger = configuration.useDeleteTriggers ?? true;
 
-    const [useTriggers, setUseTriggers] = useState(defaultTrigger); // !! fixes missing setting issue
+    const [useWriteTriggers, setUseWriteTriggers] =
+        useState<boolean>(defaultWriteTrigger);
+    const [useDeleteTriggers, setUseDeleteTriggers] =
+        useState<boolean>(defaultDeleteTrigger);
     const vscode = getVSCodeAPI();
     const logger = new Logger(configuration.logging.react);
     const table = [];
@@ -201,24 +234,31 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                 data: submitData,
                 mode: ProcessAction[action],
                 minTime: 0,
-                useTriggers: useTriggers,
+                useWriteTriggers: useWriteTriggers,
+                useDeleteTriggers: useDeleteTriggers,
             },
         };
 
-        setUseTriggers(defaultTrigger);
+        setUseWriteTriggers(defaultWriteTrigger);
+        setUseDeleteTriggers(defaultDeleteTrigger);
         logger.log('crud submit data', command);
         vscode.postMessage(command);
     };
 
-    function listenForCheck() {
-        const checkbox = document.getElementById(
-            'myCheckbox'
-        ) as HTMLInputElement;
+    const onTriggerCheckboxClick = (e: MouseEvent<HTMLButtonElement>) => {
+        const target = e.target as HTMLInputElement;
 
-        checkbox.addEventListener('change', () => {
-            setUseTriggers(checkbox.checked);
-        });
-    }
+        switch (action) {
+            case ProcessAction.Delete:
+                setUseDeleteTriggers(target.checked);
+                break;
+            case ProcessAction.Copy:
+            case ProcessAction.Insert:
+            case ProcessAction.Update:
+                setUseWriteTriggers(target.checked);
+                break;
+        }
+    };
 
     return (
         <Fragment>
@@ -230,11 +270,19 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                         </div>
                         <div className='body'>
                             {action === ProcessAction.Delete ? (
-                                <div>
-                                    Are You sure You want delete{' '}
-                                    {selectedRows.size} record
-                                    {selectedRows.size > 1 && 's'}?
-                                </div>
+                                <Box>
+                                    <Typography variant='body1' fontSize={13}>
+                                        Are You sure You want delete{' '}
+                                        {selectedRows.size} record
+                                        {selectedRows.size > 1 && 's'}?
+                                    </Typography>
+                                    <UpdateCheckbox
+                                        defaultChecked={useDeleteTriggers}
+                                        onClick={onTriggerCheckboxClick}
+                                    >
+                                        Use delete trigger
+                                    </UpdateCheckbox>
+                                </Box>
                             ) : action === ProcessAction.Read ? (
                                 <>
                                     <table>
@@ -242,20 +290,17 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                                     </table>
                                 </>
                             ) : (
-                                <div>
+                                <Box>
                                     <table>
                                         <tbody>{table}</tbody>
                                     </table>
-                                    <label>
-                                        <input
-                                            type='checkbox'
-                                            id='myCheckbox'
-                                            onClick={listenForCheck}
-                                            defaultChecked={useTriggers}
-                                        />{' '}
+                                    <UpdateCheckbox
+                                        defaultChecked={useWriteTriggers}
+                                        onClick={onTriggerCheckboxClick}
+                                    >
                                         Use write trigger
-                                    </label>
-                                </div>
+                                    </UpdateCheckbox>
+                                </Box>
                             )}
                         </div>
                         <div className='update-btn-container'>
@@ -281,7 +326,8 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                             <ProBroButton
                                 className='button'
                                 onClick={() => {
-                                    setUseTriggers(defaultTrigger);
+                                    setUseWriteTriggers(defaultWriteTrigger);
+                                    setUseDeleteTriggers(defaultDeleteTrigger);
                                     setOpen(false);
                                 }}
                             >
