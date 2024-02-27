@@ -10,6 +10,7 @@ import { Logger } from '../common/Logger';
 import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
 import { Constants } from '../common/Constants';
 import { queryEditorCache } from './queryEditor/queryEditorCache';
+import { FavoritesProvider } from '../treeview/FavoritesProvider';
 
 export class QueryEditor {
     public readonly panel: vscode.WebviewPanel | undefined;
@@ -27,6 +28,7 @@ export class QueryEditor {
         private context: vscode.ExtensionContext,
         private tableNode: TableNode,
         private tableListProvider: TablesListProvider,
+        private favoritesProvider: FavoritesProvider,
         private fieldProvider: FieldsViewProvider
     ) {
         this.extensionPath = context.asAbsolutePath('');
@@ -39,7 +41,7 @@ export class QueryEditor {
 
         this.panel = vscode.window.createWebviewPanel(
             'queryOETable', // Identifies the type of the webview. Used internally
-            `${this.tableListProvider.config?.label}.${this.tableNode.tableName}`, // Title of the panel displayed to the user
+            `${this.favoritesProvider.config?.label}.${this.tableNode.tableName}`, // Title of the panel displayed to the user
             vscode.ViewColumn.One, // Editor column to show the new webview panel in.
             {
                 enableScripts: true,
@@ -83,10 +85,10 @@ export class QueryEditor {
                 this.logger.log('command:', command);
                 switch (command.action) {
                     case CommandAction.Query:
-                        if (this.tableListProvider.config) {
+                        if (this.favoritesProvider.config) {
                             ProcessorFactory.getProcessorInstance()
                                 .getTableData(
-                                    this.tableListProvider.config,
+                                    this.favoritesProvider.config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -107,10 +109,10 @@ export class QueryEditor {
                         }
                         break;
                     case CommandAction.CRUD:
-                        if (this.tableListProvider.config) {
+                        if (this.favoritesProvider.config) {
                             ProcessorFactory.getProcessorInstance()
                                 .getTableData(
-                                    this.tableListProvider.config,
+                                    this.favoritesProvider.config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -128,10 +130,10 @@ export class QueryEditor {
                         }
                         break;
                     case CommandAction.Submit:
-                        if (this.tableListProvider.config) {
+                        if (this.favoritesProvider.config) {
                             ProcessorFactory.getProcessorInstance()
                                 .submitTableData(
-                                    this.tableListProvider.config,
+                                    this.favoritesProvider.config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -168,10 +170,10 @@ export class QueryEditor {
                         }
                         break;
                     case CommandAction.Export:
-                        if (this.tableListProvider.config) {
+                        if (this.favoritesProvider.config) {
                             ProcessorFactory.getProcessorInstance()
                                 .getTableData(
-                                    this.tableListProvider.config,
+                                    this.favoritesProvider.config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -187,7 +189,7 @@ export class QueryEditor {
                                             dumpFileFormatter.formatDumpFile(
                                                 oe,
                                                 this.tableNode.tableName,
-                                                this.tableListProvider.config!
+                                                this.favoritesProvider.config!
                                                     .label
                                             );
                                             exportData =

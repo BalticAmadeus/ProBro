@@ -19,16 +19,19 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     public tableNodes: tableNode.TableNode[] = [];
     public filters: string[] | undefined = ['UserTable'];
     public tableClicked: TableCount = { tableName: undefined, count: 0 };
+    context: vscode.ExtensionContext;
 
     constructor(
-        private fieldsProvider: PanelViewProvider,
-        private indexesProvider: PanelViewProvider
-    ) {}
+        public fieldsProvider: PanelViewProvider,
+        public indexesProvider: PanelViewProvider,
+        context: vscode.ExtensionContext
+    ) {
+        this.context = context;
+    }
 
     public displayData(node: TableNode, useCache = true) {
         this.fieldsProvider.tableNode = node;
         this.indexesProvider.tableNode = node;
-        console.log('displayData', node.tableName);
         if (useCache && node.cache) {
             this.fieldsProvider._view?.webview.postMessage({
                 id: '1',

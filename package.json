@@ -251,14 +251,14 @@
                 "icon": "$(star-empty)"
             },
             {
-                "command": "pro-bro.queryFavorite",
-                "title": "pro-bro: Query Favorite",
-                "icon": "$(play)"
-            },
-            {
                 "command": "pro-bro.removeFavourite",
                 "title": "pro-bro: removeFavourite",
                 "icon": "$(star-full)"
+            },
+            {
+                "command": "pro-bro.queryFavorite",
+                "title": "pro-bro: Query Favorite",
+                "icon": "$(play)"
             }
         ],
         "menus": {
@@ -316,17 +316,17 @@
                     "group": "inline"
                 },
                 {
-                    "command": "pro-bro.queryFavorite",
-                    "when": "view == pro-bro-favorites",
-                    "group": "inline"
-                },
-                {
                     "command": "pro-bro.addFavourite",
                     "when": "view == pro-bro-tables",
                     "group": "inline"
                 },
                 {
                     "command": "pro-bro.removeFavourite",
+                    "when": "view == pro-bro-favorites",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.queryFavorite",
                     "when": "view == pro-bro-favorites",
                     "group": "inline"
                 }

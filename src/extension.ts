@@ -17,6 +17,7 @@ import { VersionChecker } from './view/app/Welcome/VersionChecker';
 import { WelcomePageProvider } from './webview/WelcomePageProvider';
 import { AblHoverProvider } from './providers/AblHoverProvider';
 import { queryEditorCache } from './webview/queryEditor/queryEditorCache';
+import { FavoritesProvider } from './treeview/FavoritesProvider';
 
 export function activate(context: vscode.ExtensionContext) {
     let extensionPort: number;
@@ -224,7 +225,22 @@ export function activate(context: vscode.ExtensionContext) {
 
     const tablesListProvider = new TablesListProvider(
         fieldsProvider,
-        indexesProvider
+        indexesProvider,
+        context
+    );
+
+    const favoritesProvider = new FavoritesProvider(
+        fieldsProvider,
+        indexesProvider,
+        context
+    );
+
+    const favorites = vscode.window.createTreeView(
+        `${Constants.globalExtensionKey}-favorites`,
+        { treeDataProvider: favoritesProvider }
+    );
+    favorites.onDidChangeSelection((e) =>
+        favoritesProvider.onDidChangeSelection(e)
     );
 
     const tables = vscode.window.createTreeView(
@@ -250,7 +266,11 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     groups.onDidChangeSelection((e) =>
-        groupListProvider.onDidChangeSelection(e, tablesListProvider)
+        groupListProvider.onDidChangeSelection(
+            e,
+            tablesListProvider,
+            favoritesProvider
+        )
     );
 
     /**
@@ -271,11 +291,32 @@ export function activate(context: vscode.ExtensionContext) {
             context,
             node,
             tablesListProvider,
+            favoritesProvider,
             fieldsProvider
         );
 
         queryEditorCache.setQueryEditor(key, newQueryEditor);
     };
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'pro-bro.addFavourite',
+            (node: TableNode) => {
+                favoritesProvider.addTableToFavorites(node);
+                favoritesProvider.refresh(undefined);
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'pro-bro.removeFavourite',
+            (node: TableNode) => {
+                favoritesProvider.removeTableFromFavorites(node);
+                favoritesProvider.refresh(undefined);
+            }
+        )
+    );
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -303,6 +344,16 @@ export function activate(context: vscode.ExtensionContext) {
             (node: TableNode) => {
                 tablesListProvider.selectDbConfig(node);
                 loadQueryEditor(node);
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.queryFavorite`,
+            (node: TableNode) => {
+                favoritesProvider.selectDbConfig(node);
+                loadQueryEditorForFavorite(node);
             }
         )
     );
@@ -416,6 +467,41 @@ export function activate(context: vscode.ExtensionContext) {
 
             quickPick.onDidHide(() => quickPick.dispose());
             quickPick.show();
+        }
+    );
+
+    const loadQueryEditorForFavorite = (node: TableNode): void => {
+        const key = node.getFullName(true) ?? '';
+
+        const cachedQueryEditor = queryEditorCache.getQueryEditor(key);
+
+        if (cachedQueryEditor) {
+            cachedQueryEditor.panel?.reveal();
+            cachedQueryEditor.refetchData();
+            return;
+        }
+        const newQueryEditor = new QueryEditor(
+            context,
+            node,
+            tablesListProvider,
+            favoritesProvider,
+            fieldsProvider
+        );
+
+        queryEditorCache.setQueryEditor(key, newQueryEditor);
+    };
+
+    vscode.commands.registerCommand(
+        `${Constants.globalExtensionKey}.dblClickFavoriteQuery`,
+        (_) => {
+            if (favoritesProvider.node === undefined) {
+                return;
+            }
+
+            favoritesProvider.countClick();
+            if (favoritesProvider.tableClicked.count === 2) {
+                loadQueryEditorForFavorite(favoritesProvider.node);
+            }
         }
     );
 
