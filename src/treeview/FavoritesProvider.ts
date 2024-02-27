@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { TableNode } from './TableNode';
 import { TablesListProvider } from './TablesListProvider';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
-import { TableCount } from '../view/app/model';
+import { IConfig, TableCount } from '../view/app/model';
 import { Constants } from '../common/Constants';
 
 export class FavoritesProvider extends TablesListProvider {
@@ -11,7 +11,7 @@ export class FavoritesProvider extends TablesListProvider {
     > = new vscode.EventEmitter<TableNode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<TableNode | undefined | void> =
         this._onDidChangeTreeData.event;
-    public tableClicked: TableCount = { tableName: undefined, count: 0 };
+    public configs: IConfig[] | undefined;
 
     constructor(
         fieldsProvider: PanelViewProvider,
@@ -122,5 +122,12 @@ export class FavoritesProvider extends TablesListProvider {
         } else {
             return [];
         }
+    }
+
+    public refresh(configs: IConfig[] | undefined): void {
+        if (configs !== undefined) {
+            this.configs = configs;
+        }
+        this._onDidChangeTreeData.fire();
     }
 }
