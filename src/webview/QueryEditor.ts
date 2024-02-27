@@ -1,6 +1,6 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import { ICommand, CommandAction } from '../view/app/model';
+import { ICommand, CommandAction, IConfig } from '../view/app/model';
 import { IOETableData } from '../db/Oe';
 import { TableNode } from '../treeview/TableNode';
 import { TablesListProvider } from '../treeview/TablesListProvider';
@@ -35,13 +35,25 @@ export class QueryEditor {
         this.tableName = tableNode.tableName;
         this.fieldsProvider = fieldProvider;
 
-        if (tableListProvider.config) {
-            this.readOnly = tableListProvider.config?.isReadOnly;
+        let config: IConfig | undefined;
+        switch (this.tableNode.source) {
+            case 'tables':
+                config = this.tableListProvider.config;
+                break;
+            case 'favorites':
+                config = this.favoritesProvider.config;
+                break;
+            default:
+                return;
+        }
+
+        if (config) {
+            this.readOnly = config?.isReadOnly;
         }
 
         this.panel = vscode.window.createWebviewPanel(
             'queryOETable', // Identifies the type of the webview. Used internally
-            `${this.favoritesProvider.config?.label}.${this.tableNode.tableName}`, // Title of the panel displayed to the user
+            `${config?.label}.${this.tableNode.tableName}`, // Title of the panel displayed to the user
             vscode.ViewColumn.One, // Editor column to show the new webview panel in.
             {
                 enableScripts: true,
@@ -85,10 +97,10 @@ export class QueryEditor {
                 this.logger.log('command:', command);
                 switch (command.action) {
                     case CommandAction.Query:
-                        if (this.favoritesProvider.config) {
+                        if (config) {
                             ProcessorFactory.getProcessorInstance()
                                 .getTableData(
-                                    this.favoritesProvider.config,
+                                    config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -109,10 +121,10 @@ export class QueryEditor {
                         }
                         break;
                     case CommandAction.CRUD:
-                        if (this.favoritesProvider.config) {
+                        if (config) {
                             ProcessorFactory.getProcessorInstance()
                                 .getTableData(
-                                    this.favoritesProvider.config,
+                                    config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -130,10 +142,10 @@ export class QueryEditor {
                         }
                         break;
                     case CommandAction.Submit:
-                        if (this.favoritesProvider.config) {
+                        if (config) {
                             ProcessorFactory.getProcessorInstance()
                                 .submitTableData(
-                                    this.favoritesProvider.config,
+                                    config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -170,10 +182,10 @@ export class QueryEditor {
                         }
                         break;
                     case CommandAction.Export:
-                        if (this.favoritesProvider.config) {
+                        if (config) {
                             ProcessorFactory.getProcessorInstance()
                                 .getTableData(
-                                    this.favoritesProvider.config,
+                                    config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -189,8 +201,7 @@ export class QueryEditor {
                                             dumpFileFormatter.formatDumpFile(
                                                 oe,
                                                 this.tableNode.tableName,
-                                                this.favoritesProvider.config!
-                                                    .label
+                                                config!.label
                                             );
                                             exportData =
                                                 dumpFileFormatter.getDumpFile();

@@ -215,7 +215,8 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
                                             table.name,
                                             table.tableType,
                                             connectionName,
-                                            connectionLabel
+                                            connectionLabel,
+                                            'tables'
                                         )
                                     );
                                 }

@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
 import { TableNode } from './TableNode';
-import { INode } from './INode';
 import { TablesListProvider } from './TablesListProvider';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
-import { IConfig, TableCount } from '../view/app/model';
+import { TableCount } from '../view/app/model';
 import { Constants } from '../common/Constants';
 
 export class FavoritesProvider extends TablesListProvider {
@@ -34,7 +33,7 @@ export class FavoritesProvider extends TablesListProvider {
         return treeItem;
     }
 
-    public async getFavorites(): Promise<TableNode[]> {
+    private async getFavorites(): Promise<TableNode[]> {
         const favoritesData = this.context.globalState.get<
             {
                 dbId: string;
@@ -57,7 +56,8 @@ export class FavoritesProvider extends TablesListProvider {
                     data.tableName,
                     data.tableType,
                     data.connectionName,
-                    data.connectionLabel
+                    data.connectionLabel,
+                    'favorites'
                 )
         );
 

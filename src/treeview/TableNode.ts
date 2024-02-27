@@ -9,6 +9,7 @@ export class TableNode implements INode {
     public connectionName: string;
     public connectionLabel: string;
     public cache: TableDetails | undefined;
+    public source: 'tables' | 'favorites';
 
     constructor(
         private context: vscode.ExtensionContext,
@@ -16,13 +17,15 @@ export class TableNode implements INode {
         tableName: string,
         tableType: string,
         connectionName: string,
-        connectionLabel: string
+        connectionLabel: string,
+        source: 'tables' | 'favorites'
     ) {
         this.dbId = dbId;
         this.tableName = tableName;
         this.tableType = tableType;
         this.connectionName = connectionName;
         this.connectionLabel = connectionLabel;
+        this.source = source;
     }
 
     public getTreeItem(): vscode.TreeItem {
