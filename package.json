@@ -87,6 +87,11 @@
                     "default": "true",
                     "markdownDescription": "Use write triggers"
                 },
+                "pro-bro.useDeleteTriggers": {
+                    "type": "boolean",
+                    "default": "true",
+                    "markdownDescription": "Use delete triggers"
+                },
                 "pro-bro.tempfiles": {
                     "type": "string",
                     "markdownDescription": "Specifies path where temporary files are created."
