@@ -5,23 +5,23 @@ import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import { PfParser } from '../utils/PfParser';
 import { Logger } from '../../../common/Logger';
 import { ISettings } from '../../../common/IExtensionSettings';
+import { getVSCodeAPI } from '@utils/vscode';
 
 interface IConfigProps {
-  vscode: any;
-  initialData: IConfig;
-  configuration: ISettings;
+    initialData: IConfig;
+    configuration: ISettings;
 }
 
 interface IConfigState {
-  config: IConfig;
+    config: IConfig;
 }
 
 function ConnectionForm({
-    vscode,
     initialData,
     configuration,
     ...props
 }: IConfigProps) {
+    const vscode = getVSCodeAPI();
     const oldState = vscode.getState();
     const initState = oldState ? oldState : { config: initialData };
     const [vsState, _] = React.useState<IConfigState>(initState);
@@ -74,15 +74,18 @@ function ConnectionForm({
     const messageEvent = (event) => {
         const message = event.data;
         switch (message.command) {
-        case 'group':
-            setGroupNames(message.columns);
-            if (groupNames.length === 0) {
-                getGroups();
-            } else {
-                createListener(document.getElementById('input'), groupNames);
-            }
+            case 'group':
+                setGroupNames(message.columns);
+                if (groupNames.length === 0) {
+                    getGroups();
+                } else {
+                    createListener(
+                        document.getElementById('input'),
+                        groupNames
+                    );
+                }
 
-            break;
+                break;
         }
     };
 
@@ -176,7 +179,8 @@ function ConnectionForm({
 
         if (e.key === 'Enter' && selected !== null) {
             e.preventDefault();
-            const selectedText = document.querySelector('.selected').textContent;
+            const selectedText =
+                document.querySelector('.selected').textContent;
 
             setGroup(selectedText);
             createListener(document.getElementById('input'), groupNames);
@@ -195,7 +199,9 @@ function ConnectionForm({
                         item.classList.remove('selected');
                     });
                 if (selected.previousElementSibling === null) {
-                    selected.parentElement.lastElementChild.classList.add('selected');
+                    selected.parentElement.lastElementChild.classList.add(
+                        'selected'
+                    );
                 } else {
                     selected.previousElementSibling.classList.add('selected');
                 }
@@ -219,7 +225,9 @@ function ConnectionForm({
                     });
 
                 if (selected.nextElementSibling === null) {
-                    selected.parentElement.firstElementChild.classList.add('selected');
+                    selected.parentElement.firstElementChild.classList.add(
+                        'selected'
+                    );
                 } else {
                     selected.nextElementSibling.classList.add('selected');
                 }
@@ -244,23 +252,28 @@ function ConnectionForm({
     }
 
     function mouseoverListener() {
-        document.querySelectorAll('.autocomplete-list li').forEach(function (item) {
-            item.addEventListener('mouseover', function () {
-                document
-                    .querySelectorAll('.autocomplete-list li')
-                    .forEach(function (item) {
-                        item.classList.remove('selected');
-                    });
-                this.classList.add('selected');
+        document
+            .querySelectorAll('.autocomplete-list li')
+            .forEach(function (item) {
+                item.addEventListener('mouseover', function () {
+                    document
+                        .querySelectorAll('.autocomplete-list li')
+                        .forEach(function (item) {
+                            item.classList.remove('selected');
+                        });
+                    this.classList.add('selected');
+                });
+                item.addEventListener('click', function () {
+                    setGroup(this.innerHTML);
+                    document.getElementById('input').focus();
+                    setTimeout(() => {
+                        createListener(
+                            document.getElementById('input'),
+                            groupNames
+                        );
+                    }, 301);
+                });
             });
-            item.addEventListener('click', function () {
-                setGroup(this.innerHTML);
-                document.getElementById('input').focus();
-                setTimeout(() => {
-                    createListener(document.getElementById('input'), groupNames);
-                }, 301);
-            });
-        });
     }
 
     function hideSuggestions() {
@@ -276,26 +289,26 @@ function ConnectionForm({
 
     return (
         <React.Fragment>
-            <div className="container">
-                <div className="heading">
-                    <div className="title">Connect to server</div>
+            <div className='container'>
+                <div className='heading'>
+                    <div className='title'>Connect to server</div>
                     {!workState && (
                         <ProBroButton
-                            className="importPf"
+                            className='importPf'
                             onClick={importPf}
                             startIcon={<FileUploadRoundedIcon />}
                         >
-              Import .pf
+                            Import .pf
                         </ProBroButton>
                     )}
                 </div>
-                <div className="content">
-                    <form action="#">
-                        <div className="connection-details">
-                            <div className="input-box">
+                <div className='content'>
+                    <form action='#'>
+                        <div className='connection-details'>
+                            <div className='input-box'>
                                 <input
-                                    type="text"
-                                    placeholder="Connection name"
+                                    type='text'
+                                    placeholder='Connection name'
                                     value={label}
                                     onChange={(event) => {
                                         setLabel(event.target.value);
@@ -303,11 +316,11 @@ function ConnectionForm({
                                     disabled={workState}
                                 />
                             </div>
-                            <div className="input-box">
+                            <div className='input-box'>
                                 <input
-                                    id="input"
-                                    type="text"
-                                    placeholder="Group"
+                                    id='input'
+                                    type='text'
+                                    placeholder='Group'
                                     value={group}
                                     onFocus={() => {
                                         getGroups();
@@ -323,12 +336,15 @@ function ConnectionForm({
                                     disabled={workState}
                                     onKeyDown={handleKeyDown}
                                 />
-                                <ul className="autocomplete-list" id="column-list"></ul>
+                                <ul
+                                    className='autocomplete-list'
+                                    id='column-list'
+                                ></ul>
                             </div>
-                            <div className="input-box-wide">
+                            <div className='input-box-wide'>
                                 <input
-                                    type="text"
-                                    placeholder="Physical name"
+                                    type='text'
+                                    placeholder='Physical name'
                                     value={name}
                                     onChange={(event) => {
                                         setName(event.target.value);
@@ -337,11 +353,11 @@ function ConnectionForm({
                                 />
                             </div>
                         </div>
-                        <div className="connection-details">
-                            <div className="input-box-wide">
+                        <div className='connection-details'>
+                            <div className='input-box-wide'>
                                 <input
-                                    type="text"
-                                    placeholder="Description"
+                                    type='text'
+                                    placeholder='Description'
                                     value={description}
                                     onChange={(event) => {
                                         setDescription(event.target.value);
@@ -350,11 +366,11 @@ function ConnectionForm({
                                 />
                             </div>
                         </div>
-                        <div className="connection-details">
-                            <div className="input-box">
+                        <div className='connection-details'>
+                            <div className='input-box'>
                                 <input
-                                    type="text"
-                                    placeholder="Host name"
+                                    type='text'
+                                    placeholder='Host name'
                                     value={host}
                                     onChange={(event) => {
                                         setHost(event.target.value);
@@ -362,10 +378,10 @@ function ConnectionForm({
                                     disabled={workState}
                                 />
                             </div>
-                            <div className="input-box">
+                            <div className='input-box'>
                                 <input
-                                    type="text"
-                                    placeholder="Port"
+                                    type='text'
+                                    placeholder='Port'
                                     value={port}
                                     onChange={(event) => {
                                         setPort(event.target.value);
@@ -373,10 +389,10 @@ function ConnectionForm({
                                     disabled={workState}
                                 />
                             </div>
-                            <div className="input-box">
+                            <div className='input-box'>
                                 <input
-                                    type="text"
-                                    placeholder="User ID"
+                                    type='text'
+                                    placeholder='User ID'
                                     value={user}
                                     onChange={(event) => {
                                         setUser(event.target.value);
@@ -384,10 +400,10 @@ function ConnectionForm({
                                     disabled={workState}
                                 />
                             </div>
-                            <div className="input-box">
+                            <div className='input-box'>
                                 <input
-                                    type="password"
-                                    placeholder="Password"
+                                    type='password'
+                                    placeholder='Password'
                                     value={password}
                                     onChange={(event) => {
                                         setPassword(event.target.value);
@@ -395,10 +411,10 @@ function ConnectionForm({
                                     disabled={workState}
                                 />
                             </div>
-                            <div className="input-box-wide">
+                            <div className='input-box-wide'>
                                 <input
-                                    type="text"
-                                    placeholder="Other parameters"
+                                    type='text'
+                                    placeholder='Other parameters'
                                     value={params}
                                     onChange={(event) => {
                                         setParams(event.target.value);
@@ -407,15 +423,23 @@ function ConnectionForm({
                                 />
                             </div>
                         </div>
-                        <div className="buttons">
+                        <div className='buttons'>
                             {!workState && (
-                                <div className="button-narrow">
-                                    <input type="submit" value="Test" onClick={onTestClick} />
+                                <div className='button-narrow'>
+                                    <input
+                                        type='submit'
+                                        value='Test'
+                                        onClick={onTestClick}
+                                    />
                                 </div>
                             )}
                             {!workState && (
-                                <div className="button-narrow">
-                                    <input type="submit" value="Save" onClick={onSaveClick} />
+                                <div className='button-narrow'>
+                                    <input
+                                        type='submit'
+                                        value='Save'
+                                        onClick={onSaveClick}
+                                    />
                                 </div>
                             )}
                         </div>
