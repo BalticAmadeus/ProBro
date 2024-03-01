@@ -1,6 +1,7 @@
 import {
     CSSProperties,
     Fragment,
+
     UIEvent,
     useEffect,
     useRef,
@@ -11,7 +12,9 @@ import DataGrid, { SortColumn, SelectColumn, CopyEvent } from 'react-data-grid';
 
 import { IOETableData } from '@src/db/Oe';
 import { CommandAction, ICommand, ProcessAction } from '../model';
+
 import { Logger } from '@src/common/Logger';
+
 import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { IErrorObject, emptyErrorObj } from '@utils/error';
@@ -29,6 +32,7 @@ const filterCSS: CSSProperties = {
 };
 
 interface IConfigProps {
+
     tableData: IOETableData;
     tableName: string;
     isReadOnly: boolean;
@@ -41,8 +45,10 @@ interface IStatisticsObject {
 }
 
 function QueryForm({
+
     tableData,
     tableName,
+
     isReadOnly,
     ...props
 }: IConfigProps) {
@@ -93,6 +99,7 @@ function QueryForm({
     const setFilters = (data) => {
         filtersRef.current = data;
         _setFilters(data);
+
     };
 
     const windowResize = () => {
@@ -266,6 +273,7 @@ function QueryForm({
                                                         textOverflow:
                                                             'ellipsis',
                                                     }}
+
                                                 >
                                                     {column.name}
                                                 </span>
@@ -350,7 +358,9 @@ function QueryForm({
                                 row[field.name] = row[field.name].toString();
                             }
                         });
+
                     });
+
                 }
                 setRawRows([...rawRows, ...message.data.rawData]);
                 setRowID(
@@ -408,6 +418,8 @@ function QueryForm({
         );
     };
 
+
+
     function reloadData(loaded: number) {
         setLoaded(0);
         setRawRows([]);
@@ -440,6 +452,7 @@ function QueryForm({
         };
         logger.log('make query', command);
         vscode.postMessage(command);
+        setProcBusy(true);
     }
 
     function isAtBottom({ currentTarget }: UIEvent<HTMLDivElement>): boolean {
@@ -473,7 +486,7 @@ function QueryForm({
     }
 
     function onSortClick(inputSortColumns: SortColumn[]) {
-        if (isLoading) {
+        if (isLoading || procBusy) {
             return;
         }
         setSortAction(true);
@@ -501,6 +514,7 @@ function QueryForm({
             );
         } else {
             setSortAction(false);
+
         }
     }
 
@@ -520,6 +534,7 @@ function QueryForm({
         setAction(ProcessAction.Read);
         setReadRow(row);
         setOpen(true);
+
     };
 
     function filterColumns() {
@@ -546,6 +561,8 @@ function QueryForm({
             navigator.clipboard.writeText(sourceRow[sourceColumnKey]);
         }
     }
+
+
 
     const calculateHeight = () => {
         const rowCount = isFormatted ? formattedRows.length : rawRows.length;
