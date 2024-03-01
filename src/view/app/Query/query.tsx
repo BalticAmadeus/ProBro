@@ -11,9 +11,7 @@ import DataGrid, { SortColumn, SelectColumn, CopyEvent } from 'react-data-grid';
 
 import { IOETableData } from '@src/db/Oe';
 import { CommandAction, ICommand, ProcessAction } from '../model';
-
 import { Logger } from '@src/common/Logger';
-
 import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { IErrorObject, emptyErrorObj } from '@utils/error';
@@ -45,7 +43,6 @@ interface IStatisticsObject {
 function QueryForm({
     tableData,
     tableName,
-
     isReadOnly,
     ...props
 }: IConfigProps) {
