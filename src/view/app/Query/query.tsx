@@ -79,6 +79,7 @@ function QueryForm({
     const [initialDataLoad, setInitialDataLoad] = useState(true);
     const [recordColor, setRecordColor] = useState('red');
     const logger = new Logger(configuration.logging.react);
+    const [procBusy, setProcBusy] = useState(false);
 
     window.addEventListener(
         'contextmenu',
@@ -177,6 +178,9 @@ function QueryForm({
                 }
                 break;
             case 'data':
+                if (procBusy) {
+                    setProcBusy(false);
+                }
                 if (message.data.error) {
                     setErrorObject({
                         error: message.data.error,
@@ -536,6 +540,7 @@ function QueryForm({
         };
         logger.log('make query', command);
         vscode.postMessage(command);
+        setProcBusy(true);
     }
 
     function isAtBottom({ currentTarget }: UIEvent<HTMLDivElement>): boolean {
@@ -569,7 +574,7 @@ function QueryForm({
     }
 
     function onSortClick(inputSortColumns: SortColumn[]) {
-        if (isLoading) {
+        if (isLoading || procBusy) {
             return;
         }
         setSortAction(true);
