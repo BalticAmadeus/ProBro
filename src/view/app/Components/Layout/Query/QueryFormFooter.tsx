@@ -81,8 +81,10 @@ const QueryFormFooter: React.FC<QueryFormFooterProps> = ({
                     <MonospaceTypography>
                         Records in grid:{' '}
                         <MonospaceTypography
+                            component='span'
                             sx={{ color: recordColor, display: 'inline-block' }}
                         >
+                            {recordColor === red[500] ? '> ' : ''}
                             {totalRecords}
                         </MonospaceTypography>
                     </MonospaceTypography>

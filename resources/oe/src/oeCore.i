@@ -145,6 +145,8 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
 
         DEFINE VARIABLE cFieldQuery AS CHARACTER NO-UNDO.
         DEFINE VARIABLE cIndexQuery AS CHARACTER NO-UNDO.
+        DEFINE VARIABLE iFieldOrder AS INTEGER NO-UNDO.
+        DEFINE VARIABLE iCount AS INTEGER NO-UNDO.
 
 
         jsonFields = NEW Progress.Json.ObjectModel.JsonArray().
@@ -165,6 +167,11 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
         qhField:QUERY-OPEN.
 
         DO WHILE qhField:GET-NEXT():
+
+            IF bhField::_order > iFieldOrder
+            THEN ASSIGN
+                iFieldOrder = bhField::_order.
+
             jsonField = NEW Progress.Json.ObjectModel.JsonObject().
             jsonField:Add("order", bhField::_order).
             jsonField:Add("name", bhField::_field-name).
@@ -189,6 +196,21 @@ PROCEDURE LOCAL_GET_TABLE_DETAILS:
         DELETE OBJECT bhField.
         DELETE OBJECT qhField.
         DELETE OBJECT bhFile.
+
+        DO iCount = 1 TO 2:
+            iFieldOrder = iFieldOrder + 10.
+            jsonField = NEW Progress.Json.ObjectModel.JsonObject().
+            jsonField:Add("order", iFieldOrder).
+            jsonField:Add("name", ENTRY(iCount,"RECID,ROWID")).
+            jsonField:Add("type", 'character').
+            jsonField:Add("format", ENTRY(iCount,"x(20),x(24)")).
+            jsonField:Add("label", jsonField:GetCharacter("name")).
+            jsonField:Add("initial", "").
+            jsonField:Add("columnLabel", jsonField:GetCharacter("name")).
+            jsonField:Add("mandatory",FALSE).
+            jsonField:Add("extent", 0).
+            jsonFields:Add(jsonField).
+        END.
 
         // get Index table details
 
@@ -270,7 +292,9 @@ PROCEDURE GET_ROW_DATA:
     jsonRawRow = NEW Progress.Json.ObjectModel.JsonObject().
     jsonFormattedRow = NEW Progress.Json.ObjectModel.JsonObject().
     jsonRawRow:Add("ROWID", STRING(hfield:ROWID)).
+    jsonRawRow:Add("RECID", STRING(hfield:RECID)).
     jsonFormattedRow:Add("ROWID", STRING(hfield:ROWID)).
+    jsonFormattedRow:Add("RECID", STRING(hfield:RECID)).
 
     DO iFieldNum = 1 TO hfield:NUM-FIELDS:
 
@@ -327,7 +351,8 @@ FUNCTION GET_COLUMNS RETURNS Progress.Json.ObjectModel.JsonArray (lDumpFile AS L
     DEFINE VARIABLE qhField AS HANDLE NO-UNDO.
     DEFINE VARIABLE bhField AS HANDLE  NO-UNDO.
 
-    DEFINE VARIABLE iFieldCount AS INTEGER NO-UNDO.
+    DEFINE VARIABLE iFieldExtentCount AS INTEGER NO-UNDO.
+    DEFINE VARIABLE iCount AS INTEGER NO-UNDO.
 
     DEFINE BUFFER bttColumn FOR ttColumn.
 
@@ -349,12 +374,6 @@ FUNCTION GET_COLUMNS RETURNS Progress.Json.ObjectModel.JsonArray (lDumpFile AS L
 
         EMPTY TEMP-TABLE bttColumn.
 
-        CREATE bttColumn.
-        bttColumn.cName = "ROWID".
-        bttColumn.cKey = "ROWID".
-        bttColumn.cLabel = "ROWID".
-        bttColumn.cType = "ROWID".
-        bttColumn.cFormat = ?.
 
         DO WHILE qhField:GET-NEXT():
             IF NOT lDumpFile THEN DO:
@@ -373,10 +392,10 @@ FUNCTION GET_COLUMNS RETURNS Progress.Json.ObjectModel.JsonArray (lDumpFile AS L
                 bttColumn.iExtent = qhField:GET-BUFFER-HANDLE(1)::_extent.
             END.
             ELSE DO:
-                DO iFieldCount = 1 TO qhField:GET-BUFFER-HANDLE(1)::_extent:
+                DO iFieldExtentCount = 1 TO qhField:GET-BUFFER-HANDLE(1)::_extent:
                     CREATE bttColumn.
-                    bttColumn.cName = SUBSTITUTE("&1[&2]", qhField:GET-BUFFER-HANDLE(1)::_field-name, iFieldCount).
-                    bttColumn.cKey = SUBSTITUTE("&1[&2]", qhField:GET-BUFFER-HANDLE(1)::_field-name, iFieldCount).
+                    bttColumn.cName = SUBSTITUTE("&1[&2]", qhField:GET-BUFFER-HANDLE(1)::_field-name, iFieldExtentCount).
+                    bttColumn.cKey = SUBSTITUTE("&1[&2]", qhField:GET-BUFFER-HANDLE(1)::_field-name, iFieldExtentCount).
                     bttColumn.cLabel = qhField:GET-BUFFER-HANDLE(1)::_field-name.
                     bttColumn.cType = qhField:GET-BUFFER-HANDLE(1)::_data-type.
                     bttColumn.cFormat = qhField:GET-BUFFER-HANDLE(1)::_format.
@@ -384,6 +403,16 @@ FUNCTION GET_COLUMNS RETURNS Progress.Json.ObjectModel.JsonArray (lDumpFile AS L
                 END.
             END.
         END.
+        // Add ROWID and RECID
+        DO iCount = 1 TO 2:
+            CREATE bttColumn.
+            bttColumn.cName = ENTRY(iCount,"RECID,ROWID").
+            bttColumn.cKey = bttColumn.cName.
+            bttColumn.cLabel = bttColumn.cName.
+            bttColumn.cType = bttColumn.cName.
+            bttColumn.cFormat = ENTRY(iCount,"X(20),X(24)").
+        END.
+
         jsonFields:Read(TEMP-TABLE bttColumn:HANDLE).
 
         qhField:QUERY-CLOSE().
@@ -402,6 +431,16 @@ FUNCTION GET_MODE RETURNS CHARACTER ():
     IF NOT inputObject:GetJsonObject("params"):has("mode") THEN RETURN "DATA".
     RETURN inputObject:GetJsonObject("params"):GetCharacter("mode").
 END FUNCTION.
+
+FUNCTION GET_FORMATTED_COLUMN_NAME RETURNS CHARACTER (cTableName AS CHARACTER, cColumnKey AS CHARACTER):
+    IF cColumnKey NE "ROWID"
+    AND cColumnKey NE "RECID" THEN DO:
+        RETURN SUBSTITUTE("&1.&2", cTableName, cColumnKey).
+    END.
+    ELSE DO:
+        RETURN SUBSTITUTE("&2(&1)", cTableName, cColumnKey).
+    END.
+END.
 
 FUNCTION GET_WHERE_PHRASE RETURNS CHARACTER ():
     DEFINE VARIABLE jsonFilter AS Progress.Json.ObjectModel.JsonObject NO-UNDO.
@@ -436,16 +475,15 @@ FUNCTION GET_WHERE_PHRASE RETURNS CHARACTER ():
                     cWherePhrase = SUBSTITUTE("&1 AND", cWherePhrase).
                 END.
 
-                cWherePhrase = SUBSTITUTE("&1 STRING(&2.&3) BEGINS ~"&4~"",
+                cWherePhrase = SUBSTITUTE("&1 STRING(&2) BEGINS ~"&3~"",
                                         cWherePhrase,
-                                        inputObject:GetJsonObject("params"):GetCharacter("tableName"),
-                                        cFilterNames[iFilterNameCount],
+                                        GET_FORMATTED_COLUMN_NAME(inputObject:GetJsonObject("params"):GetCharacter("tableName"),
+                                                                  cFilterNames[iFilterNameCount]),
                                         jsonFilter:GetCharacter(cFilterNames[iFilterNameCount])
                                         ).
             END.
         END.
     END.
-
     RETURN cWherePhrase.
 END FUNCTION.
 
@@ -453,20 +491,20 @@ FUNCTION GET_ORDER_PHRASE RETURNS CHARACTER ():
     DEFINE VARIABLE jsonSort AS Progress.Json.ObjectModel.JsonArray NO-UNDO.
 
     DEFINE VARIABLE cOrderPhrase AS CHARACTER NO-UNDO.
+    DEFINE VARIABLE cOrderExpression AS CHARACTER NO-UNDO.
 
     DEFINE VARIABLE iChar AS INTEGER NO-UNDO.
 
     IF inputObject:GetJsonObject("params"):has("sortColumns") THEN DO:
         jsonSort = inputObject:GetJsonObject("params"):GetJsonArray("sortColumns").
         DO iChar = 1 TO jsonSort:Length:
-            cOrderPhrase = SUBSTITUTE("&1 BY &2.&3 &4",
+            cOrderPhrase = SUBSTITUTE("&1 BY &2 &3",
                         cOrderPhrase,
-                        inputObject:GetJsonObject("params"):GetCharacter("tableName"),
-                        jsonSort:GetJsonObject(iChar):GetCharacter("columnKey"),
+                        GET_FORMATTED_COLUMN_NAME(inputObject:GetJsonObject("params"):GetCharacter("tableName"),
+                                                  jsonSort:GetJsonObject(iChar):GetCharacter("columnKey")),
                         IF jsonSort:GetJsonObject(iChar):GetCharacter("direction") = "ASC" THEN "" ELSE "DESCENDING").
         END.
     END.
-
     RETURN cOrderPhrase.
 END FUNCTION.
 
@@ -733,7 +771,8 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
     DEFINE VARIABLE bh AS HANDLE  NO-UNDO.
     DEFINE VARIABLE fhKey AS HANDLE NO-UNDO.
     DEFINE VARIABLE cMode AS CHARACTER NO-UNDO.
-    DEFINE VARIABLE lUseTriggers AS LOGICAL NO-UNDO.
+    DEFINE VARIABLE lUseWriteTriggers AS LOGICAL NO-UNDO.
+    DEFINE VARIABLE lUseDeleteTriggers AS LOGICAL NO-UNDO.
 
     DEFINE VARIABLE i AS INTEGER NO-UNDO.
 
@@ -749,9 +788,15 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
 
     cMode = inputObject:GetJsonObject("params"):GetCharacter("mode").
 
-    lUseTriggers = inputObject:GetJsonObject("params"):GetLogical("useTriggers").
+    lUseWriteTriggers = inputObject:GetJsonObject("params"):GetLogical("useWriteTriggers").
+    lUseDeleteTriggers = inputObject:GetJsonObject("params"):GetLogical("useDeleteTriggers").
 
     IF cMode = "DELETE" THEN DO:
+        IF lUseDeleteTriggers = false THEN DO:
+            bh:DISABLE-LOAD-TRIGGERS(FALSE).
+            bh:DISABLE-DUMP-TRIGGERS( ).
+        END.
+
         DO i = 1 TO jsonCrud:Length:
             IF qh:REPOSITION-TO-ROWID(TO-ROWID(jsonCrud:GetCharacter(i))) THEN DO:
                 IF qh:GET-NEXT(EXCLUSIVE-LOCK, NO-WAIT) THEN DO:
@@ -772,7 +817,7 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
     END.
     ELSE DO:
         IF cMode = "INSERT" OR cMode = "COPY" THEN DO:
-            IF lUseTriggers = false THEN DO:
+            IF lUseWriteTriggers = false THEN DO:
                 bh:DISABLE-LOAD-TRIGGERS(FALSE).
                 bh:DISABLE-DUMP-TRIGGERS( ).
             END.
@@ -780,7 +825,7 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
             bh:BUFFER-CREATE().
         END.
         ELSE IF cMode = "UPDATE" THEN DO:
-            IF lUseTriggers = false THEN DO:
+            IF lUseWriteTriggers = false THEN DO:
                 bh:DISABLE-LOAD-TRIGGERS(FALSE).
                 bh:DISABLE-DUMP-TRIGGERS( ).
             END.
@@ -812,4 +857,3 @@ PROCEDURE LOCAL_SUBMIT_TABLE_DATA:
         END.
     END.
 END PROCEDURE.
-

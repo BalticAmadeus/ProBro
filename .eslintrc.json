@@ -1,31 +1,51 @@
 {
     "root": true,
-    "parser": "@typescript-eslint/parser",
+    "env": {
+        "node": true,
+        "browser": true
+    },
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module"
     },
-    "plugins": [
-        "@typescript-eslint"
+    "overrides": [
+        {
+            "files": ["*.ts", "*.tsx"],
+            "parser": "@typescript-eslint/parser",
+            "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:@typescript-eslint/recommended", "plugin:react/jsx-runtime"],
+            "plugins": [
+                "@typescript-eslint",
+                "react"
+            ],
+            "rules": {
+                "react/prop-types": "off",
+                "indent": ["off", 4] // deprecated, need to fix later: https://github.com/BalticAmadeus/ProBro/issues/518
+            }
+        }
     ],
     "rules": {
         "@typescript-eslint/naming-convention": [
             "warn",
             {
-              "selector": "enumMember",
-              "format": ["PascalCase"]
+                "selector": "enumMember",
+                "format": ["PascalCase"]
             }
         ],
         "@typescript-eslint/semi": "warn",
         "curly": "warn",
         "eqeqeq": "warn",
         "no-throw-literal": "warn",
-        "semi": "off",
-        "quotes": [1, "single", { "avoidEscape": true }]
+        "semi": ["warn", "always"],
+        "quotes": ["warn", "single"]
     },
     "ignorePatterns": [
         "out",
         "dist",
         "**/*.d.ts"
-    ]
+    ],
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    }
 }

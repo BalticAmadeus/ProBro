@@ -24,6 +24,11 @@ import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { IErrorObject, emptyErrorObj } from '@utils/error';
 import QueryFormFooter from '@app/Components/Layout/Query/QueryFormFooter';
+import { Box } from '@mui/material';
+import QueryFormHead from '@app/Components/Layout/Query/QueryFormHead';
+import { IFilters } from '@app/common/types';
+import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
+import { green, red } from '@mui/material/colors';
 
 const filterCSS: CSSProperties = {
     inlineSize: '100%',
@@ -66,20 +71,23 @@ function QueryForm({
     const [rawRows, setRawRows] = useState(() => tableData.data);
     const [formattedRows, setFormattedRows] = useState(() => tableData.data);
     const [columns, setColumns] = useState(() => tableData.columns);
-    const [selectedColumns, setSelectedColumns] = useState([]);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
     const [columnsCRUD, setColumnsCRUD] = useState(() => []);
-    const [recordsCRUD, setRecordsCRUD] = useState(() => []);
+    const [rowsCRUD, setRecordsCRUD] = useState(() => []);
     const [loaded, setLoaded] = useState(() => 0);
     const [rowID, setRowID] = useState('');
     const [scrollHeight, setScrollHeight] = useState(() => 0);
     const [isWindowSmall, setIsWindowSmall] = useState(false);
 
-    const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
+    const [sortColumns, setSortColumns] = useState<SortColumn[]>([]);
     const [sortAction, setSortAction] = useState(false);
     const [initialDataLoad, setInitialDataLoad] = useState(true);
     const [recordColor, setRecordColor] = useState('red');
+    const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+
+    const configuration = getVSCodeConfiguration();
     const logger = new Logger(configuration.logging.react);
-    const [procBusy, setProcBusy] = useState(false);
+    const vscode = getVSCodeAPI();
 
     window.addEventListener(
         'contextmenu',
@@ -89,7 +97,7 @@ function QueryForm({
         true
     );
 
-    const [filters, _setFilters] = useState({
+    const [filters, _setFilters] = useState<IFilters>({
         columns: {},
         enabled: true,
     });
@@ -111,7 +119,7 @@ function QueryForm({
         setWindowHeight(window.innerHeight);
     };
 
-    let inputQuery: HTMLButtonElement = undefined;
+    const inputQuery: HTMLButtonElement = undefined;
     useEffect(() => {
         if (inputQuery) {
             inputQuery.click();
@@ -128,7 +136,7 @@ function QueryForm({
 
     useEffect(() => {
         const handleResize = () => {
-            setIsWindowSmall(window.innerWidth <= 828); // Adjust the breakpoint value as needed
+            setIsWindowSmall(window.innerWidth <= 920); // Adjust the breakpoint value as needed
         };
 
         window.addEventListener('resize', handleResize);
@@ -145,6 +153,9 @@ function QueryForm({
         switch (message.command) {
             case 'columns':
                 setSelectedColumns([...message.columns]);
+                break;
+            case 'refetch':
+                prepareQuery();
                 break;
             case 'submit':
                 if (message.data.error) {
@@ -199,113 +210,130 @@ function QueryForm({
                             .getPropertyValue('font-size')
                             .match(/\d+[.]?\d+/);
                         message.data.columns.forEach((column) => {
-                            if (column.key !== OEDataTypePrimitive.Rowid) {
-                                column.headerRenderer = function ({
-                                    column,
-                                    sortDirection,
-                                    priority,
-                                    onSort,
-                                    isCellSelected,
-                                }) {
-                                    function handleKeyDown(event) {
-                                        if (
-                                            event.key === ' ' ||
-                                            event.key === 'Enter'
-                                        ) {
-                                            event.preventDefault();
-                                            onSort(
-                                                event.ctrlKey || event.metaKey
-                                            );
-                                        }
-                                    }
-
-                                    function handleClick(event) {
+                            column.headerRenderer = function ({
+                                column,
+                                sortDirection,
+                                priority,
+                                onSort,
+                                isCellSelected,
+                            }) {
+                                function handleKeyDown(event) {
+                                    if (
+                                        event.key === ' ' ||
+                                        event.key === 'Enter'
+                                    ) {
+                                        event.preventDefault();
                                         onSort(event.ctrlKey || event.metaKey);
                                     }
+                                }
 
-                                    var timer;
-                                    function handleKeyInputTimeout() {
-                                        clearTimeout(timer);
-                                        timer = setTimeout(() => {
-                                            reloadData(
-                                                configuration.initialBatchSizeLoad
-                                            );
-                                        }, 500);
-                                    }
-                                    function testKeyDown(event) {
-                                        if (event.key === 'Enter') {
-                                            event.preventDefault();
-                                            reloadData(
-                                                configuration.initialBatchSizeLoad
-                                            );
-                                        }
-                                    }
+                                function handleClick(event) {
+                                    onSort(event.ctrlKey || event.metaKey);
+                                }
 
-                                    function handleInputKeyDown(event) {
-                                        const tempFilters = filters;
-                                        tempFilters.columns[column.key] =
-                                            event.target.value;
-                                        setFilters(tempFilters);
-                                        if (
-                                            configuration.filterAsYouType ===
-                                            true
-                                        ) {
-                                            handleKeyInputTimeout();
-                                        }
-                                    }
+                                let timer;
+                                function handleKeyInputTimeout() {
+                                    clearTimeout(timer);
+                                    timer = setTimeout(() => {
+                                        reloadData(
+                                            configuration.initialBatchSizeLoad
+                                        );
+                                    }, 500);
+                                }
 
-                                    return (
-                                        <Fragment>
-                                            <div
-                                                className={
-                                                    filters.enabled
-                                                        ? 'filter-cell'
-                                                        : undefined
-                                                }
+                                function testKeyDown(event) {
+                                    if (event.key === 'Enter') {
+                                        event.preventDefault();
+                                        reloadData(
+                                            configuration.initialBatchSizeLoad
+                                        );
+                                    }
+                                }
+
+                                function handleInputKeyDown(event) {
+                                    const tempFilters = filters;
+                                    tempFilters.columns[column.key] =
+                                        event.target.value;
+                                    setFilters(tempFilters);
+                                    if (
+                                        configuration.filterAsYouType === true
+                                    ) {
+                                        handleKeyInputTimeout();
+                                    }
+                                }
+
+                                return (
+                                    <Fragment>
+                                        <div
+                                            className={
+                                                filters.enabled
+                                                    ? 'filter-cell'
+                                                    : undefined
+                                            }
+                                        >
+                                            <span
+                                                tabIndex={-1}
+                                                style={{
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                }}
+                                                className='rdg-header-sort-cell'
+                                                onClick={handleClick}
+                                                onKeyDown={handleKeyDown}
                                             >
                                                 <span
-                                                    tabIndex={-1}
+                                                    className='rdg-header-sort-name'
                                                     style={{
-                                                        cursor: 'pointer',
-                                                        display: 'flex',
+                                                        flexGrow: '1',
+                                                        overflow: 'clip',
+                                                        textOverflow:
+                                                            'ellipsis',
                                                     }}
                                                     className='rdg-header-sort-cell'
                                                     onClick={handleClick}
                                                     onKeyDown={handleKeyDown}
                                                 >
-                                                    <span
-                                                        className='rdg-header-sort-name'
+                                                    {column.name}
+                                                </span>
+                                                <span>
+                                                    <svg
+                                                        viewBox='0 0 12 8'
+                                                        width='12'
+                                                        height='8'
+                                                        className='rdg-sort-arrow'
                                                         style={{
-                                                            flexGrow: '1',
-                                                            overflow: 'clip',
-                                                            textOverflow:
-                                                                'ellipsis',
+                                                            fill: 'currentcolor',
                                                         }}
                                                     >
-                                                        {column.name}
-                                                    </span>
-                                                    <span>
-                                                        <svg
-                                                            viewBox='0 0 12 8'
-                                                            width='12'
-                                                            height='8'
-                                                            className='rdg-sort-arrow'
-                                                            style={{
-                                                                fill: 'currentcolor',
-                                                            }}
-                                                        >
-                                                            {sortDirection ===
-                                                                'ASC' && (
-                                                                <path d='M0 8 6 0 12 8'></path>
-                                                            )}
-                                                            {sortDirection ===
-                                                                'DESC' && (
-                                                                <path d='M0 0 6 8 12 0'></path>
-                                                            )}
-                                                        </svg>
-                                                        {priority}
-                                                    </span>
+                                                        {sortDirection ===
+                                                            'ASC' && (
+                                                            <path d='M0 8 6 0 12 8'></path>
+                                                        )}
+                                                        {sortDirection ===
+                                                            'DESC' && (
+                                                            <path d='M0 0 6 8 12 0'></path>
+                                                        )}
+                                                    </svg>
+                                                    {priority}
                                                 </span>
+                                            </span>
+                                        </div>
+                                        {filters.enabled && (
+                                            <div className={'filter-cell'}>
+                                                <input
+                                                    className='textInput'
+                                                    autoFocus={isCellSelected}
+                                                    style={filterCSS}
+                                                    defaultValue={
+                                                        filters.columns[
+                                                            column.key
+                                                        ]
+                                                    }
+                                                    onChange={
+                                                        handleInputKeyDown
+                                                    }
+                                                    onKeyDown={testKeyDown}
+                                                />
                                             </div>
                                             {filters.enabled && (
                                                 <div className={'filter-cell'}>
@@ -350,29 +378,23 @@ function QueryForm({
                         if (message.columns !== undefined) {
                             setSelectedColumns([...message.columns]);
                         } else {
-                            setSelectedColumns(
-                                [
-                                    ...message.data.columns.map(
-                                        (column) => column.name
-                                    ),
-                                ].filter(
-                                    (column) =>
-                                        column !== OEDataTypePrimitive.Rowid
-                                )
-                            );
+                            setSelectedColumns([
+                                ...message.data.columns.map(
+                                    (column) => column.name
+                                ),
+                            ]);
                         }
                     }
-                    const boolField = message.data.columns.filter(
-                        (field) => field.type === OEDataTypePrimitive.Logical
-                    );
-                    if (boolField.length !== 0) {
-                        message.data.rawData.forEach((row) => {
-                            boolField.forEach((field) => {
-                                if (row[field.name] !== null) {
-                                    row[field.name] =
-                                        row[field.name].toString();
-                                }
-                            });
+                }
+                const boolField = message.data.columns.filter(
+                    (field) => field.type === OEDataTypePrimitive.Logical
+                );
+                if (boolField.length !== 0) {
+                    message.data.rawData.forEach((row) => {
+                        boolField.forEach((field) => {
+                            if (row[field.name] !== null) {
+                                row[field.name] = row[field.name].toString();
+                            }
                         });
                     }
                     setRawRows([...rawRows, ...message.data.rawData]);
@@ -402,6 +424,31 @@ function QueryForm({
                         message.data.debug.recordsRetrievalTime
                     );
                 }
+                setRawRows([...rawRows, ...message.data.rawData]);
+                setRowID(
+                    message.data.rawData.length > 0
+                        ? message.data.rawData[message.data.rawData.length - 1]
+                              .ROWID
+                        : rowID
+                );
+                setLoaded(loaded + message.data.rawData.length);
+                setFormattedRows([
+                    ...formattedRows,
+                    ...message.data.formattedData,
+                ]);
+                setLoaded(loaded + message.data.formattedData.length);
+                setErrorObject(emptyErrorObj);
+                setIsDataRetrieved(true);
+                setStatisticsObject({
+                    recordsRetrieved: message.data.debug.recordsRetrieved,
+                    recordsRetrievalTime:
+                        message.data.debug.recordsRetrievalTime,
+                    connectTime: message.data.debug.timeConnect,
+                });
+                allRecordsRetrieved(
+                    message.data.debug.recordsRetrieved,
+                    message.data.debug.recordsRetrievalTime
+                );
         }
         setIsLoading(false);
     };
@@ -597,8 +644,8 @@ function QueryForm({
             setRecordColor(
                 recentRecords < currentBatchSize &&
                     recentRetrievalTime < configuration.batchMaxTimeout
-                    ? 'green'
-                    : 'red'
+                    ? green[500]
+                    : red[500]
             );
         } else {
             setSortAction(false);
@@ -620,9 +667,12 @@ function QueryForm({
     // CRUD operations
     const [open, setOpen] = useState(false);
     const [action, setAction] = useState<ProcessAction>();
-    const [readRow, setReadRow] = useState([]);
+    const [readRow, setReadRow] = useState<string[]>([]);
 
-    const readRecord = (row: string[]) => {
+    const readRecord = (row) => {
+        const selectedRowsSet = new Set<string>();
+        selectedRowsSet.add(row.ROWID);
+        setSelectedRows(selectedRowsSet);
         setAction(ProcessAction.Read);
         setReadRow(row);
         setOpen(true);
@@ -790,98 +840,36 @@ function QueryForm({
 
     return (
         <Fragment>
-            <div className='container'>
-                <div className='title'>Query</div>
-                <div className='content'>
-                    <form className='form' action='#'>
-                        <div className='connection-details'>
-                            <div className='input-box'>
-                                <input
-                                    id='input'
-                                    className='textInputQuery'
-                                    type='text'
-                                    placeholder='WHERE ...'
-                                    value={wherePhrase}
-                                    onFocus={() => {
-                                        createListener(
-                                            document.getElementById('input'),
-                                            selectedColumns
-                                        );
-                                    }}
-                                    onBlur={hideSuggestions}
-                                    onChange={(event) => {
-                                        createListener(
-                                            document.getElementById('input'),
-                                            selectedColumns
-                                        );
-                                        setWherePhrase(event.target.value);
-                                    }}
-                                    onKeyDown={handleKeyDown}
-                                />
-                                {isWindowSmall ? (
-                                    <ProBroButton
-                                        ref={(input) => (inputQuery = input)}
-                                        startIcon={<PlayArrowTwoToneIcon />}
-                                        onClick={onQueryClick}
-                                    />
-                                ) : (
-                                    <ProBroButton
-                                        ref={(input) => (inputQuery = input)}
-                                        startIcon={<PlayArrowTwoToneIcon />}
-                                        onClick={onQueryClick}
-                                    >
-                                        Query
-                                    </ProBroButton>
-                                )}
-                            </div>
-                        </div>
-                        <ul className='autocomplete-list' id='column-list'></ul>
-                    </form>
-                    <div className='query-options'>
-                        <ExportData
-                            wherePhrase={wherePhrase}
-                            vscode={vscode}
-                            sortColumns={sortColumns}
-                            filters={filters}
-                            selectedRows={selectedRows}
-                            logValue={configuration.logging.react}
-                        />
-                        <ProBroButton
-                            onClick={getDataFormat}
-                            startIcon={
-                                isFormatted ? (
-                                    <RawOffTwoToneIcon />
-                                ) : (
-                                    <RawOnTwoToneIcon />
-                                )
-                            }
-                        >
-                            {' '}
-                        </ProBroButton>
-                    </div>
-                    <div className='query-options'>
-                        <UpdatePopup
-                            vscode={vscode}
-                            selectedRows={selectedRows}
-                            columns={columnsCRUD}
-                            rows={recordsCRUD}
-                            tableName={tableName}
-                            open={open}
-                            setOpen={setOpen}
-                            action={action}
-                            insertRecord={insertRecord}
-                            updateRecord={updateRecord}
-                            deleteRecord={deleteRecord}
-                            copyRecord={copyRecord}
-                            readRow={readRow}
-                            logValue={configuration.logging.react}
-                            defaultTrigger={!!configuration.useWriteTriggers} // !! fixes missing setting issue
-                            isReadOnly={isReadOnly}
-                        ></UpdatePopup>
-                    </div>
-                </div>
-            </div>
-            <div>
+            <QueryFormHead
+                wherePhrase={wherePhrase}
+                setWherePhrase={setWherePhrase}
+                suggestions={selectedColumns}
+                isWindowSmall={isWindowSmall}
+                onEnter={prepareQuery}
+                onButtonClick={(event) => {
+                    event.preventDefault();
+                    prepareQuery();
+                }}
+                onLoad={prepareQuery}
+                sortColumns={sortColumns}
+                filters={filters}
+                selectedRows={selectedRows}
+                setIsFormatted={setIsFormatted}
+                formatButtonOnClick={() => {
+                    setIsFormatted(!isFormatted);
+                }}
+                isFormatted={isFormatted}
+                tableName={tableName}
+                columns={columnsCRUD}
+                rows={rowsCRUD}
+                open={open}
+                setOpen={setOpen}
+                action={action}
+                setAction={setAction}
+                readRow={readRow}
+                isReadOnly={isReadOnly}
+            />
+            <Box>
                 <DataGrid
                     columns={selected}
                     rows={isFormatted ? formattedRows : rawRows}
@@ -908,10 +896,10 @@ function QueryForm({
                     onCopy={handleCopy}
                     rowHeight={setRowHeight}
                 ></DataGrid>
-            </div>
+            </Box>
             <QueryFormFooter
                 errorObj={errorObject}
-                totalRecords={getLoaded()}
+                totalRecords={loaded}
                 newRecords={statisticsObject.recordsRetrieved}
                 retrievalTime={statisticsObject.recordsRetrievalTime}
                 showRecentNumbers={isWindowSmall}
