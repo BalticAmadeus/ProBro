@@ -438,6 +438,9 @@ function QueryForm({
                 minTime: minTime,
             },
         };
+        if (!isLoading) {
+            setIsLoading(true);
+        }
         logger.log('make query', command);
         vscode.postMessage(command);
     }
