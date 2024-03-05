@@ -3,7 +3,7 @@ import { INode } from './INode';
 import * as tableNode from './TableNode';
 import { IConfig, TableCount } from '../view/app/model';
 import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
-import { TableNode } from './TableNode';
+import { TableNode, TableSourceEnum } from './TableNode';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
 import {
     getAllColumnsCache,
@@ -19,12 +19,11 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     public tableNodes: tableNode.TableNode[] = [];
     public filters: string[] | undefined = ['UserTable'];
     public tableClicked: TableCount = { tableName: undefined, count: 0 };
-    context: vscode.ExtensionContext;
 
     constructor(
         public fieldsProvider: PanelViewProvider,
         public indexesProvider: PanelViewProvider,
-        context: vscode.ExtensionContext
+        public context: vscode.ExtensionContext
     ) {
         this.context = context;
     }
@@ -216,7 +215,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
                                             table.tableType,
                                             connectionName,
                                             connectionLabel,
-                                            'tables'
+                                            TableSourceEnum.Tables
                                         )
                                     );
                                 }

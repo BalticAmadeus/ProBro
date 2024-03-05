@@ -2,6 +2,11 @@ import * as vscode from 'vscode';
 import { TableDetails } from '../view/app/model';
 import { INode } from './INode';
 
+export enum TableSourceEnum {
+    Tables = 'tables',
+    Favorites = 'favorites',
+}
+
 export class TableNode implements INode {
     public dbId: string;
     public tableName: string;
@@ -9,7 +14,7 @@ export class TableNode implements INode {
     public connectionName: string;
     public connectionLabel: string;
     public cache: TableDetails | undefined;
-    public source: 'tables' | 'favorites';
+    public source: TableSourceEnum;
 
     constructor(
         private context: vscode.ExtensionContext,
@@ -18,7 +23,7 @@ export class TableNode implements INode {
         tableType: string,
         connectionName: string,
         connectionLabel: string,
-        source: 'tables' | 'favorites'
+        source: TableSourceEnum
     ) {
         this.dbId = dbId;
         this.tableName = tableName;

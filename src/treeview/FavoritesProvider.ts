@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import { TableNode } from './TableNode';
+import { TableNode, TableSourceEnum } from './TableNode';
 import { TablesListProvider } from './TablesListProvider';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
-import { IConfig, TableCount } from '../view/app/model';
+import { IConfig } from '../view/app/model';
 import { Constants } from '../common/Constants';
 
 export class FavoritesProvider extends TablesListProvider {
@@ -20,7 +20,11 @@ export class FavoritesProvider extends TablesListProvider {
     ) {
         super(fieldsProvider, indexesProvider, context);
     }
-
+    /**
+     *
+     * @param element
+     * @returns
+     */
     public getTreeItem(element: TableNode): vscode.TreeItem {
         const treeItem = element.getTreeItem();
 
@@ -57,7 +61,7 @@ export class FavoritesProvider extends TablesListProvider {
                     data.tableType,
                     data.connectionName,
                     data.connectionLabel,
-                    'favorites'
+                    TableSourceEnum.Favorites
                 )
         );
 
@@ -79,7 +83,9 @@ export class FavoritesProvider extends TablesListProvider {
             (fav) => fav.tableName === node.tableName && fav.dbId === node.dbId
         );
 
-        if (!isAlreadyFavorite) {
+        if (isAlreadyFavorite) {
+            return;
+        } else {
             favorites.push({
                 dbId: node.dbId,
                 tableName: node.tableName,
@@ -96,7 +102,7 @@ export class FavoritesProvider extends TablesListProvider {
     }
 
     public removeTableFromFavorites(node: TableNode): void {
-        let favorites = this.context.globalState.get<
+        const favorites = this.context.globalState.get<
             {
                 dbId: string;
                 tableName: string;
@@ -106,11 +112,15 @@ export class FavoritesProvider extends TablesListProvider {
             }[]
         >('favorites', []);
 
-        favorites = favorites.filter(
+        if (favorites.length === 0) {
+            return;
+        }
+
+        const filteredFavorites = favorites.filter(
             (fav) =>
                 !(fav.tableName === node.tableName && fav.dbId === node.dbId)
         );
-        this.context.globalState.update('favorites', favorites);
+        this.context.globalState.update('favorites', filteredFavorites);
         vscode.window.showInformationMessage(
             `Removed ${node.tableName} from favorites.`
         );
