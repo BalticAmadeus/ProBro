@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { TableNode, TableSourceEnum } from './TableNode';
+import { TableNode, TableNodeSourceEnum } from './TableNode';
 import { TablesListProvider } from './TablesListProvider';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
 import { IConfig } from '../view/app/model';
@@ -20,6 +20,7 @@ export class FavoritesProvider extends TablesListProvider {
     ) {
         super(fieldsProvider, indexesProvider, context);
     }
+
     /**
      * Gets the tree item for a given table node. Adds a command to open the favorite table when double-clicked.
      * @param element The table node to get the tree item for.
@@ -36,6 +37,7 @@ export class FavoritesProvider extends TablesListProvider {
 
         return treeItem;
     }
+
     /**
      * Retrieves the list of favorite table nodes.
      * @returns A promise that resolves to an array of TableNode objects representing the favorites.
@@ -64,12 +66,13 @@ export class FavoritesProvider extends TablesListProvider {
                     data.tableType,
                     data.connectionName,
                     data.connectionLabel,
-                    TableSourceEnum.Favorites
+                    TableNodeSourceEnum.Favorites
                 )
         );
 
         return favorites;
     }
+
     /**
      * Adds a table to the list of favorites.
      * @param node The table node to add to favorites.
@@ -91,21 +94,21 @@ export class FavoritesProvider extends TablesListProvider {
 
         if (isAlreadyFavorite) {
             return;
-        } else {
-            favorites.push({
-                dbId: node.dbId,
-                tableName: node.tableName,
-                tableType: node.tableType,
-                connectionName: node.connectionName,
-                connectionLabel: node.connectionLabel,
-            });
-
-            this.context.globalState.update('favorites', favorites);
-            vscode.window.showInformationMessage(
-                `Added ${node.tableName} to favorites.`
-            );
         }
+        favorites.push({
+            dbId: node.dbId,
+            tableName: node.tableName,
+            tableType: node.tableType,
+            connectionName: node.connectionName,
+            connectionLabel: node.connectionLabel,
+        });
+
+        this.context.globalState.update('favorites', favorites);
+        vscode.window.showInformationMessage(
+            `Added ${node.tableName} to favorites.`
+        );
     }
+
     /**
      * Removes a table from the list of favorites.
      * @param node The table node to remove from favorites.

@@ -3,7 +3,7 @@ import { INode } from './INode';
 import * as tableNode from './TableNode';
 import { IConfig, TableCount } from '../view/app/model';
 import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
-import { TableNode, TableSourceEnum } from './TableNode';
+import { TableNode, TableNodeSourceEnum } from './TableNode';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
 import {
     getAllColumnsCache,
@@ -215,7 +215,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
                                             table.tableType,
                                             connectionName,
                                             connectionLabel,
-                                            TableSourceEnum.Tables
+                                            TableNodeSourceEnum.Tables
                                         )
                                     );
                                 }

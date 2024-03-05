@@ -2,7 +2,7 @@ import path = require('path');
 import * as vscode from 'vscode';
 import { ICommand, CommandAction, IConfig } from '../view/app/model';
 import { IOETableData } from '../db/Oe';
-import { TableNode, TableSourceEnum } from '../treeview/TableNode';
+import { TableNode, TableNodeSourceEnum } from '../treeview/TableNode';
 import { TablesListProvider } from '../treeview/TablesListProvider';
 import { FieldsViewProvider } from './FieldsViewProvider';
 import { DumpFileFormatter } from './DumpFileFormatter';
@@ -37,10 +37,10 @@ export class QueryEditor {
 
         let config: IConfig | undefined;
         switch (this.tableNode.source) {
-            case TableSourceEnum.Tables:
+            case TableNodeSourceEnum.Tables:
                 config = this.tableListProvider.config;
                 break;
-            case TableSourceEnum.Favorites:
+            case TableNodeSourceEnum.Favorites:
                 config = this.favoritesProvider.config;
                 break;
             default:
