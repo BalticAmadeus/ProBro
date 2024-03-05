@@ -78,6 +78,8 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 
                     node.cache = oeTableDetails;
 
+                    console.log('node.cache', node.cache);
+
                     updateAllColumnsCache(this.node, fieldNames);
 
                     this.fieldsProvider._view?.webview.postMessage({

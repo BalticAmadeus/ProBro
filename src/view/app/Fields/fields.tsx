@@ -18,6 +18,7 @@ import { Logger } from '../../../common/Logger';
 import * as columnName from './column.json';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
+import { IHighlightFieldsCommand } from '@src/common/commands';
 
 interface FieldsExplorerEvent {
     id: string;
@@ -306,6 +307,7 @@ function Fields({ tableDetails }: Readonly<IConfigProps>) {
                                     )
                             );
                         }
+                        break;
                 }
             }
         );
@@ -332,6 +334,17 @@ function Fields({ tableDetails }: Readonly<IConfigProps>) {
         vscode.postMessage(obj);
     };
 
+    const onRowDoubleClick = (row: FieldRow) => {
+        const obj: IHighlightFieldsCommand = {
+            id: 'highlightColumn',
+            action: CommandAction.FieldsHighlightColumn,
+            column: row.name,
+            tableName: tableDetails.tableName,
+        };
+        logger.log('highlight column', obj);
+        vscode.postMessage(obj);
+    };
+
     return (
         <div>
             {!dataLoaded ? (
@@ -354,6 +367,7 @@ function Fields({ tableDetails }: Readonly<IConfigProps>) {
                     sortColumns={sortColumns}
                     onSortColumnsChange={setSortColumns}
                     style={{ height: windowHeight }}
+                    onRowDoubleClick={onRowDoubleClick}
                 />
             ) : null}
         </div>

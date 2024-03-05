@@ -4,6 +4,7 @@ import { CommandAction, ICommand } from '../view/app/model';
 import { PanelViewProvider } from './PanelViewProvider';
 import { Logger } from '../common/Logger';
 import { updateSelectedColumnsCache } from '../repo/utils/cache';
+import { IHighlightFieldsCommand } from '../common/commands';
 
 export class FieldsViewProvider extends PanelViewProvider {
     private queryEditors: QueryEditor[] = [];
@@ -25,6 +26,35 @@ export class FieldsViewProvider extends PanelViewProvider {
             if (queryEditor.tableName === this.tableNode?.tableName) {
                 queryEditor.updateFields();
             }
+        }
+    }
+
+    /**
+     * Highlights the QueryEditors column
+     * @param {IHighlightFieldsCommand} command command object
+     */
+    public highlightQueryEditorsColumn(command: IHighlightFieldsCommand) {
+        let revealedEditorFound = false;
+
+        console.log('highlightQueryEditorsColumn', command);
+
+        // highlight the active panels
+        this.queryEditors.forEach((queryEditor) => {
+            if (queryEditor.panel?.active) {
+                queryEditor.panel?.reveal();
+                queryEditor.highlightColumn(command.column);
+                revealedEditorFound = true;
+            }
+        });
+
+        // if no active panels were found, then try to reveala first panel and then highlight
+        if (!revealedEditorFound && this.queryEditors.length > 0) {
+            const firstEditor = this.queryEditors.find(
+                (val) => val.tableName === command.tableName
+            );
+
+            firstEditor?.panel?.reveal();
+            firstEditor?.highlightColumn(command.column);
         }
     }
 
@@ -55,6 +85,11 @@ export class FieldsViewProvider extends PanelViewProvider {
                         command.columns
                     );
                     this.notifyQueryEditors();
+                    break;
+                case CommandAction.FieldsHighlightColumn:
+                    this.highlightQueryEditorsColumn(
+                        command as IHighlightFieldsCommand
+                    );
                     break;
             }
         });

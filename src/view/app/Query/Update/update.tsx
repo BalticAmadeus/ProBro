@@ -119,8 +119,7 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
         processRecord(ProcessAction.Copy);
     };
 
-    logger.log('crud action', action);
-    if (action !== ProcessAction.Delete) {
+    if (action >= 0 && action !== ProcessAction.Delete) {
         switch (action) {
             case ProcessAction.Update:
             case ProcessAction.Insert:

@@ -244,6 +244,19 @@ export class QueryEditor {
         this.panel?.webview.postMessage(obj);
     }
 
+    /**
+     * Creates a request to the frontend to highlight a column
+     * @param {string} column column name to highlight for the table
+     */
+    public highlightColumn(column: string) {
+        const obj = {
+            command: 'highlightColumn',
+            column: column,
+        };
+        this.logger.log('highlighColumn:', obj);
+        this.panel?.webview.postMessage(obj);
+    }
+
     private getWebviewContent(tableData: IOETableData): string {
         // Local path to main script run in the webview
         const reactAppPathOnDisk = vscode.Uri.file(

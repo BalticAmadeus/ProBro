@@ -120,9 +120,16 @@ export class DbProcessor implements IProcessor {
                 command: 'get_table_details',
                 params: tableName,
             };
-            return this.execRequest(config, params);
+            return {
+                ...(await this.execRequest(config, params)),
+                tableName: tableName ?? '',
+            };
         } else {
-            return Promise.resolve({ fields: [], indexes: [] });
+            return Promise.resolve({
+                fields: [],
+                indexes: [],
+                tableName: tableName ?? '',
+            });
         }
     }
 
@@ -133,9 +140,9 @@ export class DbProcessor implements IProcessor {
         const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
 
         if (
-        // if process is running and not timed out
+            // if process is running and not timed out
             this.processStartTime !== undefined &&
-      this.processStartTime + this.processTimeout > Date.now()
+            this.processStartTime + this.processTimeout > Date.now()
         ) {
             // then return error
             vscode.window.showInformationMessage('Processor is busy');
