@@ -28,11 +28,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
                 ),
             ],
         };
-        this._view.webview.html = this.getWebviewContent({
-            fields: [],
-            indexes: [],
-            selectedColumns: [],
-        });
+        this._view.webview.html = this.getWebviewContent();
 
         this._view.onDidChangeVisibility((ev) => {
             if (this._view?.visible) {
@@ -53,7 +49,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
         });
     }
 
-    private getWebviewContent(data: TableDetails): string {
+    private getWebviewContent(): string {
         // Local path to main script run in the webview
         const reactAppPathOnDisk = vscode.Uri.file(
             path.join(
@@ -83,7 +79,6 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
 
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
-          window.tableDetails = ${JSON.stringify(data)};
           window.configuration = ${JSON.stringify(this.configuration)}
         </script>
     </head>

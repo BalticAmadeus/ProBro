@@ -26,7 +26,7 @@ import QueryFormHead from '@app/Components/Layout/Query/QueryFormHead';
 import { IFilters } from '@app/common/types';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { green, red } from '@mui/material/colors';
-import { IHighlightFieldsCommand } from '@src/common/commands';
+import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
 
 const filterCSS: CSSProperties = {
     inlineSize: '100%',
@@ -154,7 +154,7 @@ function QueryForm({
         logger.log('got query data', message);
         switch (message.command) {
             case 'highlightColumn':
-                highlightColumn((message as IHighlightFieldsCommand).column);
+                highlightColumn((message as HighlightFieldsCommand).column);
                 break;
             case 'columns':
                 setSelectedColumns([...message.columns]);
