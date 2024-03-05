@@ -1,8 +1,8 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import { ICommand, CommandAction } from '../view/app/model';
+import { ICommand, CommandAction, IConfig } from '../view/app/model';
 import { IOETableData } from '../db/Oe';
-import { TableNode } from '../treeview/TableNode';
+import { TableNode, TableNodeSourceEnum } from '../treeview/TableNode';
 import { TablesListProvider } from '../treeview/TablesListProvider';
 import { FieldsViewProvider } from './FieldsViewProvider';
 import { DumpFileFormatter } from './DumpFileFormatter';
@@ -10,6 +10,7 @@ import { Logger } from '../common/Logger';
 import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
 import { Constants } from '../common/Constants';
 import { queryEditorCache } from './queryEditor/queryEditorCache';
+import { FavoritesProvider } from '../treeview/FavoritesProvider';
 
 export class QueryEditor {
     public readonly panel: vscode.WebviewPanel | undefined;
@@ -27,19 +28,32 @@ export class QueryEditor {
         private context: vscode.ExtensionContext,
         private tableNode: TableNode,
         private tableListProvider: TablesListProvider,
+        private favoritesProvider: FavoritesProvider,
         private fieldProvider: FieldsViewProvider
     ) {
         this.extensionPath = context.asAbsolutePath('');
         this.tableName = tableNode.tableName;
         this.fieldsProvider = fieldProvider;
 
-        if (tableListProvider.config) {
-            this.readOnly = tableListProvider.config?.isReadOnly;
+        let config: IConfig | undefined;
+        switch (this.tableNode.source) {
+            case TableNodeSourceEnum.Tables:
+                config = this.tableListProvider.config;
+                break;
+            case TableNodeSourceEnum.Favorites:
+                config = this.favoritesProvider.config;
+                break;
+            default:
+                return;
+        }
+
+        if (config) {
+            this.readOnly = config?.isReadOnly;
         }
 
         this.panel = vscode.window.createWebviewPanel(
             'queryOETable', // Identifies the type of the webview. Used internally
-            `${this.tableListProvider.config?.label}.${this.tableNode.tableName}`, // Title of the panel displayed to the user
+            `${config?.label}.${this.tableNode.tableName}`, // Title of the panel displayed to the user
             vscode.ViewColumn.One, // Editor column to show the new webview panel in.
             {
                 enableScripts: true,
@@ -83,10 +97,10 @@ export class QueryEditor {
                 this.logger.log('command:', command);
                 switch (command.action) {
                     case CommandAction.Query:
-                        if (this.tableListProvider.config) {
+                        if (config) {
                             ProcessorFactory.getProcessorInstance()
                                 .getTableData(
-                                    this.tableListProvider.config,
+                                    config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -107,10 +121,10 @@ export class QueryEditor {
                         }
                         break;
                     case CommandAction.CRUD:
-                        if (this.tableListProvider.config) {
+                        if (config) {
                             ProcessorFactory.getProcessorInstance()
                                 .getTableData(
-                                    this.tableListProvider.config,
+                                    config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -128,10 +142,10 @@ export class QueryEditor {
                         }
                         break;
                     case CommandAction.Submit:
-                        if (this.tableListProvider.config) {
+                        if (config) {
                             ProcessorFactory.getProcessorInstance()
                                 .submitTableData(
-                                    this.tableListProvider.config,
+                                    config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -168,10 +182,10 @@ export class QueryEditor {
                         }
                         break;
                     case CommandAction.Export:
-                        if (this.tableListProvider.config) {
+                        if (config) {
                             ProcessorFactory.getProcessorInstance()
                                 .getTableData(
-                                    this.tableListProvider.config,
+                                    config,
                                     this.tableNode.tableName,
                                     command.params
                                 )
@@ -187,8 +201,7 @@ export class QueryEditor {
                                             dumpFileFormatter.formatDumpFile(
                                                 oe,
                                                 this.tableNode.tableName,
-                                                this.tableListProvider.config!
-                                                    .label
+                                                config!.label
                                             );
                                             exportData =
                                                 dumpFileFormatter.getDumpFile();

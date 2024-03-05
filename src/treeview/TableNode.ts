@@ -2,6 +2,11 @@ import * as vscode from 'vscode';
 import { TableDetails } from '../view/app/model';
 import { INode } from './INode';
 
+export enum TableNodeSourceEnum {
+    Tables = 'tables',
+    Favorites = 'favorites',
+}
+
 export class TableNode implements INode {
     public dbId: string;
     public tableName: string;
@@ -9,6 +14,7 @@ export class TableNode implements INode {
     public connectionName: string;
     public connectionLabel: string;
     public cache: TableDetails | undefined;
+    public source: TableNodeSourceEnum;
 
     constructor(
         private context: vscode.ExtensionContext,
@@ -16,13 +22,15 @@ export class TableNode implements INode {
         tableName: string,
         tableType: string,
         connectionName: string,
-        connectionLabel: string
+        connectionLabel: string,
+        source: TableNodeSourceEnum
     ) {
         this.dbId = dbId;
         this.tableName = tableName;
         this.tableType = tableType;
         this.connectionName = connectionName;
         this.connectionLabel = connectionLabel;
+        this.source = source;
     }
 
     public getTreeItem(): vscode.TreeItem {

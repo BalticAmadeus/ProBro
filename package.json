@@ -182,6 +182,12 @@
                     "name": "Tables",
                     "contextualTitle": "Tables",
                     "title": "Tables"
+                },
+                {
+                    "id": "pro-bro-favorites",
+                    "name": "Table favorites",
+                    "contextualTitle": "Table favorites",
+                    "title": "Table favorites"
                 }
             ]
         },
@@ -239,6 +245,25 @@
             {
                 "command": "pro-bro.dblClickQuery",
                 "title": "DblClickQuery"
+            },
+            {
+                "command": "pro-bro.dblClickFavoriteQuery",
+                "title": "DblClickFavoriteQuery"
+            },
+            {
+                "command": "pro-bro.addFavourite",
+                "title": "pro-bro: addFavourite",
+                "icon": "$(star-empty)"
+            },
+            {
+                "command": "pro-bro.removeFavourite",
+                "title": "pro-bro: removeFavourite",
+                "icon": "$(star-full)"
+            },
+            {
+                "command": "pro-bro.queryFavorite",
+                "title": "pro-bro: Query Favorite",
+                "icon": "$(play)"
             }
         ],
         "menus": {
@@ -293,6 +318,21 @@
                 {
                     "command": "pro-bro.query",
                     "when": "view == pro-bro-tables",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.addFavourite",
+                    "when": "view == pro-bro-tables",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.removeFavourite",
+                    "when": "view == pro-bro-favorites",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.queryFavorite",
+                    "when": "view == pro-bro-favorites",
                     "group": "inline"
                 }
             ]

@@ -17,6 +17,7 @@ import { VersionChecker } from './view/app/Welcome/VersionChecker';
 import { WelcomePageProvider } from './webview/WelcomePageProvider';
 import { AblHoverProvider } from './providers/AblHoverProvider';
 import { queryEditorCache } from './webview/queryEditor/queryEditorCache';
+import { FavoritesProvider } from './treeview/FavoritesProvider';
 
 export function activate(context: vscode.ExtensionContext) {
     let extensionPort: number;
@@ -224,7 +225,22 @@ export function activate(context: vscode.ExtensionContext) {
 
     const tablesListProvider = new TablesListProvider(
         fieldsProvider,
-        indexesProvider
+        indexesProvider,
+        context
+    );
+
+    const favoritesProvider = new FavoritesProvider(
+        fieldsProvider,
+        indexesProvider,
+        context
+    );
+
+    const favorites = vscode.window.createTreeView(
+        `${Constants.globalExtensionKey}-favorites`,
+        { treeDataProvider: favoritesProvider }
+    );
+    favorites.onDidChangeSelection((e) =>
+        favoritesProvider.onDidChangeSelection(e)
     );
 
     const tables = vscode.window.createTreeView(
@@ -250,14 +266,18 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     groups.onDidChangeSelection((e) =>
-        groupListProvider.onDidChangeSelection(e, tablesListProvider)
+        groupListProvider.onDidChangeSelection(
+            e,
+            tablesListProvider,
+            favoritesProvider
+        )
     );
 
     /**
      * Creates a new query editor or if already open, then reveals it from cache and refetch data
      */
     const loadQueryEditor = (node: TableNode): void => {
-        const key = tablesListProvider.node?.getFullName(true) ?? '';
+        const key = node.getFullName(true) ?? '';
 
         const cachedQueryEditor = queryEditorCache.getQueryEditor(key);
 
@@ -271,11 +291,32 @@ export function activate(context: vscode.ExtensionContext) {
             context,
             node,
             tablesListProvider,
+            favoritesProvider,
             fieldsProvider
         );
 
         queryEditorCache.setQueryEditor(key, newQueryEditor);
     };
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.addFavourite`,
+            (node: TableNode) => {
+                favoritesProvider.addTableToFavorites(node);
+                favoritesProvider.refresh(undefined);
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.removeFavourite`,
+            (node: TableNode) => {
+                favoritesProvider.removeTableFromFavorites(node);
+                favoritesProvider.refresh(undefined);
+            }
+        )
+    );
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -302,6 +343,16 @@ export function activate(context: vscode.ExtensionContext) {
             `${Constants.globalExtensionKey}.query`,
             (node: TableNode) => {
                 tablesListProvider.selectDbConfig(node);
+                loadQueryEditor(node);
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.queryFavorite`,
+            (node: TableNode) => {
+                favoritesProvider.selectDbConfig(node);
                 loadQueryEditor(node);
             }
         )
@@ -420,8 +471,22 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     vscode.commands.registerCommand(
+        `${Constants.globalExtensionKey}.dblClickFavoriteQuery`,
+        () => {
+            if (favoritesProvider.node === undefined) {
+                return;
+            }
+
+            favoritesProvider.countClick();
+            if (favoritesProvider.tableClicked.count === 2) {
+                loadQueryEditor(favoritesProvider.node);
+            }
+        }
+    );
+
+    vscode.commands.registerCommand(
         `${Constants.globalExtensionKey}.dblClickQuery`,
-        (_) => {
+        () => {
             if (tablesListProvider.node === undefined) {
                 return;
             }
