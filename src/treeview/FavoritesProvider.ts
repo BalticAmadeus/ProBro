@@ -21,9 +21,9 @@ export class FavoritesProvider extends TablesListProvider {
         super(fieldsProvider, indexesProvider, context);
     }
     /**
-     *
-     * @param element
-     * @returns
+     * Gets the tree item for a given table node. Adds a command to open the favorite table when double-clicked.
+     * @param element The table node to get the tree item for.
+     * @returns The tree item for the provided table node.
      */
     public getTreeItem(element: TableNode): vscode.TreeItem {
         const treeItem = element.getTreeItem();
@@ -36,7 +36,10 @@ export class FavoritesProvider extends TablesListProvider {
 
         return treeItem;
     }
-
+    /**
+     * Retrieves the list of favorite table nodes.
+     * @returns A promise that resolves to an array of TableNode objects representing the favorites.
+     */
     private async getFavorites(): Promise<TableNode[]> {
         const favoritesData = this.context.globalState.get<
             {
@@ -67,7 +70,10 @@ export class FavoritesProvider extends TablesListProvider {
 
         return favorites;
     }
-
+    /**
+     * Adds a table to the list of favorites.
+     * @param node The table node to add to favorites.
+     */
     public addTableToFavorites(node: TableNode): void {
         const favorites = this.context.globalState.get<
             {
@@ -100,7 +106,10 @@ export class FavoritesProvider extends TablesListProvider {
             );
         }
     }
-
+    /**
+     * Removes a table from the list of favorites.
+     * @param node The table node to remove from favorites.
+     */
     public removeTableFromFavorites(node: TableNode): void {
         const favorites = this.context.globalState.get<
             {
