@@ -4,6 +4,7 @@ import { CommandAction, ICommand } from '../view/app/model';
 import { PanelViewProvider } from './PanelViewProvider';
 import { Logger } from '../common/Logger';
 import { updateSelectedColumnsCache } from '../repo/utils/cache';
+import { HighlightFieldsCommand } from '../common/commands/fieldsCommands';
 
 export class FieldsViewProvider extends PanelViewProvider {
     private queryEditors: QueryEditor[] = [];
@@ -26,6 +27,19 @@ export class FieldsViewProvider extends PanelViewProvider {
                 queryEditor.updateFields();
             }
         }
+    }
+
+    /**
+     * Highlights the QueryEditors column
+     * @param {HighlightFieldsCommand} command command object
+     */
+    public highlightQueryEditorsColumn(command: HighlightFieldsCommand) {
+        const firstEditor = this.queryEditors.find(
+            (val) => val.tableName === command.tableName
+        );
+
+        firstEditor?.panel?.reveal();
+        firstEditor?.highlightColumn(command.column);
     }
 
     public resolveWebviewView(
@@ -55,6 +69,11 @@ export class FieldsViewProvider extends PanelViewProvider {
                         command.columns
                     );
                     this.notifyQueryEditors();
+                    break;
+                case CommandAction.FieldsHighlightColumn:
+                    this.highlightQueryEditorsColumn(
+                        command as HighlightFieldsCommand
+                    );
                     break;
             }
         });

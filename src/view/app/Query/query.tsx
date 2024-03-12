@@ -7,7 +7,12 @@ import {
     useState,
 } from 'react';
 
-import DataGrid, { SortColumn, SelectColumn, CopyEvent } from 'react-data-grid';
+import DataGrid, {
+    SortColumn,
+    SelectColumn,
+    CopyEvent,
+    DataGridHandle,
+} from 'react-data-grid';
 
 import { IOETableData } from '@src/db/Oe';
 import { CommandAction, ICommand, ProcessAction } from '../model';
@@ -21,6 +26,7 @@ import QueryFormHead from '@app/Components/Layout/Query/QueryFormHead';
 import { IFilters } from '@app/common/types';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { green, red } from '@mui/material/colors';
+import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
 
 const filterCSS: CSSProperties = {
     inlineSize: '100%',
@@ -72,6 +78,7 @@ function QueryForm({
     const [initialDataLoad, setInitialDataLoad] = useState(true);
     const [recordColor, setRecordColor] = useState('red');
     const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+    const queryGridRef = useRef<DataGridHandle>(null);
 
     const configuration = getVSCodeConfiguration();
     const logger = new Logger(configuration.logging.react);
@@ -127,10 +134,28 @@ function QueryForm({
         };
     }, []);
 
+    const highlightColumn = (column: string) => {
+        // + 1 because columns start from index 1. Rows start from index 0.
+        const columnIdx: number = selectedColumns.indexOf(column) + 1;
+
+        if (!columnIdx || columnIdx < 0) {
+            return;
+        }
+
+        const cellHeight = getCellHeight();
+        const rowIdx = Math.floor(scrollHeight / cellHeight);
+
+        // scrollToColumn doesn't work, so a workaround is to use selectCell and rowIdx
+        queryGridRef.current?.selectCell({ idx: columnIdx, rowIdx: rowIdx });
+    };
+
     const messageEvent = (event) => {
         const message = event.data;
         logger.log('got query data', message);
         switch (message.command) {
+            case 'highlightColumn':
+                highlightColumn((message as HighlightFieldsCommand).column);
+                break;
             case 'columns':
                 setSelectedColumns([...message.columns]);
                 break;
@@ -445,24 +470,26 @@ function QueryForm({
         vscode.postMessage(command);
     }
 
-    function isAtBottom({ currentTarget }: UIEvent<HTMLDivElement>): boolean {
+    const isAtBottom = ({
+        currentTarget,
+    }: UIEvent<HTMLDivElement>): boolean => {
         return (
             currentTarget.scrollTop + 10 >=
             currentTarget.scrollHeight - currentTarget.clientHeight
         );
-    }
+    };
 
-    function isHorizontalScroll({
+    const isHorizontalScroll = ({
         currentTarget,
-    }: UIEvent<HTMLDivElement>): boolean {
+    }: UIEvent<HTMLDivElement>): boolean => {
         return currentTarget.scrollTop === scrollHeight;
-    }
+    };
 
-    async function handleScroll(event: UIEvent<HTMLDivElement>) {
+    const handleScroll = (event: UIEvent<HTMLDivElement>) => {
+        setScrollHeight(event.currentTarget.scrollTop);
         if (isLoading || !isAtBottom(event) || isHorizontalScroll(event)) {
             return;
         }
-        setScrollHeight(event.currentTarget.scrollTop);
         setIsLoading(true);
         makeQuery(
             loaded,
@@ -473,7 +500,7 @@ function QueryForm({
             configuration.batchMaxTimeout,
             configuration.batchMinTimeout
         );
-    }
+    };
 
     function onSortClick(inputSortColumns: SortColumn[]) {
         if (isLoading) {
@@ -550,18 +577,22 @@ function QueryForm({
         }
     }
 
+    const getCellHeight = () => {
+        if (configuration.gridTextSize === 'Large') {
+            return 40;
+        } else if (configuration.gridTextSize === 'Medium') {
+            return 30;
+        } else if (configuration.gridTextSize === 'Small') {
+            return 20;
+        }
+        return 30;
+    };
+
     const calculateHeight = () => {
         const rowCount = isFormatted ? formattedRows.length : rawRows.length;
-        let minHeight;
-        if (configuration.gridTextSize === 'Large') {
-            minHeight = 40;
-        } else if (configuration.gridTextSize === 'Medium') {
-            minHeight = 30;
-        } else if (configuration.gridTextSize === 'Small') {
-            minHeight = 20;
-        }
+        const cellHeight = getCellHeight();
         const startingHeight = 85;
-        const calculatedHeight = startingHeight + rowCount * minHeight;
+        const calculatedHeight = startingHeight + rowCount * cellHeight;
         return calculatedHeight;
     };
 
@@ -612,6 +643,7 @@ function QueryForm({
             />
             <Box>
                 <DataGrid
+                    ref={queryGridRef}
                     columns={selected}
                     rows={isFormatted ? formattedRows : rawRows}
                     defaultColumnOptions={{
