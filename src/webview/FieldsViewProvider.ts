@@ -38,13 +38,6 @@ export class FieldsViewProvider extends PanelViewProvider {
             (val) => val.tableName === command.tableName
         );
 
-        console.log(
-            'highlightQueryEditorsColumn',
-            firstEditor,
-            command.tableName,
-            this.queryEditors
-        );
-
         firstEditor?.panel?.reveal();
         firstEditor?.highlightColumn(command.column);
     }
