@@ -7,7 +7,7 @@ import {
     useState,
 } from 'react';
 
-import DataGrid, {
+import {
     SortColumn,
     SelectColumn,
     CopyEvent,
@@ -21,12 +21,12 @@ import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { IErrorObject, emptyErrorObj } from '@utils/error';
 import QueryFormFooter from '@app/Components/Layout/Query/QueryFormFooter';
-import { Box } from '@mui/material';
 import QueryFormHead from '@app/Components/Layout/Query/QueryFormHead';
 import { IFilters } from '@app/common/types';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { green, red } from '@mui/material/colors';
 import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
+import QueryFormTable from '@app/Components/Layout/Query/QueryFormTable';
 
 const filterCSS: CSSProperties = {
     inlineSize: '100%',
@@ -46,12 +46,7 @@ interface IStatisticsObject {
     connectTime: number;
 }
 
-function QueryForm({
-    tableData,
-    tableName,
-    isReadOnly,
-    ...props
-}: IConfigProps) {
+function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -211,133 +206,8 @@ function QueryForm({
                             )
                             .getPropertyValue('font-size')
                             .match(/\d+[.]?\d+/);
+
                         message.data.columns.forEach((column) => {
-                            column.headerRenderer = function ({
-                                column,
-                                sortDirection,
-                                priority,
-                                onSort,
-                                isCellSelected,
-                            }) {
-                                function handleKeyDown(event) {
-                                    if (
-                                        event.key === ' ' ||
-                                        event.key === 'Enter'
-                                    ) {
-                                        event.preventDefault();
-                                        onSort(event.ctrlKey || event.metaKey);
-                                    }
-                                }
-
-                                function handleClick(event) {
-                                    onSort(event.ctrlKey || event.metaKey);
-                                }
-
-                                let timer;
-                                function handleKeyInputTimeout() {
-                                    clearTimeout(timer);
-                                    timer = setTimeout(() => {
-                                        reloadData(
-                                            configuration.initialBatchSizeLoad
-                                        );
-                                    }, 500);
-                                }
-
-                                function testKeyDown(event) {
-                                    if (event.key === 'Enter') {
-                                        event.preventDefault();
-                                        reloadData(
-                                            configuration.initialBatchSizeLoad
-                                        );
-                                    }
-                                }
-
-                                function handleInputKeyDown(event) {
-                                    const tempFilters = filters;
-                                    tempFilters.columns[column.key] =
-                                        event.target.value;
-                                    setFilters(tempFilters);
-                                    if (
-                                        configuration.filterAsYouType === true
-                                    ) {
-                                        handleKeyInputTimeout();
-                                    }
-                                }
-
-                                return (
-                                    <Fragment>
-                                        <div
-                                            className={
-                                                filters.enabled
-                                                    ? 'filter-cell'
-                                                    : undefined
-                                            }
-                                        >
-                                            <span
-                                                tabIndex={-1}
-                                                style={{
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                }}
-                                                className='rdg-header-sort-cell'
-                                                onClick={handleClick}
-                                                onKeyDown={handleKeyDown}
-                                            >
-                                                <span
-                                                    className='rdg-header-sort-name'
-                                                    style={{
-                                                        flexGrow: '1',
-                                                        overflow: 'clip',
-                                                        textOverflow:
-                                                            'ellipsis',
-                                                    }}
-                                                >
-                                                    {column.name}
-                                                </span>
-                                                <span>
-                                                    <svg
-                                                        viewBox='0 0 12 8'
-                                                        width='12'
-                                                        height='8'
-                                                        className='rdg-sort-arrow'
-                                                        style={{
-                                                            fill: 'currentcolor',
-                                                        }}
-                                                    >
-                                                        {sortDirection ===
-                                                            'ASC' && (
-                                                            <path d='M0 8 6 0 12 8'></path>
-                                                        )}
-                                                        {sortDirection ===
-                                                            'DESC' && (
-                                                            <path d='M0 0 6 8 12 0'></path>
-                                                        )}
-                                                    </svg>
-                                                    {priority}
-                                                </span>
-                                            </span>
-                                        </div>
-                                        {filters.enabled && (
-                                            <div className={'filter-cell'}>
-                                                <input
-                                                    className='textInput'
-                                                    autoFocus={isCellSelected}
-                                                    style={filterCSS}
-                                                    defaultValue={
-                                                        filters.columns[
-                                                            column.key
-                                                        ]
-                                                    }
-                                                    onChange={
-                                                        handleInputKeyDown
-                                                    }
-                                                    onKeyDown={testKeyDown}
-                                                />
-                                            </div>
-                                        )}
-                                    </Fragment>
-                                );
-                            };
                             column.minWidth = column.name.length * fontSize;
                             column.width =
                                 getOEFormatLength(column.format ?? '') *
@@ -641,35 +511,28 @@ function QueryForm({
                 readRow={readRow}
                 isReadOnly={isReadOnly}
             />
-            <Box>
-                <DataGrid
-                    ref={queryGridRef}
-                    columns={selected}
-                    rows={isFormatted ? formattedRows : rawRows}
-                    defaultColumnOptions={{
-                        sortable: true,
-                        resizable: true,
-                    }}
-                    sortColumns={sortColumns}
-                    onScroll={handleScroll}
-                    onSortColumnsChange={onSortClick}
-                    className={filters.enabled ? 'filter-cell' : ''}
-                    headerRowHeight={filters.enabled ? 70 : undefined}
-                    style={{
-                        height: calculateHeight(),
-                        overflow: 'auto',
-                        minHeight: 105,
-                        maxHeight: windowHeight - 120,
-                        whiteSpace: 'pre',
-                    }}
-                    selectedRows={selectedRows}
-                    onSelectedRowsChange={setSelectedRows}
-                    rowKeyGetter={rowKeyGetter}
-                    onRowDoubleClick={readRecord}
-                    onCopy={handleCopy}
-                    rowHeight={setRowHeight}
-                ></DataGrid>
-            </Box>
+            <QueryFormTable
+                queryGridRef={queryGridRef}
+                selected={selected}
+                isFormatted={isFormatted}
+                formattedRows={formattedRows}
+                rawRows={rawRows}
+                sortColumns={sortColumns}
+                handleScroll={handleScroll}
+                onSortClick={onSortClick}
+                filters={filters}
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+                rowKeyGetter={rowKeyGetter}
+                readRecord={readRecord}
+                handleCopy={handleCopy}
+                calculateHeight={calculateHeight}
+                windowHeight={windowHeight}
+                setRowHeight={setRowHeight}
+                reloadData={reloadData}
+                configuration={configuration}
+                setFilters={setFilters}
+            />
             <QueryFormFooter
                 errorObj={errorObject}
                 totalRecords={loaded}
