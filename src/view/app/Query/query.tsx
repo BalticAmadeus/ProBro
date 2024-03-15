@@ -1,11 +1,4 @@
-import {
-    CSSProperties,
-    Fragment,
-    UIEvent,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { Fragment, UIEvent, useEffect, useRef, useState } from 'react';
 
 import {
     SortColumn,
@@ -27,12 +20,6 @@ import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { green, red } from '@mui/material/colors';
 import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
 import QueryFormTable from '@app/Components/Layout/Query/QueryFormTable';
-
-const filterCSS: CSSProperties = {
-    inlineSize: '100%',
-    padding: '4px',
-    fontSize: '14px',
-};
 
 interface IConfigProps {
     tableData: IOETableData;
@@ -458,14 +445,6 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
         return 30;
     };
 
-    const calculateHeight = () => {
-        const rowCount = isFormatted ? formattedRows.length : rawRows.length;
-        const cellHeight = getCellHeight();
-        const startingHeight = 85;
-        const calculatedHeight = startingHeight + rowCount * cellHeight;
-        return calculatedHeight;
-    };
-
     const setRowHeight = () => {
         let height = 0;
 
@@ -514,9 +493,7 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
             <QueryFormTable
                 queryGridRef={queryGridRef}
                 selected={selected}
-                isFormatted={isFormatted}
-                formattedRows={formattedRows}
-                rawRows={rawRows}
+                rows={isFormatted ? formattedRows : rawRows}
                 sortColumns={sortColumns}
                 handleScroll={handleScroll}
                 onSortClick={onSortClick}
@@ -526,7 +503,6 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 rowKeyGetter={rowKeyGetter}
                 readRecord={readRecord}
                 handleCopy={handleCopy}
-                calculateHeight={calculateHeight}
                 windowHeight={windowHeight}
                 setRowHeight={setRowHeight}
                 reloadData={reloadData}

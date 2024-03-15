@@ -1,24 +1,17 @@
-import { CSSProperties, Fragment, UIEvent } from 'react';
+import { CSSProperties, UIEvent, useMemo } from 'react';
 import DataGrid, {
     CopyEvent,
     DataGridHandle,
     SortColumn,
+    SortDirection,
 } from 'react-data-grid';
 import { Box } from '@mui/material';
 import { IFilters } from '@app/common/types';
 
-const filterCSS: CSSProperties = {
-    inlineSize: '100%',
-    padding: '4px',
-    fontSize: '14px',
-};
-
 interface QueryFormTableProps {
     queryGridRef: React.RefObject<DataGridHandle>;
     selected: any[];
-    isFormatted: boolean;
-    formattedRows: any[];
-    rawRows: any[];
+    rows: any[];
     sortColumns: SortColumn[];
     handleScroll: (event: UIEvent<HTMLDivElement>) => void;
     onSortClick: (inputSortColumns: SortColumn[]) => void;
@@ -28,7 +21,6 @@ interface QueryFormTableProps {
     rowKeyGetter: (row: any) => string;
     readRecord: (row: any) => void;
     handleCopy: (event: CopyEvent<any>) => void;
-    calculateHeight: () => number;
     windowHeight: number;
     setRowHeight: () => number;
     reloadData: (loaded: number) => void;
@@ -36,7 +28,22 @@ interface QueryFormTableProps {
     setFilters: (data: IFilters) => void;
 }
 
-const headerRenderer = ({
+interface ColumnHeaderRendererProps {
+    column: {
+        key: string;
+        name: string;
+    };
+    sortDirection?: SortDirection;
+    priority?: string;
+    onSort: (shiftKey: boolean) => void;
+    isCellSelected?: boolean;
+    reloadData: (loaded: number) => void;
+    configuration: any;
+    filters: IFilters;
+    setFilters: (data: IFilters) => void;
+}
+
+const getColumnHeaderRenderer: React.FC<ColumnHeaderRendererProps> = ({
     column,
     sortDirection,
     priority,
@@ -47,6 +54,12 @@ const headerRenderer = ({
     filters,
     setFilters,
 }) => {
+    const filterCSS: CSSProperties = {
+        inlineSize: '100%',
+        padding: '4px',
+        fontSize: '14px',
+    };
+
     function handleKeyDown(event) {
         if (event.key === ' ' || event.key === 'Enter') {
             event.preventDefault();
@@ -82,7 +95,7 @@ const headerRenderer = ({
         }
     }
     return (
-        <Fragment>
+        <div>
             <div className={filters.enabled ? 'filter-cell' : undefined}>
                 <span
                     tabIndex={-1}
@@ -129,7 +142,7 @@ const headerRenderer = ({
                 <div className={'filter-cell'}>
                     <input
                         className='textInput'
-                        autoFocus={isCellSelected}
+                        autoFocus={!!isCellSelected}
                         style={filterCSS}
                         defaultValue={filters.columns[column.key]}
                         onChange={handleInputKeyDown}
@@ -137,16 +150,14 @@ const headerRenderer = ({
                     />
                 </div>
             )}
-        </Fragment>
+        </div>
     );
 };
 
 const QueryFormTable: React.FC<QueryFormTableProps> = ({
     queryGridRef,
     selected,
-    isFormatted,
-    formattedRows,
-    rawRows,
+    rows,
     sortColumns,
     handleScroll,
     onSortClick,
@@ -156,30 +167,53 @@ const QueryFormTable: React.FC<QueryFormTableProps> = ({
     rowKeyGetter,
     readRecord,
     handleCopy,
-    calculateHeight,
     windowHeight,
     setRowHeight,
     reloadData,
     configuration,
     setFilters,
 }) => {
-    const adjustedColumns = selected.map((col) => ({
-        ...col,
-        headerRenderer: (props) =>
-            headerRenderer({
-                ...props,
-                reloadData,
-                configuration,
-                filters,
-                setFilters,
-            }),
-    }));
+    const adjustedColumns = useMemo(
+        () =>
+            selected.map((col) => ({
+                ...col,
+                headerRenderer: (props) =>
+                    getColumnHeaderRenderer({
+                        ...props,
+                        reloadData,
+                        configuration,
+                        filters,
+                        setFilters,
+                    }),
+            })),
+        [selected]
+    );
+
+    const getCellHeight = () => {
+        if (configuration.gridTextSize === 'Large') {
+            return 40;
+        } else if (configuration.gridTextSize === 'Medium') {
+            return 30;
+        } else if (configuration.gridTextSize === 'Small') {
+            return 20;
+        }
+        return 30;
+    };
+
+    const calculateHeight = () => {
+        const rowCount = rows.length;
+        const cellHeight = getCellHeight();
+        const startingHeight = 85;
+        const calculatedHeight = startingHeight + rowCount * cellHeight;
+        return calculatedHeight;
+    };
+
     return (
         <Box>
             <DataGrid
                 ref={queryGridRef}
                 columns={adjustedColumns}
-                rows={isFormatted ? formattedRows : rawRows}
+                rows={rows}
                 defaultColumnOptions={{
                     sortable: true,
                     resizable: true,
