@@ -32,7 +32,7 @@ function rowKeyGetter(row: IndexRow) {
 }
 
 function Indexes({ tableDetails, configuration }: IConfigProps) {
-    const [rows, setRows] = useState(tableDetails.indexes);
+    const [rows, setRows] = useState(tableDetails?.indexes || []);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
