@@ -1,7 +1,7 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import { Constants } from '../common/Constants';
-import { CommandAction, ICommand, TableDetails } from '../view/app/model';
+import { CommandAction, ICommand } from '../view/app/model';
 import { TableNode } from '../treeview/TableNode';
 import { TablesListProvider } from '../treeview/TablesListProvider';
 import { FavoritesProvider } from '../treeview/FavoritesProvider';
@@ -32,7 +32,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
         };
         this._view.webview.html = this.getWebviewContent();
 
-        this._view.onDidChangeVisibility((ev) => {
+        this._view.onDidChangeVisibility(() => {
             if (this._view?.visible) {
                 if (this.tableNode) {
                     this.tableListProvider?.displayData(this.tableNode);
