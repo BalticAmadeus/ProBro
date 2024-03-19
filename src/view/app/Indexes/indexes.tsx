@@ -1,17 +1,11 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
-import { CommandAction, IndexRow, TableDetails } from '../model';
+import { CommandAction, IndexRow } from '../model';
 import DataGrid from 'react-data-grid';
 import type { SortColumn } from 'react-data-grid';
 import * as columnName from './column.json';
 import { Logger } from '../../../common/Logger';
-import { ISettings } from '../../../common/IExtensionSettings';
-import { getVSCodeAPI } from '@utils/vscode';
-
-interface IConfigProps {
-    tableDetails: TableDetails;
-    configuration: ISettings;
-}
+import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 
 type Comparator = (a: IndexRow, b: IndexRow) => number;
 function getComparator(sortColumn: string): Comparator {
@@ -31,16 +25,17 @@ function rowKeyGetter(row: IndexRow) {
     return row.cName;
 }
 
-function Indexes({ tableDetails, configuration }: IConfigProps) {
-    const [rows, setRows] = useState(tableDetails?.indexes || []);
+function Indexes() {
+    const [rows, setRows] = useState<IndexRow[]>([]);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
         () => new Set()
     );
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
-    const logger = new Logger(configuration.logging.react);
     const vscode = getVSCodeAPI();
+    const configuration = getVSCodeConfiguration();
+    const logger = new Logger(configuration.logging.react);
 
     const windowRezise = () => {
         setWindowHeight(window.innerHeight);
