@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.7.0 (2024-04-08)
+
+### Changed
+
+- Reuse existing tabs when opening query grid windows.
+- Fixed various small bugs.
+
+### Added
+
+- Favourite tables.
+
 ## 1.6.0 (2024-02-07)
 
 ### Changed
