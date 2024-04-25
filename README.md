@@ -24,6 +24,7 @@ This open source project is in active development. Our goal is to simplify the a
   - Launch query
   - Launch query on double click
   - Select tables form multiple databases
+  - Favourite tables (_new_)
 - Indexes
 - Fields
   - Filtering
@@ -37,7 +38,7 @@ This open source project is in active development. Our goal is to simplify the a
   - Suggest field names
   - View record on double-click
   - Enable/disable filtering as you type
-  - Query grid table size management (_new_)
+  - Query grid table size management
 - Export
   - Formats
     - .D file
