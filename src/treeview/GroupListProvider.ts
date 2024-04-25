@@ -6,28 +6,32 @@ import { IConfig } from '../view/app/model';
 import { TablesListProvider } from './TablesListProvider';
 import { DbConnectionNode } from './DbConnectionNode';
 import { IRefreshCallback } from './IRefreshCallback';
+import { FavoritesProvider } from './FavoritesProvider';
 
 export class GroupListProvider
-implements vscode.TreeDataProvider<INode>, IRefreshCallback
+    implements vscode.TreeDataProvider<INode>, IRefreshCallback
 {
-    private _onDidChangeTreeData: vscode.EventEmitter<INode | undefined | void> =
-        new vscode.EventEmitter<INode | undefined | void>();
+    private _onDidChangeTreeData: vscode.EventEmitter<
+        INode | undefined | void
+    > = new vscode.EventEmitter<INode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<INode | undefined | void> =
         this._onDidChangeTreeData.event;
 
     constructor(
-    private context: vscode.ExtensionContext,
-    private tables: vscode.TreeView<INode>
+        private context: vscode.ExtensionContext,
+        private tables: vscode.TreeView<INode>
     ) {}
 
     onDidChangeSelection(
         e: vscode.TreeViewSelectionChangeEvent<INode>,
-        tablesListProvider: vscode.TreeDataProvider<INode>
+        tablesListProvider: vscode.TreeDataProvider<INode>,
+        favoritesProvider: vscode.TreeDataProvider<INode>
     ): any {
         if (e.selection.length) {
             if (
                 e.selection[0] instanceof DbConnectionNode &&
-        tablesListProvider instanceof TablesListProvider
+                tablesListProvider instanceof TablesListProvider &&
+                favoritesProvider instanceof FavoritesProvider
             ) {
                 const nodes = e.selection as DbConnectionNode[];
                 const configs: IConfig[] = [];
@@ -38,10 +42,12 @@ implements vscode.TreeDataProvider<INode>, IRefreshCallback
 
                 console.log('GroupList', configs);
                 tablesListProvider.refresh(configs);
+                favoritesProvider.refresh(configs);
                 return;
             }
         }
         (tablesListProvider as TablesListProvider).refresh(undefined);
+        (favoritesProvider as FavoritesProvider).refresh(undefined);
     }
 
     refresh(): void {
@@ -63,12 +69,12 @@ implements vscode.TreeDataProvider<INode>, IRefreshCallback
 
     private async getGroupNodes(): Promise<groupNode.GroupNode[]> {
         const connections = this.context.globalState.get<{
-      [key: string]: IConfig;
-    }>(`${Constants.globalExtensionKey}.dbconfig`);
+            [key: string]: IConfig;
+        }>(`${Constants.globalExtensionKey}.dbconfig`);
 
         const workspaceConnections = this.context.workspaceState.get<{
-      [key: string]: IConfig;
-    }>(`${Constants.globalExtensionKey}.dbconfig`);
+            [key: string]: IConfig;
+        }>(`${Constants.globalExtensionKey}.dbconfig`);
 
         const groupNodes: groupNode.GroupNode[] = [];
         const groupNames: string[] = [];
@@ -80,7 +86,9 @@ implements vscode.TreeDataProvider<INode>, IRefreshCallback
                 }
                 if (groupNames.indexOf(group) === -1) {
                     groupNames.push(group);
-                    groupNodes.push(new groupNode.GroupNode(this.context, group, this));
+                    groupNodes.push(
+                        new groupNode.GroupNode(this.context, group, this)
+                    );
                 }
             }
         }
@@ -93,7 +101,9 @@ implements vscode.TreeDataProvider<INode>, IRefreshCallback
                 }
                 if (groupNames.indexOf(group) === -1) {
                     groupNames.push(group);
-                    groupNodes.push(new groupNode.GroupNode(this.context, group, this));
+                    groupNodes.push(
+                        new groupNode.GroupNode(this.context, group, this)
+                    );
                 }
             }
         }

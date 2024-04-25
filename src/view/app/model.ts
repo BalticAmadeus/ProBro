@@ -66,6 +66,7 @@ export enum CommandAction {
     UpdateColumns,
     RefreshTableData,
     Group,
+    FieldsHighlightColumn,
 }
 
 export interface FieldRow {
@@ -103,6 +104,7 @@ export interface Debug {
 }
 
 export interface TableDetails {
+    tableName: string;
     fields: FieldRow[];
     indexes: IndexRow[];
     selectedColumns?: string[];
@@ -141,7 +143,8 @@ export interface ITableData {
     }[];
     mode?: string;
     exportType?: string;
-    useTriggers?: boolean;
+    useWriteTriggers?: boolean;
+    useDeleteTriggers?: boolean;
 }
 
 export interface TableCount {

@@ -1,15 +1,17 @@
 import path = require('path');
 import * as vscode from 'vscode';
 import { Constants } from '../common/Constants';
-import { CommandAction, ICommand, TableDetails } from '../view/app/model';
+import { CommandAction, ICommand } from '../view/app/model';
 import { TableNode } from '../treeview/TableNode';
 import { TablesListProvider } from '../treeview/TablesListProvider';
+import { FavoritesProvider } from '../treeview/FavoritesProvider';
 
 export class PanelViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = `${Constants.globalExtensionKey}-panel`;
     public _view?: vscode.WebviewView;
     public tableNode?: TableNode;
     public tableListProvider?: TablesListProvider;
+    public favoritesProvider?: FavoritesProvider;
     public readonly configuration = vscode.workspace.getConfiguration(
         Constants.globalExtensionKey
     );
@@ -28,13 +30,9 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
                 ),
             ],
         };
-        this._view.webview.html = this.getWebviewContent({
-            fields: [],
-            indexes: [],
-            selectedColumns: [],
-        });
+        this._view.webview.html = this.getWebviewContent();
 
-        this._view.onDidChangeVisibility((ev) => {
+        this._view.onDidChangeVisibility(() => {
             if (this._view?.visible) {
                 if (this.tableNode) {
                     this.tableListProvider?.displayData(this.tableNode);
@@ -53,7 +51,7 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
         });
     }
 
-    private getWebviewContent(data: TableDetails): string {
+    private getWebviewContent(): string {
         // Local path to main script run in the webview
         const reactAppPathOnDisk = vscode.Uri.file(
             path.join(
@@ -83,7 +81,6 @@ export class PanelViewProvider implements vscode.WebviewViewProvider {
 
         <script>
           window.acquireVsCodeApi = acquireVsCodeApi;
-          window.tableDetails = ${JSON.stringify(data)};
           window.configuration = ${JSON.stringify(this.configuration)}
         </script>
     </head>

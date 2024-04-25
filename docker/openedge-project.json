@@ -1,7 +1,7 @@
 {
     "name": "pro-bro",
     "version": "1.0",
-    "oeversion": "12.6",
+    "oeversion": "12.8",
     "graphicalMode": false,
     "charset": "utf-8",
     "extraParameters": "",

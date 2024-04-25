@@ -3,7 +3,7 @@ import { INode } from './INode';
 import * as tableNode from './TableNode';
 import { IConfig, TableCount } from '../view/app/model';
 import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
-import { TableNode } from './TableNode';
+import { TableNode, TableNodeSourceEnum } from './TableNode';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
 import {
     getAllColumnsCache,
@@ -21,14 +21,16 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     public tableClicked: TableCount = { tableName: undefined, count: 0 };
 
     constructor(
-        private fieldsProvider: PanelViewProvider,
-        private indexesProvider: PanelViewProvider
-    ) {}
+        public fieldsProvider: PanelViewProvider,
+        public indexesProvider: PanelViewProvider,
+        public context: vscode.ExtensionContext
+    ) {
+        this.context = context;
+    }
 
     public displayData(node: TableNode, useCache = true) {
         this.fieldsProvider.tableNode = node;
         this.indexesProvider.tableNode = node;
-        console.log('displayData', node.tableName);
         if (useCache && node.cache) {
             this.fieldsProvider._view?.webview.postMessage({
                 id: '1',
@@ -208,10 +210,12 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
                                     this.tableNodes?.push(
                                         new tableNode.TableNode(
                                             Constants.context,
+                                            config.id,
                                             table.name,
                                             table.tableType,
                                             connectionName,
-                                            connectionLabel
+                                            connectionLabel,
+                                            TableNodeSourceEnum.Tables
                                         )
                                     );
                                 }

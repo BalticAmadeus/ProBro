@@ -19,7 +19,7 @@
     "editor.formatOnSave": true,
     "editor.tabSize": 4,
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
+        "source.fixAll.eslint": "explicit"
     },
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"

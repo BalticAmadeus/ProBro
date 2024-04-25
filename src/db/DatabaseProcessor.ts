@@ -77,7 +77,7 @@ export class DatabaseProcessor implements IProcessor {
         }
     }
 
-    public getTableDetails(
+    public async getTableDetails(
         config: IConfig | undefined,
         tableName: string | undefined
     ): Promise<TableDetails> {
@@ -87,19 +87,27 @@ export class DatabaseProcessor implements IProcessor {
                 command: 'get_table_details',
                 params: tableName,
             };
-            return this.execShell(params);
+            return {
+                ...(await this.execShell(params)),
+                tableName: tableName ?? '',
+            };
         } else {
-            return Promise.resolve({ fields: [], indexes: [] });
+            return Promise.resolve({
+                fields: [],
+                indexes: [],
+                tableName: tableName ?? '',
+            });
         }
     }
 
     private execShell(params: IOEParams): Promise<any> {
         const cmd = `${Buffer.from(JSON.stringify(params)).toString('base64')}`;
         if (
-        // if process is running and not timed out
+            // if process is running and not timed out
             DatabaseProcessor.processStartTime !== undefined &&
-      DatabaseProcessor.processStartTime + DatabaseProcessor.processTimeout >
-        Date.now()
+            DatabaseProcessor.processStartTime +
+                DatabaseProcessor.processTimeout >
+                Date.now()
         ) {
             // then return error
             vscode.window.showInformationMessage('Processor is busy');
@@ -109,7 +117,9 @@ export class DatabaseProcessor implements IProcessor {
         if (DatabaseProcessor.errObj.isError) {
             //
             vscode.window.showErrorMessage(DatabaseProcessor.errObj.errMessage);
-            return Promise.resolve(new Error(DatabaseProcessor.errObj.errMessage));
+            return Promise.resolve(
+                new Error(DatabaseProcessor.errObj.errMessage)
+            );
         }
 
         DatabaseProcessor.processStartTime = Date.now();

@@ -41,13 +41,36 @@ const QueryDropdownMenu: React.FC<QueryDropdownMenuProps> = ({
                 keepMounted
                 open={Boolean(anchorEl)}
                 onClose={() => setAnchorEl(null)}
+                sx={{
+                    '& .MuiPaper-root': {
+                        backgroundColor: 'var(--vscode-input-background)',
+                        size: 'small',
+                    },
+                }}
             >
                 {Object.values(FormatType).map((format) => (
-                    <MenuItem key={format} onClick={() => handleFormat(format)}>
-                        <ListItemIcon>
-                            {selectedOption === format && <CheckIcon />}
+                    <MenuItem
+                        key={format}
+                        onClick={() => handleFormat(format)}
+                        sx={{
+                            color: 'var(--vscode-input-foreground)',
+                        }}
+                    >
+                        <ListItemIcon
+                            sx={{
+                                color: 'var(--vscode-input-foreground)',
+                            }}
+                        >
+                            {selectedOption === format && (
+                                <CheckIcon fontSize='small' />
+                            )}
                         </ListItemIcon>
-                        <ListItemText primary={format} />
+                        <ListItemText
+                            primary={format}
+                            primaryTypographyProps={{
+                                sx: { fontSize: '0.8em' },
+                            }}
+                        />
                     </MenuItem>
                 ))}
             </Menu>

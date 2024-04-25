@@ -1,29 +1,23 @@
 import * as React from 'react';
 import { useState, useMemo } from 'react';
-import { CommandAction, IndexRow, TableDetails } from '../model';
+import { CommandAction, IndexRow } from '../model';
 import DataGrid from 'react-data-grid';
 import type { SortColumn } from 'react-data-grid';
 import * as columnName from './column.json';
 import { Logger } from '../../../common/Logger';
-import { ISettings } from '../../../common/IExtensionSettings';
-
-interface IConfigProps {
-    vscode: any
-    tableDetails: TableDetails
-    configuration: ISettings;
-}
+import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 
 type Comparator = (a: IndexRow, b: IndexRow) => number;
 function getComparator(sortColumn: string): Comparator {
     switch (sortColumn) {
-    case 'cName':
-    case 'cFlags':
-    case 'cFields':
-        return (a, b) => {
-            return a[sortColumn].localeCompare(b[sortColumn]);
-        };
-    default:
-        throw new Error(`unsupported sortColumn: "${sortColumn}"`);
+        case 'cName':
+        case 'cFlags':
+        case 'cFields':
+            return (a, b) => {
+                return a[sortColumn].localeCompare(b[sortColumn]);
+            };
+        default:
+            throw new Error(`unsupported sortColumn: "${sortColumn}"`);
     }
 }
 
@@ -31,23 +25,29 @@ function rowKeyGetter(row: IndexRow) {
     return row.cName;
 }
 
-function Indexes({ tableDetails, configuration, vscode }: IConfigProps) {
-    const [rows, setRows] = useState(tableDetails.indexes);
+function Indexes() {
+    const [rows, setRows] = useState<IndexRow[]>([]);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<string>>(
         () => new Set()
     );
     const [windowHeight, setWindowHeight] = React.useState(window.innerHeight);
+    const vscode = getVSCodeAPI();
+    const configuration = getVSCodeConfiguration();
     const logger = new Logger(configuration.logging.react);
 
     const windowRezise = () => {
         setWindowHeight(window.innerHeight);
     };
 
-    window.addEventListener('contextmenu', e => {
-        e.stopImmediatePropagation();
-    }, true);
+    window.addEventListener(
+        'contextmenu',
+        (e) => {
+            e.stopImmediatePropagation();
+        },
+        true
+    );
 
     React.useEffect(() => {
         window.addEventListener('resize', windowRezise);
@@ -79,15 +79,16 @@ function Indexes({ tableDetails, configuration, vscode }: IConfigProps) {
             const message = event.data;
             logger.log('indexes explorer data', message);
             switch (message.command) {
-            case 'data':
-                setRows(message.data.indexes);
-                setDataLoaded(true);
+                case 'data':
+                    setRows(message.data.indexes);
+                    setDataLoaded(true);
             }
         });
     });
 
     const refresh = () => {
         const obj = {
+            id: '2',
             action: CommandAction.RefreshTableData,
         };
         logger.log('Refresh Table Data', obj);
@@ -96,12 +97,10 @@ function Indexes({ tableDetails, configuration, vscode }: IConfigProps) {
 
     return (
         <div>
-            {!dataLoaded ? ( 
-                <button
-                    className="refreshButton"
-                    onClick={refresh}>Refresh
+            {!dataLoaded ? (
+                <button className='refreshButton' onClick={refresh}>
+                    Refresh
                 </button>
-
             ) : rows.length > 0 ? (
                 <DataGrid
                     columns={columnName.columns}

@@ -18,15 +18,12 @@ import { Logger } from '../../../common/Logger';
 import * as columnName from './column.json';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
+import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
 
 interface FieldsExplorerEvent {
     id: string;
     command: 'data';
     data: TableDetails;
-}
-
-interface IConfigProps {
-    tableDetails: TableDetails;
 }
 
 const filterCSS: React.CSSProperties = {
@@ -71,13 +68,14 @@ function rowKeyGetter(row: FieldRow) {
     return row.order;
 }
 
-function Fields({ tableDetails }: Readonly<IConfigProps>) {
-    const [rows, setRows] = useState(tableDetails.fields);
+function Fields() {
+    const [rows, setRows] = useState([]);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [sortColumns, setSortColumns] = useState<readonly SortColumn[]>([]);
     const [selectedRows, setSelectedRows] = useState<ReadonlySet<number>>();
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
     const [filteredRows, setFilteredRows] = useState(rows);
+    const [tableName, setTableName] = useState<string>('');
 
     const vscode = getVSCodeAPI();
     const configuration = getVSCodeConfiguration();
@@ -262,6 +260,7 @@ function Fields({ tableDetails }: Readonly<IConfigProps>) {
                                     : 'no';
                             }
                         });
+                        setTableName(message.data.tableName);
                         setRows(message.data.fields);
                         setFilteredRows(message.data.fields);
                         setDataLoaded(true);
@@ -306,6 +305,7 @@ function Fields({ tableDetails }: Readonly<IConfigProps>) {
                                     )
                             );
                         }
+                        break;
                 }
             }
         );
@@ -332,6 +332,17 @@ function Fields({ tableDetails }: Readonly<IConfigProps>) {
         vscode.postMessage(obj);
     };
 
+    const onRowDoubleClick = (row: FieldRow) => {
+        const obj: HighlightFieldsCommand = {
+            id: 'highlightColumn',
+            action: CommandAction.FieldsHighlightColumn,
+            column: row.name,
+            tableName: tableName,
+        };
+        logger.log('highlight column', obj);
+        vscode.postMessage(obj);
+    };
+
     return (
         <div>
             {!dataLoaded ? (
@@ -354,6 +365,7 @@ function Fields({ tableDetails }: Readonly<IConfigProps>) {
                     sortColumns={sortColumns}
                     onSortColumnsChange={setSortColumns}
                     style={{ height: windowHeight }}
+                    onRowDoubleClick={onRowDoubleClick}
                 />
             ) : null}
         </div>

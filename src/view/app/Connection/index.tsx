@@ -13,13 +13,10 @@ declare global {
     }
 }
 
-const vscode = window.acquireVsCodeApi();
-
 const root = createRoot(document.getElementById('root'));
 root.render(
     <ConnectionForm
         initialData={window.initialData}
         configuration={window.configuration}
-        vscode={vscode}
     />
 );
