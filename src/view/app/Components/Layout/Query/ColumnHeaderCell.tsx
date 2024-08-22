@@ -1,5 +1,5 @@
 import { Box, TextField, Typography } from '@mui/material';
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import SortArrowIcon from './SortArrorIcon';
 
 interface ColumnHeaderCellProps {
@@ -25,8 +25,6 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
     configuration,
     reloadData,
 }) => {
-    const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
-
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === ' ' || event.key === 'Enter') {
             event.preventDefault();
@@ -38,15 +36,12 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
         onSort(event.ctrlKey || event.metaKey);
     };
 
+    let timer;
     const handleKeyInputTimeout = () => {
-        if (timer) {
-            clearTimeout(timer);
-        }
-        setTimer(
-            setTimeout(() => {
-                reloadData(configuration.initialBatchSizeLoad);
-            }, 500)
-        );
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            reloadData(configuration.initialBatchSizeLoad);
+        }, 500);
     };
 
     const testKeyDown = (event: React.KeyboardEvent) => {

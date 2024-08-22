@@ -1,11 +1,4 @@
-import {
-    CSSProperties,
-    Fragment,
-    UIEvent,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { Fragment, UIEvent, useEffect, useRef, useState } from 'react';
 
 import DataGrid, {
     SortColumn,
