@@ -366,7 +366,8 @@ function QueryForm({
                     }
                 }
                 const boolField = message.data.columns.filter(
-                    (field) => field.type === OEDataTypePrimitive.Logical
+                    (field) =>
+                        field.type.toUpperCase() === OEDataTypePrimitive.Logical
                 );
                 if (boolField.length !== 0) {
                     message.data.rawData.forEach((row) => {
