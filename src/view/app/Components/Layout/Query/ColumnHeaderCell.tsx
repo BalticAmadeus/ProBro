@@ -95,6 +95,7 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
                 onChange={handleInputKeyDown}
                 onKeyDown={testKeyDown}
                 fullWidth={true}
+                InputProps={{ disableUnderline: true }}
                 sx={{
                     '& .MuiInputBase-input': {
                         fontSize: '0.8rem',
