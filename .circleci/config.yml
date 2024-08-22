@@ -1,54 +1,54 @@
 version: 2.1
 
 jobs:
-  test-and-compile-front-end:
-    docker:
-      - image: circleci/node:16
-    steps:
-      - checkout
-      - run:
-          name: Install Dependencies
-          command: npm install
-      - run:
-          name: Compile Extension
-          command: npm run compile:extension
-      - run:
-          name: Compile Views
-          command: npm run compile:views
-      - run:
-          name: Run Tests
-          command: npm run jestTest
-      - store_test_results:
-          path: test-results/jest
-  test-and-compile-back-end:
-    docker:
-      - image: kherring/oedb:latest
-    steps:
-      - checkout
-      - run: tr ' ' '\n' \<<< "$PROGRESS_CFG_BASE64" | base64 --decode > /psc/dlc/progress.cfg
-      - run: ant compile
-      - run: ant test
-      - persist_to_workspace:
-          root: .
-          paths: [ '.' ]
-      - store_artifacts:
-          path: target/results.xml
-      - store_test_results:
-          path: target/results.xml
-  build:
-    docker:
-      - image: circleci/node:16
-    steps:
-      - checkout
-      - run: 
-          name: Install vsce
-          command: npm install vsce
-      - run: 
-          name: Build Extension
-          command: npm run vsce
+    test-and-compile-front-end:
+        docker:
+            - image: circleci/node:18
+        steps:
+            - checkout
+            - run:
+                  name: Install Dependencies
+                  command: npm install
+            - run:
+                  name: Compile Extension
+                  command: npm run compile:extension
+            - run:
+                  name: Compile Views
+                  command: npm run compile:views
+            - run:
+                  name: Run Tests
+                  command: npm run jestTest
+            - store_test_results:
+                  path: test-results/jest
+    test-and-compile-back-end:
+        docker:
+            - image: kherring/oedb:latest
+        steps:
+            - checkout
+            - run: tr ' ' '\n' \<<< "$PROGRESS_CFG_BASE64" | base64 --decode > /psc/dlc/progress.cfg
+            - run: ant compile
+            - run: ant test
+            - persist_to_workspace:
+                  root: .
+                  paths: ['.']
+            - store_artifacts:
+                  path: target/results.xml
+            - store_test_results:
+                  path: target/results.xml
+    build:
+        docker:
+            - image: circleci/node:18
+        steps:
+            - checkout
+            - run:
+                  name: Install vsce
+                  command: npm install vsce
+            - run:
+                  name: Build Extension
+                  command: npm run vsce
 workflows:
-  build:
-    jobs:
-      - test-and-compile-front-end
-      - test-and-compile-back-end
-      - build
+    build:
+        jobs:
+            - test-and-compile-front-end
+            - test-and-compile-back-end
+            - build
