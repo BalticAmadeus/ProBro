@@ -3,7 +3,7 @@ version: 2.1
 jobs:
     test-and-compile-front-end:
         docker:
-            - image: circleci/node:18
+            - image: cimg/node:18.0
         steps:
             - checkout
             - run:
@@ -37,7 +37,7 @@ jobs:
                   path: target/results.xml
     build:
         docker:
-            - image: circleci/node:18
+            - image: cimg/node:18.0
         steps:
             - checkout
             - run:
