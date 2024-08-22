@@ -1,7 +1,6 @@
 import { Box, TextField, Typography } from '@mui/material';
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState } from 'react';
 import SortArrowIcon from './SortArrorIcon';
-import './FilterStyles.css';
 
 interface ColumnHeaderCellProps {
     column: any;
@@ -67,46 +66,49 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
     };
     return (
         <Fragment>
-            <Box className={filters.enabled ? 'filter-cell' : undefined}>
-                <Box
-                    tabIndex={-1}
-                    style={{
-                        cursor: 'pointer',
-                        display: 'flex',
-                    }}
-                    className='rdg-header-sort-cell'
-                    onClick={handleClick}
-                    onKeyDown={handleKeyDown}
-                >
-                    <Typography
-                        variant='body2'
-                        className='rdg-header-sort-name'
-                        style={{
-                            flexGrow: '1',
-                            overflow: 'clip',
-                            textOverflow: 'ellipsis',
+            {filters.enabled && (
+                <Box>
+                    <Box
+                        tabIndex={-1}
+                        onClick={handleClick}
+                        onKeyDown={handleKeyDown}
+                        display='flex'
+                        alignItems='center'
+                        sx={{
+                            height: '35px',
+                            padding: '0',
+                            cursor: 'pointer',
                         }}
                     >
-                        {column.name}
-                    </Typography>
-                    <SortArrowIcon sortDirection={sortDirection} />
-                    {priority}
-                </Box>
-            </Box>
-            {filters.enabled && (
-                <Box className='filter-cell'>
-                    <TextField
-                        className='Filter-css'
-                        autoFocus={isCellSelected}
-                        variant='outlined'
-                        size='small'
-                        fullWidth
-                        defaultValue={filters.columns[column.key]}
-                        onChange={handleInputKeyDown}
-                        onKeyDown={testKeyDown}
-                    />
+                        <Typography
+                            fontSize={'0.8rem'}
+                            fontWeight={'bold'}
+                            flexGrow={1}
+                        >
+                            {column.name}
+                        </Typography>
+                        <SortArrowIcon sortDirection={sortDirection} />
+                        {priority}
+                    </Box>
                 </Box>
             )}
+            <TextField
+                autoFocus={isCellSelected}
+                variant='standard'
+                size='small'
+                defaultValue={filters.columns[column.key]}
+                onChange={handleInputKeyDown}
+                onKeyDown={testKeyDown}
+                fullWidth={true}
+                sx={{
+                    '& .MuiInputBase-input': {
+                        fontSize: '0.8rem',
+                        padding: '4px',
+                        backgroundColor: 'var(--vscode-input-background)',
+                        color: 'var(--vscode-input-foreground)',
+                    },
+                }}
+            />
         </Fragment>
     );
 };
