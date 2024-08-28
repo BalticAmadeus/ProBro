@@ -1,6 +1,6 @@
 import { Fragment, UIEvent, useEffect, useRef, useState } from 'react';
 
-import DataGrid, {
+import {
     SortColumn,
     SelectColumn,
     CopyEvent,
@@ -14,13 +14,12 @@ import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { IErrorObject, emptyErrorObj } from '@utils/error';
 import QueryFormFooter from '@app/Components/Layout/Query/QueryFormFooter';
-import { Box } from '@mui/material';
 import QueryFormHead from '@app/Components/Layout/Query/QueryFormHead';
 import { IFilters } from '@app/common/types';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { green, red } from '@mui/material/colors';
 import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
-import ColumnHeaderCell from '@app/Components/Layout/Query/ColumnHeaderCell';
+import QueryFormTable from '@app/Components/Layout/Query/QueryFormTable';
 
 interface IConfigProps {
     tableData: IOETableData;
@@ -197,21 +196,6 @@ function QueryForm({
                         .getPropertyValue('font-size')
                         .match(/\d+[.]?\d+/);
                     message.data.columns.forEach((column) => {
-                        column.headerRenderer = function (props) {
-                            return (
-                                <ColumnHeaderCell
-                                    column={props.column}
-                                    sortDirection={props.sortDirection}
-                                    priority={props.priority}
-                                    onSort={props.onSort}
-                                    isCellSelected={props.isCellSelected}
-                                    filters={filters}
-                                    setFilters={setFilters}
-                                    configuration={configuration}
-                                    reloadData={reloadData}
-                                />
-                            );
-                        };
                         column.minWidth = column.name.length * fontSize;
                         column.width =
                             getOEFormatLength(column.format ?? '') *
@@ -461,14 +445,6 @@ function QueryForm({
         return 30;
     };
 
-    const calculateHeight = () => {
-        const rowCount = isFormatted ? formattedRows.length : rawRows.length;
-        const cellHeight = getCellHeight();
-        const startingHeight = 85;
-        const calculatedHeight = startingHeight + rowCount * cellHeight;
-        return calculatedHeight;
-    };
-
     const setRowHeight = () => {
         let height = 0;
 
@@ -514,35 +490,25 @@ function QueryForm({
                 readRow={readRow}
                 isReadOnly={isReadOnly}
             />
-            <Box>
-                <DataGrid
-                    ref={queryGridRef}
-                    columns={selected}
-                    rows={isFormatted ? formattedRows : rawRows}
-                    defaultColumnOptions={{
-                        sortable: true,
-                        resizable: true,
-                    }}
-                    sortColumns={sortColumns}
-                    onScroll={handleScroll}
-                    onSortColumnsChange={onSortClick}
-                    className={filters.enabled ? 'filter-cell' : ''}
-                    headerRowHeight={filters.enabled ? 70 : undefined}
-                    style={{
-                        height: calculateHeight(),
-                        overflow: 'auto',
-                        minHeight: 105,
-                        maxHeight: windowHeight - 120,
-                        whiteSpace: 'pre',
-                    }}
-                    selectedRows={selectedRows}
-                    onSelectedRowsChange={setSelectedRows}
-                    rowKeyGetter={rowKeyGetter}
-                    onRowDoubleClick={readRecord}
-                    onCopy={handleCopy}
-                    rowHeight={setRowHeight}
-                ></DataGrid>
-            </Box>
+            <QueryFormTable
+                queryGridRef={queryGridRef}
+                selected={selected}
+                rows={isFormatted ? formattedRows : rawRows}
+                sortColumns={sortColumns}
+                handleScroll={handleScroll}
+                onSortClick={onSortClick}
+                filters={filters}
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+                rowKeyGetter={rowKeyGetter}
+                readRecord={readRecord}
+                handleCopy={handleCopy}
+                windowHeight={windowHeight}
+                setRowHeight={setRowHeight}
+                reloadData={reloadData}
+                configuration={configuration}
+                setFilters={setFilters}
+            />
             <QueryFormFooter
                 errorObj={errorObject}
                 totalRecords={loaded}
