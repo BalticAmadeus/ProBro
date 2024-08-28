@@ -1,5 +1,4 @@
 import {
-    CancellationToken,
     Hover,
     HoverProvider,
     MarkdownString,
@@ -18,8 +17,7 @@ export class AblHoverProvider implements HoverProvider {
 
     provideHover(
         document: TextDocument,
-        position: Position,
-        token: CancellationToken
+        position: Position
     ): ProviderResult<Hover> {
         const str = new MarkdownString();
         str.isTrusted = true;
@@ -36,9 +34,9 @@ export class AblHoverProvider implements HoverProvider {
                 this.tableListProvider.selectDbConfig(tableNode);
                 this.tableListProvider.node = tableNode;
                 str.value =
-          '[Run Query for ' +
-          tableNode.tableName +
-          '](command:pro-bro.queryFromCode)';
+                    '[Run Query for ' +
+                    tableNode.tableName +
+                    '](command:pro-bro.queryFromCode)';
             }
         });
 

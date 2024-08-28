@@ -46,12 +46,7 @@ interface IStatisticsObject {
     connectTime: number;
 }
 
-function QueryForm({
-    tableData,
-    tableName,
-    isReadOnly,
-    ...props
-}: IConfigProps) {
+function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);

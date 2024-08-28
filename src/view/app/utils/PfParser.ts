@@ -22,14 +22,14 @@ export class PfParser {
             .split('\n')
             .filter((params) => {
                 return (
-                    params && !new RegExp('^(\r)$').test(params) && params[0] !== '#'
+                    params && params.trim() !== '' && !params.startsWith('#')
                 );
             })
             .forEach((param) => {
                 param.match(/(-[A-Za-z0-9]+)/g)?.forEach((key) => {
                     let regexStr;
-                    if (new RegExp(`(${key}\\s)(\'|\")`).test(param)) {
-                        regexStr = `(${key}\\s)(\'|\")([^\'^\"]*)(\'|\")`;
+                    if (new RegExp(`(${key}\\s)('|")`).test(param)) {
+                        regexStr = `(${key}\\s)('|")([^'^"]*)('|")`;
                     } else {
                         regexStr = `(${key}\\s*)([\\S]+)*`;
                     }
@@ -38,34 +38,36 @@ export class PfParser {
                         return;
                     }
                     switch (key) {
-                    case '-db':
-                        config.name = keyVal[0].substring(key.length + 1);
-                        break;
-                    case '-U':
-                        config.user = keyVal[0].substring(key.length + 1);
-                        break;
-                    case '-P':
-                        config.password = keyVal[0].substring(key.length + 1);
-                        break;
-                    case '-H':
-                        config.host = keyVal[0].substring(key.length + 1);
-                        break;
-                    case '-S':
-                        config.port = keyVal[0].substring(key.length + 1);
-                        break;
-                    case '-RO':
-                        config.isReadOnly = true;
-                        if (config.params) {
-                            config.params += ' ';
-                        }
-                        config.params += keyVal[0];
-                        break;
-                    default:
-                        if (config.params) {
-                            config.params += ' ';
-                        }
-                        config.params += keyVal[0];
-                        break;
+                        case '-db':
+                            config.name = keyVal[0].substring(key.length + 1);
+                            break;
+                        case '-U':
+                            config.user = keyVal[0].substring(key.length + 1);
+                            break;
+                        case '-P':
+                            config.password = keyVal[0].substring(
+                                key.length + 1
+                            );
+                            break;
+                        case '-H':
+                            config.host = keyVal[0].substring(key.length + 1);
+                            break;
+                        case '-S':
+                            config.port = keyVal[0].substring(key.length + 1);
+                            break;
+                        case '-RO':
+                            config.isReadOnly = true;
+                            if (config.params) {
+                                config.params += ' ';
+                            }
+                            config.params += keyVal[0];
+                            break;
+                        default:
+                            if (config.params) {
+                                config.params += ' ';
+                            }
+                            config.params += keyVal[0];
+                            break;
                     }
                 });
             });

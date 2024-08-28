@@ -17,6 +17,7 @@ export class DatabaseProcessor implements IProcessor {
     );
     private logger = new Logger(this.configuration.get('logging.node')!);
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     private constructor() {}
 
     public static getInstance(): DatabaseProcessor {

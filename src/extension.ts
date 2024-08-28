@@ -121,11 +121,10 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(indexes);
 
-    let oeRuntimes: Array<any>;
-
-    oeRuntimes = vscode.workspace
+    const oeRuntimes: Array<any> = vscode.workspace
         .getConfiguration('abl.configuration')
         .get<Array<any>>('runtimes')!;
+
     if (oeRuntimes === undefined || oeRuntimes.length === 0) {
         vscode.window.showWarningMessage(
             'No OpenEdge runtime configured on this machine'
@@ -143,7 +142,6 @@ export function activate(context: vscode.ExtensionContext) {
     let importConnections = vscode.workspace
         .getConfiguration(Constants.globalExtensionKey)
         .get('importConnections');
-    let fileWatcher: vscode.FileSystemWatcher;
 
     if (importConnections) {
         vscode.workspace.findFiles('**/openedge-project.json').then((list) => {
@@ -153,9 +151,8 @@ export function activate(context: vscode.ExtensionContext) {
         clearDatabaseConfigState();
     }
 
-    fileWatcher = vscode.workspace.createFileSystemWatcher(
-        '**/openedge-project.json'
-    );
+    const fileWatcher: vscode.FileSystemWatcher =
+        vscode.workspace.createFileSystemWatcher('**/openedge-project.json');
     fileWatcher.onDidChange((uri) => {
         if (importConnections) {
             createJsonDatabases(uri);
