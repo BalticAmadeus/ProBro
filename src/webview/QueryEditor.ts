@@ -184,42 +184,43 @@ export class QueryEditor {
                         }
                         break;
                     case CommandAction.Export:
-                        if (config) {
-                            ProcessorFactory.getProcessorInstance()
-                                .getTableData(
-                                    config,
-                                    this.tableNode.tableName,
-                                    command.params
-                                )
-                                .then((oe) => {
-                                    if (this.panel) {
-                                        let exportData = oe;
-                                        if (
-                                            command.params?.exportType ===
-                                            'dumpFile'
-                                        ) {
-                                            const dumpFileFormatter =
-                                                new DumpFileFormatter();
-                                            dumpFileFormatter.formatDumpFile(
-                                                oe,
-                                                this.tableNode.tableName,
-                                                config.label ?? ''
-                                            );
-                                            exportData =
-                                                dumpFileFormatter.getDumpFile();
-                                        }
-                                        const obj = {
-                                            id: command.id,
-                                            command: 'export',
-                                            tableName: this.tableNode.tableName,
-                                            data: exportData,
-                                            format: command.params!.exportType,
-                                        };
-                                        this.logger.log('data:', obj);
-                                        this.panel?.webview.postMessage(obj);
-                                    }
-                                });
+                        if (!config) {
+                            break;
                         }
+                        ProcessorFactory.getProcessorInstance()
+                            .getTableData(
+                                config,
+                                this.tableNode.tableName,
+                                command.params
+                            )
+                            .then((oe) => {
+                                if (this.panel) {
+                                    let exportData = oe;
+                                    if (
+                                        command.params?.exportType ===
+                                        'dumpFile'
+                                    ) {
+                                        const dumpFileFormatter =
+                                            new DumpFileFormatter();
+                                        dumpFileFormatter.formatDumpFile(
+                                            oe,
+                                            this.tableNode.tableName,
+                                            config.label ?? ''
+                                        );
+                                        exportData =
+                                            dumpFileFormatter.getDumpFile();
+                                    }
+                                    const obj = {
+                                        id: command.id,
+                                        command: 'export',
+                                        tableName: this.tableNode.tableName,
+                                        data: exportData,
+                                        format: command.params!.exportType,
+                                    };
+                                    this.logger.log('data:', obj);
+                                    this.panel?.webview.postMessage(obj);
+                                }
+                            });
                         break;
                 }
             },

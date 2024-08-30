@@ -549,10 +549,12 @@ export function activate(context: vscode.ExtensionContext) {
             }
 
             for (const id of Object.keys(portList)) {
+                const port = portList[id];
+                const timestamp = port.timestamp;
                 if (
-                    portList[id].isInUse &&
-                    portList[id].timestamp &&
-                    Date.now() - portList[id].timestamp > 35000
+                    port.isInUse &&
+                    timestamp &&
+                    Date.now() - timestamp > 35000
                 ) {
                     portList[id].isInUse = false;
                     portList[id].timestamp = undefined;
