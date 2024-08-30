@@ -185,7 +185,9 @@ export class QueryEditor {
                         break;
                     case CommandAction.Export:
                         if (!config) {
-                            break;
+                            throw new Error(
+                                'Configuration is missing or undefined.'
+                            );
                         }
                         ProcessorFactory.getProcessorInstance()
                             .getTableData(
