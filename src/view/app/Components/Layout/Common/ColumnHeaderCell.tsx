@@ -11,7 +11,7 @@ interface ColumnHeaderCellProps {
     filters: any;
     setFilters: (filters: any) => void;
     configuration: any;
-    reloadData: (batchSize: number) => void;
+    reloadData?: (batchSize: number) => void;
 }
 
 const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
