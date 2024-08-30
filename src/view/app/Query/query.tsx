@@ -1,13 +1,6 @@
-import {
-    CSSProperties,
-    Fragment,
-    UIEvent,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { Fragment, UIEvent, useEffect, useRef, useState } from 'react';
 
-import DataGrid, {
+import {
     SortColumn,
     SelectColumn,
     CopyEvent,
@@ -21,18 +14,12 @@ import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { IErrorObject, emptyErrorObj } from '@utils/error';
 import QueryFormFooter from '@app/Components/Layout/Query/QueryFormFooter';
-import { Box } from '@mui/material';
 import QueryFormHead from '@app/Components/Layout/Query/QueryFormHead';
 import { IFilters } from '@app/common/types';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { green, red } from '@mui/material/colors';
 import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
-
-const filterCSS: CSSProperties = {
-    inlineSize: '100%',
-    padding: '4px',
-    fontSize: '14px',
-};
+import QueryFormTable from '@app/Components/Layout/Query/QueryFormTable';
 
 interface IConfigProps {
     tableData: IOETableData;
@@ -201,168 +188,38 @@ function QueryForm({
                         trace: message.data.trace,
                     });
                     setIsDataRetrieved(false);
-                } else {
-                    if (message.data.columns.length !== columns.length) {
-                        const fontSize = +window
-                            .getComputedStyle(
-                                document.getElementsByClassName(
-                                    'rdg-header-row'
-                                )[0]
-                            )
-                            .getPropertyValue('font-size')
-                            .match(/\d+[.]?\d+/);
-                        message.data.columns.forEach((column) => {
-                            column.headerRenderer = function ({
-                                column,
-                                sortDirection,
-                                priority,
-                                onSort,
-                                isCellSelected,
-                            }) {
-                                function handleKeyDown(event) {
-                                    if (
-                                        event.key === ' ' ||
-                                        event.key === 'Enter'
-                                    ) {
-                                        event.preventDefault();
-                                        onSort(event.ctrlKey || event.metaKey);
-                                    }
-                                }
-
-                                function handleClick(event) {
-                                    onSort(event.ctrlKey || event.metaKey);
-                                }
-
-                                let timer;
-                                function handleKeyInputTimeout() {
-                                    clearTimeout(timer);
-                                    timer = setTimeout(() => {
-                                        reloadData(
-                                            configuration.initialBatchSizeLoad
-                                        );
-                                    }, 500);
-                                }
-
-                                function testKeyDown(event) {
-                                    if (event.key === 'Enter') {
-                                        event.preventDefault();
-                                        reloadData(
-                                            configuration.initialBatchSizeLoad
-                                        );
-                                    }
-                                }
-
-                                function handleInputKeyDown(event) {
-                                    const tempFilters = filters;
-                                    tempFilters.columns[column.key] =
-                                        event.target.value;
-                                    setFilters(tempFilters);
-                                    if (
-                                        configuration.filterAsYouType === true
-                                    ) {
-                                        handleKeyInputTimeout();
-                                    }
-                                }
-
-                                return (
-                                    <Fragment>
-                                        <div
-                                            className={
-                                                filters.enabled
-                                                    ? 'filter-cell'
-                                                    : undefined
-                                            }
-                                        >
-                                            <span
-                                                tabIndex={-1}
-                                                style={{
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                }}
-                                                className='rdg-header-sort-cell'
-                                                onClick={handleClick}
-                                                onKeyDown={handleKeyDown}
-                                            >
-                                                <span
-                                                    className='rdg-header-sort-name'
-                                                    style={{
-                                                        flexGrow: '1',
-                                                        overflow: 'clip',
-                                                        textOverflow:
-                                                            'ellipsis',
-                                                    }}
-                                                >
-                                                    {column.name}
-                                                </span>
-                                                <span>
-                                                    <svg
-                                                        viewBox='0 0 12 8'
-                                                        width='12'
-                                                        height='8'
-                                                        className='rdg-sort-arrow'
-                                                        style={{
-                                                            fill: 'currentcolor',
-                                                        }}
-                                                    >
-                                                        {sortDirection ===
-                                                            'ASC' && (
-                                                            <path d='M0 8 6 0 12 8'></path>
-                                                        )}
-                                                        {sortDirection ===
-                                                            'DESC' && (
-                                                            <path d='M0 0 6 8 12 0'></path>
-                                                        )}
-                                                    </svg>
-                                                    {priority}
-                                                </span>
-                                            </span>
-                                        </div>
-                                        {filters.enabled && (
-                                            <div className={'filter-cell'}>
-                                                <input
-                                                    className='textInput'
-                                                    autoFocus={isCellSelected}
-                                                    style={filterCSS}
-                                                    defaultValue={
-                                                        filters.columns[
-                                                            column.key
-                                                        ]
-                                                    }
-                                                    onChange={
-                                                        handleInputKeyDown
-                                                    }
-                                                    onKeyDown={testKeyDown}
-                                                />
-                                            </div>
-                                        )}
-                                    </Fragment>
-                                );
-                            };
-                            column.minWidth = column.name.length * fontSize;
-                            column.width =
-                                getOEFormatLength(column.format ?? '') *
-                                (fontSize - 4);
-                            switch (column.type.toUpperCase()) {
-                                case OEDataTypePrimitive.Integer:
-                                case OEDataTypePrimitive.Decimal:
-                                case OEDataTypePrimitive.Int64:
-                                    column.cellClass = 'rightAlign';
-                                    column.headerCellClass = 'rightAlign';
-                                    break;
-                                default:
-                                    break;
-                            }
-                        });
-                        setColumns([SelectColumn, ...message.data.columns]);
-                        if (message.columns !== undefined) {
-                            setSelectedColumns([...message.columns]);
-                        } else {
-                            setSelectedColumns([
-                                ...message.data.columns.map(
-                                    (column) => column.name
-                                ),
-                            ]);
+                } else if (message.data.columns.length !== columns.length) {
+                    const fontSize = +window
+                        .getComputedStyle(
+                            document.getElementsByClassName('rdg-header-row')[0]
+                        )
+                        .getPropertyValue('font-size')
+                        .match(/\d+[.]?\d+/);
+                    message.data.columns.forEach((column) => {
+                        column.minWidth = column.name.length * fontSize;
+                        column.width =
+                            getOEFormatLength(column.format ?? '') *
+                            (fontSize - 4);
+                        switch (column.type.toUpperCase()) {
+                            case OEDataTypePrimitive.Integer:
+                            case OEDataTypePrimitive.Decimal:
+                            case OEDataTypePrimitive.Int64:
+                                column.cellClass = 'rightAlign';
+                                column.headerCellClass = 'rightAlign';
+                                break;
+                            default:
+                                break;
                         }
+                    });
+                    setColumns([SelectColumn, ...message.data.columns]);
+                    if (message.columns !== undefined) {
+                        setSelectedColumns([...message.columns]);
+                    } else {
+                        setSelectedColumns([
+                            ...message.data.columns.map(
+                                (column) => column.name
+                            ),
+                        ]);
                     }
                 }
                 const boolField = message.data.columns.filter(
@@ -589,14 +446,6 @@ function QueryForm({
         return 30;
     };
 
-    const calculateHeight = () => {
-        const rowCount = isFormatted ? formattedRows.length : rawRows.length;
-        const cellHeight = getCellHeight();
-        const startingHeight = 85;
-        const calculatedHeight = startingHeight + rowCount * cellHeight;
-        return calculatedHeight;
-    };
-
     const setRowHeight = () => {
         let height = 0;
 
@@ -642,35 +491,25 @@ function QueryForm({
                 readRow={readRow}
                 isReadOnly={isReadOnly}
             />
-            <Box>
-                <DataGrid
-                    ref={queryGridRef}
-                    columns={selected}
-                    rows={isFormatted ? formattedRows : rawRows}
-                    defaultColumnOptions={{
-                        sortable: true,
-                        resizable: true,
-                    }}
-                    sortColumns={sortColumns}
-                    onScroll={handleScroll}
-                    onSortColumnsChange={onSortClick}
-                    className={filters.enabled ? 'filter-cell' : ''}
-                    headerRowHeight={filters.enabled ? 70 : undefined}
-                    style={{
-                        height: calculateHeight(),
-                        overflow: 'auto',
-                        minHeight: 105,
-                        maxHeight: windowHeight - 120,
-                        whiteSpace: 'pre',
-                    }}
-                    selectedRows={selectedRows}
-                    onSelectedRowsChange={setSelectedRows}
-                    rowKeyGetter={rowKeyGetter}
-                    onRowDoubleClick={readRecord}
-                    onCopy={handleCopy}
-                    rowHeight={setRowHeight}
-                ></DataGrid>
-            </Box>
+            <QueryFormTable
+                queryGridRef={queryGridRef}
+                selected={selected}
+                rows={isFormatted ? formattedRows : rawRows}
+                sortColumns={sortColumns}
+                handleScroll={handleScroll}
+                onSortClick={onSortClick}
+                filters={filters}
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+                rowKeyGetter={rowKeyGetter}
+                readRecord={readRecord}
+                handleCopy={handleCopy}
+                windowHeight={windowHeight}
+                setRowHeight={setRowHeight}
+                reloadData={reloadData}
+                configuration={configuration}
+                setFilters={setFilters}
+            />
             <QueryFormFooter
                 errorObj={errorObject}
                 totalRecords={loaded}
