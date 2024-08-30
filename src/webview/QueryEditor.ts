@@ -185,9 +185,7 @@ export class QueryEditor {
                         break;
                     case CommandAction.Export:
                         if (!config) {
-                            throw new Error(
-                                'Configuration is missing or undefined.'
-                            );
+                            break;
                         }
                         ProcessorFactory.getProcessorInstance()
                             .getTableData(
@@ -196,32 +194,35 @@ export class QueryEditor {
                                 command.params
                             )
                             .then((oe) => {
-                                if (this.panel) {
-                                    let exportData = oe;
-                                    if (
-                                        command.params?.exportType ===
-                                        'dumpFile'
-                                    ) {
-                                        const dumpFileFormatter =
-                                            new DumpFileFormatter();
-                                        dumpFileFormatter.formatDumpFile(
-                                            oe,
-                                            this.tableNode.tableName,
-                                            config.label ?? ''
-                                        );
-                                        exportData =
-                                            dumpFileFormatter.getDumpFile();
-                                    }
-                                    const obj = {
-                                        id: command.id,
-                                        command: 'export',
-                                        tableName: this.tableNode.tableName,
-                                        data: exportData,
-                                        format: command.params!.exportType,
-                                    };
-                                    this.logger.log('data:', obj);
-                                    this.panel?.webview.postMessage(obj);
+                                if (!this.panel) {
+                                    return;
                                 }
+                                if (!config) {
+                                    throw new Error(
+                                        'Configuration became undefined unexpectedly.'
+                                    );
+                                }
+                                let exportData = oe;
+                                if (command.params?.exportType === 'dumpFile') {
+                                    const dumpFileFormatter =
+                                        new DumpFileFormatter();
+                                    dumpFileFormatter.formatDumpFile(
+                                        oe,
+                                        this.tableNode.tableName,
+                                        config.label
+                                    );
+                                    exportData =
+                                        dumpFileFormatter.getDumpFile();
+                                }
+                                const obj = {
+                                    id: command.id,
+                                    command: 'export',
+                                    tableName: this.tableNode.tableName,
+                                    data: exportData,
+                                    format: command.params!.exportType,
+                                };
+                                this.logger.log('data:', obj);
+                                this.panel?.webview.postMessage(obj);
                             });
                         break;
                 }
