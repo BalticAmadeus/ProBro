@@ -9,7 +9,9 @@ import { HighlightFieldsCommand } from '../common/commands/fieldsCommands';
 export class FieldsViewProvider extends PanelViewProvider {
     private queryEditors: QueryEditor[] = [];
 
-    private logger = new Logger(this.configuration.get('logging.node')!);
+    private logger = new Logger(
+        this.configuration.get('logging.node') ?? false
+    );
 
     public addQueryEditor(queryEditor: QueryEditor) {
         this.queryEditors.push(queryEditor);

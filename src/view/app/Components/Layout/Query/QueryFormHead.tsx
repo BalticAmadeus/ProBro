@@ -31,8 +31,6 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
     isWindowSmall,
     onLoad,
     onButtonClick,
-    formatButtonOnClick,
-    isFormatted,
     setIsFormatted,
     ...otherProps
 }) => {

@@ -58,7 +58,7 @@ export class DumpFileFormatter {
                 accumulator +
                 Object.entries(row)
                     .filter((element) => element[0] !== 'ROWID')
-                    .reduce((accumulator: any, element: any, index) => {
+                    .reduce((accumulator: string, element: any, index) => {
                         if (index > 0 && accumulator.length !== 0) {
                             accumulator += ' ';
                         }
@@ -69,7 +69,12 @@ export class DumpFileFormatter {
                         const column = data.columns.find(
                             (column) => column.name === element[0]
                         );
-                        switch (column!.type) {
+                        if (!column) {
+                            throw new Error(
+                                `Column not found for element: ${element[0]}`
+                            );
+                        }
+                        switch (column.type) {
                             case 'decimal':
                                 if (element[1] < 1 && element[1] > 0) {
                                     return (

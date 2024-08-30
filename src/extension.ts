@@ -39,9 +39,10 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        const settingsPorts: number[] = vscode.workspace
-            .getConfiguration(Constants.globalExtensionKey)
-            .get('possiblePortsList')!;
+        const settingsPorts: number[] =
+            vscode.workspace
+                .getConfiguration(Constants.globalExtensionKey)
+                .get('possiblePortsList') ?? [];
         if (settingsPorts.length === 0) {
             context.globalState.update(
                 `${Constants.globalExtensionKey}.portList`,
@@ -52,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
         let newGlobalStatePortList: IPort[] = [];
         const globalStatePorts = context.globalState.get<{
             [id: string]: IPort;
-        }>(`${Constants.globalExtensionKey}.portList`)!;
+        }>(`${Constants.globalExtensionKey}.portList`);
         if (globalStatePorts) {
             newGlobalStatePortList = Object.values(globalStatePorts).filter(
                 (gPort) => {
@@ -121,11 +122,12 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(indexes);
 
-    const oeRuntimes: Array<any> = vscode.workspace
-        .getConfiguration('abl.configuration')
-        .get<Array<any>>('runtimes')!;
+    const oeRuntimes: Array<any> =
+        vscode.workspace
+            .getConfiguration('abl.configuration')
+            .get<Array<any>>('runtimes') ?? [];
 
-    if (oeRuntimes === undefined || oeRuntimes.length === 0) {
+    if (oeRuntimes.length === 0) {
         vscode.window.showWarningMessage(
             'No OpenEdge runtime configured on this machine'
         );
@@ -500,7 +502,7 @@ export function activate(context: vscode.ExtensionContext) {
         async (): Promise<number | undefined> => {
             const portList = context.globalState.get<{ [id: string]: IPort }>(
                 `${Constants.globalExtensionKey}.portList`
-            )!;
+            );
             if (!portList) {
                 await vscode.window
                     .showErrorMessage(
@@ -549,7 +551,8 @@ export function activate(context: vscode.ExtensionContext) {
             for (const id of Object.keys(portList)) {
                 if (
                     portList[id].isInUse &&
-                    Date.now() - portList[id].timestamp! > 35000
+                    portList[id].timestamp &&
+                    Date.now() - portList[id].timestamp > 35000
                 ) {
                     portList[id].isInUse = false;
                     portList[id].timestamp = undefined;

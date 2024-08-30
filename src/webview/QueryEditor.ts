@@ -22,7 +22,9 @@ export class QueryEditor {
         Constants.globalExtensionKey
     );
     private readOnly = false;
-    private logger = new Logger(this.configuration.get('logging.node')!);
+    private logger = new Logger(
+        this.configuration.get('logging.node') ?? false
+    );
 
     constructor(
         private context: vscode.ExtensionContext,
@@ -201,7 +203,7 @@ export class QueryEditor {
                                             dumpFileFormatter.formatDumpFile(
                                                 oe,
                                                 this.tableNode.tableName,
-                                                config!.label
+                                                config.label ?? ''
                                             );
                                             exportData =
                                                 dumpFileFormatter.getDumpFile();

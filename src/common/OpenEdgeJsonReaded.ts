@@ -22,7 +22,7 @@ export function parseOEFile(fileContent: string, filePath: string) {
 
     const directoryPath = path.dirname(filePath);
 
-    dbConnections.forEach((connection: { name: any; connect: any }) => {
+    dbConnections.forEach((connection: { name: string; connect: string }) => {
         const { name, connect } = connection;
 
         const pfParser = new PfParser();
