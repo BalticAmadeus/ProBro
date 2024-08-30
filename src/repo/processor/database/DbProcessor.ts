@@ -22,8 +22,11 @@ export class DbProcessor implements IProcessor {
     private readonly configuration = vscode.workspace.getConfiguration(
         Constants.globalExtensionKey
     );
-    private logger = new Logger(this.configuration.get('logging.node')!);
+    private logger = new Logger(
+        this.configuration.get('logging.node') ?? false
+    );
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     private constructor() {}
 
     public static getInstance(): DbProcessor {

@@ -42,6 +42,14 @@ export default function ExportPopup({
         console.log(currentTarget.value);
     }
 
+    function extractRowIds(selectedRows: string[]): string[] {
+        const rowids: string[] = [];
+        selectedRows.forEach((element) => {
+            rowids.push(element);
+        });
+        return rowids;
+    }
+
     const exportList = ['dumpFile', 'json', 'csv', 'xls'];
 
     const getData = () => {
@@ -77,10 +85,6 @@ export default function ExportPopup({
                 };
                 break;
             case DataToExport[DataToExport.Selection]:
-                const rowids: string[] = [];
-                selectedRows.forEach((element) => {
-                    rowids.push(element);
-                });
                 command.params = {
                     wherePhrase: wherePhrase,
                     start: 0,
@@ -90,7 +94,7 @@ export default function ExportPopup({
                     filters: filters,
                     exportType: exportFormat,
                     timeOut: 0,
-                    crud: rowids,
+                    crud: extractRowIds(selectedRows),
                     minTime: 0,
                 };
                 break;
@@ -104,33 +108,31 @@ export default function ExportPopup({
     const handleMessage = (event) => {
         const message = event.data;
         logger.log('got export data', message);
-        switch (message.command) {
-            case 'export':
-                if (message.format === 'dumpFile') {
-                    logger.log('dumpfile export got.');
-                    exportFromJSON({
-                        data: message.data,
-                        fileName: message.tableName,
-                        exportType: exportFromJSON.types.txt,
-                        extension: 'd',
-                    });
-                    setIsSaving(false);
-                    break;
+        if (message.command !== 'export') {
+            return;
+        }
+
+        if (message.format === 'dumpFile') {
+            logger.log('dumpfile export got.');
+            exportFromJSON({
+                data: message.data,
+                fileName: message.tableName,
+                exportType: exportFromJSON.types.txt,
+                extension: 'd',
+            });
+            setIsSaving(false);
+        } else {
+            const exportData = message.data.rawData.map(
+                ({ ROWID, RECID, ...rest }) => {
+                    return rest;
                 }
-                const exportData = message.data.rawData.map(
-                    ({ ROWID, RECID, ...rest }) => {
-                        return rest;
-                    }
-                );
-                exportFromJSON({
-                    data: exportData,
-                    fileName: message.tableName,
-                    exportType: exportFromJSON.types[message.format],
-                });
-                setIsSaving(false);
-                break;
-            default:
-                break;
+            );
+            exportFromJSON({
+                data: exportData,
+                fileName: message.tableName,
+                exportType: exportFromJSON.types[message.format],
+            });
+            setIsSaving(false);
         }
     };
 

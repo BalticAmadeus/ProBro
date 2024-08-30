@@ -2,10 +2,11 @@ import { createRoot } from 'react-dom/client';
 import './indexes.css';
 import Indexes from './indexes';
 import { ISettings } from '@src/common/IExtensionSettings';
+import { VSCode } from '@utils/vscode';
 
 declare global {
     interface Window {
-        acquireVsCodeApi(): any;
+        acquireVsCodeApi(): VSCode;
         configuration: ISettings;
     }
 }

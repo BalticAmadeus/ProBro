@@ -291,7 +291,7 @@ function Fields() {
                             );
                         } else {
                             const selected = message.data.fields.filter(
-                                (row: { name: any }) =>
+                                (row: { name: string }) =>
                                     message.data.selectedColumns.includes(
                                         row.name
                                     )
@@ -300,7 +300,8 @@ function Fields() {
                                 (): ReadonlySet<number> =>
                                     new Set(
                                         selected.map(
-                                            (row: { order: any }) => row.order
+                                            (row: { order: number }) =>
+                                                row.order
                                         )
                                     )
                             );

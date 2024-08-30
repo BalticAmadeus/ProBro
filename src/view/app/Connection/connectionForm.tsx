@@ -128,7 +128,7 @@ function ConnectionForm({
         input.id = 'inputVal';
         input.type = 'file';
         input.accept = '.pf';
-        input.onchange = (ev) => {
+        input.onchange = (_ev) => {
             const [file] = Array.from(input.files);
             const reader = new FileReader();
             reader.addEventListener('load', () => {

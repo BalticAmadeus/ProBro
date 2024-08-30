@@ -86,7 +86,7 @@ export const testObjInput: IExportDumpData = {
             testDecimal: 0.01,
             testInt: 123,
             testIntPercent: 15,
-            testInt64: 12345678901234567890,
+            testInt64: 12345678901234567890n,
             testRaw: 'AAMBAQEBAQEBAQEBAQA=',
             testDate: '2023-02-20',
             testDatetime: '2023-02-20T11:11:11.111',
@@ -98,7 +98,7 @@ export const testObjInput: IExportDumpData = {
             testDecimal: 0.11,
             testInt: 123,
             testIntPercent: 15,
-            testInt64: 12345678901234567890,
+            testInt64: 12345678901234567890n,
             testRaw: 'AAMBAQEBAQEBAQEBAQA=',
             testDate: '2023-02-20',
             testDatetime: '2023-02-20T11:11:11.111',
@@ -110,7 +110,7 @@ export const testObjInput: IExportDumpData = {
             testDecimal: 0.22,
             testInt: -123,
             testIntPercent: 15,
-            testInt64: 12345678901234567890,
+            testInt64: 12345678901234567890n,
             testRaw: 'AAMBAQEBAQEBAQEBAQA=',
             testDate: '2023-02-20',
             testDatetime: '2023-02-20T11:11:11.111',
@@ -122,7 +122,7 @@ export const testObjInput: IExportDumpData = {
             testDecimal: 0.33,
             testInt: 123,
             testIntPercent: 15,
-            testInt64: 12345678901234567890,
+            testInt64: 12345678901234567890n,
             testRaw: 'AAMBAQEBAQEBAQEBAQA=',
             testDate: '2023-02-20',
             testDatetime: '2023-02-20T11:11:11.111',
@@ -132,18 +132,18 @@ export const testObjInput: IExportDumpData = {
 };
 
 export const testOutputDumpData: string =
-  '"record no.1" .01 123 15 12345678901234567000 "AAMBAQEBAQEBAQEBAQA=" 02/20/23 2023-02-20T11:11:11.111 yes\r\n' +
-  '"record no.2" .11 123 0.15 12345678901234567000 "AAMBAQEBAQEBAQEBAQA=" 02/20/23 2023-02-20T11:11:11.111 no\r\n' +
-  '"record no.3" .22 -123 15 12345678901234567000 "AAMBAQEBAQEBAQEBAQA=" 02/20/23 2023-02-20T11:11:11.111 yes\r\n' +
-  '"record no.4" .33 123 15 12345678901234567000 "AAMBAQEBAQEBAQEBAQA=" 02/20/23 2023-02-20T11:11:11.111 no\r\n';
+    '"record no.1" .01 123 15 12345678901234567000 "AAMBAQEBAQEBAQEBAQA=" 02/20/23 2023-02-20T11:11:11.111 yes\r\n' +
+    '"record no.2" .11 123 0.15 12345678901234567000 "AAMBAQEBAQEBAQEBAQA=" 02/20/23 2023-02-20T11:11:11.111 no\r\n' +
+    '"record no.3" .22 -123 15 12345678901234567000 "AAMBAQEBAQEBAQEBAQA=" 02/20/23 2023-02-20T11:11:11.111 yes\r\n' +
+    '"record no.4" .33 123 15 12345678901234567000 "AAMBAQEBAQEBAQEBAQA=" 02/20/23 2023-02-20T11:11:11.111 no\r\n';
 
 export const testOutputTrailerInfo: string =
-  'PSC\r\n' +
-  'filename=testing\r\n' +
-  'records=0000000000004\r\n' +
-  'ldbname=testDb\r\n' +
-  'timestamp=2023/02/20-15:36:36\r\n' +
-  'numformat=44,46\r\n' +
-  'dateformat=mdy-1950\r\n' +
-  'map=NO-MAP\r\n' +
-  'cpstream=UTF-8\r\n';
+    'PSC\r\n' +
+    'filename=testing\r\n' +
+    'records=0000000000004\r\n' +
+    'ldbname=testDb\r\n' +
+    'timestamp=2023/02/20-15:36:36\r\n' +
+    'numformat=44,46\r\n' +
+    'dateformat=mdy-1950\r\n' +
+    'map=NO-MAP\r\n' +
+    'cpstream=UTF-8\r\n';

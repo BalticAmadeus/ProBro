@@ -4,10 +4,11 @@ import './query.css';
 import QueryForm from './query';
 import { IOETableData } from '@src/db/Oe';
 import { ISettings } from '@src/common/IExtensionSettings';
+import { VSCode } from '@utils/vscode';
 
 declare global {
     interface Window {
-        acquireVsCodeApi(): any;
+        acquireVsCodeApi(): VSCode;
         tableData: IOETableData;
         tableName: string;
         configuration: ISettings;

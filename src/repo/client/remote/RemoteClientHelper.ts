@@ -13,7 +13,7 @@ export class RemoteClientHelper implements IClientHelper {
         return RemoteClientHelper.instance;
     }
 
-    public formConnectionString(config: IRemoteConnectionConfig): string {
-        return 'Hellp from RemoteClientHelper';
+    public formConnectionString(_config: IRemoteConnectionConfig): string {
+        throw new Error('Method not yet implemented.');
     }
 }

@@ -33,12 +33,7 @@ interface IStatisticsObject {
     connectTime: number;
 }
 
-function QueryForm({
-    tableData,
-    tableName,
-    isReadOnly,
-    ...props
-}: IConfigProps) {
+function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -136,6 +131,115 @@ function QueryForm({
         queryGridRef.current?.selectCell({ idx: columnIdx, rowIdx: rowIdx });
     };
 
+    const processBooleanFields = (columns: any[], rawData: any[]) => {
+        const boolField = columns.filter(
+            (field) => field.type.toUpperCase() === OEDataTypePrimitive.Logical
+        );
+        if (boolField.length !== 0) {
+            rawData.forEach((row) => {
+                boolField.forEach((field) => {
+                    if (row[field.name] !== null) {
+                        row[field.name] = row[field.name].toString();
+                    }
+                });
+            });
+        }
+    };
+
+    const handleSubmit = (message: any) => {
+        if (message.data.error) {
+            // should be displayed in UpdatePopup window
+            setErrorObject({
+                error: message.data.error,
+                description: message.data.description,
+                trace: message.data.trace,
+            });
+            setIsDataRetrieved(false);
+        } else {
+            setSelectedRows(new Set());
+            setOpen(false);
+            reloadData(loaded + (action === ProcessAction.Insert ? 1 : 0));
+        }
+    };
+
+    const handleCrud = (message: any) => {
+        if (message.data.error) {
+            setErrorObject({
+                error: message.data.error,
+                description: message.data.description,
+                trace: message.data.trace,
+            });
+            setIsDataRetrieved(false);
+        } else {
+            setColumnsCRUD(message.data.columns);
+            setRecordsCRUD(message.data.rawData);
+            setOpen(true);
+        }
+    };
+
+    const handleData = (message: any) => {
+        if (message.data.error) {
+            setErrorObject({
+                error: message.data.error,
+                description: message.data.description,
+                trace: message.data.trace,
+            });
+            setIsDataRetrieved(false);
+        } else if (message.data.columns.length !== columns.length) {
+            const fontSize = +window
+                .getComputedStyle(
+                    document.getElementsByClassName('rdg-header-row')[0]
+                )
+                .getPropertyValue('font-size')
+                .match(/\d+[.]?\d+/);
+            message.data.columns.forEach((column) => {
+                column.minWidth = column.name.length * fontSize;
+                column.width =
+                    getOEFormatLength(column.format ?? '') * (fontSize - 4);
+                switch (column.type.toUpperCase()) {
+                    case OEDataTypePrimitive.Integer:
+                    case OEDataTypePrimitive.Decimal:
+                    case OEDataTypePrimitive.Int64:
+                        column.cellClass = 'rightAlign';
+                        column.headerCellClass = 'rightAlign';
+                        break;
+                    default:
+                        break;
+                }
+            });
+            setColumns([SelectColumn, ...message.data.columns]);
+            if (message.columns !== undefined) {
+                setSelectedColumns([...message.columns]);
+            } else {
+                setSelectedColumns([
+                    ...message.data.columns.map((column) => column.name),
+                ]);
+            }
+        }
+        processBooleanFields(message.data.columns, message.data.rawData);
+
+        setRawRows([...rawRows, ...message.data.rawData]);
+        setRowID(
+            message.data.rawData.length > 0
+                ? message.data.rawData[message.data.rawData.length - 1].ROWID
+                : rowID
+        );
+        setLoaded(loaded + message.data.rawData.length);
+        setFormattedRows([...formattedRows, ...message.data.formattedData]);
+        setLoaded(loaded + message.data.formattedData.length);
+        setErrorObject(emptyErrorObj);
+        setIsDataRetrieved(true);
+        setStatisticsObject({
+            recordsRetrieved: message.data.debug.recordsRetrieved,
+            recordsRetrievalTime: message.data.debug.recordsRetrievalTime,
+            connectTime: message.data.debug.timeConnect,
+        });
+        allRecordsRetrieved(
+            message.data.debug.recordsRetrieved,
+            message.data.debug.recordsRetrievalTime
+        );
+    };
+
     const messageEvent = (event) => {
         const message = event.data;
         logger.log('got query data', message);
@@ -150,116 +254,14 @@ function QueryForm({
                 prepareQuery();
                 break;
             case 'submit':
-                if (message.data.error) {
-                    // should be displayed in UpdatePopup window
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsDataRetrieved(false);
-                } else {
-                    setSelectedRows(new Set());
-                    setOpen(false);
-                    reloadData(
-                        loaded + (action === ProcessAction.Insert ? 1 : 0)
-                    );
-                }
+                handleSubmit(message);
                 break;
             case 'crud':
-                if (message.data.error) {
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsDataRetrieved(false);
-                } else {
-                    setColumnsCRUD(message.data.columns);
-                    setRecordsCRUD(message.data.rawData);
-                    setOpen(true);
-                }
+                handleCrud(message);
                 break;
             case 'data':
-                if (message.data.error) {
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsDataRetrieved(false);
-                } else if (message.data.columns.length !== columns.length) {
-                    const fontSize = +window
-                        .getComputedStyle(
-                            document.getElementsByClassName('rdg-header-row')[0]
-                        )
-                        .getPropertyValue('font-size')
-                        .match(/\d+[.]?\d+/);
-                    message.data.columns.forEach((column) => {
-                        column.minWidth = column.name.length * fontSize;
-                        column.width =
-                            getOEFormatLength(column.format ?? '') *
-                            (fontSize - 4);
-                        switch (column.type.toUpperCase()) {
-                            case OEDataTypePrimitive.Integer:
-                            case OEDataTypePrimitive.Decimal:
-                            case OEDataTypePrimitive.Int64:
-                                column.cellClass = 'rightAlign';
-                                column.headerCellClass = 'rightAlign';
-                                break;
-                            default:
-                                break;
-                        }
-                    });
-                    setColumns([SelectColumn, ...message.data.columns]);
-                    if (message.columns !== undefined) {
-                        setSelectedColumns([...message.columns]);
-                    } else {
-                        setSelectedColumns([
-                            ...message.data.columns.map(
-                                (column) => column.name
-                            ),
-                        ]);
-                    }
-                }
-                const boolField = message.data.columns.filter(
-                    (field) =>
-                        field.type.toUpperCase() === OEDataTypePrimitive.Logical
-                );
-                if (boolField.length !== 0) {
-                    message.data.rawData.forEach((row) => {
-                        boolField.forEach((field) => {
-                            if (row[field.name] !== null) {
-                                row[field.name] = row[field.name].toString();
-                            }
-                        });
-                    });
-                }
-                setRawRows([...rawRows, ...message.data.rawData]);
-                setRowID(
-                    message.data.rawData.length > 0
-                        ? message.data.rawData[message.data.rawData.length - 1]
-                              .ROWID
-                        : rowID
-                );
-                setLoaded(loaded + message.data.rawData.length);
-                setFormattedRows([
-                    ...formattedRows,
-                    ...message.data.formattedData,
-                ]);
-                setLoaded(loaded + message.data.formattedData.length);
-                setErrorObject(emptyErrorObj);
-                setIsDataRetrieved(true);
-                setStatisticsObject({
-                    recordsRetrieved: message.data.debug.recordsRetrieved,
-                    recordsRetrievalTime:
-                        message.data.debug.recordsRetrievalTime,
-                    connectTime: message.data.debug.timeConnect,
-                });
-                allRecordsRetrieved(
-                    message.data.debug.recordsRetrieved,
-                    message.data.debug.recordsRetrievalTime
-                );
+                handleData(message);
+                break;
         }
         setIsLoading(false);
     };

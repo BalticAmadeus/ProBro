@@ -1,14 +1,14 @@
 import { PfParser } from '../view/app/utils/PfParser';
 import { IConfig } from '../view/app/model';
 import * as path from 'path';
+import * as fs from 'fs';
 
 export function readFile(fileName: string): string {
     while (fileName.charAt(0) === '/') {
         fileName = fileName.substring(1);
     }
-    const fs = require('fs');
-    const allFileContents = fs.readFileSync(fileName, 'utf-8');
 
+    const allFileContents = fs.readFileSync(fileName, 'utf-8');
     return allFileContents;
 }
 
@@ -22,7 +22,7 @@ export function parseOEFile(fileContent: string, filePath: string) {
 
     const directoryPath = path.dirname(filePath);
 
-    dbConnections.forEach((connection: { name: any; connect: any }) => {
+    dbConnections.forEach((connection: { name: string; connect: string }) => {
         const { name, connect } = connection;
 
         const pfParser = new PfParser();

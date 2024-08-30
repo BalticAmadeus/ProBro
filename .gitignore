@@ -8,3 +8,4 @@ resources/oe/oeSocket.pro
 .builder/**
 docker/.builder/**
 .scannerwork
+connectionPF.pf

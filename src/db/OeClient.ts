@@ -17,8 +17,10 @@ class OEClient {
     private readonly configuration = vscode.workspace.getConfiguration(
         Constants.globalExtensionKey
     );
-    private logentrytypes: string = this.configuration.get('logging.openEdge')!;
-    private tempFilesPath: string = this.configuration.get('tempfiles')!;
+    private logentrytypes: string =
+        this.configuration.get('logging.openEdge') ?? 'not found';
+    private tempFilesPath: string =
+        this.configuration.get('tempfiles') ?? 'not found';
     private pfFilePath: string = path.join(
         Constants.context.extensionPath,
         'resources',
@@ -37,8 +39,8 @@ class OEClient {
             this.client.connect(this.port, this.host, () => {
                 console.log(
                     'TCP connection established with the server at ' +
-            this.port.toString() +
-            '.'
+                        this.port.toString() +
+                        '.'
                 );
             });
             // The client can also receive data from the server by reading from its socket.
@@ -141,7 +143,8 @@ class OEClient {
 
             this.proc.on('exit', (code, signal) => {
                 console.log(
-                    'child process exited with ' + `code ${code} and signal ${signal}`
+                    'child process exited with ' +
+                        `code ${code} and signal ${signal}`
                 );
             });
 
@@ -153,7 +156,9 @@ class OEClient {
                 console.log(`child stdout:\n${data}`);
                 const dataString = this.enc.decode(data);
                 if (
-                    dataString.startsWith('SERVER STARTED AT ' + this.port.toString())
+                    dataString.startsWith(
+                        'SERVER STARTED AT ' + this.port.toString()
+                    )
                 ) {
                     this.procFinish(dataString);
                 }
@@ -187,7 +192,9 @@ class OEClient {
                 : null,
         ].join(' ');
 
-        fs.writeFile(this.pfFilePath, pfContent, () => {});
+        fs.writeFile(this.pfFilePath, pfContent, () => {
+            console.log('pf file created');
+        });
     }
 }
 
