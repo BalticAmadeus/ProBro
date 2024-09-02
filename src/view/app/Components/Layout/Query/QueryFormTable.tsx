@@ -1,4 +1,4 @@
-import { UIEvent, useMemo } from 'react';
+import { UIEvent } from 'react';
 
 import DataGrid, {
     SortColumn,
