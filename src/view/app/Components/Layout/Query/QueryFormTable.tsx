@@ -51,18 +51,21 @@ const QueryFormTable: React.FC<QueryFormTableProps> = ({
 }) => {
     const adjustedColumns = useMemo(
         () =>
-            selected.map((col) => ({
+            selected.map((col, index) => ({
                 ...col,
-                headerRenderer: (props) =>
-                    ColumnHeaderCell({
-                        ...props,
-                        reloadData,
-                        configuration,
-                        filters,
-                        setFilters,
-                    }),
+                headerRenderer:
+                    index === 0
+                        ? undefined
+                        : (props) =>
+                              ColumnHeaderCell({
+                                  ...props,
+                                  reloadData,
+                                  configuration,
+                                  filters,
+                                  setFilters,
+                              }),
             })),
-        [selected]
+        [selected, reloadData, configuration, filters, setFilters]
     );
 
     const calculateHeight = () => {
