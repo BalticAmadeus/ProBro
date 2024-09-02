@@ -49,25 +49,30 @@ const QueryFormTable: React.FC<QueryFormTableProps> = ({
     reloadData,
     setFilters,
 }) => {
-    const adjustedColumns = useMemo(
-        () =>
-            selected.map((col, index) => ({
-                ...col,
-                headerRenderer:
-                    index === 0
-                        ? undefined
-                        : (props) =>
-                              ColumnHeaderCell({
-                                  ...props,
-                                  reloadData,
-                                  configuration,
-                                  filters,
-                                  setFilters,
-                              }),
-            })),
-        [selected, reloadData, configuration, filters, setFilters]
-    );
+    const adjustedColumns = selected.map((column, index) => {
+        if (index === 0) {
+            return column;
+        }
 
+        return {
+            ...column,
+            headerRenderer: function (props) {
+                return (
+                    <ColumnHeaderCell
+                        column={props.column}
+                        sortDirection={props.sortDirection}
+                        priority={props.priority}
+                        onSort={props.onSort}
+                        isCellSelected={props.isCellSelected}
+                        filters={filters}
+                        setFilters={setFilters}
+                        configuration={configuration}
+                        reloadData={reloadData}
+                    />
+                );
+            },
+        };
+    });
     const calculateHeight = () => {
         const rowCount = rows.length;
         const cellHeight = getCellHeight();
