@@ -1,4 +1,4 @@
-import { UIEvent, useMemo } from 'react';
+import { UIEvent } from 'react';
 
 import DataGrid, {
     SortColumn,
@@ -49,6 +49,7 @@ const QueryFormTable: React.FC<QueryFormTableProps> = ({
     reloadData,
     setFilters,
 }) => {
+<<<<<<< HEAD
     const adjustedColumns = useMemo(
         () =>
             selected.map((col, index) => ({
@@ -67,7 +68,32 @@ const QueryFormTable: React.FC<QueryFormTableProps> = ({
             })),
         [selected, reloadData, configuration, filters, setFilters]
     );
+=======
+    const adjustedColumns = selected.map((column, index) => {
+        if (index === 0) {
+            return column;
+        }
+>>>>>>> 2c2a3a099716844afe5ee3be6dd24a7405421c33
 
+        return {
+            ...column,
+            headerRenderer: function (props) {
+                return (
+                    <ColumnHeaderCell
+                        column={props.column}
+                        sortDirection={props.sortDirection}
+                        priority={props.priority}
+                        onSort={props.onSort}
+                        isCellSelected={props.isCellSelected}
+                        filters={filters}
+                        setFilters={setFilters}
+                        configuration={configuration}
+                        reloadData={reloadData}
+                    />
+                );
+            },
+        };
+    });
     const calculateHeight = () => {
         const rowCount = rows.length;
         const cellHeight = getCellHeight();
