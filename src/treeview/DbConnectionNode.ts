@@ -154,7 +154,13 @@ export class DbConnectionNode implements INode {
     ) {
         const dlc = Constants.dlc;
         // Spawn the child process to execute the .bat script
-        const child = spawn(scriptPath, [dlc, procedureName, dbContent]);
+        const child = spawn(
+            scriptPath,
+            [`${dlc}`, `"${procedureName}"`, `"${dbContent}"`],
+            {
+                shell: true,
+            }
+        );
 
         // Listen for data from the .bat script (if needed)
         child.stdout.on('data', (data) => {
