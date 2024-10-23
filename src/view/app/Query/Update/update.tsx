@@ -318,6 +318,7 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                                         setOpen(false);
                                         updateRecord();
                                     }}
+                                    disabled={isReadOnly === true ? true : false}
                                 >
                                     UPDATE
                                 </ProBroButton>
