@@ -11,6 +11,15 @@
   --rdg-border-color: none;
 }
 
+.r104f42s700-beta13:not(.rdg-light) {
+  --rdg-background-color: inherit;
+  --rdg-header-background-color: var(--vscode-editorWidget-background);
+  --rdg-row-hover-background-color: rgba(0, 0, 0, 0.2);
+  --rdg-row-selected-background-color: var(--vscode-list-inactiveSelectionBackground);
+  --rdg-checkbox-color: inherit;
+  --rdg-border-color: none;
+}
+
 .rdg-row-even {
   --rdg-background-color: rgba(0, 0, 0, 0.1);
 }
