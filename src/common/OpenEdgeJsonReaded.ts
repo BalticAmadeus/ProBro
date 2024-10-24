@@ -12,6 +12,13 @@ export function readFile(fileName: string): string {
     return allFileContents;
 }
 
+export function getOEVersion(fileContent: string){
+    const data = JSON.parse(fileContent);
+    const  {oeversion} = data;
+    
+    return oeversion;
+}
+
 export function parseOEFile(fileContent: string, filePath: string) {
     const data = JSON.parse(fileContent);
     const { name, dbConnections } = data;
