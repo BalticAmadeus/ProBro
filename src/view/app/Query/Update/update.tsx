@@ -233,8 +233,8 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                 data: submitData,
                 mode: ProcessAction[action],
                 minTime: 0,
-                useWriteTriggers: useWriteTriggers,
-                useDeleteTriggers: useDeleteTriggers,
+                useWriteTriggers: Boolean(useWriteTriggers),
+                useDeleteTriggers: Boolean(useDeleteTriggers),
             },
         };
 
