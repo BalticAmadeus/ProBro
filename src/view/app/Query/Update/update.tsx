@@ -66,8 +66,8 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
     isWindowSmall,
 }) => {
     const configuration = getVSCodeConfiguration();
-    const defaultWriteTrigger = configuration.useWriteTriggers ?? true;
-    const defaultDeleteTrigger = configuration.useDeleteTriggers ?? true;
+    const defaultWriteTrigger = configuration.useWriteTriggers;
+    const defaultDeleteTrigger = configuration.useDeleteTriggers;
 
     const [useWriteTriggers, setUseWriteTriggers] =
         useState<boolean>(defaultWriteTrigger);
@@ -233,8 +233,8 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                 data: submitData,
                 mode: ProcessAction[action],
                 minTime: 0,
-                useWriteTriggers: Boolean(useWriteTriggers),
-                useDeleteTriggers: Boolean(useDeleteTriggers),
+                useWriteTriggers: useWriteTriggers,
+                useDeleteTriggers: useDeleteTriggers,
             },
         };
 
