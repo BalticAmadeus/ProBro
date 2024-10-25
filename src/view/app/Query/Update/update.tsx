@@ -233,8 +233,8 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                 data: submitData,
                 mode: ProcessAction[action],
                 minTime: 0,
-                useWriteTriggers: useWriteTriggers,
-                useDeleteTriggers: useDeleteTriggers,
+                useWriteTriggers,
+                useDeleteTriggers,
             },
         };
 
@@ -318,7 +318,9 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                                         setOpen(false);
                                         updateRecord();
                                     }}
-                                    disabled={isReadOnly === true ? true : false}
+                                    disabled={
+                                        isReadOnly === true ? true : false
+                                    }
                                 >
                                     UPDATE
                                 </ProBroButton>
