@@ -1,4 +1,6 @@
 #!/bin/sh
+echo $0 called with
+echo $*
 
 export DLC="$7"
 export TERM=xterm
@@ -6,6 +8,8 @@ export PROPATH=$PROPATH:$(dirname "$PWD")
 
 called_path=${0%/*}
 parent_path=$(dirname $called_path)
+
+export PROSTARTUP=$called_path/oe.pf
 
 export PROPATH=$PROPATH:$parent_path
 
@@ -42,4 +46,4 @@ fi
 # Set the Progress Shared lib environment
 . $DLC/bin/slib_env
 
-exec $PROEXE -1 "$1" "$2" "$3" "$4" "$5" "$6" -cpinternal UTF-8 -cpstream UTF-8 -cpcoll Basic -cpcase Basic
+exec $PROEXE -1 "$1" "$2" "$3" "$4" "$5" "$6"

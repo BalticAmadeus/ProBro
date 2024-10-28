@@ -11,8 +11,10 @@ if not "%PROEXE%"=="" goto START
 
 if "%ICU_DATA%"==""    set ICU_DATA="%DLC%\bin\icu\data\\"
 
+set PROSTARTUP=%~dp0\oe.pf
+
 cd %~dp0/..
 
-"%PROEXE%" %1 %2 %3 %4 %5 %6 %8 %9 -cpinternal UTF-8 -cpstream UTF-8 -cpcoll Basic -cpcase Basic
+"%PROEXE%" %1 %2 %3 %4 %5 %6 %8 %9 
 
 :END
