@@ -26,16 +26,9 @@ jobs:
         steps:
             - checkout
             - run: tr ' ' '\n' \<<< "$PROGRESS_CFG_BASE64" | base64 --decode > /psc/dlc/progress.cfg
-            - run: cat /psc/dlc/progress.cfg || echo "Not created"
-            - run: |
-            if [ -f "${HOME}/.ant/lib/PCT.jar" ]; then
-                echo "PCT.jar found in ${HOME}/.ant/lib"
-                jar tf "${HOME}/.ant/lib/PCT.jar" | head -n 20 # Show first 20 entries
-            else
-                echo "Error: PCT.jar not found in ${HOME}/.ant/lib"
-                exit 1
-            fi
-            - run: ant -verbose compile
+            - run: printenv
+            - run: /bin/bash -c "echo $DLC"
+            - run: ant compile
             - run: ant test
             - persist_to_workspace:
                   root: .
