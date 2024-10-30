@@ -1,9 +1,9 @@
 <project name="ProBro" default="compile">
   <property environment="env" />
   <taskdef resource="PCT.properties"
-    classpath="${user.home}/.ant/lib/PCT.jar;/usr/share/ant/lib/PCT.jar,${env.DLC}/pct/PCT.jar" />
+    classpath="${user.home}/.ant/lib/PCT.jar;/usr/share/ant/lib/PCT.jar;${env.DLC}/pct/PCT.jar" />
   <typedef resource="types.properties"
-    classpath="${user.home}/.ant/lib/PCT.jar;/usr/share/ant/lib/PCT.jar,${env.DLC}/pct/PCT.jar" />
+    classpath="${user.home}/.ant/lib/PCT.jar;/usr/share/ant/lib/PCT.jar;${env.DLC}/pct/PCT.jar" />
   <DlcHome value="${env.DLC}" />
   <echo>DLC=${env.DLC}</echo>
 
