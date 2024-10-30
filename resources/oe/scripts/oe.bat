@@ -1,7 +1,7 @@
 @echo off
 
 if not "%~7"==""       set DLC=%~7
-if exist %DLC%\bin\_progres goto BIN
+if exist %DLC%\bin\_progres.exe goto BIN
    echo Failed to initialize client: _progres executable is missing in %DLC%\bin.
    goto END
 
