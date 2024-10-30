@@ -3,12 +3,15 @@
     width: 250px;
     height: 210px;
     background-color: var(--vscode-notifications-background);
-  border: var(--vscode-notifications-border);
     justify-content: center;
     align-items:center;
     font-size: inherit;
     font-style: inherit;
-    margin: auto;
+    cursor: grab;
+    border: 1px solid var(--vscode-notifications-foreground);
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
   }
 
 .menu {
@@ -41,7 +44,7 @@
 }
 
 .popup-overlay {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 997 !important;
     pointer-events: none !important;
     display: none;
