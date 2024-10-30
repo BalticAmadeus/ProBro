@@ -23,14 +23,13 @@ jobs:
     test-and-compile-back-end:
         docker:
             - image: kherring/oedb:latest
+        environment:
+            DLC: /psc/dlc
 
         steps:
             - checkout
             - run: tr ' ' '\n' \<<< "$PROGRESS_CFG_BASE64" | base64 --decode > /psc/dlc/progress.cfg
-            - run:
-                  command: ant compile
-                  environment:
-                      DLC: /psc/dlc
+            - run: ant -Denv.DLC=/psc/dlc compile
             - run: ant test
             - persist_to_workspace:
                   root: .
