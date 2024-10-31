@@ -55,38 +55,6 @@ export class DbConnectionUpdater {
         }
     }
 
-    public async updateSingleWorkStateStatus(connectionId: string) {
-        const connections = this.context.workspaceState.get<{
-            [id: string]: IConfig;
-        }>('pro-bro.dbconfig');
-        if (!connections || !connections[connectionId]) {
-            return;
-        }
-
-        connections[connectionId].conStatus = ConnectionStatus.Connecting;
-        this.updateWorkStateStatus(connections);
-        await this.wait();
-
-        try {
-            const data =
-                await ProcessorFactory.getProcessorInstance().getDBVersion(
-                    connections[connectionId]
-                );
-
-            if (data instanceof Error || 'error' in data) {
-                connections[connectionId].conStatus =
-                    ConnectionStatus.NotConnected;
-            } else {
-                connections[connectionId].conStatus =
-                    ConnectionStatus.Connected;
-            }
-        } catch (error) {
-            connections[connectionId].conStatus = ConnectionStatus.NotConnected;
-        } finally {
-            this.updateWorkStateStatus(connections);
-        }
-    }
-
     private updateWorkStateStatus(connections: { [id: string]: IConfig }) {
         this.context.workspaceState.update('pro-bro.dbconfig', connections);
         this.callback.refresh();
@@ -134,11 +102,11 @@ export class DbConnectionUpdater {
                 this.locked = true;
 
                 if (this.context.globalState) {
-                    await this.updateSingleConnectionStatus(connectionId);
+                    await this.updateSingleStatus(connectionId, 'globalState');
                 }
 
                 if (this.context.workspaceState) {
-                    await this.updateSingleWorkStateStatus(connectionId);
+                    await this.updateSingleStatus(connectionId, 'workspaceState');
                 }
             }
         } finally {
@@ -146,8 +114,11 @@ export class DbConnectionUpdater {
         }
     }
 
-    private async updateSingleConnectionStatus(connectionId: string) {
-        const connections = this.context.globalState.get<{
+    private async updateSingleStatus(
+        connectionId: string,
+        stateType: 'workspaceState' | 'globalState'
+    ) {
+        const connections = this.context[stateType].get<{
             [id: string]: IConfig;
         }>('pro-bro.dbconfig');
 
@@ -156,7 +127,8 @@ export class DbConnectionUpdater {
         }
 
         connections[connectionId].conStatus = ConnectionStatus.Connecting;
-        this.updateStatus(connections);
+        this.updateStatusBasedOnType(connections, stateType);
+
         await this.wait();
 
         try {
@@ -164,7 +136,6 @@ export class DbConnectionUpdater {
                 await ProcessorFactory.getProcessorInstance().getDBVersion(
                     connections[connectionId]
                 );
-
             if (data instanceof Error || 'error' in data) {
                 connections[connectionId].conStatus =
                     ConnectionStatus.NotConnected;
@@ -175,6 +146,17 @@ export class DbConnectionUpdater {
         } catch (error) {
             connections[connectionId].conStatus = ConnectionStatus.NotConnected;
         } finally {
+            this.updateStatusBasedOnType(connections, stateType);
+        }
+    }
+
+    private updateStatusBasedOnType(
+        connections: { [id: string]: IConfig },
+        stateType: 'workspaceState' | 'globalState'
+    ) {
+        if (stateType === 'workspaceState') {
+            this.updateWorkStateStatus(connections);
+        } else {
             this.updateStatus(connections);
         }
     }
