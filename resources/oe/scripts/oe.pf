@@ -1,0 +1,5 @@
+# oe.pf to replace $DLC/startup.pf ensuring startup parameters ProBro expects
+-cpinternal UTF-8
+-cpstream UTF-8
+-cpcoll Basic
+-cpcase Basic

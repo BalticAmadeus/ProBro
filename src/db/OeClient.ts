@@ -162,6 +162,9 @@ class OEClient {
                 ) {
                     this.procFinish(dataString);
                 }
+                else if (dataString.startsWith( 'DLC environment variable not set correctly ')){
+                    vscode.window.showErrorMessage(dataString);
+                }
             });
 
             this.proc.stderr.on('data', (data) => {
