@@ -13,6 +13,11 @@ export PROSTARTUP=$called_path/oe.pf
 
 export PROPATH=$PROPATH:$parent_path
 
+if [ -z "$DLC" ] || [ ! -f "$DLC/bin/_progres" ]; then
+    echo "Failed to initialize client: _progres executable is missing in $DLC/bin."
+    exit 1
+fi
+
 PROEXE=${PROEXE-$DLC/bin/_progres}
 
 # set the Progress shared lib  environment

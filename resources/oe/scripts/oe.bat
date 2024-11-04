@@ -1,8 +1,8 @@
 @echo off
 
 if not "%~7"==""       set DLC=%~7
-if exist "%DLC%"\promsgs goto BIN
-   echo DLC environment variable not set correctly - Please set DLC variable
+if exist %DLC%\bin\_progres.exe goto BIN
+   echo Failed to initialize client: _progres executable is missing in %DLC%\bin.
    goto END
 
 :BIN
