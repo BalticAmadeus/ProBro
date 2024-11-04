@@ -304,9 +304,9 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                         style={{
                             transform: `translate(${position.x}px, ${position.y}px)`,
                         }}
-                        onMouseDown={handleMouseDown}
+                        
                     >
-                        <div className='update-header'>
+                        <div className='update-header' onMouseDown={handleMouseDown}>
                             {tableName}, {ProcessAction[action]}
                         </div>
                         <div className='body'>

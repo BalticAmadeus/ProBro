@@ -25,7 +25,6 @@ export default function ExportPopup({
     selectedRows,
     isWindowSmall,
 }) {
-
     const [position, setPosition] = React.useState({ x: 0, y: 0 });
     const [dragging, setDragging] = React.useState(false);
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
@@ -38,7 +37,6 @@ export default function ExportPopup({
     const logValue = window.configuration.logging.react;
     const logger = new Logger(logValue);
     const vscode = getVSCodeAPI();
-
 
     const handleMouseDown = (e: React.MouseEvent) => {
         setDragging(true);
@@ -175,8 +173,14 @@ export default function ExportPopup({
         window.addEventListener('mouseup', handleMouseUp as EventListener);
 
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove as EventListener);
-            window.removeEventListener('mouseup', handleMouseUp as EventListener);
+            window.removeEventListener(
+                'mousemove',
+                handleMouseMove as EventListener
+            );
+            window.removeEventListener(
+                'mouseup',
+                handleMouseUp as EventListener
+            );
         };
     }, [dragging, offset]);
 
@@ -195,9 +199,11 @@ export default function ExportPopup({
                     style={{
                         transform: `translate(${position.x}px, ${position.y}px)`,
                     }}
-                    onMouseDown={handleMouseDown}
                 >
-                    <div className='header'> Export to {exportFormat} </div>
+                    <div className='header' onMouseDown={handleMouseDown}>
+                        {' '}
+                        Export to {exportFormat}{' '}
+                    </div>
                     <div className='content'>
                         <b>Select export format:</b>
                         <br />
