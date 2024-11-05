@@ -200,7 +200,11 @@ export default function ExportPopup({
                         transform: `translate(${position.x}px, ${position.y}px)`,
                     }}
                 >
-                    <div className='header' onMouseDown={handleMouseDown}>
+                    <div
+                        className='header'
+                        onMouseDown={handleMouseDown}
+                        style={{ userSelect: 'none' }}
+                    >
                         {' '}
                         Export to {exportFormat}{' '}
                     </div>

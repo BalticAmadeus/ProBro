@@ -290,8 +290,14 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
         window.addEventListener('mouseup', handleMouseUp as EventListener);
 
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove as EventListener);
-            window.removeEventListener('mouseup', handleMouseUp as EventListener);
+            window.removeEventListener(
+                'mousemove',
+                handleMouseMove as EventListener
+            );
+            window.removeEventListener(
+                'mouseup',
+                handleMouseUp as EventListener
+            );
         };
     }, [dragging, offset]);
 
@@ -304,11 +310,15 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                         style={{
                             transform: `translate(${position.x}px, ${position.y}px)`,
                         }}
-                        
                     >
-                        <div className='update-header' onMouseDown={handleMouseDown}>
+                        <div
+                            className='update-header'
+                            onMouseDown={handleMouseDown}
+                            style={{ userSelect: 'none' }}
+                        >
                             {tableName}, {ProcessAction[action]}
                         </div>
+
                         <div className='body'>
                             {action === ProcessAction.Delete ? (
                                 <Box>
