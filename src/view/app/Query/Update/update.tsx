@@ -303,7 +303,14 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
 
     return (
         <Fragment>
-            <Popup open={open} onClose={() => setOpen(false)} modal>
+            <Popup
+                open={open}
+                onClose={() => {
+                    setOpen(false);
+                    setPosition({ x: 0, y: 0 });
+                }}
+                modal
+            >
                 {(close) => (
                     <div
                         className='update-modal'

@@ -186,6 +186,9 @@ export default function ExportPopup({
 
     return (
         <Popup
+        onClose={() => {
+            setPosition({ x: 0, y: 0 });
+        }}
             trigger={
                 <ProBroButton startIcon={<ExportIcon />}>
                     {isWindowSmall ? '' : 'Export'}
@@ -259,6 +262,7 @@ export default function ExportPopup({
                         >
                             Export
                         </ProBroButton>
+
                         <ProBroButton
                             className='button'
                             onClick={() => close()}
