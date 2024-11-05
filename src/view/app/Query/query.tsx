@@ -186,7 +186,7 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
             });
 
             setIsDataRetrieved(false);
-            
+
             return;
         } else if (message.data.columns.length !== columns.length) {
             const fontSize = +window
