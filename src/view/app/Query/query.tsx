@@ -158,7 +158,7 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
         } else {
             setSelectedRows(new Set());
             setOpen(false);
-            reloadData(loaded + (action === ProcessAction.Insert ? 1 : 0));
+            reloadData(loaded + (action === ProcessAction.Insert || action === ProcessAction.Copy ? 1 : 0));
         }
     };
 
@@ -184,10 +184,9 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 description: message.data.description,
                 trace: message.data.trace,
             });
-
             setIsDataRetrieved(false);
-
             return;
+
         } else if (message.data.columns.length !== columns.length) {
             const fontSize = +window
                 .getComputedStyle(
@@ -213,7 +212,6 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
             setColumns([SelectColumn, ...message.data.columns]);
             if (message.columns !== undefined) {
                 setSelectedColumns([...message.columns]);
-
             } else {
                 setSelectedColumns([
                     ...message.data.columns.map((column) => column.name),
@@ -439,7 +437,14 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
         if (window.isSecureContext) {
             navigator.clipboard.writeText(sourceRow[sourceColumnKey]);
         }
+        console.log(
+            `Copied ${sourceColumnKey} from row ${sourceRow.ROWID}`);
+        
+        reloadData(loaded);
+        console.log("reloadData", loaded);
+        
     }
+
 
     const getCellHeight = () => {
         if (configuration.gridTextSize === 'Large') {
