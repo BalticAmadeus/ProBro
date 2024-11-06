@@ -124,6 +124,10 @@ export class LocalClient extends AClient implements IClient {
         this.pfFilePath,
     ];
 
+    protected readonly windowsOptions = {
+        cwd: path.join(Constants.context.extensionPath, 'resources', 'oe'),
+    };
+
     protected async startAndListen(): Promise<any> {
         return this.start()
             .then(() => {
@@ -149,7 +153,8 @@ export class LocalClient extends AClient implements IClient {
                 case 'win32':
                     this.proc = cp.spawn(
                         this.windowsProPath,
-                        this.windowsConnectionString
+                        this.windowsConnectionString,
+                        this.windowsOptions
                     );
                     break;
                 default:

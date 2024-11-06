@@ -25,6 +25,9 @@ export default function ExportPopup({
     selectedRows,
     isWindowSmall,
 }) {
+    const [position, setPosition] = React.useState({ x: 0, y: 0 });
+    const [dragging, setDragging] = React.useState(false);
+    const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const [exportFormat, setExportFormat] = React.useState('dumpFile');
     const [radioSelection, setRadioSelection] = React.useState(
         Object.keys(DataToExport).filter((key) => Number.isNaN(+key))[0]
@@ -34,6 +37,27 @@ export default function ExportPopup({
     const logValue = window.configuration.logging.react;
     const logger = new Logger(logValue);
     const vscode = getVSCodeAPI();
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        setDragging(true);
+        setOffset({
+            x: e.clientX - position.x,
+            y: e.clientY - position.y,
+        });
+    };
+
+    const handleMouseMove = (e: globalThis.MouseEvent) => {
+        if (dragging) {
+            setPosition({
+                x: e.clientX - offset.x,
+                y: e.clientY - offset.y,
+            });
+        }
+    };
+
+    const handleMouseUp = () => {
+        setDragging(false);
+    };
 
     function handleChange({
         currentTarget,
@@ -144,8 +168,27 @@ export default function ExportPopup({
         };
     }, []);
 
+    React.useEffect(() => {
+        window.addEventListener('mousemove', handleMouseMove as EventListener);
+        window.addEventListener('mouseup', handleMouseUp as EventListener);
+
+        return () => {
+            window.removeEventListener(
+                'mousemove',
+                handleMouseMove as EventListener
+            );
+            window.removeEventListener(
+                'mouseup',
+                handleMouseUp as EventListener
+            );
+        };
+    }, [dragging, offset]);
+
     return (
         <Popup
+        onClose={() => {
+            setPosition({ x: 0, y: 0 });
+        }}
             trigger={
                 <ProBroButton startIcon={<ExportIcon />}>
                     {isWindowSmall ? '' : 'Export'}
@@ -154,8 +197,20 @@ export default function ExportPopup({
             modal
         >
             {(close) => (
-                <div className='modal'>
-                    <div className='header'> Export to {exportFormat} </div>
+                <div
+                    className='modal'
+                    style={{
+                        transform: `translate(${position.x}px, ${position.y}px)`,
+                    }}
+                >
+                    <div
+                        className='header'
+                        onMouseDown={handleMouseDown}
+                        style={{ userSelect: 'none' }}
+                    >
+                        {' '}
+                        Export to {exportFormat}{' '}
+                    </div>
                     <div className='content'>
                         <b>Select export format:</b>
                         <br />
@@ -207,6 +262,7 @@ export default function ExportPopup({
                         >
                             Export
                         </ProBroButton>
+
                         <ProBroButton
                             className='button'
                             onClick={() => close()}

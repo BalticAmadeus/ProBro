@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { resolveTsAliases } = require('resolve-ts-aliases');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -56,6 +57,13 @@ module.exports = {
             },
         ],
     },
+    plugins: [
+        new CopyWebpackPlugin({
+            patterns: [
+                { from: './resources/icon', to: '../../resources/icon' }
+            ]
+        })
+    ],
     performance: {
         hints: false,
     },

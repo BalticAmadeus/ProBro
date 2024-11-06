@@ -56,11 +56,12 @@ export class PfParser {
                             config.port = keyVal[0].substring(key.length + 1);
                             break;
                         case '-RO':
+                            const ROFlag = keyVal[0].split(/\s+/)[0];
                             config.isReadOnly = true;
                             if (config.params) {
                                 config.params += ' ';
                             }
-                            config.params += keyVal[0];
+                            config.params += ROFlag;
                             break;
                         default:
                             if (config.params) {

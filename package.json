@@ -79,17 +79,17 @@
                 },
                 "pro-bro.importConnections": {
                     "type": "boolean",
-                    "default": "true",
+                    "default": true,
                     "markdownDescription": "Import connections from openedge-project.json"
                 },
                 "pro-bro.useWriteTriggers": {
                     "type": "boolean",
-                    "default": "true",
+                    "default": true,
                     "markdownDescription": "Use write triggers"
                 },
                 "pro-bro.useDeleteTriggers": {
                     "type": "boolean",
-                    "default": "true",
+                    "default": true,
                     "markdownDescription": "Use delete triggers"
                 },
                 "pro-bro.tempfiles": {
@@ -98,7 +98,7 @@
                 },
                 "pro-bro.filterAsYouType": {
                     "type": "boolean",
-                    "default": "true",
+                    "default": true,
                     "markdownDescription": "Use filter as you type"
                 },
                 "pro-bro.logging.react": {
@@ -115,7 +115,7 @@
                 },
                 "pro-bro.development.useNewDbClient": {
                     "type": "boolean",
-                    "default": "false",
+                    "default": false,
                     "markdownDescription": "Use New DB Client implementation"
                 },
                 "pro-bro.gridTextSize": {
@@ -370,6 +370,7 @@
         "@typescript-eslint/parser": "^5.21.0",
         "@vscode/test-electron": "^2.1.3",
         "babel-jest": "^29.4.3",
+        "copy-webpack-plugin": "^12.0.2",
         "css-loader": "^6.7.1",
         "eslint": "^8.14.0",
         "eslint-plugin-react": "^7.33.2",

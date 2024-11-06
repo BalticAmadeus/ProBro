@@ -184,7 +184,10 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 description: message.data.description,
                 trace: message.data.trace,
             });
+
             setIsDataRetrieved(false);
+
+            return;
         } else if (message.data.columns.length !== columns.length) {
             const fontSize = +window
                 .getComputedStyle(
@@ -210,6 +213,7 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
             setColumns([SelectColumn, ...message.data.columns]);
             if (message.columns !== undefined) {
                 setSelectedColumns([...message.columns]);
+
             } else {
                 setSelectedColumns([
                     ...message.data.columns.map((column) => column.name),

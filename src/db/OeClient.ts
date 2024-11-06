@@ -58,6 +58,11 @@ class OEClient {
 
             console.log('V1: OE Client initialized');
             return this;
+        })
+        .catch((err) => {
+            return new Promise(() => {
+                throw new Error(err);
+            });
         });
     }
 
@@ -162,6 +167,11 @@ class OEClient {
                 ) {
                     this.procFinish(dataString);
                 }
+                else if (dataString.startsWith('Failed to initialize client:')){
+                    return this.procFinish(new Promise(() => {
+                        throw new Error(dataString);
+                    }));
+                }
             });
 
             this.proc.stderr.on('data', (data) => {
@@ -219,7 +229,14 @@ async function getOEClient(): Promise<any> {
             });
         }
         client = new OEClient(port, host);
-        return client.init();
+
+        try {
+            return await client.init();
+        } catch (err : any) {
+            return new Promise(() => {
+                throw new Error(err.message);
+            });
+        }
     }
     return Promise.resolve(client);
 }
