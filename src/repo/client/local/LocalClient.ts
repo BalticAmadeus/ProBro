@@ -207,8 +207,11 @@ export class LocalClient extends AClient implements IClient {
                 : null,
         ].join(' ');
 
-        fs.writeFile(this.pfFilePath, pfContent, () => {
+        try {
+            fs.writeFileSync(this.pfFilePath, pfContent);
             console.log('pf file created');
-        });
+        } catch (error) {
+            console.log('error while creating pf file', error);
+        }
     }
 }
