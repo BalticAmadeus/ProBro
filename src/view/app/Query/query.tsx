@@ -436,13 +436,7 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
     function handleCopy({ sourceRow, sourceColumnKey }: CopyEvent<any>): void {
         if (window.isSecureContext) {
             navigator.clipboard.writeText(sourceRow[sourceColumnKey]);
-        }
-        console.log(
-            `Copied ${sourceColumnKey} from row ${sourceRow.ROWID}`);
-        
-        reloadData(loaded);
-        console.log("reloadData", loaded);
-        
+        }        
     }
 
 
