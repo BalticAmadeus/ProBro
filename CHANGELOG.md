@@ -1,5 +1,22 @@
 # Change Log
 
+## 1.8.0 (2024-11-08)
+
+### Changed
+
+- Fixed create, edit and delete issue.
+- Windows OS theme adaptabtability bug fix.
+- Fixed logical fields disappearing in JSON format.
+- Fixed issue where query errors prevented proceeding, subsequent valid queries can be executed to obtain results.
+- Refresh button works both for workspace and global connections.
+- Fixed various small bugs.
+
+### Added
+
+- Support for multiple OE versions.
+- Data Administration, Data Dictionary or Procedure Editor tools open with connection to selected database.
+- Interactive modals with improved UI.
+
 ## 1.7.0 (2024-04-08)
 
 ### Changed
