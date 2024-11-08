@@ -18,8 +18,8 @@ This open source project is in active development. Our goal is to simplify the a
   - Connection status indicator
   - Shortcuts to OE tools
   - Possibility to import from `openedge-project.json`
-  - Data Administration, Data Dictionary or Procedure Editor tools open with connection to selected database
-  - Support for multiple OE versions
+  - Data Administration, Data Dictionary or Procedure Editor tools open with connection to selected database (_new_)
+  - Support for multiple OE versions (_new_)
 
 - Tables
   - Hidden tables
@@ -27,7 +27,7 @@ This open source project is in active development. Our goal is to simplify the a
   - Launch query on double click
   - Select tables form multiple databases
   - Favourite tables
-  - Interactive modals with improved UI
+  - Interactive modals with improved UI (_new_)
 - Indexes
 - Fields
   - Filtering
