@@ -1,44 +1,57 @@
 .update-modal {
-    top: 50px;
-    background-color: var(--vscode-notifications-background);
-    border: var(--vscode-notifications-border);
-    justify-content: center;
-    align-items:center;
-    font-size: inherit;
-    font-style: inherit;
-    max-height: 85%;
-    height: fit-content;
-    width:auto;
-    box-sizing: border-box;
-    display: flex;
-     flex-direction: column;
-     overflow: hidden;
-     align-self: center; 
-     position: fixed; 
-    
-  }
+  top: 50px;
+  background-color: var(--vscode-notifications-background);
+  justify-content: center;
+  align-items: center;
+  font-size: inherit;
+  font-style: inherit;
+  max-height: 85%;
+  height: fit-content;
+  width: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  align-self: center;
+  position: fixed;
+  border: 1px solid var(--vscode-editor-foreground);
+  background-color: var(--vscode-editorWidget-background);
+  padding: 5px;
+  margin: 5px;
+  border-radius: 5px;
 
-  .update-btn-container {
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    padding: 5px;
+}
+
+.update-btn-container {
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  padding: 5px;
 }
 
 .body {
-  margin:5px;
+  margin: 5px;
   /* max-height: 70%; */
-  overflow-y:scroll; 
+  overflow-y: scroll;
+  border-radius: 5px;
 }
 
 .update-header {
   background-color: var(--vscode-notificationCenterHeader-background);
   width: 100%;
   height: 30px;
-  text-align:justify;
+  text-align: justify;
+  text-align: center;
   font-size: 16px;
   font-weight: bold;
   padding: 5px;
+    cursor: grab;
+}
+
+.update-header:hover{
+  border-bottom: 1px solid var(--vscode-input-foreground);
+  opacity: 0.5;
+  transition: all 0.3s ease-in-out;
 }
 
 .textInput {
@@ -47,7 +60,7 @@
 }
 
 .popup-overlay {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .popup-content {

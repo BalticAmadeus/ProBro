@@ -15,8 +15,10 @@ export class LocalClient extends AClient implements IClient {
     private readonly configuration = vscode.workspace.getConfiguration(
         Constants.globalExtensionKey
     );
-    private logentrytypes: string = this.configuration.get('logging.openEdge')!;
-    private tempFilesPath: string = this.configuration.get('tempfiles')!;
+    private logentrytypes: string =
+        this.configuration.get('logging.openEdge') ?? 'not found';
+    private tempFilesPath: string =
+        this.configuration.get('tempfiles') ?? 'not found';
     protected proc!: cp.ChildProcessWithoutNullStreams;
 
     private constructor(connectionParams: ConnectionParams) {
@@ -96,7 +98,11 @@ export class LocalClient extends AClient implements IClient {
         `"${this.pfFilePath}"`,
     ];
 
-    private readonly windowsProPath = path.join(Constants.dlc, 'bin', '_progres');
+    private readonly windowsProPath = path.join(
+        Constants.dlc,
+        'bin',
+        '_progres'
+    );
 
     protected readonly windowsConnectionString = [
         '-p',
@@ -118,6 +124,10 @@ export class LocalClient extends AClient implements IClient {
         this.pfFilePath,
     ];
 
+    protected readonly windowsOptions = {
+        cwd: path.join(Constants.context.extensionPath, 'resources', 'oe'),
+    };
+
     protected async startAndListen(): Promise<any> {
         return this.start()
             .then(() => {
@@ -134,17 +144,21 @@ export class LocalClient extends AClient implements IClient {
             this.createPfFile();
 
             switch (process.platform) {
-            case 'linux':
-                this.proc = cp.spawn(this.linuxProPath, this.linuxConnectionString);
-                break;
-            case 'win32':
-                this.proc = cp.spawn(
-                    this.windowsProPath,
-                    this.windowsConnectionString
-                );
-                break;
-            default:
-                reject('Unsupported platform');
+                case 'linux':
+                    this.proc = cp.spawn(
+                        this.linuxProPath,
+                        this.linuxConnectionString
+                    );
+                    break;
+                case 'win32':
+                    this.proc = cp.spawn(
+                        this.windowsProPath,
+                        this.windowsConnectionString,
+                        this.windowsOptions
+                    );
+                    break;
+                default:
+                    reject('Unsupported platform');
             }
 
             this.proc.stdout.on('data', (data) => {
@@ -153,7 +167,8 @@ export class LocalClient extends AClient implements IClient {
                 const dataString = this.enc.decode(data);
                 if (
                     dataString.startsWith(
-                        'SERVER STARTED AT ' + this.connectionParams.port.toString()
+                        'SERVER STARTED AT ' +
+                            this.connectionParams.port.toString()
                     )
                 ) {
                     this.procFinish(dataString);
@@ -192,6 +207,11 @@ export class LocalClient extends AClient implements IClient {
                 : null,
         ].join(' ');
 
-        fs.writeFile(this.pfFilePath, pfContent, () => {});
+        try {
+            fs.writeFileSync(this.pfFilePath, pfContent);
+            console.log('pf file created');
+        } catch (error) {
+            console.log('error while creating pf file', error);
+        }
     }
 }

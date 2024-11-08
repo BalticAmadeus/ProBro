@@ -1,13 +1,6 @@
-import {
-    CSSProperties,
-    Fragment,
-    UIEvent,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { Fragment, UIEvent, useEffect, useRef, useState } from 'react';
 
-import DataGrid, {
+import {
     SortColumn,
     SelectColumn,
     CopyEvent,
@@ -21,18 +14,12 @@ import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { IErrorObject, emptyErrorObj } from '@utils/error';
 import QueryFormFooter from '@app/Components/Layout/Query/QueryFormFooter';
-import { Box } from '@mui/material';
 import QueryFormHead from '@app/Components/Layout/Query/QueryFormHead';
 import { IFilters } from '@app/common/types';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { green, red } from '@mui/material/colors';
 import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
-
-const filterCSS: CSSProperties = {
-    inlineSize: '100%',
-    padding: '4px',
-    fontSize: '14px',
-};
+import QueryFormTable from '@app/Components/Layout/Query/QueryFormTable';
 
 interface IConfigProps {
     tableData: IOETableData;
@@ -46,12 +33,7 @@ interface IStatisticsObject {
     connectTime: number;
 }
 
-function QueryForm({
-    tableData,
-    tableName,
-    isReadOnly,
-    ...props
-}: IConfigProps) {
+function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
     const [wherePhrase, setWherePhrase] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
     const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -149,6 +131,117 @@ function QueryForm({
         queryGridRef.current?.selectCell({ idx: columnIdx, rowIdx: rowIdx });
     };
 
+    const processBooleanFields = (columns: any[], rawData: any[]) => {
+        const boolField = columns.filter(
+            (field) => field.type.toUpperCase() === OEDataTypePrimitive.Logical
+        );
+        if (boolField.length !== 0) {
+            rawData.forEach((row) => {
+                boolField.forEach((field) => {
+                    if (row[field.name] !== null) {
+                        row[field.name] = row[field.name].toString();
+                    }
+                });
+            });
+        }
+    };
+
+    const handleSubmit = (message: any) => {
+        if (message.data.error) {
+            // should be displayed in UpdatePopup window
+            setErrorObject({
+                error: message.data.error,
+                description: message.data.description,
+                trace: message.data.trace,
+            });
+            setIsDataRetrieved(false);
+        } else {
+            setSelectedRows(new Set());
+            setOpen(false);
+            reloadData(loaded + (action === ProcessAction.Insert || action === ProcessAction.Copy ? 1 : 0));
+        }
+    };
+
+    const handleCrud = (message: any) => {
+        if (message.data.error) {
+            setErrorObject({
+                error: message.data.error,
+                description: message.data.description,
+                trace: message.data.trace,
+            });
+            setIsDataRetrieved(false);
+        } else {
+            setColumnsCRUD(message.data.columns);
+            setRecordsCRUD(message.data.rawData);
+            setOpen(true);
+        }
+    };
+
+    const handleData = (message: any) => {
+        if (message.data.error) {
+            setErrorObject({
+                error: message.data.error,
+                description: message.data.description,
+                trace: message.data.trace,
+            });
+            setIsDataRetrieved(false);
+            return;
+
+        } else if (message.data.columns.length !== columns.length) {
+            const fontSize = +window
+                .getComputedStyle(
+                    document.getElementsByClassName('rdg-header-row')[0]
+                )
+                .getPropertyValue('font-size')
+                .match(/\d+[.]?\d+/);
+            message.data.columns.forEach((column) => {
+                column.minWidth = column.name.length * fontSize;
+                column.width =
+                    getOEFormatLength(column.format ?? '') * (fontSize - 4);
+                switch (column.type.toUpperCase()) {
+                    case OEDataTypePrimitive.Integer:
+                    case OEDataTypePrimitive.Decimal:
+                    case OEDataTypePrimitive.Int64:
+                        column.cellClass = 'rightAlign';
+                        column.headerCellClass = 'rightAlign';
+                        break;
+                    default:
+                        break;
+                }
+            });
+            setColumns([SelectColumn, ...message.data.columns]);
+            if (message.columns !== undefined) {
+                setSelectedColumns([...message.columns]);
+            } else {
+                setSelectedColumns([
+                    ...message.data.columns.map((column) => column.name),
+                ]);
+            }
+        }
+        processBooleanFields(message.data.columns, message.data.rawData);
+
+        setRawRows([...rawRows, ...message.data.rawData]);
+        setRowID(
+            message.data.rawData.length > 0
+                ? message.data.rawData[message.data.rawData.length - 1].ROWID
+                : rowID
+        );
+        setLoaded(loaded + message.data.rawData.length);
+        setFormattedRows([...formattedRows, ...message.data.formattedData]);
+        setLoaded(loaded + message.data.formattedData.length);
+        setErrorObject(emptyErrorObj);
+        setIsDataRetrieved(true);
+        setStatisticsObject({
+            recordsRetrieved: message.data.debug.recordsRetrieved,
+            recordsRetrievalTime: message.data.debug.recordsRetrievalTime,
+            connectTime: message.data.debug.timeConnect,
+        });
+        allRecordsRetrieved(
+            message.data.debug.recordsRetrieved,
+            message.data.debug.recordsRetrievalTime
+        );
+    };
+
     const messageEvent = (event) => {
         const message = event.data;
         logger.log('got query data', message);
@@ -163,245 +256,14 @@ function QueryForm({
                 prepareQuery();
                 break;
             case 'submit':
-                if (message.data.error) {
-                    // should be displayed in UpdatePopup window
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsDataRetrieved(false);
-                } else {
-                    setSelectedRows(new Set());
-                    setOpen(false);
-                    reloadData(
-                        loaded + (action === ProcessAction.Insert ? 1 : 0)
-                    );
-                }
+                handleSubmit(message);
                 break;
             case 'crud':
-                if (message.data.error) {
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsDataRetrieved(false);
-                } else {
-                    setColumnsCRUD(message.data.columns);
-                    setRecordsCRUD(message.data.rawData);
-                    setOpen(true);
-                }
+                handleCrud(message);
                 break;
             case 'data':
-                if (message.data.error) {
-                    setErrorObject({
-                        error: message.data.error,
-                        description: message.data.description,
-                        trace: message.data.trace,
-                    });
-                    setIsDataRetrieved(false);
-                } else {
-                    if (message.data.columns.length !== columns.length) {
-                        const fontSize = +window
-                            .getComputedStyle(
-                                document.getElementsByClassName(
-                                    'rdg-header-row'
-                                )[0]
-                            )
-                            .getPropertyValue('font-size')
-                            .match(/\d+[.]?\d+/);
-                        message.data.columns.forEach((column) => {
-                            column.headerRenderer = function ({
-                                column,
-                                sortDirection,
-                                priority,
-                                onSort,
-                                isCellSelected,
-                            }) {
-                                function handleKeyDown(event) {
-                                    if (
-                                        event.key === ' ' ||
-                                        event.key === 'Enter'
-                                    ) {
-                                        event.preventDefault();
-                                        onSort(event.ctrlKey || event.metaKey);
-                                    }
-                                }
-
-                                function handleClick(event) {
-                                    onSort(event.ctrlKey || event.metaKey);
-                                }
-
-                                let timer;
-                                function handleKeyInputTimeout() {
-                                    clearTimeout(timer);
-                                    timer = setTimeout(() => {
-                                        reloadData(
-                                            configuration.initialBatchSizeLoad
-                                        );
-                                    }, 500);
-                                }
-
-                                function testKeyDown(event) {
-                                    if (event.key === 'Enter') {
-                                        event.preventDefault();
-                                        reloadData(
-                                            configuration.initialBatchSizeLoad
-                                        );
-                                    }
-                                }
-
-                                function handleInputKeyDown(event) {
-                                    const tempFilters = filters;
-                                    tempFilters.columns[column.key] =
-                                        event.target.value;
-                                    setFilters(tempFilters);
-                                    if (
-                                        configuration.filterAsYouType === true
-                                    ) {
-                                        handleKeyInputTimeout();
-                                    }
-                                }
-
-                                return (
-                                    <Fragment>
-                                        <div
-                                            className={
-                                                filters.enabled
-                                                    ? 'filter-cell'
-                                                    : undefined
-                                            }
-                                        >
-                                            <span
-                                                tabIndex={-1}
-                                                style={{
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                }}
-                                                className='rdg-header-sort-cell'
-                                                onClick={handleClick}
-                                                onKeyDown={handleKeyDown}
-                                            >
-                                                <span
-                                                    className='rdg-header-sort-name'
-                                                    style={{
-                                                        flexGrow: '1',
-                                                        overflow: 'clip',
-                                                        textOverflow:
-                                                            'ellipsis',
-                                                    }}
-                                                >
-                                                    {column.name}
-                                                </span>
-                                                <span>
-                                                    <svg
-                                                        viewBox='0 0 12 8'
-                                                        width='12'
-                                                        height='8'
-                                                        className='rdg-sort-arrow'
-                                                        style={{
-                                                            fill: 'currentcolor',
-                                                        }}
-                                                    >
-                                                        {sortDirection ===
-                                                            'ASC' && (
-                                                            <path d='M0 8 6 0 12 8'></path>
-                                                        )}
-                                                        {sortDirection ===
-                                                            'DESC' && (
-                                                            <path d='M0 0 6 8 12 0'></path>
-                                                        )}
-                                                    </svg>
-                                                    {priority}
-                                                </span>
-                                            </span>
-                                        </div>
-                                        {filters.enabled && (
-                                            <div className={'filter-cell'}>
-                                                <input
-                                                    className='textInput'
-                                                    autoFocus={isCellSelected}
-                                                    style={filterCSS}
-                                                    defaultValue={
-                                                        filters.columns[
-                                                            column.key
-                                                        ]
-                                                    }
-                                                    onChange={
-                                                        handleInputKeyDown
-                                                    }
-                                                    onKeyDown={testKeyDown}
-                                                />
-                                            </div>
-                                        )}
-                                    </Fragment>
-                                );
-                            };
-                            column.minWidth = column.name.length * fontSize;
-                            column.width =
-                                getOEFormatLength(column.format ?? '') *
-                                (fontSize - 4);
-                            switch (column.type.toUpperCase()) {
-                                case OEDataTypePrimitive.Integer:
-                                case OEDataTypePrimitive.Decimal:
-                                case OEDataTypePrimitive.Int64:
-                                    column.cellClass = 'rightAlign';
-                                    column.headerCellClass = 'rightAlign';
-                                    break;
-                                default:
-                                    break;
-                            }
-                        });
-                        setColumns([SelectColumn, ...message.data.columns]);
-                        if (message.columns !== undefined) {
-                            setSelectedColumns([...message.columns]);
-                        } else {
-                            setSelectedColumns([
-                                ...message.data.columns.map(
-                                    (column) => column.name
-                                ),
-                            ]);
-                        }
-                    }
-                }
-                const boolField = message.data.columns.filter(
-                    (field) => field.type === OEDataTypePrimitive.Logical
-                );
-                if (boolField.length !== 0) {
-                    message.data.rawData.forEach((row) => {
-                        boolField.forEach((field) => {
-                            if (row[field.name] !== null) {
-                                row[field.name] = row[field.name].toString();
-                            }
-                        });
-                    });
-                }
-                setRawRows([...rawRows, ...message.data.rawData]);
-                setRowID(
-                    message.data.rawData.length > 0
-                        ? message.data.rawData[message.data.rawData.length - 1]
-                              .ROWID
-                        : rowID
-                );
-                setLoaded(loaded + message.data.rawData.length);
-                setFormattedRows([
-                    ...formattedRows,
-                    ...message.data.formattedData,
-                ]);
-                setLoaded(loaded + message.data.formattedData.length);
-                setErrorObject(emptyErrorObj);
-                setIsDataRetrieved(true);
-                setStatisticsObject({
-                    recordsRetrieved: message.data.debug.recordsRetrieved,
-                    recordsRetrievalTime:
-                        message.data.debug.recordsRetrievalTime,
-                    connectTime: message.data.debug.timeConnect,
-                });
-                allRecordsRetrieved(
-                    message.data.debug.recordsRetrieved,
-                    message.data.debug.recordsRetrievalTime
-                );
+                handleData(message);
+                break;
         }
         setIsLoading(false);
     };
@@ -574,8 +436,9 @@ function QueryForm({
     function handleCopy({ sourceRow, sourceColumnKey }: CopyEvent<any>): void {
         if (window.isSecureContext) {
             navigator.clipboard.writeText(sourceRow[sourceColumnKey]);
-        }
+        }        
     }
+
 
     const getCellHeight = () => {
         if (configuration.gridTextSize === 'Large') {
@@ -586,14 +449,6 @@ function QueryForm({
             return 20;
         }
         return 30;
-    };
-
-    const calculateHeight = () => {
-        const rowCount = isFormatted ? formattedRows.length : rawRows.length;
-        const cellHeight = getCellHeight();
-        const startingHeight = 85;
-        const calculatedHeight = startingHeight + rowCount * cellHeight;
-        return calculatedHeight;
     };
 
     const setRowHeight = () => {
@@ -641,35 +496,25 @@ function QueryForm({
                 readRow={readRow}
                 isReadOnly={isReadOnly}
             />
-            <Box>
-                <DataGrid
-                    ref={queryGridRef}
-                    columns={selected}
-                    rows={isFormatted ? formattedRows : rawRows}
-                    defaultColumnOptions={{
-                        sortable: true,
-                        resizable: true,
-                    }}
-                    sortColumns={sortColumns}
-                    onScroll={handleScroll}
-                    onSortColumnsChange={onSortClick}
-                    className={filters.enabled ? 'filter-cell' : ''}
-                    headerRowHeight={filters.enabled ? 70 : undefined}
-                    style={{
-                        height: calculateHeight(),
-                        overflow: 'auto',
-                        minHeight: 105,
-                        maxHeight: windowHeight - 120,
-                        whiteSpace: 'pre',
-                    }}
-                    selectedRows={selectedRows}
-                    onSelectedRowsChange={setSelectedRows}
-                    rowKeyGetter={rowKeyGetter}
-                    onRowDoubleClick={readRecord}
-                    onCopy={handleCopy}
-                    rowHeight={setRowHeight}
-                ></DataGrid>
-            </Box>
+            <QueryFormTable
+                queryGridRef={queryGridRef}
+                selected={selected}
+                rows={isFormatted ? formattedRows : rawRows}
+                sortColumns={sortColumns}
+                handleScroll={handleScroll}
+                onSortClick={onSortClick}
+                filters={filters}
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+                rowKeyGetter={rowKeyGetter}
+                readRecord={readRecord}
+                handleCopy={handleCopy}
+                windowHeight={windowHeight}
+                setRowHeight={setRowHeight}
+                reloadData={reloadData}
+                configuration={configuration}
+                setFilters={setFilters}
+            />
             <QueryFormFooter
                 errorObj={errorObject}
                 totalRecords={loaded}

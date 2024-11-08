@@ -1,7 +1,9 @@
 <project name="ProBro" default="compile">
   <property environment="env" />
-  <taskdef resource="PCT.properties" classpath="${user.home}/.ant/lib/PCT.jar;/usr/share/ant/lib/PCT.jar" />
-  <typedef resource="types.properties" classpath="${user.home}/.ant/lib/PCT.jar;/usr/share/ant/lib/PCT.jar" />
+  <taskdef resource="PCT.properties"
+    classpath="${user.home}/.ant/lib/PCT.jar;/usr/share/ant/lib/PCT.jar;${env.DLC}/pct/PCT.jar" />
+  <typedef resource="types.properties"
+    classpath="${user.home}/.ant/lib/PCT.jar;/usr/share/ant/lib/PCT.jar;${env.DLC}/pct/PCT.jar" />
   <DlcHome value="${env.DLC}" />
   <echo>DLC=${env.DLC}</echo>
 
@@ -12,14 +14,19 @@
     <pathelement location="${env.DLC}/tty/OpenEdge.Core.pl" />
   </path>
 
-  <condition property="DB_DIR" value="/psc/wrk/sp2k" else="target/db/sp2k" >
+  <condition property="DB_DIR" value="/psc/wrk/sp2k" else="target/db/sp2k">
     <os family="unix" />
   </condition>
-  
+
   <property name="tempDir" value="target/temp" />
 
+  <target name="create_db">
+    <mkdir dir="${DB_DIR}" />
+    <PCTCreateDatabase sourceDb="${env.DLC}/sports2020" dbName="sp2k" destDir="${DB_DIR}" />
+  </target>
+
   <target name="compile">
-    <echo message="Compiling ProBro Back-End"/> 
+    <echo message="Compiling ProBro Back-End" />
     <PCTCompile destDir="target/rcode" keepXref="true" xmlXref="true" forceCompile="true">
       <fileset dir="resources/oe/src" includes="**/*.cls,**/*.p" />
       <fileset dir="resources/oe/tests" includes="**/*.cls,**/*.p" />
@@ -28,12 +35,13 @@
     </PCTCompile>
   </target>
 
-    <target name="test" depends="compile">
-    <condition property="fileset.includes" value="${file}" else="**/*Test.cls,**/*Test.p" >
+  <target name="test" depends="compile">
+    <condition property="fileset.includes" value="${file}" else="**/*Test.cls,**/*Test.p">
       <isset property="file" />
     </condition>
     <mkdir dir="${tempDir}" />
-    <ABLUnit writeLog="true" destDir="target" failOnError="true" haltOnFailure="true" tempDir="${tempDir}">
+    <ABLUnit writeLog="true" destDir="target" failOnError="true" haltOnFailure="true"
+      tempDir="${tempDir}">
       <fileset dir="resources/oe/tests" includes="**/*.p,**/*.cls" />
       <propath refid="propath" />
       <Profiler enabled="true" outputDir="target/profiler" coverage="true" />

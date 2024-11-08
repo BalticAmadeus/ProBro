@@ -15,12 +15,14 @@ export class ConnectionEditor {
     private readonly configuration = vscode.workspace.getConfiguration(
         Constants.globalExtensionKey
     );
-    private logger = new Logger(this.configuration.get('logging.node')!);
+    private logger = new Logger(
+        this.configuration.get('logging.node') ?? false
+    );
 
     constructor(
-    private context: vscode.ExtensionContext,
-    action: string,
-    id?: string
+        private context: vscode.ExtensionContext,
+        action: string,
+        id?: string
     ) {
         this.extensionPath = context.asAbsolutePath('');
         this.context.globalState.get<{ [id: string]: IConfig }>(
@@ -38,7 +40,9 @@ export class ConnectionEditor {
                 enableScripts: true,
                 retainContextWhenHidden: true,
                 localResourceRoots: [
-                    vscode.Uri.file(path.join(context.asAbsolutePath(''), 'out')),
+                    vscode.Uri.file(
+                        path.join(context.asAbsolutePath(''), 'out')
+                    ),
                 ],
             }
         );
@@ -68,62 +72,69 @@ export class ConnectionEditor {
             (command: ICommand) => {
                 this.logger.log('command:', command);
                 let connections = this.context.globalState.get<{
-          [id: string]: IConfig;
-        }>(`${Constants.globalExtensionKey}.dbconfig`);
+                    [id: string]: IConfig;
+                }>(`${Constants.globalExtensionKey}.dbconfig`);
                 switch (command.action) {
-                case CommandAction.Save:
-                    if (!this.isTestedSuccesfully) {
+                    case CommandAction.Save:
+                        if (!this.isTestedSuccesfully) {
+                            vscode.window.showInformationMessage(
+                                'Connection should be tested before saving.'
+                            );
+                            return;
+                        }
+                        if (!connections) {
+                            connections = {};
+                        }
+                        connections[command.content!.id] = command.content!;
+                        this.context.globalState.update(
+                            `${Constants.globalExtensionKey}.dbconfig`,
+                            connections
+                        );
                         vscode.window.showInformationMessage(
-                            'Connection should be tested before saving.'
+                            'Connection saved succesfully.'
+                        );
+                        this.panel?.dispose();
+                        vscode.commands.executeCommand(
+                            `${Constants.globalExtensionKey}.refreshList`
                         );
                         return;
-                    }
-                    if (!connections) {
-                        connections = {};
-                    }
-                    connections[command.content!.id] = command.content!;
-                    this.context.globalState.update(
-                        `${Constants.globalExtensionKey}.dbconfig`,
-                        connections
-                    );
-                    vscode.window.showInformationMessage(
-                        'Connection saved succesfully.'
-                    );
-                    this.panel?.dispose();
-                    vscode.commands.executeCommand(
-                        `${Constants.globalExtensionKey}.refreshList`
-                    );
-                    return;
-                case CommandAction.Test:
-                    ProcessorFactory.getProcessorInstance()
-                        .getDBVersion(command.content!)
-                        .then((oe) => {
-                            if (oe.error) {
-                                vscode.window.showErrorMessage(
-                                    `Error connecting DB: ${oe.description} (${oe.error})`
-                                );
-                            } else {
-                                this.logger.log('Requested version of DB', oe.dbversion);
-                                vscode.window.showInformationMessage('Connection OK');
-                                this.isTestedSuccesfully = true;
-                            }
-                        });
-                    return;
-                case CommandAction.Group:
-                    if (connections) {
-                        const uniqueGroups = new Set<string>(); // Specify that the Set will contain strings
+                    case CommandAction.Test:
+                        ProcessorFactory.getProcessorInstance()
+                            .getDBVersion(command.content!)
+                            .then((oe) => {
+                                if (oe.error) {
+                                    vscode.window.showErrorMessage(
+                                        `Error connecting DB: ${oe.description} (${oe.error})`
+                                    );
+                                } else {
+                                    this.logger.log(
+                                        'Requested version of DB',
+                                        oe.dbversion
+                                    );
+                                    vscode.window.showInformationMessage(
+                                        'Connection OK'
+                                    );
+                                    this.isTestedSuccesfully = true;
+                                }
+                            });
+                        return;
+                    case CommandAction.Group:
+                        if (connections) {
+                            const uniqueGroups = new Set<string>(); // Specify that the Set will contain strings
 
-                        for (const id of Object.keys(connections)) {
-                            const group = connections[id].group.toUpperCase();
-                            uniqueGroups.add(group);
+                            for (const id of Object.keys(connections)) {
+                                const group =
+                                    connections[id].group.toUpperCase();
+                                uniqueGroups.add(group);
+                            }
+
+                            const groupNames: string[] =
+                                Array.from(uniqueGroups);
+
+                            this.groupList(groupNames);
                         }
 
-                        const groupNames: string[] = Array.from(uniqueGroups);
-
-                        this.groupList(groupNames);
-                    }
-
-                    return;
+                        return;
                 }
             },
             undefined,
@@ -148,7 +159,7 @@ export class ConnectionEditor {
     }
 
     private getWebviewContent(): string {
-    // Local path to main script run in the webview
+        // Local path to main script run in the webview
         const reactAppPathOnDisk = vscode.Uri.file(
             path.join(
                 vscode.Uri.file(
@@ -159,7 +170,8 @@ export class ConnectionEditor {
             )
         );
 
-        const reactAppUri = this.panel?.webview.asWebviewUri(reactAppPathOnDisk);
+        const reactAppUri =
+            this.panel?.webview.asWebviewUri(reactAppPathOnDisk);
         const cspSource = this.panel?.webview.cspSource;
 
         let config: IConfig = {
@@ -180,14 +192,15 @@ export class ConnectionEditor {
         };
         if (this.id) {
             const connections = this.context.globalState.get<{
-        [id: string]: IConfig;
-      }>(`${Constants.globalExtensionKey}.dbconfig`);
+                [id: string]: IConfig;
+            }>(`${Constants.globalExtensionKey}.dbconfig`);
             if (connections) {
                 config = connections[this.id];
                 if (!config) {
-                    const workspaceConnections = this.context.workspaceState.get<{
-            [id: string]: IConfig;
-          }>(`${Constants.globalExtensionKey}.dbconfig`);
+                    const workspaceConnections =
+                        this.context.workspaceState.get<{
+                            [id: string]: IConfig;
+                        }>(`${Constants.globalExtensionKey}.dbconfig`);
                     if (workspaceConnections) {
                         config = workspaceConnections[this.id];
                         config.workState = true;

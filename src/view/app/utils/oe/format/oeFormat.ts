@@ -9,29 +9,29 @@
 export const getOEFormatLength = (formatStr: string): number => {
     let length = 0;
 
-    for (let i = 0; i < formatStr.length; i++) {
-        const char = formatStr[i];
+    for (
+        let lengthIterator = 0;
+        lengthIterator < formatStr.length;
+        lengthIterator++
+    ) {
+        const char = formatStr[lengthIterator];
 
         switch (char) {
-        case '(':
-            // Handle the (n) format
-            const closingParenIndex = formatStr.indexOf(')', i + 1);
-            if (closingParenIndex !== -1) {
-                const repeatCount = parseInt(
-                    formatStr.slice(i + 1, closingParenIndex),
-                    10
-                );
-                length += Math.max(repeatCount - 1, 0); // Ensure repeatCount is non-negative
-                i = closingParenIndex; // Skip the characters inside the parentheses
-            }
-            break;
-        case ',':
-        case '.':
-            // do nothing
-            break;
-        default:
-            length++;
-            break;
+            case '(':
+                // Handle the (n) format
+                ({ length, lengthIterator } = handleParentheses(
+                    formatStr,
+                    length,
+                    lengthIterator
+                ));
+                break;
+            case ',':
+            case '.':
+                // do nothing
+                break;
+            default:
+                length++;
+                break;
         }
     }
 
@@ -43,3 +43,20 @@ export const getOEFormatLength = (formatStr: string): number => {
 
     return length;
 };
+
+function handleParentheses(
+    formatString: string,
+    length: number,
+    lengthIterator: number
+) {
+    const closingParenIndex = formatString.indexOf(')', lengthIterator + 1);
+    if (closingParenIndex !== -1) {
+        const repeatCount = parseInt(
+            formatString.slice(lengthIterator + 1, closingParenIndex),
+            10
+        );
+        length += Math.max(repeatCount - 1, 0); // Ensure repeatCount is non-negative
+        lengthIterator = closingParenIndex; // Skip the characters inside the parentheses
+    }
+    return { length, lengthIterator };
+}

@@ -1,6 +1,6 @@
 // file for type declarations
 
 export interface IFilters {
-    columns: {};
+    columns: object;
     enabled: boolean;
 }

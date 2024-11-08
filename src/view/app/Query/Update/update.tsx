@@ -2,7 +2,8 @@ import { CommandAction, ICommand, ProcessAction } from '../../model';
 import './update.css';
 import { Logger } from '../../../../common/Logger';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
-import { Fragment, MouseEvent, ReactNode, useState } from 'react';
+import { Fragment, MouseEvent, ReactNode, useEffect, useState } from 'react';
+
 import { ProBroButton } from '@assets/button';
 import AddIcon from '@mui/icons-material/AddTwoTone';
 import DeleteIcon from '@mui/icons-material/DeleteTwoTone';
@@ -66,8 +67,12 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
     isWindowSmall,
 }) => {
     const configuration = getVSCodeConfiguration();
-    const defaultWriteTrigger = configuration.useWriteTriggers ?? true;
-    const defaultDeleteTrigger = configuration.useDeleteTriggers ?? true;
+    const defaultWriteTrigger = configuration.useWriteTriggers;
+    const defaultDeleteTrigger = configuration.useDeleteTriggers;
+
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [dragging, setDragging] = useState(false);
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
 
     const [useWriteTriggers, setUseWriteTriggers] =
         useState<boolean>(defaultWriteTrigger);
@@ -81,6 +86,27 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
         input: HTMLInputElement;
         valueType: string;
     }[] = [];
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        setDragging(true);
+        setOffset({
+            x: e.clientX - position.x,
+            y: e.clientY - position.y,
+        });
+    };
+
+    const handleMouseMove = (e: globalThis.MouseEvent) => {
+        if (dragging) {
+            setPosition({
+                x: e.clientX - offset.x,
+                y: e.clientY - offset.y,
+            });
+        }
+    };
+
+    const handleMouseUp = () => {
+        setDragging(false);
+    };
 
     const processRecord = (mode: ProcessAction) => {
         setAction(mode);
@@ -233,8 +259,8 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                 data: submitData,
                 mode: ProcessAction[action],
                 minTime: 0,
-                useWriteTriggers: useWriteTriggers,
-                useDeleteTriggers: useDeleteTriggers,
+                useWriteTriggers,
+                useDeleteTriggers,
             },
         };
 
@@ -259,14 +285,47 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
         }
     };
 
+    useEffect(() => {
+        window.addEventListener('mousemove', handleMouseMove as EventListener);
+        window.addEventListener('mouseup', handleMouseUp as EventListener);
+
+        return () => {
+            window.removeEventListener(
+                'mousemove',
+                handleMouseMove as EventListener
+            );
+            window.removeEventListener(
+                'mouseup',
+                handleMouseUp as EventListener
+            );
+        };
+    }, [dragging, offset]);
+
     return (
         <Fragment>
-            <Popup open={open} onClose={() => setOpen(false)} modal>
+            <Popup
+                open={open}
+                onClose={() => {
+                    setOpen(false);
+                    setPosition({ x: 0, y: 0 });
+                }}
+                modal
+            >
                 {(close) => (
-                    <div className='update-modal'>
-                        <div className='update-header'>
+                    <div
+                        className='update-modal'
+                        style={{
+                            transform: `translate(${position.x}px, ${position.y}px)`,
+                        }}
+                    >
+                        <div
+                            className='update-header'
+                            onMouseDown={handleMouseDown}
+                            style={{ userSelect: 'none' }}
+                        >
                             {tableName}, {ProcessAction[action]}
                         </div>
+
                         <div className='body'>
                             {action === ProcessAction.Delete ? (
                                 <Box>
@@ -318,6 +377,9 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                                         setOpen(false);
                                         updateRecord();
                                     }}
+                                    disabled={
+                                        isReadOnly === true ? true : false
+                                    }
                                 >
                                     UPDATE
                                 </ProBroButton>

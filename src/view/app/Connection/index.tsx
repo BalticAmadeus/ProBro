@@ -4,10 +4,11 @@ import './connection.css';
 import ConnectionForm from './connectionForm';
 import { IConfig } from '@app/model';
 import { ISettings } from '@src/common/IExtensionSettings';
+import { VSCode } from '@utils/vscode';
 
 declare global {
     interface Window {
-        acquireVsCodeApi(): any;
+        acquireVsCodeApi(): VSCode;
         initialData: IConfig;
         configuration: ISettings;
     }

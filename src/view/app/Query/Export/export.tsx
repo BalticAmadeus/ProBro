@@ -25,6 +25,9 @@ export default function ExportPopup({
     selectedRows,
     isWindowSmall,
 }) {
+    const [position, setPosition] = React.useState({ x: 0, y: 0 });
+    const [dragging, setDragging] = React.useState(false);
+    const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const [exportFormat, setExportFormat] = React.useState('dumpFile');
     const [radioSelection, setRadioSelection] = React.useState(
         Object.keys(DataToExport).filter((key) => Number.isNaN(+key))[0]
@@ -35,11 +38,40 @@ export default function ExportPopup({
     const logger = new Logger(logValue);
     const vscode = getVSCodeAPI();
 
+    const handleMouseDown = (e: React.MouseEvent) => {
+        setDragging(true);
+        setOffset({
+            x: e.clientX - position.x,
+            y: e.clientY - position.y,
+        });
+    };
+
+    const handleMouseMove = (e: globalThis.MouseEvent) => {
+        if (dragging) {
+            setPosition({
+                x: e.clientX - offset.x,
+                y: e.clientY - offset.y,
+            });
+        }
+    };
+
+    const handleMouseUp = () => {
+        setDragging(false);
+    };
+
     function handleChange({
         currentTarget,
     }: React.ChangeEvent<HTMLInputElement>) {
         setRadioSelection(currentTarget.value);
         console.log(currentTarget.value);
+    }
+
+    function extractRowIds(selectedRows: string[]): string[] {
+        const rowids: string[] = [];
+        selectedRows.forEach((element) => {
+            rowids.push(element);
+        });
+        return rowids;
     }
 
     const exportList = ['dumpFile', 'json', 'csv', 'xls'];
@@ -77,10 +109,6 @@ export default function ExportPopup({
                 };
                 break;
             case DataToExport[DataToExport.Selection]:
-                const rowids: string[] = [];
-                selectedRows.forEach((element) => {
-                    rowids.push(element);
-                });
                 command.params = {
                     wherePhrase: wherePhrase,
                     start: 0,
@@ -90,7 +118,7 @@ export default function ExportPopup({
                     filters: filters,
                     exportType: exportFormat,
                     timeOut: 0,
-                    crud: rowids,
+                    crud: extractRowIds(selectedRows),
                     minTime: 0,
                 };
                 break;
@@ -104,33 +132,31 @@ export default function ExportPopup({
     const handleMessage = (event) => {
         const message = event.data;
         logger.log('got export data', message);
-        switch (message.command) {
-            case 'export':
-                if (message.format === 'dumpFile') {
-                    logger.log('dumpfile export got.');
-                    exportFromJSON({
-                        data: message.data,
-                        fileName: message.tableName,
-                        exportType: exportFromJSON.types.txt,
-                        extension: 'd',
-                    });
-                    setIsSaving(false);
-                    break;
+        if (message.command !== 'export') {
+            return;
+        }
+
+        if (message.format === 'dumpFile') {
+            logger.log('dumpfile export got.');
+            exportFromJSON({
+                data: message.data,
+                fileName: message.tableName,
+                exportType: exportFromJSON.types.txt,
+                extension: 'd',
+            });
+            setIsSaving(false);
+        } else {
+            const exportData = message.data.rawData.map(
+                ({ ROWID, RECID, ...rest }) => {
+                    return rest;
                 }
-                const exportData = message.data.rawData.map(
-                    ({ ROWID, RECID, ...rest }) => {
-                        return rest;
-                    }
-                );
-                exportFromJSON({
-                    data: exportData,
-                    fileName: message.tableName,
-                    exportType: exportFromJSON.types[message.format],
-                });
-                setIsSaving(false);
-                break;
-            default:
-                break;
+            );
+            exportFromJSON({
+                data: exportData,
+                fileName: message.tableName,
+                exportType: exportFromJSON.types[message.format],
+            });
+            setIsSaving(false);
         }
     };
 
@@ -142,8 +168,27 @@ export default function ExportPopup({
         };
     }, []);
 
+    React.useEffect(() => {
+        window.addEventListener('mousemove', handleMouseMove as EventListener);
+        window.addEventListener('mouseup', handleMouseUp as EventListener);
+
+        return () => {
+            window.removeEventListener(
+                'mousemove',
+                handleMouseMove as EventListener
+            );
+            window.removeEventListener(
+                'mouseup',
+                handleMouseUp as EventListener
+            );
+        };
+    }, [dragging, offset]);
+
     return (
         <Popup
+        onClose={() => {
+            setPosition({ x: 0, y: 0 });
+        }}
             trigger={
                 <ProBroButton startIcon={<ExportIcon />}>
                     {isWindowSmall ? '' : 'Export'}
@@ -152,8 +197,20 @@ export default function ExportPopup({
             modal
         >
             {(close) => (
-                <div className='modal'>
-                    <div className='header'> Export to {exportFormat} </div>
+                <div
+                    className='modal'
+                    style={{
+                        transform: `translate(${position.x}px, ${position.y}px)`,
+                    }}
+                >
+                    <div
+                        className='header'
+                        onMouseDown={handleMouseDown}
+                        style={{ userSelect: 'none' }}
+                    >
+                        {' '}
+                        Export to {exportFormat}{' '}
+                    </div>
                     <div className='content'>
                         <b>Select export format:</b>
                         <br />
@@ -205,6 +262,7 @@ export default function ExportPopup({
                         >
                             Export
                         </ProBroButton>
+
                         <ProBroButton
                             className='button'
                             onClick={() => close()}

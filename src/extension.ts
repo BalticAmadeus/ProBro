@@ -11,7 +11,7 @@ import { TableNode } from './treeview/TableNode';
 import { TablesListProvider } from './treeview/TablesListProvider';
 import { DbConnectionUpdater } from './treeview/DbConnectionUpdater';
 import { IPort, IConfig } from './view/app/model';
-import { readFile, parseOEFile } from './common/OpenEdgeJsonReaded';
+import { readFile, getOEVersion, parseOEFile } from './common/OpenEdgeJsonReaded';
 
 import { VersionChecker } from './view/app/Welcome/VersionChecker';
 import { WelcomePageProvider } from './webview/WelcomePageProvider';
@@ -19,7 +19,7 @@ import { AblHoverProvider } from './providers/AblHoverProvider';
 import { queryEditorCache } from './webview/queryEditor/queryEditorCache';
 import { FavoritesProvider } from './treeview/FavoritesProvider';
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
     let extensionPort: number;
     Constants.context = context;
 
@@ -39,9 +39,10 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        const settingsPorts: number[] = vscode.workspace
-            .getConfiguration(Constants.globalExtensionKey)
-            .get('possiblePortsList')!;
+        const settingsPorts: number[] =
+            vscode.workspace
+                .getConfiguration(Constants.globalExtensionKey)
+                .get('possiblePortsList') ?? [];
         if (settingsPorts.length === 0) {
             context.globalState.update(
                 `${Constants.globalExtensionKey}.portList`,
@@ -52,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
         let newGlobalStatePortList: IPort[] = [];
         const globalStatePorts = context.globalState.get<{
             [id: string]: IPort;
-        }>(`${Constants.globalExtensionKey}.portList`)!;
+        }>(`${Constants.globalExtensionKey}.portList`);
         if (globalStatePorts) {
             newGlobalStatePortList = Object.values(globalStatePorts).filter(
                 (gPort) => {
@@ -121,29 +122,45 @@ export function activate(context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(indexes);
 
-    let oeRuntimes: Array<any>;
+    const ablConfig = vscode.workspace.getConfiguration('abl.configuration');
+    const defaultRuntimeName = ablConfig.get<string>('defaultRuntime');
+    const oeRuntimes: Array<any> = ablConfig.get<Array<any>>('runtimes') ?? [];
 
-    oeRuntimes = vscode.workspace
-        .getConfiguration('abl.configuration')
-        .get<Array<any>>('runtimes')!;
-    if (oeRuntimes === undefined || oeRuntimes.length === 0) {
-        vscode.window.showWarningMessage(
-            'No OpenEdge runtime configured on this machine'
-        );
+    const oejRuntimeName = await vscode.workspace.findFiles('openedge-project.json').then((files) => {
+        if (files.length > 0) {
+            return getOEJRuntime(files[0]);
+        } else {
+            vscode.window.showWarningMessage('No openedge-project.json file found at the root.');
+            return null;
+        }
+    });
+    
+    function getOEJRuntime (uri: vscode.Uri)
+    {
+        allFileContent = readFile(uri.path);
+        const oeRuntime = getOEVersion(allFileContent);
+        return oeRuntime;
     }
 
-    const defaultRuntime =
-        oeRuntimes.length === 1
-            ? oeRuntimes[0]
-            : oeRuntimes.find((runtime) => runtime.default);
-    if (defaultRuntime !== undefined) {
+    let defaultRuntime;
+    if (Array.isArray(oeRuntimes) && oeRuntimes.length > 0) {
+        defaultRuntime =
+            oeRuntimes.some((runtime) => runtime.name === oejRuntimeName)
+                ? oeRuntimes.find((runtime) => runtime.name === oejRuntimeName)
+                : oeRuntimes.find((runtime) => runtime.name === defaultRuntimeName) || oeRuntimes[0];
+    } else {
+        vscode.window.showWarningMessage('No OpenEdge runtime configured on this machine.');
+        defaultRuntime = null;
+    }
+
+    if (defaultRuntime !== null) {
         Constants.dlc = defaultRuntime.path;
+        vscode.window.showInformationMessage(`Runtime selected : ${defaultRuntime.name}, Path: ${defaultRuntime.path}`);
     }
 
     let importConnections = vscode.workspace
         .getConfiguration(Constants.globalExtensionKey)
         .get('importConnections');
-    let fileWatcher: vscode.FileSystemWatcher;
 
     if (importConnections) {
         vscode.workspace.findFiles('**/openedge-project.json').then((list) => {
@@ -153,9 +170,8 @@ export function activate(context: vscode.ExtensionContext) {
         clearDatabaseConfigState();
     }
 
-    fileWatcher = vscode.workspace.createFileSystemWatcher(
-        '**/openedge-project.json'
-    );
+    const fileWatcher: vscode.FileSystemWatcher =
+        vscode.workspace.createFileSystemWatcher('**/openedge-project.json');
     fileWatcher.onDidChange((uri) => {
         if (importConnections) {
             createJsonDatabases(uri);
@@ -503,7 +519,7 @@ export function activate(context: vscode.ExtensionContext) {
         async (): Promise<number | undefined> => {
             const portList = context.globalState.get<{ [id: string]: IPort }>(
                 `${Constants.globalExtensionKey}.portList`
-            )!;
+            );
             if (!portList) {
                 await vscode.window
                     .showErrorMessage(
@@ -550,9 +566,12 @@ export function activate(context: vscode.ExtensionContext) {
             }
 
             for (const id of Object.keys(portList)) {
+                const port = portList[id];
+                const timestamp = port.timestamp;
                 if (
-                    portList[id].isInUse &&
-                    Date.now() - portList[id].timestamp! > 35000
+                    port.isInUse &&
+                    timestamp &&
+                    Date.now() - timestamp > 35000
                 ) {
                     portList[id].isInUse = false;
                     portList[id].timestamp = undefined;
