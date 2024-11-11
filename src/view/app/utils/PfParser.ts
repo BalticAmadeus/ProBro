@@ -17,6 +17,25 @@ export class PfParser {
             type: 0,
             isReadOnly: false,
         };
+        const flagOnlyParams = [
+            '-RO',
+            '-ssl',
+            '-brl',
+            '-directio',
+            '-r',
+            '-F',
+            '-i',
+            '-ipver',
+            '-is',
+            '-nohostverify',
+            '-nosessionreuse',
+            '-Passphrase',
+            '-requireusername',
+            '-tstamp',
+            '-1',
+            '-crTXDisplay',
+            '-Sn',
+        ];
 
         pfFile
             .split('\n')
@@ -67,7 +86,11 @@ export class PfParser {
                             if (config.params) {
                                 config.params += ' ';
                             }
-                            config.params += keyVal[0];
+                            if (flagOnlyParams.includes(key)) {
+                                config.params += key;
+                            } else {
+                                config.params += keyVal[0];
+                            }
                             break;
                     }
                 });
