@@ -1,16 +1,24 @@
-import { Autocomplete, FilterOptionsState, TextField } from '@mui/material';
+import {
+    Autocomplete,
+    Box,
+    FilterOptionsState,
+    InputAdornment,
+    TextField,
+} from '@mui/material';
 import { SyntheticEvent, useEffect, useState } from 'react';
 
 export interface QueryAutocompleteInputProps {
     suggestions?: Array<string>;
     setWherePhrase?: React.Dispatch<React.SetStateAction<string>>;
     onEnter?: () => void;
+    handleSaveClick?: () => void;
 }
 
 const QueryAutocompleteInput: React.FC<QueryAutocompleteInputProps> = ({
     suggestions = [],
     setWherePhrase,
     onEnter,
+    handleSaveClick,
 }) => {
     const [value, setValue] = useState('');
     const [isPopperOpen, setIsPopperOpen] = useState(false);
@@ -96,6 +104,30 @@ const QueryAutocompleteInput: React.FC<QueryAutocompleteInputProps> = ({
                     onChange={(event) => setValue(event.target.value)}
                     onKeyDown={handleKeyDown}
                     size='small'
+                    InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                            <>
+                                {params.InputProps.endAdornment}
+                                <InputAdornment position='end'>
+                                    <Box
+                                        component='span'
+                                        onClick={handleSaveClick} // Define this function for your save logic
+                                        sx={{
+                                            cursor: 'pointer',
+                                            color: 'lightgrey',
+                                            fontSize: '0.8rem',
+                                            '&:hover': {
+                                                color: 'black', // Or any color you want on hover
+                                            },
+                                        }}
+                                    >
+                                        Save
+                                    </Box>
+                                </InputAdornment>
+                            </>
+                        ),
+                    }}
                 />
             )}
             // to update popper component colors:

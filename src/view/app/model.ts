@@ -67,6 +67,7 @@ export enum CommandAction {
     RefreshTableData,
     Group,
     FieldsHighlightColumn,
+    SaveCustomQuery,
 }
 
 export interface FieldRow {

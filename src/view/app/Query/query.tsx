@@ -213,7 +213,6 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
             setColumns([SelectColumn, ...message.data.columns]);
             if (message.columns !== undefined) {
                 setSelectedColumns([...message.columns]);
-
             } else {
                 setSelectedColumns([
                     ...message.data.columns.map((column) => column.name),
@@ -302,6 +301,25 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
         setRawRows([]);
         setFormattedRows([]);
         makeQuery(0, loaded, '', sortColumns, filters, 0, 0);
+    }
+
+    function handleSaveClick(query: string, name: string) {
+        console.log('saved query.tsx', query, name);
+        const command: ICommand = {
+            id: 'saveQuery',
+            action: CommandAction.SaveCustomQuery,
+            params: {
+                wherePhrase: wherePhrase,
+                start: loaded,
+                pageLength: configuration.batchSize,
+                lastRowID: '',
+                sortColumns: sortColumns,
+                filters: filters,
+                timeOut: configuration.batchMaxTimeout,
+                minTime: configuration.batchMinTimeout,
+            },
+        };
+        vscode.postMessage(command);
     }
 
     function makeQuery(
@@ -472,6 +490,7 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 wherePhrase={wherePhrase}
                 setWherePhrase={setWherePhrase}
                 suggestions={selectedColumns}
+                handleSaveClick={() => handleSaveClick(wherePhrase, 'new')}
                 isWindowSmall={isWindowSmall}
                 onEnter={prepareQuery}
                 onButtonClick={(event) => {

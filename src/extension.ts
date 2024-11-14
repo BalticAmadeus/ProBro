@@ -11,13 +11,21 @@ import { TableNode } from './treeview/TableNode';
 import { TablesListProvider } from './treeview/TablesListProvider';
 import { DbConnectionUpdater } from './treeview/DbConnectionUpdater';
 import { IPort, IConfig } from './view/app/model';
-import { readFile, getOEVersion, parseOEFile } from './common/OpenEdgeJsonReaded';
+import {
+    readFile,
+    getOEVersion,
+    parseOEFile,
+} from './common/OpenEdgeJsonReaded';
 
 import { VersionChecker } from './view/app/Welcome/VersionChecker';
 import { WelcomePageProvider } from './webview/WelcomePageProvider';
 import { AblHoverProvider } from './providers/AblHoverProvider';
 import { queryEditorCache } from './webview/queryEditor/queryEditorCache';
 import { FavoritesProvider } from './treeview/FavoritesProvider';
+import {
+    CustomViewNode,
+    CustomViewProvider,
+} from './treeview/CustomViewProvider';
 
 export async function activate(context: vscode.ExtensionContext) {
     let extensionPort: number;
@@ -251,6 +259,19 @@ export async function activate(context: vscode.ExtensionContext) {
         context
     );
 
+    const customViewsProvider = new CustomViewProvider(
+        fieldsProvider,
+        indexesProvider,
+        context
+    );
+
+    const customViews = vscode.window.createTreeView(
+        `${Constants.globalExtensionKey}-custom-views`,
+        { treeDataProvider: customViewsProvider }
+    );
+    customViews.onDidChangeSelection((e) =>
+        customViewsProvider.onDidChangeSelection(e)
+    );
     const favorites = vscode.window.createTreeView(
         `${Constants.globalExtensionKey}-favorites`,
         { treeDataProvider: favoritesProvider }
@@ -285,7 +306,8 @@ export async function activate(context: vscode.ExtensionContext) {
         groupListProvider.onDidChangeSelection(
             e,
             tablesListProvider,
-            favoritesProvider
+            favoritesProvider,
+            customViewsProvider
         )
     );
 
@@ -308,11 +330,32 @@ export async function activate(context: vscode.ExtensionContext) {
             node,
             tablesListProvider,
             favoritesProvider,
+            customViewsProvider,
             fieldsProvider
         );
 
         queryEditorCache.setQueryEditor(key, newQueryEditor);
     };
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.saveCustomView`,
+            (node: CustomViewNode) => {
+                customViewsProvider.saveCustomQuery(node);
+                customViewsProvider.refresh(undefined);
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.removeCustomView`,
+            (node: CustomViewNode) => {
+                customViewsProvider.removeTableFromCustomViews(node);
+                customViewsProvider.refresh(undefined);
+            }
+        )
+    );
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -369,6 +412,16 @@ export async function activate(context: vscode.ExtensionContext) {
             `${Constants.globalExtensionKey}.queryFavorite`,
             (node: TableNode) => {
                 favoritesProvider.selectDbConfig(node);
+                loadQueryEditor(node);
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.queryCustomView`,
+            (node: CustomViewNode) => {
+                customViewsProvider.selectDbConfig(node);
                 loadQueryEditor(node);
             }
         )

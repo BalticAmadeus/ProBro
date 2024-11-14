@@ -3,6 +3,10 @@ import * as vscode from 'vscode';
 import { ICommand, CommandAction, IConfig } from '../view/app/model';
 import { IOETableData } from '../db/Oe';
 import { TableNode, TableNodeSourceEnum } from '../treeview/TableNode';
+import {
+    CustomViewNode,
+    CustomViewProvider,
+} from '../treeview/CustomViewProvider';
 import { TablesListProvider } from '../treeview/TablesListProvider';
 import { FieldsViewProvider } from './FieldsViewProvider';
 import { DumpFileFormatter } from './DumpFileFormatter';
@@ -31,6 +35,7 @@ export class QueryEditor {
         private tableNode: TableNode,
         private tableListProvider: TablesListProvider,
         private favoritesProvider: FavoritesProvider,
+        private customViewProvider: CustomViewProvider,
         private fieldProvider: FieldsViewProvider
     ) {
         this.extensionPath = context.asAbsolutePath('');
@@ -47,6 +52,9 @@ export class QueryEditor {
                 break;
             default:
                 return;
+        }
+        if (tableNode instanceof CustomViewNode) {
+            config = this.customViewProvider.config;
         }
 
         if (config) {
@@ -224,6 +232,32 @@ export class QueryEditor {
                                 this.logger.log('data:', obj);
                                 this.panel?.webview.postMessage(obj);
                             });
+                        break;
+                    case CommandAction.SaveCustomQuery:
+                        vscode.commands
+                            .executeCommand(
+                                `${Constants.globalExtensionKey}.saveCustomView`,
+                                new CustomViewNode(
+                                    Constants.context,
+                                    this.tableNode,
+                                    this.tableNode.dbId +
+                                        this.tableNode.tableName,
+                                    command.params
+                                )
+                            )
+                            .then(
+                                () => {
+                                    console.log(
+                                        'Command executed successfully'
+                                    );
+                                },
+                                (error) => {
+                                    console.error(
+                                        'Error executing command:',
+                                        error
+                                    );
+                                }
+                            );
                         break;
                 }
             },

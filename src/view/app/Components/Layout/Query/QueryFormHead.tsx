@@ -48,6 +48,7 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                     suggestions={otherProps.suggestions}
                     setWherePhrase={otherProps.setWherePhrase}
                     onEnter={otherProps.onEnter}
+                    handleSaveClick={otherProps.handleSaveClick}
                 ></QueryAutocompleteInput>
                 <Box minWidth={isWindowSmall ? '400px' : '550px'}>
                     <ProBroButton
