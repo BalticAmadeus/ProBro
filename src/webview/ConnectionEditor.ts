@@ -81,42 +81,44 @@ export class ConnectionEditor {
                                 'Connection should be tested before saving.'
                             );
                             return;
-                        }
-                        if (!connections) {
+                        } else if (!connections) {
                             connections = {};
+                        } else if (command.content) {
+                            connections[command.content.id] = command.content;
+                            this.context.globalState.update(
+                                `${Constants.globalExtensionKey}.dbconfig`,
+                                connections
+                            );
+                            vscode.window.showInformationMessage(
+                                'Connection saved succesfully.'
+                            );
+                            this.panel?.dispose();
+                            vscode.commands.executeCommand(
+                                `${Constants.globalExtensionKey}.refreshList`
+                            );
                         }
-                        connections[command.content!.id] = command.content!;
-                        this.context.globalState.update(
-                            `${Constants.globalExtensionKey}.dbconfig`,
-                            connections
-                        );
-                        vscode.window.showInformationMessage(
-                            'Connection saved succesfully.'
-                        );
-                        this.panel?.dispose();
-                        vscode.commands.executeCommand(
-                            `${Constants.globalExtensionKey}.refreshList`
-                        );
                         return;
                     case CommandAction.Test:
-                        ProcessorFactory.getProcessorInstance()
-                            .getDBVersion(command.content!)
-                            .then((oe) => {
-                                if (oe.error) {
-                                    vscode.window.showErrorMessage(
-                                        `Error connecting DB: ${oe.description} (${oe.error})`
-                                    );
-                                } else {
-                                    this.logger.log(
-                                        'Requested version of DB',
-                                        oe.dbversion
-                                    );
-                                    vscode.window.showInformationMessage(
-                                        'Connection OK'
-                                    );
-                                    this.isTestedSuccesfully = true;
-                                }
-                            });
+                        if (command.content) {
+                            ProcessorFactory.getProcessorInstance()
+                                .getDBVersion(command.content)
+                                .then((oe) => {
+                                    if (oe.error) {
+                                        vscode.window.showErrorMessage(
+                                            `Error connecting DB: ${oe.description} (${oe.error})`
+                                        );
+                                    } else {
+                                        this.logger.log(
+                                            'Requested version of DB',
+                                            oe.dbversion
+                                        );
+                                        vscode.window.showInformationMessage(
+                                            'Connection OK'
+                                        );
+                                        this.isTestedSuccesfully = true;
+                                    }
+                                });
+                        }
                         return;
                     case CommandAction.Group:
                         if (connections) {

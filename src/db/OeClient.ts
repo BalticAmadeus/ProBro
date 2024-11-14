@@ -34,6 +34,7 @@ class OEClient {
     }
 
     public init(): Promise<any> {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         return this.runProc().then((resolve) => {
             this.client = new Net.Socket();
             this.client.connect(this.port, this.host, () => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from 'react';
 import { CommandAction, ICommand, IConfig } from '../model';
 import { ProBroButton } from '../assets/button';
@@ -16,11 +17,7 @@ interface IConfigState {
     config: IConfig;
 }
 
-function ConnectionForm({
-    initialData,
-    configuration,
-    ...props
-}: IConfigProps) {
+function ConnectionForm({ initialData, configuration, ...props}: IConfigProps) {
     const vscode = getVSCodeAPI();
     const oldState = vscode.getState();
     const initState = oldState ? oldState : { config: initialData };
