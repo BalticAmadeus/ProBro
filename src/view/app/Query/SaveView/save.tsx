@@ -23,8 +23,7 @@ export default function ExportPopup({
     const [dragging, setDragging] = React.useState(false);
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
 
-    const [isSaving, setIsSaving] = React.useState(false);
-    const [preferenceName, setPreferenceName] = React.useState(''); // Add state for preference name
+    const [preferenceName, setPreferenceName] = React.useState('');
 
     const handleMouseDown = (e: React.MouseEvent) => {
         setDragging(true);
@@ -65,7 +64,7 @@ export default function ExportPopup({
 
     const handleSavePreference = () => {
         handleSaveClick();
-        setPreferenceName(''); // Reset preference name after saving
+        setPreferenceName('');
     };
 
     return (
@@ -76,7 +75,7 @@ export default function ExportPopup({
             }}
             trigger={
                 <ProBroButton startIcon={<SaveIcon />}>
-                    {isWindowSmall ? '' : 'Export'}
+                    {isWindowSmall ? '' : 'Save View'}
                 </ProBroButton>
             }
             modal
@@ -123,10 +122,7 @@ export default function ExportPopup({
                         >
                             Cancel
                         </ProBroButton>
-                    </div>
-                    {isSaving ? (
-                        <span className='export-saving'>Saving...</span>
-                    ) : null}
+                    </div>                 
                 </div>
             )}
         </Popup>
