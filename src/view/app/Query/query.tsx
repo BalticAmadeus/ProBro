@@ -318,6 +318,7 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 timeOut: configuration.batchMaxTimeout,
                 minTime: configuration.batchMinTimeout,
             },
+            customViewName: name,
         };
         vscode.postMessage(command);
     }
@@ -490,7 +491,9 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 wherePhrase={wherePhrase}
                 setWherePhrase={setWherePhrase}
                 suggestions={selectedColumns}
-                handleSaveClick={() => handleSaveClick(wherePhrase, 'new')}
+                handleSaveClick={(preferenceName) =>
+                    handleSaveClick(wherePhrase, preferenceName)
+                }
                 isWindowSmall={isWindowSmall}
                 onEnter={prepareQuery}
                 onButtonClick={(event) => {

@@ -49,6 +49,7 @@ export interface ICommand {
     content?: IConfig;
     params?: ITableData;
     columns?: string[];
+    customViewName?: string;
 }
 
 export interface IQueryParams {

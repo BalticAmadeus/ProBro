@@ -1,6 +1,11 @@
 import path = require('path');
 import * as vscode from 'vscode';
-import { ICommand, CommandAction, IConfig } from '../view/app/model';
+import {
+    ICommand,
+    CommandAction,
+    IConfig,
+    ITableData,
+} from '../view/app/model';
 import { IOETableData } from '../db/Oe';
 import { TableNode, TableNodeSourceEnum } from '../treeview/TableNode';
 import {
@@ -29,6 +34,7 @@ export class QueryEditor {
     private logger = new Logger(
         this.configuration.get('logging.node') ?? false
     );
+    private customViewData: ITableData | undefined;
 
     constructor(
         private context: vscode.ExtensionContext,
@@ -53,8 +59,10 @@ export class QueryEditor {
             default:
                 return;
         }
+
         if (tableNode instanceof CustomViewNode) {
             config = this.customViewProvider.config;
+            this.customViewData = tableNode.tableData;
         }
 
         if (config) {
@@ -112,7 +120,7 @@ export class QueryEditor {
                                 .getTableData(
                                     config,
                                     this.tableNode.tableName,
-                                    command.params
+                                    this.customViewData || command.params
                                 )
                                 .then((oe) => {
                                     if (this.panel) {
@@ -125,6 +133,7 @@ export class QueryEditor {
                                             data: oe,
                                         };
                                         this.logger.log('data:', obj);
+                                        this.customViewData = undefined;
                                         this.panel?.webview.postMessage(obj);
                                     }
                                 });
@@ -240,8 +249,7 @@ export class QueryEditor {
                                 new CustomViewNode(
                                     Constants.context,
                                     this.tableNode,
-                                    this.tableNode.dbId +
-                                        this.tableNode.tableName,
+                                    command.customViewName || '',
                                     command.params
                                 )
                             )
@@ -279,6 +287,10 @@ export class QueryEditor {
             context.subscriptions
         );
     }
+
+    public setParams = (node: CustomViewNode): void => {
+        this.customViewData = node.tableData;
+    };
 
     public refetchData = (): void => {
         const obj = {

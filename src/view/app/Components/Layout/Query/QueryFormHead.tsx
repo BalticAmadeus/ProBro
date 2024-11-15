@@ -2,7 +2,7 @@ import ExportPopup from '@Query/Export';
 import { ExportPopupProps } from '@Query/Export/export';
 import { ProBroButton } from '@assets/button';
 import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
-import { MouseEventHandler, useEffect} from 'react';
+import { MouseEventHandler, useEffect } from 'react';
 import UpdatePopup from '@Query/Update';
 import { UpdatePopupProps } from '@Query/Update/update';
 import { Box, Stack, Typography } from '@mui/material';
@@ -11,11 +11,13 @@ import QueryAutocompleteInput, {
 } from './QueryAutocompleteInput';
 import QueryDropdownMenu from './QueryDropdownMenu';
 import SavePopup from '@Query/SaveView';
+import { SavePopupProps } from '@Query/SaveView/save';
 
 interface QueryFormHeadProps
     extends QueryAutocompleteInputProps,
         ExportPopupProps,
-        UpdatePopupProps {
+        UpdatePopupProps,
+        SavePopupProps {
     isWindowSmall: boolean;
     onLoad?: () => void;
     onButtonClick?: MouseEventHandler<HTMLButtonElement>;
@@ -35,7 +37,6 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
     setIsFormatted,
     ...otherProps
 }) => {
-
     useEffect(() => {
         if (onLoad) {
             onLoad();
@@ -50,7 +51,6 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                     suggestions={otherProps.suggestions}
                     setWherePhrase={otherProps.setWherePhrase}
                     onEnter={otherProps.onEnter}
-                    handleSaveClick={otherProps.handleSaveClick}
                 ></QueryAutocompleteInput>
                 <Box minWidth={isWindowSmall ? '400px' : '550px'}>
                     <ProBroButton

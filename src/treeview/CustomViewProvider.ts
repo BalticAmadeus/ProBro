@@ -163,7 +163,7 @@ export class CustomViewNode extends TableNode {
     public override getTreeItem(): vscode.TreeItem {
         return {
             label: this.name,
-            description: this.tableData?.wherePhrase,
+            description: this.tableName,
             collapsibleState: vscode.TreeItemCollapsibleState.None,
         };
     }

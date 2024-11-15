@@ -12,7 +12,7 @@ export interface SavePopupProps {
     filters: IFilters;
     selectedRows: Set<string>;
     isWindowSmall: boolean;
-    handleSaveClick: () => void;
+    handleSaveClick: (preferenceName: string) => void;
 }
 
 export default function ExportPopup({
@@ -63,7 +63,7 @@ export default function ExportPopup({
     }, [dragging, offset]);
 
     const handleSavePreference = () => {
-        handleSaveClick();
+        handleSaveClick(preferenceName);
         setPreferenceName('');
     };
 
@@ -112,6 +112,7 @@ export default function ExportPopup({
                                 handleSavePreference();
                                 close();
                             }}
+                            disabled={preferenceName === ''}
                         >
                             Save Preference
                         </ProBroButton>
@@ -122,7 +123,7 @@ export default function ExportPopup({
                         >
                             Cancel
                         </ProBroButton>
-                    </div>                 
+                    </div>
                 </div>
             )}
         </Popup>
