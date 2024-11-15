@@ -2,7 +2,7 @@ import ExportPopup from '@Query/Export';
 import { ExportPopupProps } from '@Query/Export/export';
 import { ProBroButton } from '@assets/button';
 import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
-import { MouseEventHandler, useEffect} from 'react';
+import { MouseEventHandler, useEffect } from 'react';
 import UpdatePopup from '@Query/Update';
 import { UpdatePopupProps } from '@Query/Update/update';
 import { Box, Stack, Typography } from '@mui/material';
@@ -35,7 +35,6 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
     setIsFormatted,
     ...otherProps
 }) => {
-
     useEffect(() => {
         if (onLoad) {
             onLoad();
@@ -66,7 +65,10 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                         selectedRows={otherProps.selectedRows}
                         isWindowSmall={isWindowSmall}
                     />
-                    <QueryDropdownMenu setIsFormatted={setIsFormatted} />
+                    <QueryDropdownMenu
+                        setIsFormatted={setIsFormatted}
+                        isWindowSmall={isWindowSmall}
+                    />
                     <UpdatePopup
                         selectedRows={otherProps.selectedRows}
                         columns={otherProps.columns}
