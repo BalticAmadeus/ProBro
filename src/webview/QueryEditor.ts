@@ -123,6 +123,19 @@ export class QueryEditor {
                                     this.customViewData || command.params
                                 )
                                 .then((oe) => {
+                                    if (this.customViewData) {
+                                        const obj = {
+                                            id: command.id,
+                                            command: 'customViewParams',
+                                            params: this.customViewData,
+                                        };
+                                        this.logger.log(
+                                            'customView params: ',
+                                            this.customViewData
+                                        );
+                                        this.panel?.webview.postMessage(obj);
+                                    }
+
                                     if (this.panel) {
                                         const obj = {
                                             id: command.id,

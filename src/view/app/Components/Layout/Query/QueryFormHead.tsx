@@ -49,6 +49,7 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
             <Stack direction={'row'} alignItems={'center'}>
                 <QueryAutocompleteInput
                     suggestions={otherProps.suggestions}
+                    wherePhrase={otherProps.wherePhrase}
                     setWherePhrase={otherProps.setWherePhrase}
                     onEnter={otherProps.onEnter}
                 ></QueryAutocompleteInput>
