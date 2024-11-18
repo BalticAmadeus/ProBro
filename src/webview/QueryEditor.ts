@@ -8,10 +8,7 @@ import {
 } from '../view/app/model';
 import { IOETableData } from '../db/Oe';
 import { TableNode, TableNodeSourceEnum } from '../treeview/TableNode';
-import {
-    CustomViewNode,
-    CustomViewProvider,
-} from '../treeview/CustomViewProvider';
+import { CustomViewProvider } from '../treeview/CustomViewProvider';
 import { TablesListProvider } from '../treeview/TablesListProvider';
 import { FieldsViewProvider } from './FieldsViewProvider';
 import { DumpFileFormatter } from './DumpFileFormatter';
@@ -20,6 +17,7 @@ import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
 import { Constants } from '../common/Constants';
 import { queryEditorCache } from './queryEditor/queryEditorCache';
 import { FavoritesProvider } from '../treeview/FavoritesProvider';
+import { CustomViewNode } from '../treeview/CustomViewNode';
 
 export class QueryEditor {
     public readonly panel: vscode.WebviewPanel | undefined;

@@ -22,10 +22,8 @@ import { WelcomePageProvider } from './webview/WelcomePageProvider';
 import { AblHoverProvider } from './providers/AblHoverProvider';
 import { queryEditorCache } from './webview/queryEditor/queryEditorCache';
 import { FavoritesProvider } from './treeview/FavoritesProvider';
-import {
-    CustomViewNode,
-    CustomViewProvider,
-} from './treeview/CustomViewProvider';
+import { CustomViewProvider } from './treeview/CustomViewProvider';
+import { CustomViewNode } from './treeview/CustomViewNode';
 
 export async function activate(context: vscode.ExtensionContext) {
     let extensionPort: number;
@@ -370,7 +368,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.removeCustomView`,
             (node: CustomViewNode) => {
-                customViewsProvider.removeTableFromCustomViews(node);
+                customViewsProvider.removeCustomViews(node);
                 customViewsProvider.refresh(undefined);
             }
         )
