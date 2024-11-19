@@ -43,8 +43,21 @@ export class CustomViewProvider extends TablesListProvider {
                 tableData: ITableData | undefined;
             }[]
         >('custom-views', []);
-        //ToDo:
-        //Add Logic to detect same views.
+
+        const matchingCustomView = customViewData.find(
+            (customView) =>
+                customView.dbId === node.dbId &&
+                customView.name === node.name &&
+                customView.tableName === node.tableName
+        );
+
+        if (matchingCustomView) {
+            vscode.window.showErrorMessage(
+                `Could not save "${node.name}" for table "${node.tableName}". Change the preference name.`
+            );
+            return;
+        }
+
         customViewData.push({
             dbId: node.dbId,
             tableName: node.tableName,
@@ -117,7 +130,8 @@ export class CustomViewProvider extends TablesListProvider {
             (customView) =>
                 !(
                     customView.name === node.name &&
-                    customView.dbId === node.dbId
+                    customView.dbId === node.dbId &&
+                    customView.tableName === node.tableName
                 )
         );
 
