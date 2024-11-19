@@ -31,8 +31,8 @@ export class CustomViewProvider extends TablesListProvider {
         else return [];
     }
 
-    saveCustomQuery(node: CustomViewNode): void {
-        const customQueryData = this.context.globalState.get<
+    saveCustomView(node: CustomViewNode): void {
+        const customViewData = this.context.globalState.get<
             {
                 dbId: string;
                 tableName: string;
@@ -45,7 +45,7 @@ export class CustomViewProvider extends TablesListProvider {
         >('custom-views', []);
         //ToDo:
         //Add Logic to detect same views.
-        customQueryData.push({
+        customViewData.push({
             dbId: node.dbId,
             tableName: node.tableName,
             tableType: node.tableType,
@@ -54,7 +54,7 @@ export class CustomViewProvider extends TablesListProvider {
             name: node.name,
             tableData: node.tableData,
         });
-        this.context.globalState.update('custom-views', customQueryData);
+        this.context.globalState.update('custom-views', customViewData);
         vscode.window.showInformationMessage(
             `Custom view ${node.name} was added.`
         );

@@ -358,7 +358,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.saveCustomView`,
             (node: CustomViewNode) => {
-                customViewsProvider.saveCustomQuery(node);
+                customViewsProvider.saveCustomView(node);
                 customViewsProvider.refresh(undefined);
             }
         )
