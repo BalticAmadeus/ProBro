@@ -49,7 +49,7 @@ export interface ICommand {
     content?: IConfig;
     params?: ITableData;
     columns?: string[];
-    customViewName?: string;
+    customView?: ICustomView;
 }
 
 export interface IQueryParams {
@@ -158,4 +158,13 @@ export interface IPort {
     port: number;
     isInUse: boolean;
     timestamp: number | undefined;
+}
+
+export interface ICustomView {
+    name: string;
+    wherePhrase: string;
+    sortColumns: SortColumn[];
+    filters: any;
+    useWriteTriggers: boolean;
+    useDeleteTriggers: boolean;
 }

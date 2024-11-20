@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
 import { TablesListProvider } from './TablesListProvider';
 import { TableNode, TableNodeSourceEnum } from './TableNode';
-import { IConfig } from '../view/app/model';
+import { IConfig, ICustomView } from '../view/app/model';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
-import { ITableData } from '../view/app/model';
 import { CustomViewNode } from './CustomViewNode';
 
 export class CustomViewProvider extends TablesListProvider {
@@ -40,7 +39,7 @@ export class CustomViewProvider extends TablesListProvider {
                 connectionName: string;
                 connectionLabel: string;
                 name: string;
-                tableData: ITableData | undefined;
+                customViewParams: ICustomView | undefined;
             }[]
         >('custom-views', []);
 
@@ -65,7 +64,7 @@ export class CustomViewProvider extends TablesListProvider {
             connectionName: node.connectionName,
             connectionLabel: node.connectionLabel,
             name: node.name,
-            tableData: node.tableData,
+            customViewParams: node.customViewParams,
         });
         this.context.globalState.update('custom-views', customViewData);
         vscode.window.showInformationMessage(
@@ -82,7 +81,7 @@ export class CustomViewProvider extends TablesListProvider {
                 connectionName: string;
                 connectionLabel: string;
                 name: string;
-                tableData: ITableData;
+                customViewParams: ICustomView;
             }[]
         >('custom-views', []);
         const filteredCustomViews = customViewData.filter((customView) =>
@@ -103,7 +102,7 @@ export class CustomViewProvider extends TablesListProvider {
                         TableNodeSourceEnum.Favorites
                     ),
                     data.name,
-                    data.tableData
+                    data.customViewParams
                 )
         );
         return customViews;
@@ -118,7 +117,7 @@ export class CustomViewProvider extends TablesListProvider {
                 connectionName: string;
                 connectionLabel: string;
                 name: string;
-                tableData: ITableData;
+                customViewParams: ICustomView;
             }[]
         >('custom-views', []);
 

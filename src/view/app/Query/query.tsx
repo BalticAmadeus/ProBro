@@ -8,7 +8,7 @@ import {
 } from 'react-data-grid';
 
 import { IOETableData } from '@src/db/Oe';
-import { CommandAction, ICommand, ProcessAction } from '../model';
+import { CommandAction, ICommand, ICustomView, ProcessAction } from '../model';
 import { Logger } from '@src/common/Logger';
 import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
@@ -320,22 +320,18 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
         makeQuery(0, loaded, '', sortColumns, filters, 0, 0);
     }
 
-    function handleSaveClick(query: string, name: string) {
-        console.log('saved query.tsx', query, name);
+    function handleSaveClick(name: string) {
         const command: ICommand = {
-            id: 'saveQuery',
+            id: 'saveCustomView',
             action: CommandAction.SaveCustomQuery,
-            params: {
-                wherePhrase: wherePhrase,
-                start: loaded,
-                pageLength: configuration.batchSize,
-                lastRowID: '',
-                sortColumns: sortColumns,
-                filters: filters,
-                timeOut: configuration.batchMaxTimeout,
-                minTime: configuration.batchMinTimeout,
+            customView: {
+                name,
+                wherePhrase,
+                sortColumns,
+                filters,
+                useDeleteTriggers: configuration.useDeleteTriggers,
+                useWriteTriggers: configuration.useWriteTriggers,
             },
-            customViewName: name,
         };
         vscode.postMessage(command);
     }
@@ -509,7 +505,7 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 setWherePhrase={setWherePhrase}
                 suggestions={selectedColumns}
                 handleSaveClick={(preferenceName) =>
-                    handleSaveClick(wherePhrase, preferenceName)
+                    handleSaveClick(preferenceName)
                 }
                 isWindowSmall={isWindowSmall}
                 onEnter={prepareQuery}

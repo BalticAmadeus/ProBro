@@ -1,16 +1,16 @@
 import * as vscode from 'vscode';
 import { TableNode } from './TableNode';
-import { ITableData } from '../view/app/model';
+import { ICustomView } from '../view/app/model';
 
 export class CustomViewNode extends TableNode {
     public name: string;
-    public tableData: ITableData | undefined;
+    public customViewParams: ICustomView | undefined;
 
     constructor(
         context: vscode.ExtensionContext,
         table: TableNode,
         name: string,
-        tableData: ITableData | undefined
+        customViewParams: ICustomView | undefined
     ) {
         super(
             context,
@@ -22,7 +22,7 @@ export class CustomViewNode extends TableNode {
             table.source
         );
         this.name = name;
-        this.tableData = tableData;
+        this.customViewParams = customViewParams;
     }
 
     public override getTreeItem(): vscode.TreeItem {

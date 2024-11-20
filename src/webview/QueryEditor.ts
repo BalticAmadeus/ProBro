@@ -5,6 +5,7 @@ import {
     CommandAction,
     IConfig,
     ITableData,
+    ICustomView,
 } from '../view/app/model';
 import { IOETableData } from '../db/Oe';
 import { TableNode, TableNodeSourceEnum } from '../treeview/TableNode';
@@ -32,7 +33,7 @@ export class QueryEditor {
     private logger = new Logger(
         this.configuration.get('logging.node') ?? false
     );
-    private customViewData: ITableData | undefined;
+    private customViewData: ICustomView | undefined;
 
     constructor(
         private context: vscode.ExtensionContext,
@@ -60,7 +61,7 @@ export class QueryEditor {
 
         if (tableNode instanceof CustomViewNode) {
             config = this.customViewProvider.config;
-            this.customViewData = tableNode.tableData;
+            this.customViewData = tableNode.customViewParams;
         }
 
         if (config) {
@@ -118,7 +119,9 @@ export class QueryEditor {
                                 .getTableData(
                                     config,
                                     this.tableNode.tableName,
-                                    this.customViewData || command.params
+                                    this.customViewData
+                                        ? this.getParams(command.params!)
+                                        : command.params
                                 )
                                 .then((oe) => {
                                     if (this.customViewData) {
@@ -260,8 +263,8 @@ export class QueryEditor {
                                 new CustomViewNode(
                                     Constants.context,
                                     this.tableNode,
-                                    command.customViewName || '',
-                                    command.params
+                                    command.customView?.name || '',
+                                    command.customView
                                 )
                             )
                             .then(
@@ -300,7 +303,17 @@ export class QueryEditor {
     }
 
     public setParams = (node: CustomViewNode): void => {
-        this.customViewData = node.tableData;
+        this.customViewData = node.customViewParams;
+    };
+
+    public getParams = (params: ITableData): ITableData => {
+        if (!this.customViewData) {
+            return params;
+        }
+
+        const customViewParams = { ...params, ...this.customViewData };
+
+        return customViewParams;
     };
 
     public refetchData = (): void => {
