@@ -8,7 +8,7 @@ import {
 } from 'react-data-grid';
 
 import { IOETableData } from '@src/db/Oe';
-import { CommandAction, ICommand, ICustomView, ProcessAction } from '../model';
+import { CommandAction, ICommand, ProcessAction } from '../model';
 import { Logger } from '@src/common/Logger';
 import { getOEFormatLength } from '@utils/oe/format/oeFormat';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';

@@ -85,10 +85,6 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                         isWindowSmall={isWindowSmall}
                     ></UpdatePopup>
                     <SavePopup
-                        wherePhrase={otherProps.wherePhrase}
-                        sortColumns={otherProps.sortColumns}
-                        filters={otherProps.filters}
-                        selectedRows={otherProps.selectedRows}
                         isWindowSmall={isWindowSmall}
                         handleSaveClick={otherProps.handleSaveClick}
                     ></SavePopup>

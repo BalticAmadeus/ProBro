@@ -3,16 +3,10 @@ import Popup from 'reactjs-popup';
 import SaveIcon from '@mui/icons-material/Save';
 import './save.css';
 import { ProBroButton } from '../../assets/button';
-import { SortColumn } from 'react-data-grid';
-import { IFilters } from '@app/common/types';
 
 export interface SavePopupProps {
-    wherePhrase: string;
-    sortColumns: SortColumn[];
-    filters: IFilters;
-    selectedRows: Set<string>;
     isWindowSmall: boolean;
-    handleSaveClick: (preferenceName: string) => void;
+    handleSaveClick: (customViewName: string) => void;
 }
 
 export default function ExportPopup({
@@ -23,7 +17,7 @@ export default function ExportPopup({
     const [dragging, setDragging] = React.useState(false);
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
 
-    const [preferenceName, setPreferenceName] = React.useState('');
+    const [customViewName, setCustomViewName] = React.useState('');
 
     const handleMouseDown = (e: React.MouseEvent) => {
         setDragging(true);
@@ -63,15 +57,15 @@ export default function ExportPopup({
     }, [dragging, offset]);
 
     const handleSavePreference = () => {
-        handleSaveClick(preferenceName);
-        setPreferenceName('');
+        handleSaveClick(customViewName);
+        setCustomViewName('');
     };
 
     return (
         <Popup
             onClose={() => {
                 setPosition({ x: 0, y: 0 });
-                setPreferenceName('');
+                setCustomViewName('');
             }}
             trigger={
                 <ProBroButton startIcon={<SaveIcon />}>
@@ -94,27 +88,30 @@ export default function ExportPopup({
                     >
                         Saving Custom View
                     </div>
-                    <div className='content'>
-                        <b>Enter Name for Saved Preference:</b>
+                    <div className='content' style={{ marginTop: '10px' }}>
+                        <b>Enter Name for Custom View:</b>
                         <br />
                         <input
                             type='text'
-                            value={preferenceName}
-                            onChange={(e) => setPreferenceName(e.target.value)}
-                            placeholder='Preference Name'
+                            value={customViewName}
+                            onChange={(e) => setCustomViewName(e.target.value)}
+                            placeholder='Custom View Name'
                         />
                     </div>
 
-                    <div className='btn-container'>
+                    <div
+                        className='btn-container'
+                        style={{ marginTop: '30px' }}
+                    >
                         <ProBroButton
                             className='button'
                             onClick={() => {
                                 handleSavePreference();
                                 close();
                             }}
-                            disabled={preferenceName === ''}
+                            disabled={customViewName === ''}
                         >
-                            Save Preference
+                            Save Custom View
                         </ProBroButton>
 
                         <ProBroButton
