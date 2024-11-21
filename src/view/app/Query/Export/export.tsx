@@ -147,6 +147,7 @@ export default function ExportPopup({
             setIsSaving(false);
         } else {
             const exportData = message.data.rawData.map(
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 ({ ROWID, RECID, ...rest }) => {
                     return rest;
                 }

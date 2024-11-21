@@ -245,15 +245,18 @@ export class QueryEditor {
                                     exportData =
                                         dumpFileFormatter.getDumpFile();
                                 }
-                                const obj = {
-                                    id: command.id,
-                                    command: 'export',
-                                    tableName: this.tableNode.tableName,
-                                    data: exportData,
-                                    format: command.params!.exportType,
-                                };
-                                this.logger.log('data:', obj);
-                                this.panel?.webview.postMessage(obj);
+                                if (command.params !== undefined) {
+                                    const obj = {
+                                        id: command.id,
+                                        command: 'export',
+                                        tableName: this.tableNode.tableName,
+                                        data: exportData,
+                                        format: command.params.exportType,
+                                    };
+
+                                    this.logger.log('data:', obj);
+                                    this.panel?.webview.postMessage(obj);
+                                }
                             });
                         break;
                     case CommandAction.SaveCustomQuery:

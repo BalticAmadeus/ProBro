@@ -9,7 +9,7 @@
         "DB",
         "Explorer"
     ],
-    "version": "1.7.0",
+    "version": "1.8.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -98,7 +98,7 @@
                 },
                 "pro-bro.filterAsYouType": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "markdownDescription": "Use filter as you type"
                 },
                 "pro-bro.logging.react": {
@@ -115,7 +115,7 @@
                 },
                 "pro-bro.development.useNewDbClient": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "markdownDescription": "Use New DB Client implementation"
                 },
                 "pro-bro.gridTextSize": {

@@ -68,8 +68,8 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                         isWindowSmall={isWindowSmall}
                     />
                     <QueryDropdownMenu
-                        setIsFormatted={setIsFormatted}
                         isWindowSmall={isWindowSmall}
+                        setIsFormatted={setIsFormatted}
                     />
                     <UpdatePopup
                         selectedRows={otherProps.selectedRows}
