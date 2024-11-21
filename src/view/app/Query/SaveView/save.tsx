@@ -88,7 +88,7 @@ export default function ExportPopup({
                     >
                         Saving Custom View
                     </div>
-                    <div className='content' style={{ marginTop: '10px' }}>
+                    <div className='content'>
                         <b>Enter Name for Custom View:</b>
                         <br />
                         <input
@@ -99,10 +99,7 @@ export default function ExportPopup({
                         />
                     </div>
 
-                    <div
-                        className='btn-container'
-                        style={{ marginTop: '30px' }}
-                    >
+                    <div className='btn-container'>
                         <ProBroButton
                             className='button'
                             onClick={() => {
