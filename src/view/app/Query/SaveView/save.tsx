@@ -76,7 +76,7 @@ export default function ExportPopup({
         >
             {(close) => (
                 <div
-                    className='modal'
+                    className='modal-save'
                     style={{
                         transform: `translate(${position.x}px, ${position.y}px)`,
                     }}
@@ -92,6 +92,7 @@ export default function ExportPopup({
                         <b>Enter Name for Custom View:</b>
                         <br />
                         <input
+                            className='input'
                             type='text'
                             value={customViewName}
                             onChange={(e) => setCustomViewName(e.target.value)}
@@ -99,7 +100,7 @@ export default function ExportPopup({
                         />
                     </div>
 
-                    <div className='btn-container'>
+                    <div className='btn-container-save'>
                         <ProBroButton
                             className='button'
                             onClick={() => {
@@ -108,7 +109,7 @@ export default function ExportPopup({
                             }}
                             disabled={customViewName === ''}
                         >
-                            Save Custom View
+                            Save
                         </ProBroButton>
 
                         <ProBroButton
