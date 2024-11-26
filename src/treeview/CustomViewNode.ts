@@ -30,6 +30,7 @@ export class CustomViewNode extends TableNode {
             label: this.name,
             description: this.tableName,
             collapsibleState: vscode.TreeItemCollapsibleState.None,
+            tooltip: this.connectionLabel,
         };
     }
 }
