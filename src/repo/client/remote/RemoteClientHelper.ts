@@ -13,6 +13,7 @@ export class RemoteClientHelper implements IClientHelper {
         return RemoteClientHelper.instance;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public formConnectionString(_config: IRemoteConnectionConfig): string {
         throw new Error('Method not yet implemented.');
     }

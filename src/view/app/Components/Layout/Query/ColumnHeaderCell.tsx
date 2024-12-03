@@ -88,7 +88,6 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
                 </Box>
             )}
             <TextField
-                autoFocus={isCellSelected}
                 variant='standard'
                 size='small'
                 defaultValue={filters.columns[column.key]}

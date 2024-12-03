@@ -1,11 +1,9 @@
 import { UIEvent } from 'react';
-
 import DataGrid, {
     SortColumn,
     CopyEvent,
     DataGridHandle,
 } from 'react-data-grid';
-
 import { Box } from '@mui/material';
 import { IFilters } from '@app/common/types';
 import ColumnHeaderCell from './ColumnHeaderCell';
