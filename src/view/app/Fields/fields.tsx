@@ -9,7 +9,7 @@ import * as columnName from './column.json';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
-import ColumnHeaderCell from '@app/Components/Layout/Common/ColumnHeaderCell';
+import ColumnHeaderCell from '@app/Components/Layout/Query/ColumnHeaderCell';
 
 interface FieldsExplorerEvent {
     id: string;

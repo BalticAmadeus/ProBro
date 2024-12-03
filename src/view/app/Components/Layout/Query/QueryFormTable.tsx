@@ -8,7 +8,7 @@ import DataGrid, {
 
 import { Box } from '@mui/material';
 import { IFilters } from '@app/common/types';
-import ColumnHeaderCell from '../Common/ColumnHeaderCell';
+import ColumnHeaderCell from './ColumnHeaderCell';
 
 interface QueryFormTableProps {
     queryGridRef: React.RefObject<DataGridHandle>;
