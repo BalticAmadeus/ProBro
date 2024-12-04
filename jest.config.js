@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-const path = require('path');
+
+import { pathsToModuleNameMapper } from 'ts-jest';
+import path from 'path';
 /** @type {import('jest').Config} */
 const config = {
     roots: ['<rootDir>/src/test/nodeTest', '<rootDir>/src/test/viewTest'],
@@ -12,4 +14,4 @@ const config = {
     },
 };
 
-module.exports = config;
+export default config;
