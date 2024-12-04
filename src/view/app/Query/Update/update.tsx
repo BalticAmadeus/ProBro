@@ -1,6 +1,5 @@
-import { CommandAction, ICommand, ProcessAction } from '../../model';
-import './update.css';
-import { Logger } from '../../../../common/Logger';
+import { CommandAction, ICommand, ProcessAction } from '@app/model';
+import '@Update/update.css';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { Fragment, MouseEvent, ReactNode, useEffect, useState } from 'react';
 
@@ -8,7 +7,6 @@ import { ProBroButton } from '@assets/button';
 import AddIcon from '@mui/icons-material/AddTwoTone';
 import DeleteIcon from '@mui/icons-material/DeleteTwoTone';
 import EditIcon from '@mui/icons-material/EditTwoTone';
-import Popup from 'reactjs-popup';
 import {
     Box,
     Checkbox,
@@ -16,6 +14,8 @@ import {
     FormControlLabel,
     Typography,
 } from '@mui/material';
+import { Logger } from '@src/common/Logger';
+import Popup from 'reactjs-popup';
 
 export interface UpdatePopupProps {
     selectedRows: Set<string>;

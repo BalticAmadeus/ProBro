@@ -1,24 +1,24 @@
 import {
-    useState,
+    ChangeEvent,
+    Fragment,
+    KeyboardEvent,
+    MouseEvent,
+    useEffect,
+    useLayoutEffect,
     useMemo,
     useRef,
-    useEffect,
-    Fragment,
-    useLayoutEffect,
-    ChangeEvent,
-    MouseEvent,
-    KeyboardEvent,
+    useState,
 } from 'react';
 
-import { FieldRow, CommandAction, TableDetails, ICommand } from '../model';
-import DataGrid, { SelectColumn } from 'react-data-grid';
+import { CommandAction, FieldRow, ICommand, TableDetails } from '@app/model';
 import type { SortColumn } from 'react-data-grid';
-import { Logger } from '../../../common/Logger';
+import DataGrid, { SelectColumn } from 'react-data-grid';
 
-import * as columnName from './column.json';
+import * as columnName from '@Fields/column.json';
+import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
+import { Logger } from '@src/common/Logger';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
-import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
 
 interface FieldsExplorerEvent {
     id: string;

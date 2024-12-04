@@ -1,6 +1,6 @@
+import SortArrowIcon from '@app/Components/Layout/Query/SortArrorIcon';
 import { Box, TextField, Typography } from '@mui/material';
 import { Fragment } from 'react';
-import SortArrowIcon from './SortArrorIcon';
 
 interface ColumnHeaderCellProps {
     column: any;

@@ -1,8 +1,8 @@
-import { Box, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check';
-import { useState } from 'react';
 import { ProBroButton } from '@assets/button';
+import CheckIcon from '@mui/icons-material/Check';
 import DnsIcon from '@mui/icons-material/DnsTwoTone';
+import { Box, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
+import { useState } from 'react';
 
 interface QueryDropdownMenuProps {
     setIsFormatted: (isFormatted: boolean) => void; // Prop to set formatting state in parent
@@ -16,7 +16,7 @@ enum FormatType {
 
 const QueryDropdownMenu: React.FC<QueryDropdownMenuProps> = ({
     setIsFormatted,
-    isWindowSmall
+    isWindowSmall,
 }) => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [selectedOption, setSelectedOption] = useState<FormatType>(
@@ -35,13 +35,11 @@ const QueryDropdownMenu: React.FC<QueryDropdownMenuProps> = ({
 
     return (
         <Box display='inline-block'>
-
             <ProBroButton
                 onClick={(event) => setAnchorEl(event.currentTarget)}
                 startIcon={<DnsIcon />}
             >
                 {!isWindowSmall && 'FORMAT'}
-
             </ProBroButton>
             <Menu
                 id='format-menu'

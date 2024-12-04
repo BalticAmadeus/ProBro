@@ -1,12 +1,12 @@
+import { IFilters } from '@app/common/types';
+import ColumnHeaderCell from '@app/Components/Layout/Query/ColumnHeaderCell';
+import { Box } from '@mui/material';
 import { UIEvent } from 'react';
 import DataGrid, {
-    SortColumn,
     CopyEvent,
     DataGridHandle,
+    SortColumn,
 } from 'react-data-grid';
-import { Box } from '@mui/material';
-import { IFilters } from '@app/common/types';
-import ColumnHeaderCell from './ColumnHeaderCell';
 
 interface QueryFormTableProps {
     queryGridRef: React.RefObject<DataGridHandle>;

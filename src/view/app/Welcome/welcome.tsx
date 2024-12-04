@@ -1,8 +1,8 @@
-import './welcome.css';
+import '@Welcome/welcome.css';
 
-import ReactMarkdown from 'react-markdown';
-import readme from '@root/README.md';
 import changelog from '@root/CHANGELOG.md';
+import readme from '@root/README.md';
+import ReactMarkdown from 'react-markdown';
 
 // Welcome.tsx
 function Welcome() {

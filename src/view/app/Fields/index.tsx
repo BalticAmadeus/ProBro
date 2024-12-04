@@ -1,7 +1,7 @@
-import { createRoot } from 'react-dom/client';
-import './fields.css';
-import Fields from './fields';
+import Fields from '@Fields/fields';
+import '@Fields/fields.css';
 import { VSCode } from '@utils/vscode';
+import { createRoot } from 'react-dom/client';
 
 declare global {
     interface Window {
