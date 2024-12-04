@@ -22,6 +22,7 @@
     "editor.formatOnSave": true,
     "editor.tabSize": 4,
     "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit",
         "source.fixAll.eslint": "explicit"
     },
     "[typescript]": {
@@ -30,5 +31,6 @@
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "workbench.colorCustomizations": {}
+    "workbench.colorCustomizations": {},
+    "typescript.preferences.importModuleSpecifier": "non-relative"
 }
