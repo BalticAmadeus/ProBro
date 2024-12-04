@@ -6,6 +6,10 @@ const config = {
     globals: {
         __DEV__: true,
     },
+    moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
+    transform: {
+        '^.+\\.tsx?$': 'ts-jest',
+    },
 };
 
 module.exports = config;
