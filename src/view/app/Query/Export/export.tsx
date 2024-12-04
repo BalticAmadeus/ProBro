@@ -1,14 +1,14 @@
-import * as React from 'react';
-import Popup from 'reactjs-popup';
-import exportFromJSON from 'export-from-json';
-import { CommandAction, DataToExport, ICommand } from '../../model';
-import ExportIcon from '@mui/icons-material/FileDownloadTwoTone';
-import './export.css';
-import { ProBroButton } from '../../assets/button';
-import { Logger } from '../../../../common/Logger';
-import { SortColumn } from 'react-data-grid';
 import { IFilters } from '@app/common/types';
+import { CommandAction, DataToExport, ICommand } from '@app/model';
+import { ProBroButton } from '@assets/button';
+import ExportIcon from '@mui/icons-material/FileDownloadTwoTone';
+import { Logger } from '@src/common/Logger';
+import '@src/view/app/Query/Export/export.css';
 import { getVSCodeAPI } from '@utils/vscode';
+import exportFromJSON from 'export-from-json';
+import * as React from 'react';
+import { SortColumn } from 'react-data-grid';
+import Popup from 'reactjs-popup';
 
 export interface ExportPopupProps {
     wherePhrase: string;
@@ -187,9 +187,9 @@ export default function ExportPopup({
 
     return (
         <Popup
-        onClose={() => {
-            setPosition({ x: 0, y: 0 });
-        }}
+            onClose={() => {
+                setPosition({ x: 0, y: 0 });
+            }}
             trigger={
                 <ProBroButton startIcon={<ExportIcon />}>
                     {isWindowSmall ? '' : 'Export'}

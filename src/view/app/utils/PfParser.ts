@@ -1,4 +1,4 @@
-import { IConfig } from '../model';
+import { IConfig } from '@app/model';
 
 export class PfParser {
     public parse(pfFile: string): IConfig {

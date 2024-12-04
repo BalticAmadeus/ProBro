@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Constants } from './../../../common/Constants';
+import { Constants } from '@src/common/Constants';
 
 
 export class VersionChecker{

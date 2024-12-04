@@ -1,20 +1,21 @@
+import { IConfig } from '@app/model';
+import { Constants } from '@src/common/Constants';
+import * as connectionNode from '@src/treeview/DbConnectionNode';
+import { INode } from '@src/treeview/INode';
+import { IRefreshCallback } from '@src/treeview/IRefreshCallback';
 import * as vscode from 'vscode';
-import { Constants } from '../common/Constants';
-import { IConfig } from '../view/app/model';
-import { INode } from './INode';
-import * as connectionNode from './DbConnectionNode';
-import { IRefreshCallback } from './IRefreshCallback';
 
 export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
-    private _onDidChangeTreeData: vscode.EventEmitter<INode | undefined | void> =
-        new vscode.EventEmitter<INode | undefined | void>();
+    private _onDidChangeTreeData: vscode.EventEmitter<
+        INode | undefined | void
+    > = new vscode.EventEmitter<INode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<INode | undefined | void> =
         this._onDidChangeTreeData.event;
 
     constructor(
-    private context: vscode.ExtensionContext,
-    private readonly groupName: string,
-    private readonly refreshCallback: IRefreshCallback
+        private context: vscode.ExtensionContext,
+        private readonly groupName: string,
+        private readonly refreshCallback: IRefreshCallback
     ) {}
 
     refresh(): void {
@@ -35,15 +36,15 @@ export class DatabaseListProvider implements vscode.TreeDataProvider<INode> {
         return element.getChildren();
     }
     private async getConnectionNodes(): Promise<
-    connectionNode.DbConnectionNode[]
+        connectionNode.DbConnectionNode[]
     > {
         const connections = this.context.globalState.get<{
-      [key: string]: IConfig;
-    }>(`${Constants.globalExtensionKey}.dbconfig`);
+            [key: string]: IConfig;
+        }>(`${Constants.globalExtensionKey}.dbconfig`);
 
         const workspaceConnections = this.context.workspaceState.get<{
-      [key: string]: IConfig;
-    }>(`${Constants.globalExtensionKey}.dbconfig`);
+            [key: string]: IConfig;
+        }>(`${Constants.globalExtensionKey}.dbconfig`);
 
         const connectionNodes = [];
         if (connections) {

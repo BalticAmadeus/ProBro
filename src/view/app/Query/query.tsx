@@ -1,25 +1,25 @@
 import { Fragment, UIEvent, useEffect, useRef, useState } from 'react';
 
 import {
-    SortColumn,
-    SelectColumn,
     CopyEvent,
     DataGridHandle,
+    SelectColumn,
+    SortColumn,
 } from 'react-data-grid';
 
-import { IOETableData } from '@src/db/Oe';
-import { CommandAction, ICommand, ProcessAction } from '../model';
-import { Logger } from '@src/common/Logger';
-import { getOEFormatLength } from '@utils/oe/format/oeFormat';
-import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
-import { IErrorObject, emptyErrorObj } from '@utils/error';
 import QueryFormFooter from '@app/Components/Layout/Query/QueryFormFooter';
 import QueryFormHead from '@app/Components/Layout/Query/QueryFormHead';
-import { IFilters } from '@app/common/types';
-import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
-import { green, red } from '@mui/material/colors';
-import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
 import QueryFormTable from '@app/Components/Layout/Query/QueryFormTable';
+import { IFilters } from '@app/common/types';
+import { CommandAction, ICommand, ProcessAction } from '@app/model';
+import { green, red } from '@mui/material/colors';
+import { Logger } from '@src/common/Logger';
+import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
+import { IOETableData } from '@src/db/Oe';
+import { IErrorObject, emptyErrorObj } from '@utils/error';
+import { getOEFormatLength } from '@utils/oe/format/oeFormat';
+import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
+import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 
 interface IConfigProps {
     tableData: IOETableData;
@@ -158,7 +158,13 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
         } else {
             setSelectedRows(new Set());
             setOpen(false);
-            reloadData(loaded + (action === ProcessAction.Insert || action === ProcessAction.Copy ? 1 : 0));
+            reloadData(
+                loaded +
+                    (action === ProcessAction.Insert ||
+                    action === ProcessAction.Copy
+                        ? 1
+                        : 0)
+            );
         }
     };
 
@@ -186,7 +192,6 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
             });
             setIsDataRetrieved(false);
             return;
-
         } else if (message.data.columns.length !== columns.length) {
             const fontSize = +window
                 .getComputedStyle(
@@ -436,9 +441,8 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
     function handleCopy({ sourceRow, sourceColumnKey }: CopyEvent<any>): void {
         if (window.isSecureContext) {
             navigator.clipboard.writeText(sourceRow[sourceColumnKey]);
-        }        
+        }
     }
-
 
     const getCellHeight = () => {
         if (configuration.gridTextSize === 'Large') {

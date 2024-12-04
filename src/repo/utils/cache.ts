@@ -1,5 +1,5 @@
-import { TableNode } from '../../treeview/TableNode';
-import { Constants } from '../../common/Constants';
+import { Constants } from '@src/common/Constants';
+import { TableNode } from '@src/treeview/TableNode';
 
 enum CacheKeyNames {
     SelectedColumns = 'selectedColumns',

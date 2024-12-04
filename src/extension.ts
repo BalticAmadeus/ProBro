@@ -1,23 +1,27 @@
+import {
+    getOEVersion,
+    parseOEFile,
+    readFile,
+} from '@src/common/OpenEdgeJsonReaded';
 import * as vscode from 'vscode';
 import { QuickPickItem } from 'vscode';
-import { ConnectionEditor } from './webview/ConnectionEditor';
-import { Constants } from './common/Constants';
-import { QueryEditor } from './webview/QueryEditor';
-import { DbConnectionNode } from './treeview/DbConnectionNode';
-import { FieldsViewProvider } from './webview/FieldsViewProvider';
-import { IndexesViewProvider } from './webview/IndexesViewProvider';
-import { GroupListProvider } from './treeview/GroupListProvider';
-import { TableNode } from './treeview/TableNode';
-import { TablesListProvider } from './treeview/TablesListProvider';
-import { DbConnectionUpdater } from './treeview/DbConnectionUpdater';
-import { IPort, IConfig } from './view/app/model';
-import { readFile, getOEVersion, parseOEFile } from './common/OpenEdgeJsonReaded';
 
-import { VersionChecker } from './view/app/Welcome/VersionChecker';
-import { WelcomePageProvider } from './webview/WelcomePageProvider';
-import { AblHoverProvider } from './providers/AblHoverProvider';
-import { queryEditorCache } from './webview/queryEditor/queryEditorCache';
-import { FavoritesProvider } from './treeview/FavoritesProvider';
+import { IConfig, IPort } from '@app/model';
+import { VersionChecker } from '@app/Welcome/VersionChecker';
+import { Constants } from '@src/common/Constants';
+import { AblHoverProvider } from '@src/providers/AblHoverProvider';
+import { DbConnectionNode } from '@src/treeview/DbConnectionNode';
+import { DbConnectionUpdater } from '@src/treeview/DbConnectionUpdater';
+import { FavoritesProvider } from '@src/treeview/FavoritesProvider';
+import { GroupListProvider } from '@src/treeview/GroupListProvider';
+import { TableNode } from '@src/treeview/TableNode';
+import { TablesListProvider } from '@src/treeview/TablesListProvider';
+import { ConnectionEditor } from '@src/webview/ConnectionEditor';
+import { FieldsViewProvider } from '@src/webview/FieldsViewProvider';
+import { IndexesViewProvider } from '@src/webview/IndexesViewProvider';
+import { QueryEditor } from '@src/webview/QueryEditor';
+import { queryEditorCache } from '@src/webview/queryEditor/queryEditorCache';
+import { WelcomePageProvider } from '@src/webview/WelcomePageProvider';
 
 export async function activate(context: vscode.ExtensionContext) {
     let extensionPort: number;
@@ -126,17 +130,20 @@ export async function activate(context: vscode.ExtensionContext) {
     const defaultRuntimeName = ablConfig.get<string>('defaultRuntime');
     const oeRuntimes: Array<any> = ablConfig.get<Array<any>>('runtimes') ?? [];
 
-    const oejRuntimeName = await vscode.workspace.findFiles('openedge-project.json').then((files) => {
-        if (files.length > 0) {
-            return getOEJRuntime(files[0]);
-        } else {
-            vscode.window.showWarningMessage('No openedge-project.json file found at the root.');
-            return null;
-        }
-    });
-    
-    function getOEJRuntime (uri: vscode.Uri)
-    {
+    const oejRuntimeName = await vscode.workspace
+        .findFiles('openedge-project.json')
+        .then((files) => {
+            if (files.length > 0) {
+                return getOEJRuntime(files[0]);
+            } else {
+                vscode.window.showWarningMessage(
+                    'No openedge-project.json file found at the root.'
+                );
+                return null;
+            }
+        });
+
+    function getOEJRuntime(uri: vscode.Uri) {
         allFileContent = readFile(uri.path);
         const oeRuntime = getOEVersion(allFileContent);
         return oeRuntime;
@@ -144,18 +151,25 @@ export async function activate(context: vscode.ExtensionContext) {
 
     let defaultRuntime;
     if (Array.isArray(oeRuntimes) && oeRuntimes.length > 0) {
-        defaultRuntime =
-            oeRuntimes.some((runtime) => runtime.name === oejRuntimeName)
-                ? oeRuntimes.find((runtime) => runtime.name === oejRuntimeName)
-                : oeRuntimes.find((runtime) => runtime.name === defaultRuntimeName) || oeRuntimes[0];
+        defaultRuntime = oeRuntimes.some(
+            (runtime) => runtime.name === oejRuntimeName
+        )
+            ? oeRuntimes.find((runtime) => runtime.name === oejRuntimeName)
+            : oeRuntimes.find(
+                  (runtime) => runtime.name === defaultRuntimeName
+              ) || oeRuntimes[0];
     } else {
-        vscode.window.showWarningMessage('No OpenEdge runtime configured on this machine.');
+        vscode.window.showWarningMessage(
+            'No OpenEdge runtime configured on this machine.'
+        );
         defaultRuntime = null;
     }
 
     if (defaultRuntime !== null) {
         Constants.dlc = defaultRuntime.path;
-        vscode.window.showInformationMessage(`Runtime selected : ${defaultRuntime.name}, Path: ${defaultRuntime.path}`);
+        vscode.window.showInformationMessage(
+            `Runtime selected : ${defaultRuntime.name}, Path: ${defaultRuntime.path}`
+        );
     }
 
     let importConnections = vscode.workspace

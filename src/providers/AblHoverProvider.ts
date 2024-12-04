@@ -1,3 +1,4 @@
+import { TablesListProvider } from '@src/treeview/TablesListProvider';
 import {
     Hover,
     HoverProvider,
@@ -6,7 +7,6 @@ import {
     ProviderResult,
     TextDocument,
 } from 'vscode';
-import { TablesListProvider } from '../treeview/TablesListProvider';
 
 export class AblHoverProvider implements HoverProvider {
     private tableListProvider: TablesListProvider;

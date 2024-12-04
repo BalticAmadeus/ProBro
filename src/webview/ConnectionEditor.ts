@@ -1,10 +1,10 @@
-import path = require('path');
-import * as vscode from 'vscode';
-import { ICommand, CommandAction, IConfig } from '../view/app/model';
-import { Constants } from '../common/Constants';
-import { Logger } from '../common/Logger';
+import { CommandAction, ICommand, IConfig } from '@app/model';
+import { Constants } from '@src/common/Constants';
+import { Logger } from '@src/common/Logger';
+import { ProcessorFactory } from '@src/repo/processor/ProcessorFactory';
 import { v4 as uuid } from 'uuid';
-import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
+import * as vscode from 'vscode';
+import path = require('path');
 
 export class ConnectionEditor {
     private readonly panel: vscode.WebviewPanel | undefined;

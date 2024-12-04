@@ -1,4 +1,4 @@
-import { IExportDumpData, IOePsc } from '../db/Oe';
+import { IExportDumpData, IOePsc } from '@src/db/Oe';
 
 export class DumpFileFormatter {
     protected dumpData = '';

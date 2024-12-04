@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { useState, useMemo } from 'react';
-import { CommandAction, IndexRow } from '../model';
-import DataGrid from 'react-data-grid';
-import type { SortColumn } from 'react-data-grid';
-import * as columnName from './column.json';
-import { Logger } from '../../../common/Logger';
+import { CommandAction, IndexRow } from '@app/model';
+import * as columnName from '@Indexes/column.json';
+import { Logger } from '@src/common/Logger';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
+import * as React from 'react';
+import { useMemo, useState } from 'react';
+import type { SortColumn } from 'react-data-grid';
+import DataGrid from 'react-data-grid';
 
 type Comparator = (a: IndexRow, b: IndexRow) => number;
 function getComparator(sortColumn: string): Comparator {

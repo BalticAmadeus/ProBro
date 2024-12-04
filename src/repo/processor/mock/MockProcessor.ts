@@ -1,4 +1,4 @@
-import { IProcessor } from '../IProcessor';
+import { IProcessor } from '@src/db/IProcessor';
 
 export class MockProcessor implements IProcessor {
     private static instance: MockProcessor | undefined = undefined; // singleton
