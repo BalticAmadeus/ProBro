@@ -1,7 +1,7 @@
-import { PfParser } from '../view/app/utils/PfParser';
-import { IConfig } from '../view/app/model';
-import * as path from 'path';
+import { IConfig } from '@app/model';
+import { PfParser } from '@app/utils/PfParser';
 import * as fs from 'fs';
+import * as path from 'path';
 
 export function readFile(fileName: string): string {
     while (fileName.charAt(0) === '/') {
@@ -12,10 +12,10 @@ export function readFile(fileName: string): string {
     return allFileContents;
 }
 
-export function getOEVersion(fileContent: string){
+export function getOEVersion(fileContent: string) {
     const data = JSON.parse(fileContent);
-    const  {oeversion} = data;
-    
+    const { oeversion } = data;
+
     return oeversion;
 }
 

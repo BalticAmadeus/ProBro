@@ -1,6 +1,6 @@
-import { ConnectionParams } from '../../../view/app/model';
-import { AClient } from '../AClient';
-import { IClient } from '../IClient';
+import { ConnectionParams } from '@app/model';
+import { AClient } from '@src/repo/client/AClient';
+import { IClient } from '@src/repo/client/IClient';
 
 export class RemoteClient extends AClient implements IClient {
     public constructor(connectionParams: ConnectionParams) {

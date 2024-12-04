@@ -1,12 +1,11 @@
-import * as vscode from 'vscode';
+import { ConnectionParams } from '@app/model';
+import { Constants } from '@src/common/Constants';
+import { AClient } from '@src/repo/client/AClient';
+import { IClient } from '@src/repo/client/IClient';
 import * as cp from 'child_process';
 import * as fs from 'fs';
+import * as vscode from 'vscode';
 import path = require('path');
-
-import { AClient } from '../AClient';
-import { IClient } from '../IClient';
-import { Constants } from '../../../common/Constants';
-import { ConnectionParams } from '../../../view/app/model';
 
 export class LocalClient extends AClient implements IClient {
     private static localClient: LocalClient | undefined = undefined;

@@ -1,3 +1,3 @@
-import UpdatePopup from './update';
+import UpdatePopup from '@Query/Update/update';
 
 export default UpdatePopup;

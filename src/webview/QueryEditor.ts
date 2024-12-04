@@ -1,16 +1,16 @@
 import path = require('path');
+import { Constants } from '@src/common/Constants';
+import { Logger } from '@src/common/Logger';
+import { IOETableData } from '@src/db/Oe';
+import { ProcessorFactory } from '@src/repo/processor/ProcessorFactory';
+import { FavoritesProvider } from '@src/treeview/FavoritesProvider';
+import { TableNode, TableNodeSourceEnum } from '@src/treeview/TableNode';
+import { TablesListProvider } from '@src/treeview/TablesListProvider';
+import { CommandAction, ICommand, IConfig } from '@src/view/app/model';
+import { DumpFileFormatter } from '@src/webview/DumpFileFormatter';
+import { FieldsViewProvider } from '@src/webview/FieldsViewProvider';
+import { queryEditorCache } from '@src/webview/queryEditor/queryEditorCache';
 import * as vscode from 'vscode';
-import { ICommand, CommandAction, IConfig } from '../view/app/model';
-import { IOETableData } from '../db/Oe';
-import { TableNode, TableNodeSourceEnum } from '../treeview/TableNode';
-import { TablesListProvider } from '../treeview/TablesListProvider';
-import { FieldsViewProvider } from './FieldsViewProvider';
-import { DumpFileFormatter } from './DumpFileFormatter';
-import { Logger } from '../common/Logger';
-import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
-import { Constants } from '../common/Constants';
-import { queryEditorCache } from './queryEditor/queryEditorCache';
-import { FavoritesProvider } from '../treeview/FavoritesProvider';
 
 export class QueryEditor {
     public readonly panel: vscode.WebviewPanel | undefined;

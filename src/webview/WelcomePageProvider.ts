@@ -1,6 +1,6 @@
+import { Constants } from '@src/common/Constants';
 import path = require('path');
 import * as vscode from 'vscode';
-import { Constants } from '../common/Constants';
 
 export class WelcomePageProvider {
     private readonly panel: vscode.WebviewPanel | undefined;
@@ -11,8 +11,8 @@ export class WelcomePageProvider {
     );
 
     constructor(
-    private context: vscode.ExtensionContext,
-    private version: string
+        private context: vscode.ExtensionContext,
+        private version: string
     ) {
         this.extensionPath = context.asAbsolutePath('');
 
@@ -24,7 +24,9 @@ export class WelcomePageProvider {
                 enableScripts: true,
                 retainContextWhenHidden: true,
                 localResourceRoots: [
-                    vscode.Uri.file(path.join(context.asAbsolutePath(''), 'out')),
+                    vscode.Uri.file(
+                        path.join(context.asAbsolutePath(''), 'out')
+                    ),
                 ],
             }
         );
@@ -62,16 +64,19 @@ export class WelcomePageProvider {
     }
 
     private getWebviewContent(): string {
-    // Local path to main script run in the webview
+        // Local path to main script run in the webview
         const reactAppPathOnDisk = vscode.Uri.file(
             path.join(
                 vscode.Uri.file(
-                    this.context.asAbsolutePath(path.join('out/view/app', 'welcome.js'))
+                    this.context.asAbsolutePath(
+                        path.join('out/view/app', 'welcome.js')
+                    )
                 ).fsPath
             )
         );
 
-        const reactAppUri = this.panel?.webview.asWebviewUri(reactAppPathOnDisk);
+        const reactAppUri =
+            this.panel?.webview.asWebviewUri(reactAppPathOnDisk);
         console.log('reactAppUri', reactAppUri);
         const cspSource = this.panel?.webview.cspSource;
         console.log('cspSource', cspSource);

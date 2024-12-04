@@ -1,16 +1,16 @@
-import * as vscode from 'vscode';
-import { INode } from './INode';
-import * as tableNode from './TableNode';
-import { IConfig, TableCount } from '../view/app/model';
-import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
-import { TableNode, TableNodeSourceEnum } from './TableNode';
-import { PanelViewProvider } from '../webview/PanelViewProvider';
+import { IConfig, TableCount } from '@app/model';
+import { Constants } from '@src/common/Constants';
+import { ProcessorFactory } from '@src/repo/processor/ProcessorFactory';
 import {
     getAllColumnsCache,
     getSelectedColumnsCache,
     updateAllColumnsCache,
-} from '../repo/utils/cache';
-import { Constants } from '../common/Constants';
+} from '@src/repo/utils/cache';
+import { INode } from '@src/treeview/INode';
+import * as tableNode from '@src/treeview/TableNode';
+import { TableNode, TableNodeSourceEnum } from '@src/treeview/TableNode';
+import { PanelViewProvider } from '@src/webview/PanelViewProvider';
+import * as vscode from 'vscode';
 
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     public config: IConfig | undefined;

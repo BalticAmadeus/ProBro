@@ -5,11 +5,11 @@ import { UpdatePopupProps } from '@Query/Update/update';
 import QueryAutocompleteInput, {
     QueryAutocompleteInputProps,
 } from '@app/Components/Layout/Query/QueryAutocompleteInput';
+import QueryDropdownMenu from '@app/Components/Layout/Query/QueryDropdownMenu';
 import { ProBroButton } from '@assets/button';
 import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
 import { Box, Stack, Typography } from '@mui/material';
 import { MouseEventHandler, useEffect } from 'react';
-import QueryDropdownMenu from './QueryDropdownMenu';
 
 interface QueryFormHeadProps
     extends QueryAutocompleteInputProps,

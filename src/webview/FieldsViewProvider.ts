@@ -1,10 +1,10 @@
+import { CommandAction, ICommand } from '@app/model';
+import { Logger } from '@src/common/Logger';
+import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
+import { updateSelectedColumnsCache } from '@src/repo/utils/cache';
+import { PanelViewProvider } from '@src/webview/PanelViewProvider';
+import { QueryEditor } from '@src/webview/QueryEditor';
 import * as vscode from 'vscode';
-import { QueryEditor } from './QueryEditor';
-import { CommandAction, ICommand } from '../view/app/model';
-import { PanelViewProvider } from './PanelViewProvider';
-import { Logger } from '../common/Logger';
-import { updateSelectedColumnsCache } from '../repo/utils/cache';
-import { HighlightFieldsCommand } from '../common/commands/fieldsCommands';
 
 export class FieldsViewProvider extends PanelViewProvider {
     private queryEditors: QueryEditor[] = [];

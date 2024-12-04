@@ -1,5 +1,5 @@
+import { ConnectionParams } from '@app/model';
 import * as Net from 'net';
-import { ConnectionParams } from '../../view/app/model';
 
 export class AClient {
     protected connectionParams: ConnectionParams;
@@ -24,8 +24,8 @@ export class AClient {
                 () => {
                     console.log(
                         'V2: TCP connection established with the server at ' +
-              this.connectionParams.port.toString() +
-              '.'
+                            this.connectionParams.port.toString() +
+                            '.'
                     );
                 }
             );

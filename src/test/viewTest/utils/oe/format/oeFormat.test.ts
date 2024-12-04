@@ -1,5 +1,5 @@
+import { getOEFormatLength } from '@app/utils/oe/format/oeFormat';
 import { expect } from '@jest/globals';
-import { getOEFormatLength } from '../../../../../view/app/utils/oe/format/oeFormat';
 
 describe('getOEFormatLength', () => {
     it('should return the correct length for "xxx"', () => {
