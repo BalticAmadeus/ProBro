@@ -11,7 +11,7 @@ jobs:
                   command: npm install
             - run:
                 name: Lint Codebase
-                command: npx eslint /src --max-warnings=-1
+                command: npx eslint src/ --max-warnings=-1
             - run:
                   name: Compile Extension
                   command: npm run compile:extension
