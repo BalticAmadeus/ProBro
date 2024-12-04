@@ -1,5 +1,5 @@
 import { CommandAction, ICommand, ProcessAction } from '@app/model';
-import '@Update/update.css';
+import '@src/view/app/Query/Update/update.css';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { Fragment, MouseEvent, ReactNode, useEffect, useState } from 'react';
 

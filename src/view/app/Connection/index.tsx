@@ -1,10 +1,10 @@
 import { createRoot } from 'react-dom/client';
 
 import { IConfig } from '@app/model';
+import '@Connection/connection.css';
+import ConnectionForm from '@Connection/connectionForm';
 import { ISettings } from '@src/common/IExtensionSettings';
 import { VSCode } from '@utils/vscode';
-import '@Connection/connectionForm.css';
-import ConnectionForm from '@Connection/connectionForm';
 
 declare global {
     interface Window {

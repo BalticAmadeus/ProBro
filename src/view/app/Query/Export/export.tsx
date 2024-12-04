@@ -1,9 +1,9 @@
 import { IFilters } from '@app/common/types';
 import { CommandAction, DataToExport, ICommand } from '@app/model';
 import { ProBroButton } from '@assets/button';
-import '@Export/export.css';
 import ExportIcon from '@mui/icons-material/FileDownloadTwoTone';
 import { Logger } from '@src/common/Logger';
+import '@src/view/app/Query/Export/export.css';
 import { getVSCodeAPI } from '@utils/vscode';
 import exportFromJSON from 'export-from-json';
 import * as React from 'react';
