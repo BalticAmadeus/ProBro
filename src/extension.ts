@@ -570,7 +570,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 const timestamp = port.timestamp;
                 if (
                     port.isInUse &&
-                    timestamp &&
+                    timestamp !== undefined &&
                     Date.now() - timestamp > 35000
                 ) {
                     portList[id].isInUse = false;
