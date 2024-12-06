@@ -121,10 +121,11 @@ function Fields() {
                     priority={props.priority}
                     onSort={props.onSort}
                     isCellSelected={props.isCellSelected}
+                    setCellSelected={props.setCellSelected}
                     filters={filters}
                     setFilters={setFilters}
-                    configuration={configuration}
-                />
+                    configuration={configuration} 
+                    />
             );
         };
     });
