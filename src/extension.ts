@@ -11,13 +11,19 @@ import { TableNode } from './treeview/TableNode';
 import { TablesListProvider } from './treeview/TablesListProvider';
 import { DbConnectionUpdater } from './treeview/DbConnectionUpdater';
 import { IPort, IConfig } from './view/app/model';
-import { readFile, getOEVersion, parseOEFile } from './common/OpenEdgeJsonReaded';
+import {
+    readFile,
+    getOEVersion,
+    parseOEFile,
+} from './common/OpenEdgeJsonReaded';
 
 import { VersionChecker } from './view/app/Welcome/VersionChecker';
 import { WelcomePageProvider } from './webview/WelcomePageProvider';
 import { AblHoverProvider } from './providers/AblHoverProvider';
 import { queryEditorCache } from './webview/queryEditor/queryEditorCache';
 import { FavoritesProvider } from './treeview/FavoritesProvider';
+import { CustomViewProvider } from './treeview/CustomViewProvider';
+import { CustomViewNode } from './treeview/CustomViewNode';
 
 export async function activate(context: vscode.ExtensionContext) {
     let extensionPort: number;
@@ -126,17 +132,20 @@ export async function activate(context: vscode.ExtensionContext) {
     const defaultRuntimeName = ablConfig.get<string>('defaultRuntime');
     const oeRuntimes: Array<any> = ablConfig.get<Array<any>>('runtimes') ?? [];
 
-    const oejRuntimeName = await vscode.workspace.findFiles('openedge-project.json').then((files) => {
-        if (files.length > 0) {
-            return getOEJRuntime(files[0]);
-        } else {
-            vscode.window.showWarningMessage('No openedge-project.json file found at the root.');
-            return null;
-        }
-    });
-    
-    function getOEJRuntime (uri: vscode.Uri)
-    {
+    const oejRuntimeName = await vscode.workspace
+        .findFiles('openedge-project.json')
+        .then((files) => {
+            if (files.length > 0) {
+                return getOEJRuntime(files[0]);
+            } else {
+                vscode.window.showWarningMessage(
+                    'No openedge-project.json file found at the root.'
+                );
+                return null;
+            }
+        });
+
+    function getOEJRuntime(uri: vscode.Uri) {
         allFileContent = readFile(uri.path);
         const oeRuntime = getOEVersion(allFileContent);
         return oeRuntime;
@@ -144,18 +153,25 @@ export async function activate(context: vscode.ExtensionContext) {
 
     let defaultRuntime;
     if (Array.isArray(oeRuntimes) && oeRuntimes.length > 0) {
-        defaultRuntime =
-            oeRuntimes.some((runtime) => runtime.name === oejRuntimeName)
-                ? oeRuntimes.find((runtime) => runtime.name === oejRuntimeName)
-                : oeRuntimes.find((runtime) => runtime.name === defaultRuntimeName) || oeRuntimes[0];
+        defaultRuntime = oeRuntimes.some(
+            (runtime) => runtime.name === oejRuntimeName
+        )
+            ? oeRuntimes.find((runtime) => runtime.name === oejRuntimeName)
+            : oeRuntimes.find(
+                  (runtime) => runtime.name === defaultRuntimeName
+              ) || oeRuntimes[0];
     } else {
-        vscode.window.showWarningMessage('No OpenEdge runtime configured on this machine.');
+        vscode.window.showWarningMessage(
+            'No OpenEdge runtime configured on this machine.'
+        );
         defaultRuntime = null;
     }
 
     if (defaultRuntime !== null) {
         Constants.dlc = defaultRuntime.path;
-        vscode.window.showInformationMessage(`Runtime selected : ${defaultRuntime.name}, Path: ${defaultRuntime.path}`);
+        vscode.window.showInformationMessage(
+            `Runtime selected : ${defaultRuntime.name}, Path: ${defaultRuntime.path}`
+        );
     }
 
     let importConnections = vscode.workspace
@@ -251,6 +267,19 @@ export async function activate(context: vscode.ExtensionContext) {
         context
     );
 
+    const customViewsProvider = new CustomViewProvider(
+        fieldsProvider,
+        indexesProvider,
+        context
+    );
+
+    const customViews = vscode.window.createTreeView(
+        `${Constants.globalExtensionKey}-custom-views`,
+        { treeDataProvider: customViewsProvider }
+    );
+    customViews.onDidChangeSelection((e) =>
+        customViewsProvider.onDidChangeSelection(e)
+    );
     const favorites = vscode.window.createTreeView(
         `${Constants.globalExtensionKey}-favorites`,
         { treeDataProvider: favoritesProvider }
@@ -285,7 +314,8 @@ export async function activate(context: vscode.ExtensionContext) {
         groupListProvider.onDidChangeSelection(
             e,
             tablesListProvider,
-            favoritesProvider
+            favoritesProvider,
+            customViewsProvider
         )
     );
 
@@ -308,11 +338,41 @@ export async function activate(context: vscode.ExtensionContext) {
             node,
             tablesListProvider,
             favoritesProvider,
+            customViewsProvider,
             fieldsProvider
         );
 
         queryEditorCache.setQueryEditor(key, newQueryEditor);
     };
+
+    const loadCustomView = (node: CustomViewNode): void => {
+        const key = node.getFullName(true) ?? '';
+        const cachedQueryEditor = queryEditorCache.getQueryEditor(key);
+
+        if (cachedQueryEditor) {
+            cachedQueryEditor.setParams(node);
+        }
+    };
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.saveCustomView`,
+            (node: CustomViewNode) => {
+                customViewsProvider.saveCustomView(node);
+                customViewsProvider.refresh(undefined);
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.removeCustomView`,
+            (node: CustomViewNode) => {
+                customViewsProvider.removeCustomViews(node);
+                customViewsProvider.refresh(undefined);
+            }
+        )
+    );
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
@@ -370,6 +430,17 @@ export async function activate(context: vscode.ExtensionContext) {
             (node: TableNode) => {
                 favoritesProvider.selectDbConfig(node);
                 loadQueryEditor(node);
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.queryCustomView`,
+            (node: CustomViewNode) => {
+                customViewsProvider.selectDbConfig(node);
+                loadQueryEditor(node);
+                loadCustomView(node);
             }
         )
     );

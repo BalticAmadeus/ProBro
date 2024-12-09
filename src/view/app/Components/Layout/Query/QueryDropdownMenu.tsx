@@ -16,7 +16,7 @@ enum FormatType {
 
 const QueryDropdownMenu: React.FC<QueryDropdownMenuProps> = ({
     setIsFormatted,
-    isWindowSmall
+    isWindowSmall,
 }) => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [selectedOption, setSelectedOption] = useState<FormatType>(
@@ -35,13 +35,11 @@ const QueryDropdownMenu: React.FC<QueryDropdownMenuProps> = ({
 
     return (
         <Box display='inline-block'>
-
             <ProBroButton
                 onClick={(event) => setAnchorEl(event.currentTarget)}
                 startIcon={<DnsIcon />}
             >
                 {!isWindowSmall && 'FORMAT'}
-
             </ProBroButton>
             <Menu
                 id='format-menu'
