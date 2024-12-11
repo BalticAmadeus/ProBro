@@ -534,7 +534,7 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
             />
             {selectedColumns.length === 0 &&
             <p style={{ textAlign: 'center', marginTop: '0px' }}>
-                No Fields are selected from the tab "Fields Explorer"...
+                No Fields are selected from the tab &quot;Fields Explorer&quot;...
             </p>
             }
             <QueryFormTable
