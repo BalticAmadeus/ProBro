@@ -1,4 +1,4 @@
-import { ICommand } from '../../view/app/model';
+import { ICommand } from '@app/model';
 
 export interface HighlightFieldsCommand extends ICommand {
     column: string;

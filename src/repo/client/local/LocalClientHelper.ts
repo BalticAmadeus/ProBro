@@ -1,5 +1,5 @@
-import { IConfig } from '../../../view/app/model';
-import { IClientHelper } from '../IClientHelper';
+import { IConfig } from '@app/model';
+import { IClientHelper } from '@src/repo/client/IClientHelper';
 
 export class LocalClientHelper implements IClientHelper {
     // singleton

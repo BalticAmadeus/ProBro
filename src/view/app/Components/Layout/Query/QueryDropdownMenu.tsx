@@ -1,8 +1,8 @@
-import { Box, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check';
-import { useState } from 'react';
 import { ProBroButton } from '@assets/button';
+import CheckIcon from '@mui/icons-material/Check';
 import DnsIcon from '@mui/icons-material/DnsTwoTone';
+import { Box, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
+import { useState } from 'react';
 
 interface QueryDropdownMenuProps {
     setIsFormatted: (isFormatted: boolean) => void; // Prop to set formatting state in parent

@@ -1,6 +1,6 @@
+import { TableDetails } from '@app/model';
+import { INode } from '@src/treeview/INode';
 import * as vscode from 'vscode';
-import { TableDetails } from '../view/app/model';
-import { INode } from './INode';
 
 export enum TableNodeSourceEnum {
     Tables = 'tables',

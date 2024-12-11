@@ -1,9 +1,9 @@
 import { createRoot } from 'react-dom/client';
 
-import './query.css';
-import QueryForm from './query';
-import { IOETableData } from '@src/db/Oe';
+import QueryForm from '@Query/query';
+import '@Query/query.css';
 import { ISettings } from '@src/common/IExtensionSettings';
+import { IOETableData } from '@src/db/Oe';
 import { VSCode } from '@utils/vscode';
 
 declare global {

@@ -1,12 +1,12 @@
+import { IFilters } from '@app/common/types';
+import ColumnHeaderCell from '@app/Components/Layout/Query/ColumnHeaderCell';
+import { Box } from '@mui/material';
 import { UIEvent, useEffect, useState } from 'react';
 import DataGrid, {
-    SortColumn,
     CopyEvent,
     DataGridHandle,
+    SortColumn,
 } from 'react-data-grid';
-import { Box } from '@mui/material';
-import { IFilters } from '@app/common/types';
-import ColumnHeaderCell from './ColumnHeaderCell';
 
 interface QueryFormTableProps {
     queryGridRef: React.RefObject<DataGridHandle>;
@@ -47,11 +47,12 @@ const QueryFormTable: React.FC<QueryFormTableProps> = ({
     reloadData,
     setFilters,
 }) => {
-
     const [selectedColumn, setSelectedColumn] = useState<string | null>(null);
 
     const handleOutsideClick = (event: MouseEvent) => {
-        const grid = queryGridRef.current?.element?.contains(event.target as Node);
+        const grid = queryGridRef.current?.element?.contains(
+            event.target as Node
+        );
         if (!grid) {
             setSelectedColumn(null);
         }
@@ -80,7 +81,9 @@ const QueryFormTable: React.FC<QueryFormTableProps> = ({
                         onSort={props.onSort}
                         filters={filters}
                         isCellSelected={selectedColumn === props.column.key}
-                        setCellSelected={() => setSelectedColumn(props.column.key)}
+                        setCellSelected={() =>
+                            setSelectedColumn(props.column.key)
+                        }
                         setFilters={setFilters}
                         configuration={configuration}
                         reloadData={reloadData}

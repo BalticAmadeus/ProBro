@@ -1,29 +1,29 @@
-import * as vscode from 'vscode';
-import { QuickPickItem } from 'vscode';
-import { ConnectionEditor } from './webview/ConnectionEditor';
-import { Constants } from './common/Constants';
-import { QueryEditor } from './webview/QueryEditor';
-import { DbConnectionNode } from './treeview/DbConnectionNode';
-import { FieldsViewProvider } from './webview/FieldsViewProvider';
-import { IndexesViewProvider } from './webview/IndexesViewProvider';
-import { GroupListProvider } from './treeview/GroupListProvider';
-import { TableNode } from './treeview/TableNode';
-import { TablesListProvider } from './treeview/TablesListProvider';
-import { DbConnectionUpdater } from './treeview/DbConnectionUpdater';
-import { IPort, IConfig } from './view/app/model';
 import {
-    readFile,
     getOEVersion,
     parseOEFile,
-} from './common/OpenEdgeJsonReaded';
+    readFile,
+} from '@src/common/OpenEdgeJsonReaded';
+import * as vscode from 'vscode';
+import { QuickPickItem } from 'vscode';
 
-import { VersionChecker } from './view/app/Welcome/VersionChecker';
-import { WelcomePageProvider } from './webview/WelcomePageProvider';
-import { AblHoverProvider } from './providers/AblHoverProvider';
-import { queryEditorCache } from './webview/queryEditor/queryEditorCache';
-import { FavoritesProvider } from './treeview/FavoritesProvider';
-import { CustomViewProvider } from './treeview/CustomViewProvider';
-import { CustomViewNode } from './treeview/CustomViewNode';
+import { IConfig, IPort } from '@app/model';
+import { VersionChecker } from '@app/Welcome/VersionChecker';
+import { Constants } from '@src/common/Constants';
+import { AblHoverProvider } from '@src/providers/AblHoverProvider';
+import { CustomViewNode } from '@src/treeview/CustomViewNode';
+import { CustomViewProvider } from '@src/treeview/CustomViewProvider';
+import { DbConnectionNode } from '@src/treeview/DbConnectionNode';
+import { DbConnectionUpdater } from '@src/treeview/DbConnectionUpdater';
+import { FavoritesProvider } from '@src/treeview/FavoritesProvider';
+import { GroupListProvider } from '@src/treeview/GroupListProvider';
+import { TableNode } from '@src/treeview/TableNode';
+import { TablesListProvider } from '@src/treeview/TablesListProvider';
+import { ConnectionEditor } from '@src/webview/ConnectionEditor';
+import { FieldsViewProvider } from '@src/webview/FieldsViewProvider';
+import { IndexesViewProvider } from '@src/webview/IndexesViewProvider';
+import { QueryEditor } from '@src/webview/QueryEditor';
+import { queryEditorCache } from '@src/webview/queryEditor/queryEditorCache';
+import { WelcomePageProvider } from '@src/webview/WelcomePageProvider';
 
 export async function activate(context: vscode.ExtensionContext) {
     let extensionPort: number;
