@@ -1,5 +1,7 @@
 import ExportPopup from '@Query/Export';
 import { ExportPopupProps } from '@Query/Export/export';
+import SavePopup from '@Query/SaveView';
+import { SavePopupProps } from '@Query/SaveView/save';
 import UpdatePopup from '@Query/Update';
 import { UpdatePopupProps } from '@Query/Update/update';
 import QueryAutocompleteInput, {
@@ -14,7 +16,8 @@ import { MouseEventHandler, useEffect } from 'react';
 interface QueryFormHeadProps
     extends QueryAutocompleteInputProps,
         ExportPopupProps,
-        UpdatePopupProps {
+        UpdatePopupProps,
+        SavePopupProps {
     isWindowSmall: boolean;
     onLoad?: () => void;
     onButtonClick?: MouseEventHandler<HTMLButtonElement>;
@@ -46,6 +49,7 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
             <Stack direction={'row'} alignItems={'center'}>
                 <QueryAutocompleteInput
                     suggestions={otherProps.suggestions}
+                    wherePhrase={otherProps.wherePhrase}
                     setWherePhrase={otherProps.setWherePhrase}
                     onEnter={otherProps.onEnter}
                 ></QueryAutocompleteInput>
@@ -80,6 +84,10 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                         isReadOnly={otherProps.isReadOnly}
                         isWindowSmall={isWindowSmall}
                     ></UpdatePopup>
+                    <SavePopup
+                        isWindowSmall={isWindowSmall}
+                        handleSaveClick={otherProps.handleSaveClick}
+                    ></SavePopup>
                 </Box>
             </Stack>
         </Box>

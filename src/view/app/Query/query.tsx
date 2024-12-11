@@ -247,6 +247,21 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
         );
     };
 
+    const handleCustomViewParams = (message: any) => {
+        const params = message.params;
+
+        if (!params) {
+            return;
+        }
+        try {
+            setWherePhrase(params.wherePhrase);
+            setFilters(params.filters);
+            setSortColumns(params.sortColumns);
+        } catch (error) {
+            console.error('setting params', error);
+        }
+    };
+
     const messageEvent = (event) => {
         const message = event.data;
         logger.log('got query data', message);
@@ -269,6 +284,8 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
             case 'data':
                 handleData(message);
                 break;
+            case 'customViewParams':
+                handleCustomViewParams(message);
         }
         setIsLoading(false);
     };
@@ -305,6 +322,22 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
         setRawRows([]);
         setFormattedRows([]);
         makeQuery(0, loaded, '', sortColumns, filters, 0, 0);
+    }
+
+    function handleSaveClick(name: string) {
+        const command: ICommand = {
+            id: 'saveCustomView',
+            action: CommandAction.SaveCustomQuery,
+            customView: {
+                name,
+                wherePhrase,
+                sortColumns,
+                filters,
+                useDeleteTriggers: configuration.useDeleteTriggers,
+                useWriteTriggers: configuration.useWriteTriggers,
+            },
+        };
+        vscode.postMessage(command);
     }
 
     function makeQuery(
@@ -475,6 +508,9 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 wherePhrase={wherePhrase}
                 setWherePhrase={setWherePhrase}
                 suggestions={selectedColumns}
+                handleSaveClick={(preferenceName) =>
+                    handleSaveClick(preferenceName)
+                }
                 isWindowSmall={isWindowSmall}
                 onEnter={prepareQuery}
                 onButtonClick={(event) => {

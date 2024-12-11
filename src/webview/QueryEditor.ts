@@ -6,11 +6,13 @@ import { ProcessorFactory } from '@src/repo/processor/ProcessorFactory';
 import { FavoritesProvider } from '@src/treeview/FavoritesProvider';
 import { TableNode, TableNodeSourceEnum } from '@src/treeview/TableNode';
 import { TablesListProvider } from '@src/treeview/TablesListProvider';
-import { CommandAction, ICommand, IConfig } from '@src/view/app/model';
+import { CommandAction, ICommand, IConfig, ICustomView, ITableData } from '@src/view/app/model';
 import { DumpFileFormatter } from '@src/webview/DumpFileFormatter';
 import { FieldsViewProvider } from '@src/webview/FieldsViewProvider';
 import { queryEditorCache } from '@src/webview/queryEditor/queryEditorCache';
 import * as vscode from 'vscode';
+import { CustomViewProvider } from '@src/treeview/CustomViewProvider';
+import { CustomViewNode } from '@src/treeview/CustomViewNode';
 
 export class QueryEditor {
     public readonly panel: vscode.WebviewPanel | undefined;
@@ -25,12 +27,14 @@ export class QueryEditor {
     private logger = new Logger(
         this.configuration.get('logging.node') ?? false
     );
+    private customViewData: ICustomView | undefined;
 
     constructor(
         private context: vscode.ExtensionContext,
         private tableNode: TableNode,
         private tableListProvider: TablesListProvider,
         private favoritesProvider: FavoritesProvider,
+        private customViewProvider: CustomViewProvider,
         private fieldProvider: FieldsViewProvider
     ) {
         this.extensionPath = context.asAbsolutePath('');
@@ -47,6 +51,11 @@ export class QueryEditor {
                 break;
             default:
                 return;
+        }
+
+        if (tableNode instanceof CustomViewNode) {
+            config = this.customViewProvider.config;
+            this.customViewData = tableNode.customViewParams;
         }
 
         if (config) {
@@ -104,9 +113,24 @@ export class QueryEditor {
                                 .getTableData(
                                     config,
                                     this.tableNode.tableName,
-                                    command.params
+                                    this.customViewData
+                                        ? this.getParams(command.params!)
+                                        : command.params
                                 )
                                 .then((oe) => {
+                                    if (this.customViewData) {
+                                        const obj = {
+                                            id: command.id,
+                                            command: 'customViewParams',
+                                            params: this.customViewData,
+                                        };
+                                        this.logger.log(
+                                            'customView params: ',
+                                            this.customViewData
+                                        );
+                                        this.panel?.webview.postMessage(obj);
+                                    }
+
                                     if (this.panel) {
                                         const obj = {
                                             id: command.id,
@@ -117,6 +141,7 @@ export class QueryEditor {
                                             data: oe,
                                         };
                                         this.logger.log('data:', obj);
+                                        this.customViewData = undefined;
                                         this.panel?.webview.postMessage(obj);
                                     }
                                 });
@@ -228,6 +253,31 @@ export class QueryEditor {
                                 }
                             });
                         break;
+                    case CommandAction.SaveCustomQuery:
+                        vscode.commands
+                            .executeCommand(
+                                `${Constants.globalExtensionKey}.saveCustomView`,
+                                new CustomViewNode(
+                                    Constants.context,
+                                    this.tableNode,
+                                    command.customView?.name || '',
+                                    command.customView
+                                )
+                            )
+                            .then(
+                                () => {
+                                    console.log(
+                                        'Command executed successfully'
+                                    );
+                                },
+                                (error) => {
+                                    console.error(
+                                        'Error executing command:',
+                                        error
+                                    );
+                                }
+                            );
+                        break;
                 }
             },
             undefined,
@@ -248,6 +298,20 @@ export class QueryEditor {
             context.subscriptions
         );
     }
+
+    public setParams = (node: CustomViewNode): void => {
+        this.customViewData = node.customViewParams;
+    };
+
+    public getParams = (params: ITableData): ITableData => {
+        if (!this.customViewData) {
+            return params;
+        }
+
+        const customViewParams = { ...params, ...this.customViewData };
+
+        return customViewParams;
+    };
 
     public refetchData = (): void => {
         const obj = {

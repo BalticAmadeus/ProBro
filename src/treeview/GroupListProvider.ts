@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 
 import { IConfig } from '@app/model';
 import { Constants } from '@src/common/Constants';
+import { CustomViewProvider } from '@src/treeview/CustomViewProvider';
 import { DbConnectionNode } from '@src/treeview/DbConnectionNode';
 import { FavoritesProvider } from '@src/treeview/FavoritesProvider';
 import * as groupNode from '@src/treeview/GroupNode';
@@ -26,13 +27,15 @@ export class GroupListProvider
     onDidChangeSelection(
         e: vscode.TreeViewSelectionChangeEvent<INode>,
         tablesListProvider: vscode.TreeDataProvider<INode>,
-        favoritesProvider: vscode.TreeDataProvider<INode>
+        favoritesProvider: vscode.TreeDataProvider<INode>,
+        customViewsProvider: vscode.TreeDataProvider<INode>
     ): any {
         if (e.selection.length) {
             if (
                 e.selection[0] instanceof DbConnectionNode &&
                 tablesListProvider instanceof TablesListProvider &&
-                favoritesProvider instanceof FavoritesProvider
+                favoritesProvider instanceof FavoritesProvider &&
+                customViewsProvider instanceof CustomViewProvider
             ) {
                 const nodes = e.selection as DbConnectionNode[];
                 const configs: IConfig[] = [];
@@ -44,11 +47,13 @@ export class GroupListProvider
                 console.log('GroupList', configs);
                 tablesListProvider.refresh(configs);
                 favoritesProvider.refresh(configs);
+                customViewsProvider.refresh(configs);
                 return;
             }
         }
         (tablesListProvider as TablesListProvider).refresh(undefined);
         (favoritesProvider as FavoritesProvider).refresh(undefined);
+        (customViewsProvider as CustomViewProvider).refresh(undefined);
     }
 
     refresh(): void {

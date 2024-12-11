@@ -188,6 +188,12 @@
                     "name": "Table favorites",
                     "contextualTitle": "Table favorites",
                     "title": "Table favorites"
+                },
+                {
+                    "id": "pro-bro-custom-views",
+                    "name": "Custom table views",
+                    "contextualTitle": "Custom table views",
+                    "title": "Custom table views"
                 }
             ]
         },
@@ -264,6 +270,16 @@
                 "command": "pro-bro.queryFavorite",
                 "title": "pro-bro: Query Favorite",
                 "icon": "$(play)"
+            },
+            {
+                "command": "pro-bro.queryCustomView",
+                "title": "pro-bro: Query Custom View",
+                "icon": "$(play)"
+            },
+            {
+                "command": "pro-bro.removeCustomView",
+                "title": "pro-bro: Remove Custom View",
+                "icon": "$(trash)"
             }
         ],
         "menus": {
@@ -334,6 +350,16 @@
                     "command": "pro-bro.queryFavorite",
                     "when": "view == pro-bro-favorites",
                     "group": "inline"
+                },
+                {
+                    "command": "pro-bro.queryCustomView",
+                    "when": "view == pro-bro-custom-views",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.removeCustomView",
+                    "when": "view == pro-bro-custom-views",
+                    "group": "inline"
                 }
             ]
         }
@@ -360,6 +386,7 @@
         "@babel/core": "^7.21.0",
         "@babel/preset-env": "^7.20.2",
         "@babel/preset-typescript": "^7.21.0",
+        "@stylistic/eslint-plugin-js": "^2.11.0",
         "@types/glob": "^7.2.0",
         "@types/mocha": "^9.1.1",
         "@types/node": "14.x",

@@ -1,6 +1,6 @@
-import SortArrowIcon from '@app/Components/Layout/Query/SortArrorIcon';
+import SortArrowIcon from '@app/Components/Layout/Common/SortArrorIcon';
 import { Box, TextField, Typography } from '@mui/material';
-import { Fragment } from 'react';
+import { Fragment, useRef } from 'react';
 
 interface ColumnHeaderCellProps {
     column: any;
@@ -8,10 +8,11 @@ interface ColumnHeaderCellProps {
     priority: number;
     onSort: (multiColumnSort: boolean) => void;
     isCellSelected: boolean;
+    setCellSelected: () => void;
     filters: any;
     setFilters: (filters: any) => void;
     configuration: any;
-    reloadData: (batchSize: number) => void;
+    reloadData?: (batchSize: number) => void;
 }
 
 const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
@@ -20,20 +21,23 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
     priority,
     onSort,
     isCellSelected,
+    setCellSelected,
     filters,
     setFilters,
     configuration,
     reloadData,
 }) => {
+    const cellRef = useRef<HTMLDivElement>(null);
+
+    const handleClick = () => {
+        setCellSelected();
+    };
+
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === ' ' || event.key === 'Enter') {
             event.preventDefault();
             onSort(event.ctrlKey || event.metaKey);
         }
-    };
-
-    const handleClick = (event: React.MouseEvent) => {
-        onSort(event.ctrlKey || event.metaKey);
     };
 
     let timer;
@@ -42,6 +46,7 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
         timer = setTimeout(() => {
             reloadData(configuration.initialBatchSizeLoad);
         }, 500);
+        setCellSelected();
     };
 
     const testKeyDown = (event: React.KeyboardEvent) => {
@@ -64,6 +69,7 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
             {filters.enabled && (
                 <Box>
                     <Box
+                        ref={cellRef}
                         tabIndex={-1}
                         onClick={handleClick}
                         onKeyDown={handleKeyDown}
@@ -94,6 +100,7 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
                 onChange={handleInputKeyDown}
                 onKeyDown={testKeyDown}
                 fullWidth={true}
+                autoFocus={isCellSelected}
                 InputProps={{ disableUnderline: true }}
                 sx={{
                     '& .MuiInputBase-input': {
