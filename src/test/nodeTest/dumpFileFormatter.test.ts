@@ -1,11 +1,11 @@
 import { expect, jest, test } from '@jest/globals';
-import { DumpFileFormatterTest } from '@src/test/nodeTest/DumpFileFormatterTest';
+import { assert } from 'console';
+import { DumpFileFormatterTest } from './DumpFileFormatterTest';
 import {
     testObjInput,
     testOutputDumpData,
     testOutputTrailerInfo,
-} from '@src/test/nodeTest/testObjects';
-import { assert } from 'console';
+} from './testObjects';
 
 afterEach(() => {
     jest.restoreAllMocks();

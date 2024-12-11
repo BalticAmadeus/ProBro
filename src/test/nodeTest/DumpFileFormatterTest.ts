@@ -1,5 +1,5 @@
-import { IExportDumpData } from '@src/db/Oe';
-import { DumpFileFormatter } from '@src/webview/DumpFileFormatter';
+import { IExportDumpData } from '../../db/Oe';
+import { DumpFileFormatter } from '../../webview/DumpFileFormatter';
 
 export class DumpFileFormatterTest extends DumpFileFormatter {
     public dumpData: string = super.dumpData;
