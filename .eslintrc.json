@@ -20,7 +20,7 @@
             ],
             "rules": {
                 "react/prop-types": "off",
-                "@stylistic/js/indent": ["warn", 4]
+                "@stylistic/js/indent": ["warn", 4, {"SwitchCase": 1}]
             }
         }
     ],
