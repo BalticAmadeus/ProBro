@@ -30,7 +30,8 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
 
     const cellRef = useRef<HTMLDivElement>(null);
 
-    const handleClick = () => {
+    const handleClick = (event: React.MouseEvent) => {
+        onSort(event.ctrlKey || event.metaKey);
         setCellSelected();
     };
 
