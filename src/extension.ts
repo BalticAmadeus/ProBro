@@ -569,7 +569,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
             favoritesProvider.countClick();
             if (favoritesProvider.tableClicked.count === 2) {
-                loadQueryEditor(favoritesProvider.node);
+                loadQueryEditor(favoritesProvider.node, true);
             }
         }
     );
@@ -583,7 +583,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
             tablesListProvider.countClick();
             if (tablesListProvider.tableClicked.count === 2) {
-                loadQueryEditor(tablesListProvider.node);
+                loadQueryEditor(tablesListProvider.node, true);
             }
         }
     );
