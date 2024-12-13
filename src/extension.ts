@@ -158,8 +158,8 @@ export async function activate(context: vscode.ExtensionContext) {
         )
             ? oeRuntimes.find((runtime) => runtime.name === oejRuntimeName)
             : oeRuntimes.find(
-                  (runtime) => runtime.name === defaultRuntimeName
-              ) || oeRuntimes[0];
+                (runtime) => runtime.name === defaultRuntimeName
+            ) || oeRuntimes[0];
     } else {
         vscode.window.showWarningMessage(
             'No OpenEdge runtime configured on this machine.'
@@ -322,12 +322,15 @@ export async function activate(context: vscode.ExtensionContext) {
     /**
      * Creates a new query editor or if already open, then reveals it from cache and refetch data
      */
-    const loadQueryEditor = (node: TableNode): void => {
+    const loadQueryEditor = (node: TableNode, reloadFull = false): void => {
         const key = node.getFullName(true) ?? '';
 
         const cachedQueryEditor = queryEditorCache.getQueryEditor(key);
 
         if (cachedQueryEditor) {
+            if (reloadFull) {
+                cachedQueryEditor.resetParams();
+            }
             cachedQueryEditor.panel?.reveal();
             cachedQueryEditor.refetchData();
             return;
@@ -419,7 +422,7 @@ export async function activate(context: vscode.ExtensionContext) {
             `${Constants.globalExtensionKey}.query`,
             (node: TableNode) => {
                 tablesListProvider.selectDbConfig(node);
-                loadQueryEditor(node);
+                loadQueryEditor(node, true);
             }
         )
     );
@@ -429,7 +432,7 @@ export async function activate(context: vscode.ExtensionContext) {
             `${Constants.globalExtensionKey}.queryFavorite`,
             (node: TableNode) => {
                 favoritesProvider.selectDbConfig(node);
-                loadQueryEditor(node);
+                loadQueryEditor(node, true);
             }
         )
     );
@@ -566,7 +569,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
             favoritesProvider.countClick();
             if (favoritesProvider.tableClicked.count === 2) {
-                loadQueryEditor(favoritesProvider.node);
+                loadQueryEditor(favoritesProvider.node, true);
             }
         }
     );
@@ -580,7 +583,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
             tablesListProvider.countClick();
             if (tablesListProvider.tableClicked.count === 2) {
-                loadQueryEditor(tablesListProvider.node);
+                loadQueryEditor(tablesListProvider.node, true);
             }
         }
     );
