@@ -257,6 +257,10 @@
                 "title": "DblClickFavoriteQuery"
             },
             {
+                "command": "pro-bro.dblClickCustomViewQuery",
+                "title": "DblClickCustomViewQuery"
+            },
+            {
                 "command": "pro-bro.addFavourite",
                 "title": "pro-bro: addFavourite",
                 "icon": "$(star-empty)"
