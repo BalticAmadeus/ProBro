@@ -310,14 +310,22 @@ export async function activate(context: vscode.ExtensionContext) {
         groupListProvider
     );
 
-    groups.onDidChangeSelection((e) =>
+    groups.onDidChangeSelection((e) => {
+        clearTreeSelection();
         groupListProvider.onDidChangeSelection(
             e,
             tablesListProvider,
             favoritesProvider,
             customViewsProvider
-        )
-    );
+        );
+    });
+
+    const clearTreeSelection = () => {
+        if (tables?.selection[0]) {
+            console.log('tables cleared');
+            tables.reveal(tables.selection[0], { select: false, focus: false });
+        }
+    };
 
     /**
      * Creates a new query editor or if already open, then reveals it from cache and refetch data

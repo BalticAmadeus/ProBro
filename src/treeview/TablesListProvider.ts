@@ -178,6 +178,10 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
         return element.getChildren();
     }
 
+    public getParent(element: TableNode): TableNode | undefined {
+        return element.parent;
+    }
+
     private async getGroupNodes(): Promise<void> {
         this.tableNodes = [];
         if (this.configs) {
