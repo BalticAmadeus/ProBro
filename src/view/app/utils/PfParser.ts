@@ -47,6 +47,7 @@ export class PfParser {
             .forEach((param) => {
                 param = ' ' + param;
                 param.match(/(\s-[A-Za-z0-9]+)/g)?.forEach((key) => {
+                    key = key.trim();
                     let regexStr;
                     if (new RegExp(`(${key}\\s)('|")`).test(param)) {
                         regexStr = `(${key}\\s)('|")([^'^"]*)('|")`;
@@ -58,24 +59,24 @@ export class PfParser {
                         return;
                     }
                     switch (key) {
-                        case ' -db':
+                        case '-db':
                             config.name = keyVal[0].substring(key.length + 1);
                             break;
-                        case ' -U':
+                        case '-U':
                             config.user = keyVal[0].substring(key.length + 1);
                             break;
-                        case ' -P':
+                        case '-P':
                             config.password = keyVal[0].substring(
                                 key.length + 1
                             );
                             break;
-                        case ' -H':
+                        case '-H':
                             config.host = keyVal[0].substring(key.length + 1);
                             break;
-                        case ' -S':
+                        case '-S':
                             config.port = keyVal[0].substring(key.length + 1);
                             break;
-                        case ' -RO': {
+                        case '-RO': {
                             const ROFlag = keyVal[0].split(/\s+/)[0];
                             config.isReadOnly = true;
                             if (config.params) {
