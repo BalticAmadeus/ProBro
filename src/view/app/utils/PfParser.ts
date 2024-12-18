@@ -55,8 +55,6 @@ export class PfParser {
                         regexStr = `(${key}\\s*)([\\S]+)*`;
                     }
                     const keyVal = param.match(new RegExp(regexStr));
-                    console.warn(key);
-                    console.warn('KEYVAL:' + keyVal);
                     if (!keyVal) {
                         return;
                     }
