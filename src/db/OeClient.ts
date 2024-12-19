@@ -1,8 +1,8 @@
-import * as Net from 'net';
+import { Constants } from '@src/common/Constants';
 import * as cp from 'child_process';
-import { Constants } from '../common/Constants';
-import * as vscode from 'vscode';
 import * as fs from 'fs';
+import * as Net from 'net';
+import * as vscode from 'vscode';
 import path = require('path');
 
 class OEClient {
@@ -35,36 +35,37 @@ class OEClient {
 
     public init(): Promise<any> {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        return this.runProc().then((resolve) => {
-            this.client = new Net.Socket();
-            this.client.connect(this.port, this.host, () => {
-                console.log(
-                    'TCP connection established with the server at ' +
-                        this.port.toString() +
-                        '.'
-                );
-            });
-            // The client can also receive data from the server by reading from its socket.
-            this.client.on('data', (chunk) => {
-                console.log('Data received from the server');
-                this.data += chunk.toString();
-                if (this.data.endsWith('\n')) {
-                    this.dataFinish(this.data);
-                }
-            });
+        return this.runProc()
+            .then((resolve) => {
+                this.client = new Net.Socket();
+                this.client.connect(this.port, this.host, () => {
+                    console.log(
+                        'TCP connection established with the server at ' +
+                            this.port.toString() +
+                            '.'
+                    );
+                });
+                // The client can also receive data from the server by reading from its socket.
+                this.client.on('data', (chunk) => {
+                    console.log('Data received from the server');
+                    this.data += chunk.toString();
+                    if (this.data.endsWith('\n')) {
+                        this.dataFinish(this.data);
+                    }
+                });
 
-            this.client.on('end', () => {
-                console.log('Requested an end to the TCP connection');
-            });
+                this.client.on('end', () => {
+                    console.log('Requested an end to the TCP connection');
+                });
 
-            console.log('V1: OE Client initialized');
-            return this;
-        })
-        .catch((err) => {
-            return new Promise(() => {
-                throw new Error(err);
+                console.log('V1: OE Client initialized');
+                return this;
+            })
+            .catch((err) => {
+                return new Promise(() => {
+                    throw new Error(err);
+                });
             });
-        });
     }
 
     private runProc(): Promise<any> {
@@ -167,11 +168,14 @@ class OEClient {
                     )
                 ) {
                     this.procFinish(dataString);
-                }
-                else if (dataString.startsWith('Failed to initialize client:')){
-                    return this.procFinish(new Promise(() => {
-                        throw new Error(dataString);
-                    }));
+                } else if (
+                    dataString.startsWith('Failed to initialize client:')
+                ) {
+                    return this.procFinish(
+                        new Promise(() => {
+                            throw new Error(dataString);
+                        })
+                    );
                 }
             });
 
@@ -233,7 +237,7 @@ async function getOEClient(): Promise<any> {
 
         try {
             return await client.init();
-        } catch (err : any) {
+        } catch (err: any) {
             return new Promise(() => {
                 throw new Error(err.message);
             });

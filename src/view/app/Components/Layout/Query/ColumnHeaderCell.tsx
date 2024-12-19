@@ -1,6 +1,6 @@
+import SortArrowIcon from '@app/Components/Layout/Common/SortArrorIcon';
 import { Box, TextField, Typography } from '@mui/material';
 import { Fragment, useRef } from 'react';
-import SortArrowIcon from '../Common/SortArrorIcon';
 
 interface ColumnHeaderCellProps {
     column: any;
@@ -27,7 +27,6 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
     configuration,
     reloadData,
 }) => {
-
     const cellRef = useRef<HTMLDivElement>(null);
 
     const handleClick = (event: React.MouseEvent) => {

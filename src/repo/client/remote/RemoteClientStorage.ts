@@ -1,20 +1,20 @@
-import {
-    IRemoteConnectionConfig
-} from '../../../view/app/model';
-import { IClient } from '../IClient';
-import { RemoteClient } from './RemoteClient';
+import { IRemoteConnectionConfig } from '@app/model';
+import { IClient } from '@src/repo/client/IClient';
+import { RemoteClient } from '@src/repo/client/remote/RemoteClient';
 
 export class RemoteClientStorage {
     private static remoteClientMap: Map<string, IClient> = new Map<
-    string,
-    RemoteClient
-  >();
+        string,
+        RemoteClient
+    >();
 
     public static async getInstance(
         connectionConfig: IRemoteConnectionConfig
     ): Promise<IClient> {
         if (
-            !RemoteClientStorage.remoteClientMap.has(connectionConfig.connectionId)
+            !RemoteClientStorage.remoteClientMap.has(
+                connectionConfig.connectionId
+            )
         ) {
             RemoteClientStorage.remoteClientMap.set(
                 connectionConfig.connectionId,

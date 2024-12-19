@@ -1,17 +1,17 @@
 import ExportPopup from '@Query/Export';
 import { ExportPopupProps } from '@Query/Export/export';
-import { ProBroButton } from '@assets/button';
-import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
-import { MouseEventHandler, useEffect } from 'react';
-import UpdatePopup from '@Query/Update';
-import { UpdatePopupProps } from '@Query/Update/update';
-import { Box, Stack, Typography } from '@mui/material';
-import QueryAutocompleteInput, {
-    QueryAutocompleteInputProps,
-} from './QueryAutocompleteInput';
-import QueryDropdownMenu from './QueryDropdownMenu';
 import SavePopup from '@Query/SaveView';
 import { SavePopupProps } from '@Query/SaveView/save';
+import UpdatePopup from '@Query/Update';
+import { UpdatePopupProps } from '@Query/Update/update';
+import QueryAutocompleteInput, {
+    QueryAutocompleteInputProps,
+} from '@app/Components/Layout/Query/QueryAutocompleteInput';
+import QueryDropdownMenu from '@app/Components/Layout/Query/QueryDropdownMenu';
+import { ProBroButton } from '@assets/button';
+import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
+import { Box, Stack, Typography } from '@mui/material';
+import { MouseEventHandler, useEffect } from 'react';
 
 interface QueryFormHeadProps
     extends QueryAutocompleteInputProps,

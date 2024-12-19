@@ -1,9 +1,9 @@
+import { IConfig } from '@app/model';
+import { Constants } from '@src/common/Constants';
+import { TableNode, TableNodeSourceEnum } from '@src/treeview/TableNode';
+import { TablesListProvider } from '@src/treeview/TablesListProvider';
+import { PanelViewProvider } from '@src/webview/PanelViewProvider';
 import * as vscode from 'vscode';
-import { TableNode, TableNodeSourceEnum } from './TableNode';
-import { TablesListProvider } from './TablesListProvider';
-import { PanelViewProvider } from '../webview/PanelViewProvider';
-import { IConfig } from '../view/app/model';
-import { Constants } from '../common/Constants';
 
 export class FavoritesProvider extends TablesListProvider {
     public _onDidChangeTreeData: vscode.EventEmitter<

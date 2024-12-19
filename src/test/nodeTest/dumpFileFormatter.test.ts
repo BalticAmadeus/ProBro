@@ -1,11 +1,11 @@
 import { expect, jest, test } from '@jest/globals';
 import { assert } from 'console';
+import { DumpFileFormatterTest } from './DumpFileFormatterTest';
 import {
     testObjInput,
     testOutputDumpData,
     testOutputTrailerInfo,
 } from './testObjects';
-import { DumpFileFormatterTest } from './DumpFileFormatterTest';
 
 afterEach(() => {
     jest.restoreAllMocks();
@@ -14,7 +14,10 @@ afterEach(() => {
 test('formatDumpFile calls other methods ', () => {
     const dumpFileFormatterTest = new DumpFileFormatterTest();
     const spyDumpData = jest.spyOn(dumpFileFormatterTest, 'formatDumpData');
-    const spyTrailerInfo = jest.spyOn(dumpFileFormatterTest, 'formatTrailerInfo');
+    const spyTrailerInfo = jest.spyOn(
+        dumpFileFormatterTest,
+        'formatTrailerInfo'
+    );
     const spyDumpFile = jest.spyOn(dumpFileFormatterTest, 'combineDumpFile');
 
     dumpFileFormatterTest.formatDumpFile(testObjInput, 'test', 'test');
@@ -36,11 +39,11 @@ test('combineDumpFile combines data to dump file in right format', () => {
     dumpFileFormatterTest.combineDumpFile();
 
     const testReturnValue =
-    'test dump Data\r\n' +
-    '.\r\n' +
-    'test trailer info\r\n' +
-    '.\r\n' +
-    '0000000021';
+        'test dump Data\r\n' +
+        '.\r\n' +
+        'test trailer info\r\n' +
+        '.\r\n' +
+        '0000000021';
 
     assert(testReturnValue, dumpFileFormatterTest.dumpFile);
 });
@@ -53,6 +56,11 @@ test('formatDumpData formatted correctly with add data types', () => {
 
 test('formatTrailerInfo formatted correctly', () => {
     const dumpFileFormatterTest = new DumpFileFormatterTest();
-    dumpFileFormatterTest.formatTrailerInfo(testObjInput.psc, 'testing', 'testDb', 4);
+    dumpFileFormatterTest.formatTrailerInfo(
+        testObjInput.psc,
+        'testing',
+        'testDb',
+        4
+    );
     assert(testOutputTrailerInfo, dumpFileFormatterTest.trailerInfo);
 });
