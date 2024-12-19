@@ -4,8 +4,11 @@ import { TableNode, TableNodeSourceEnum } from './TableNode';
 import { IConfig, ICustomView } from '../view/app/model';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
 import { CustomViewNode } from './CustomViewNode';
+import { Constants } from '../common/Constants';
 
 export class CustomViewProvider extends TablesListProvider {
+    public override node: CustomViewNode | undefined;
+
     public _onDidChangeTreeData: vscode.EventEmitter<
         TableNode | undefined | void
     > = new vscode.EventEmitter<TableNode | undefined | void>();
@@ -20,8 +23,21 @@ export class CustomViewProvider extends TablesListProvider {
         super(fieldProvider, indexesProvider, context);
     }
 
-    public getTreeItem(element: CustomViewNode): vscode.TreeItem {
-        return element.getTreeItem();
+    /**
+     * Gets the tree item for a given table node. Adds a command to open the favorite table when double-clicked.
+     * @param element The table node to get the tree item for.
+     * @returns The tree item for the provided table node.
+     */
+    public getTreeItem(element: TableNode): vscode.TreeItem {
+        const treeItem = element.getTreeItem();
+
+        treeItem.command = {
+            command: `${Constants.globalExtensionKey}.dblClickCustomViewQuery`,
+            title: 'Open Favorite Table',
+            arguments: [element],
+        };
+
+        return treeItem;
     }
     public async getChildren(
         element?: CustomViewNode

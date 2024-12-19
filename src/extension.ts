@@ -158,8 +158,8 @@ export async function activate(context: vscode.ExtensionContext) {
         )
             ? oeRuntimes.find((runtime) => runtime.name === oejRuntimeName)
             : oeRuntimes.find(
-                (runtime) => runtime.name === defaultRuntimeName
-            ) || oeRuntimes[0];
+                  (runtime) => runtime.name === defaultRuntimeName
+              ) || oeRuntimes[0];
     } else {
         vscode.window.showWarningMessage(
             'No OpenEdge runtime configured on this machine.'
@@ -557,6 +557,21 @@ export async function activate(context: vscode.ExtensionContext) {
 
             quickPick.onDidHide(() => quickPick.dispose());
             quickPick.show();
+        }
+    );
+
+    vscode.commands.registerCommand(
+        `${Constants.globalExtensionKey}.dblClickCustomViewQuery`,
+        () => {
+            if (customViewsProvider.node === undefined) {
+                return;
+            }
+
+            customViewsProvider.countClick();
+            if (customViewsProvider.tableClicked.count === 2) {
+                loadQueryEditor(customViewsProvider.node);
+                loadCustomView(customViewsProvider.node);
+            }
         }
     );
 
