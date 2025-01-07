@@ -15,7 +15,6 @@ export class TableNode implements INode {
     public connectionLabel: string;
     public cache: TableDetails | undefined;
     public source: TableNodeSourceEnum;
-    public readonly parent?: TableNode;
 
     constructor(
         private context: vscode.ExtensionContext,

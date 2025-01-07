@@ -145,9 +145,6 @@ export class FavoritesProvider extends TablesListProvider {
             return [];
         }
     }
-    public getParent(element: TableNode): TableNode | undefined {
-        return element.parent;
-    }
 
     public refresh(configs: IConfig[] | undefined): void {
         if (configs !== undefined) {

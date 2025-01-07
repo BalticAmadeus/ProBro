@@ -310,22 +310,14 @@ export async function activate(context: vscode.ExtensionContext) {
         groupListProvider
     );
 
-    groups.onDidChangeSelection((e) => {
-        clearTreeSelection();
+    groups.onDidChangeSelection((e) =>
         groupListProvider.onDidChangeSelection(
             e,
             tablesListProvider,
             favoritesProvider,
             customViewsProvider
-        );
-    });
-
-    const clearTreeSelection = () => {
-        if (tables?.selection[0]) {
-            console.log('tables cleared');
-            tables.reveal(tables.selection[0], { select: false, focus: false });
-        }
-    };
+        )
+    );
 
     /**
      * Creates a new query editor or if already open, then reveals it from cache and refetch data
@@ -363,6 +355,32 @@ export async function activate(context: vscode.ExtensionContext) {
         if (cachedQueryEditor) {
             cachedQueryEditor.setParams(node);
         }
+    };
+
+    const queryEditorDblClick = async (
+        node: TableNode,
+        reloadFull = false
+    ): Promise<void> => {
+        let key;
+        let cachedQueryEditor;
+
+        const nodeList = await favoritesProvider.getChildren(undefined);
+        const newNode = nodeList.find(
+            (correctNode) => node.tableName === correctNode.tableName
+        );
+
+        if (newNode) {
+            node = newNode;
+            key = node.getFullName(true) ?? '';
+            cachedQueryEditor = queryEditorCache.getQueryEditor(key);
+        }
+
+        if (!cachedQueryEditor) {
+            favoritesProvider.selectDbConfig(node);
+            favoritesProvider.displayData(node, false);
+        }
+
+        loadQueryEditor(node, reloadFull);
     };
 
     context.subscriptions.push(
@@ -577,7 +595,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
             favoritesProvider.countClick();
             if (favoritesProvider.tableClicked.count === 2) {
-                loadQueryEditor(favoritesProvider.node, true);
+                queryEditorDblClick(favoritesProvider.node, true);
             }
         }
     );
