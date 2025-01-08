@@ -210,7 +210,10 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 }
             });
             setColumns([SelectColumn, ...message.data.columns]);
-            if (message.columns.length !== 0 && message.columns !== undefined) {
+            if (
+                message.columns?.length !== 0 &&
+                message.columns !== undefined
+            ) {
                 setSelectedColumns([...message.columns]);
             } else {
                 setSelectedColumns([
