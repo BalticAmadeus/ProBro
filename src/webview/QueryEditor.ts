@@ -55,12 +55,14 @@ export class QueryEditor {
         case TableNodeSourceEnum.Favorites:
             config = this.favoritesProvider.config;
             break;
+        case TableNodeSourceEnum.Custom:
+            config = this.customViewProvider.config;
+            break;
         default:
             return;
         }
 
         if (tableNode instanceof CustomViewNode) {
-            config = this.customViewProvider.config;
             this.customViewData = tableNode.customViewParams;
         }
 

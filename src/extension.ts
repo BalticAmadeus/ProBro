@@ -7,7 +7,7 @@ import { DbConnectionNode } from './treeview/DbConnectionNode';
 import { FieldsViewProvider } from './webview/FieldsViewProvider';
 import { IndexesViewProvider } from './webview/IndexesViewProvider';
 import { GroupListProvider } from './treeview/GroupListProvider';
-import { TableNode } from './treeview/TableNode';
+import { TableNode, TableNodeSourceEnum } from './treeview/TableNode';
 import { TablesListProvider } from './treeview/TablesListProvider';
 import { DbConnectionUpdater } from './treeview/DbConnectionUpdater';
 import { IPort, IConfig } from './view/app/model';
@@ -363,8 +363,22 @@ export async function activate(context: vscode.ExtensionContext) {
     ): Promise<void> => {
         let key;
         let cachedQueryEditor;
+        let nodeList;
 
-        const nodeList = await favoritesProvider.getChildren(undefined);
+        switch (node.source) {
+            case TableNodeSourceEnum.Tables:
+                nodeList = tablesListProvider.tableNodes;
+                break;
+            case TableNodeSourceEnum.Favorites:
+                nodeList = await favoritesProvider.getChildren(undefined);
+                break;
+            case TableNodeSourceEnum.Custom:
+                nodeList = await customViewsProvider.getChildren(undefined);
+                break;
+            default:
+                nodeList = tablesListProvider.tableNodes;
+        }
+
         const newNode = nodeList.find(
             (correctNode) => node.tableName === correctNode.tableName
         );
@@ -376,8 +390,20 @@ export async function activate(context: vscode.ExtensionContext) {
         }
 
         if (!cachedQueryEditor) {
-            favoritesProvider.selectDbConfig(node);
-            favoritesProvider.displayData(node, false);
+            switch (node.source) {
+                case TableNodeSourceEnum.Tables:
+                    tablesListProvider.selectDbConfig(node);
+                    tablesListProvider.displayData(node, false);
+                    break;
+                case TableNodeSourceEnum.Favorites:
+                    favoritesProvider.selectDbConfig(node);
+                    favoritesProvider.displayData(node, false);
+                    break;
+                case TableNodeSourceEnum.Custom:
+                    customViewsProvider.selectDbConfig(node);
+                    customViewsProvider.displayData(node, false);
+                    break;
+            }
         }
 
         loadQueryEditor(node, reloadFull);
@@ -595,7 +621,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
             customViewsProvider.countClick();
             if (customViewsProvider.tableClicked.count === 2) {
-                loadQueryEditor(customViewsProvider.node);
+                queryEditorDblClick(customViewsProvider.node);
                 loadCustomView(customViewsProvider.node);
             }
         }
@@ -624,7 +650,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
             tablesListProvider.countClick();
             if (tablesListProvider.tableClicked.count === 2) {
-                loadQueryEditor(tablesListProvider.node, true);
+                queryEditorDblClick(tablesListProvider.node, true);
             }
         }
     );
