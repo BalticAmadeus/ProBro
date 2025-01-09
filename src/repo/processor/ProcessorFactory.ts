@@ -1,10 +1,10 @@
-import { IProcessor } from './IProcessor';
-import { ProcessorType } from './ProcessorType';
-import { DbProcessor } from './database/DbProcessor';
-import { MockProcessor } from './mock/MockProcessor';
-import { DatabaseProcessor } from '../../db/DatabaseProcessor';
+import { Constants } from '@src/common/Constants';
+import { DatabaseProcessor } from '@src/db/DatabaseProcessor';
+import { IProcessor } from '@src/db/IProcessor';
+import { ProcessorType } from '@src/repo/processor/ProcessorType';
+import { DbProcessor } from '@src/repo/processor/database/DbProcessor';
+import { MockProcessor } from '@src/repo/processor/mock/MockProcessor';
 import * as vscode from 'vscode';
-import { Constants } from '../../common/Constants';
 
 export class ProcessorFactory {
     private static readonly processorType: ProcessorType =

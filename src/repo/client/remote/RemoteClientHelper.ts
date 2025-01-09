@@ -1,5 +1,5 @@
-import { IRemoteConnectionConfig } from '../../../view/app/model';
-import { IClientHelper } from '../IClientHelper';
+import { IRemoteConnectionConfig } from '@app/model';
+import { IClientHelper } from '@src/repo/client/IClientHelper';
 
 export class RemoteClientHelper implements IClientHelper {
     // singleton

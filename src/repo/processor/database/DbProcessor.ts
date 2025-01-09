@@ -1,17 +1,17 @@
 import * as vscode from 'vscode';
 
-import { IProcessor } from '../IProcessor';
 import {
     ConnectionType,
     IConfig,
     IConnectionConfig,
     ITableData,
     TableDetails,
-} from '../../../view/app/model';
-import { IOEParams } from '../../../db/Oe';
-import { ClientFactory } from '../../client/ClientFactory';
-import { Logger } from '../../../common/Logger';
-import { Constants } from '../../../common/Constants';
+} from '@app/model';
+import { Constants } from '@src/common/Constants';
+import { Logger } from '@src/common/Logger';
+import { IProcessor } from '@src/db/IProcessor';
+import { IOEParams } from '@src/db/Oe';
+import { ClientFactory } from '@src/repo/client/ClientFactory';
 
 export class DbProcessor implements IProcessor {
     private static instance: DbProcessor | undefined = undefined; // singleton

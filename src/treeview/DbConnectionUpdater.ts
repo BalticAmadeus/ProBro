@@ -1,7 +1,7 @@
+import { ConnectionStatus, IConfig } from '@app/model';
+import { ProcessorFactory } from '@src/repo/processor/ProcessorFactory';
+import { IRefreshCallback } from '@src/treeview/IRefreshCallback';
 import * as vscode from 'vscode';
-import { ConnectionStatus, IConfig } from '../view/app/model';
-import { IRefreshCallback } from './IRefreshCallback';
-import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
 
 export class DbConnectionUpdater {
     private locked = false;
@@ -106,7 +106,10 @@ export class DbConnectionUpdater {
                 }
 
                 if (this.context.workspaceState) {
-                    await this.updateSingleStatus(connectionId, 'workspaceState');
+                    await this.updateSingleStatus(
+                        connectionId,
+                        'workspaceState'
+                    );
                 }
             }
         } finally {

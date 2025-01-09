@@ -1,4 +1,4 @@
-import { QueryEditor } from '../QueryEditor';
+import { QueryEditor } from '@src/webview/QueryEditor';
 
 const cache = new Map<string, QueryEditor>();
 

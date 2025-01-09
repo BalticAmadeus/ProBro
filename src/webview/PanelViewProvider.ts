@@ -1,10 +1,10 @@
 import path = require('path');
+import { CommandAction, ICommand } from '@app/model';
+import { Constants } from '@src/common/Constants';
+import { FavoritesProvider } from '@src/treeview/FavoritesProvider';
+import { TableNode } from '@src/treeview/TableNode';
+import { TablesListProvider } from '@src/treeview/TablesListProvider';
 import * as vscode from 'vscode';
-import { Constants } from '../common/Constants';
-import { CommandAction, ICommand } from '../view/app/model';
-import { TableNode } from '../treeview/TableNode';
-import { TablesListProvider } from '../treeview/TablesListProvider';
-import { FavoritesProvider } from '../treeview/FavoritesProvider';
 
 export class PanelViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = `${Constants.globalExtensionKey}-panel`;

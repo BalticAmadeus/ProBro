@@ -1,3 +1,3 @@
 export interface IClient {
-  sendRequest(cmd: string): Promise<string>;
+    sendRequest(cmd: string): Promise<string>;
 }

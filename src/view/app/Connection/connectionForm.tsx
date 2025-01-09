@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import * as React from 'react';
-import { CommandAction, ICommand, IConfig } from '../model';
-import { ProBroButton } from '../assets/button';
+import { CommandAction, ICommand, IConfig } from '@app/model';
+import { ProBroButton } from '@assets/button';
 import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
-import { PfParser } from '../utils/PfParser';
-import { Logger } from '../../../common/Logger';
-import { ISettings } from '../../../common/IExtensionSettings';
+import { ISettings } from '@src/common/IExtensionSettings';
+import { Logger } from '@src/common/Logger';
+import { PfParser } from '@utils/PfParser';
 import { getVSCodeAPI } from '@utils/vscode';
+import * as React from 'react';
 
 interface IConfigProps {
     initialData: IConfig;
@@ -17,7 +17,11 @@ interface IConfigState {
     config: IConfig;
 }
 
-function ConnectionForm({ initialData, configuration, ...props}: IConfigProps) {
+function ConnectionForm({
+    initialData,
+    configuration,
+    ...props
+}: IConfigProps) {
     const vscode = getVSCodeAPI();
     const oldState = vscode.getState();
     const initState = oldState ? oldState : { config: initialData };

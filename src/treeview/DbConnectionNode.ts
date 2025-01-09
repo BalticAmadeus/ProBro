@@ -1,13 +1,13 @@
+import { ConnectionStatus, IConfig } from '@app/model';
+import { Constants } from '@src/common/Constants';
+import { DbConnectionUpdater } from '@src/treeview/DbConnectionUpdater';
+import { INode } from '@src/treeview/INode';
+import { IRefreshCallback } from '@src/treeview/IRefreshCallback';
+import { ConnectionEditor } from '@src/webview/ConnectionEditor';
+import { spawn } from 'child_process';
+import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
 import path = require('path');
-import { INode } from './INode';
-import { ConnectionStatus, IConfig } from '../view/app/model';
-import { ConnectionEditor } from '../webview/ConnectionEditor';
-import { spawn } from 'child_process';
-import { Constants } from '../common/Constants';
-import { v4 as uuid } from 'uuid';
-import { DbConnectionUpdater } from './DbConnectionUpdater';
-import { IRefreshCallback } from './IRefreshCallback';
 
 export class DbConnectionNode implements INode {
     public readonly id: string;
@@ -18,7 +18,7 @@ export class DbConnectionNode implements INode {
         id: string,
         config: IConfig,
         refreshCallback: IRefreshCallback,
-    private context: vscode.ExtensionContext
+        private context: vscode.ExtensionContext
     ) {
         this.id = id;
         this.config = config;
@@ -44,14 +44,14 @@ export class DbConnectionNode implements INode {
 
     private iconChooser() {
         switch (this.config.conStatus) {
-        case ConnectionStatus.Connected:
-            return 'progress_icon.svg';
-        case ConnectionStatus.NotConnected:
-            return 'progress_icon_stop.svg';
-        case ConnectionStatus.Connecting:
-            return 'loading.gif';
-        default:
-            return 'progress_icon_stop.svg';
+            case ConnectionStatus.Connected:
+                return 'progress_icon.svg';
+            case ConnectionStatus.NotConnected:
+                return 'progress_icon_stop.svg';
+            case ConnectionStatus.Connecting:
+                return 'loading.gif';
+            default:
+                return 'progress_icon_stop.svg';
         }
     }
 
@@ -60,7 +60,7 @@ export class DbConnectionNode implements INode {
     }
 
     public async deleteConnection(context: vscode.ExtensionContext) {
-    //TODO fix and move to someplace else
+        //TODO fix and move to someplace else
 
         let connections = context.globalState.get<{ [id: string]: IConfig }>(
             'pro-bro.dbconfig'
@@ -107,13 +107,13 @@ export class DbConnectionNode implements INode {
 
         if (this.id) {
             let connections = this.context.globalState.get<{
-        [id: string]: IConfig;
-      }>(`${Constants.globalExtensionKey}.dbconfig`);
+                [id: string]: IConfig;
+            }>(`${Constants.globalExtensionKey}.dbconfig`);
 
             if (connections && !connections[this.id]) {
                 connections = this.context.workspaceState.get<{
-          [id: string]: IConfig;
-        }>(`${Constants.globalExtensionKey}.dbconfig`);
+                    [id: string]: IConfig;
+                }>(`${Constants.globalExtensionKey}.dbconfig`);
             }
             if (connections) {
                 return connections[this.id];
@@ -167,7 +167,9 @@ export class DbConnectionNode implements INode {
             console.log(`stdout: ${data}`);
         });
 
-        child.on('error', (error) => console.log('child process error: \n', error));
+        child.on('error', (error) =>
+            console.log('child process error: \n', error)
+        );
 
         // Listen for the process exit event
         child.on('exit', (code) => {
