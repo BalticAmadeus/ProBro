@@ -4,10 +4,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 export function readFile(fileName: string): string {
-    // while (fileName.charAt(0) === '/') {
-    //     fileName = fileName.substring(1);
-    // }
-
     const allFileContents = fs.readFileSync(fileName, 'utf-8');
     return allFileContents;
 }
