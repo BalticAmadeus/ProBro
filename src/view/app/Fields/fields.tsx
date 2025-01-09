@@ -157,7 +157,7 @@ function Fields() {
                             enabled: true,
                         });
 
-                        if (message.data.selectedColumns === undefined) {
+                        if (message.data.selectedColumns.length === 0 && message.data.selectedColumns === undefined) {
                             setSelectedRows(
                                 (): ReadonlySet<number> =>
                                     new Set(

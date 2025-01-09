@@ -210,7 +210,10 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 }
             });
             setColumns([SelectColumn, ...message.data.columns]);
-            if (message.columns !== undefined) {
+            if (
+                message.columns?.length !== 0 &&
+                message.columns !== undefined
+            ) {
                 setSelectedColumns([...message.columns]);
             } else {
                 setSelectedColumns([
@@ -532,6 +535,11 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 readRow={readRow}
                 isReadOnly={isReadOnly}
             />
+            {selectedColumns.length === 0 &&
+            <p style={{ textAlign: 'center', marginTop: '0px' }}>
+                No Fields are selected from the tab &quot;Fields Explorer&quot;...
+            </p>
+            }
             <QueryFormTable
                 queryGridRef={queryGridRef}
                 selected={selected}

@@ -45,7 +45,9 @@ export class PfParser {
                 );
             })
             .forEach((param) => {
-                param.match(/(-[A-Za-z0-9]+)/g)?.forEach((key) => {
+                param = ' ' + param;
+                param.match(/(\s-[A-Za-z0-9]+)/g)?.forEach((key) => {
+                    key = key.trim();
                     let regexStr;
                     if (new RegExp(`(${key}\\s)('|")`).test(param)) {
                         regexStr = `(${key}\\s)('|")([^'^"]*)('|")`;
