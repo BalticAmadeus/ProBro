@@ -32,7 +32,7 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
 
     const handleClick = (event: React.MouseEvent) => {
         onSort(event.ctrlKey || event.metaKey);
-        setCellSelected();
+
     };
 
     const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -55,6 +55,7 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
         if (event.key === 'Enter') {
             event.preventDefault();
             reloadData(configuration.initialBatchSizeLoad);
+            setCellSelected();
         }
     };
 
