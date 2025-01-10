@@ -158,7 +158,13 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
         } else {
             setSelectedRows(new Set());
             setOpen(false);
-            reloadData(loaded + (action === ProcessAction.Insert || action === ProcessAction.Copy ? 1 : 0));
+            reloadData(
+                loaded +
+                    (action === ProcessAction.Insert ||
+                    action === ProcessAction.Copy
+                        ? 1
+                        : 0)
+            );
         }
     };
 
@@ -186,7 +192,6 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
             });
             setIsDataRetrieved(false);
             return;
-
         } else if (message.data.columns.length !== columns.length) {
             const fontSize = +window
                 .getComputedStyle(
@@ -472,9 +477,8 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
     function handleCopy({ sourceRow, sourceColumnKey }: CopyEvent<any>): void {
         if (window.isSecureContext) {
             navigator.clipboard.writeText(sourceRow[sourceColumnKey]);
-        }        
+        }
     }
-
 
     const getCellHeight = () => {
         if (configuration.gridTextSize === 'Large') {
@@ -535,11 +539,12 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 readRow={readRow}
                 isReadOnly={isReadOnly}
             />
-            {selectedColumns.length === 0 &&
-            <p style={{ textAlign: 'center', marginTop: '0px' }}>
-                No Fields are selected from the tab &quot;Fields Explorer&quot;...
-            </p>
-            }
+            {selectedColumns.length === 0 && (
+                <p style={{ textAlign: 'center', marginTop: '0px' }}>
+                    No Fields are selected from the tab &quot;Fields
+                    Explorer&quot;...
+                </p>
+            )}
             <QueryFormTable
                 queryGridRef={queryGridRef}
                 selected={selected}

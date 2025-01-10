@@ -115,7 +115,7 @@ export class CustomViewProvider extends TablesListProvider {
                         data.tableType,
                         data.connectionName,
                         data.connectionLabel,
-                        TableNodeSourceEnum.Favorites
+                        TableNodeSourceEnum.Custom
                     ),
                     data.name,
                     data.customViewParams
