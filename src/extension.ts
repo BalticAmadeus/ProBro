@@ -146,7 +146,7 @@ export async function activate(context: vscode.ExtensionContext) {
         });
 
     function getOEJRuntime(uri: vscode.Uri) {
-        allFileContent = readFile(uri.path);
+        allFileContent = readFile(uri.fsPath);
         const oeRuntime = getOEVersion(allFileContent);
         return oeRuntime;
     }
@@ -218,9 +218,9 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     function createJsonDatabases(uri: vscode.Uri) {
-        allFileContent = readFile(uri.path);
+        allFileContent = readFile(uri.fsPath);
 
-        const configs = parseOEFile(allFileContent, uri.path);
+        const configs = parseOEFile(allFileContent, uri.fsPath);
 
         let connections = context.workspaceState.get<{ [id: string]: IConfig }>(
             `${Constants.globalExtensionKey}.dbconfig`
