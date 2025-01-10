@@ -311,7 +311,7 @@ const UpdatePopup: React.FC<UpdatePopupProps> = ({
                 }}
                 modal
             >
-                {(close) => (
+                {() => (
                     <div
                         className='update-modal'
                         style={{

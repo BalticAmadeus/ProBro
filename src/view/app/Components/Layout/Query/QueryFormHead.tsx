@@ -10,11 +10,14 @@ import QueryAutocompleteInput, {
     QueryAutocompleteInputProps,
 } from './QueryAutocompleteInput';
 import QueryDropdownMenu from './QueryDropdownMenu';
+import SavePopup from '@Query/SaveView';
+import { SavePopupProps } from '@Query/SaveView/save';
 
 interface QueryFormHeadProps
     extends QueryAutocompleteInputProps,
         ExportPopupProps,
-        UpdatePopupProps {
+        UpdatePopupProps,
+        SavePopupProps {
     isWindowSmall: boolean;
     onLoad?: () => void;
     onButtonClick?: MouseEventHandler<HTMLButtonElement>;
@@ -46,6 +49,7 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
             <Stack direction={'row'} alignItems={'center'}>
                 <QueryAutocompleteInput
                     suggestions={otherProps.suggestions}
+                    wherePhrase={otherProps.wherePhrase}
                     setWherePhrase={otherProps.setWherePhrase}
                     onEnter={otherProps.onEnter}
                 ></QueryAutocompleteInput>
@@ -63,7 +67,10 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                         selectedRows={otherProps.selectedRows}
                         isWindowSmall={isWindowSmall}
                     />
-                    <QueryDropdownMenu setIsFormatted={setIsFormatted} />
+                    <QueryDropdownMenu
+                        isWindowSmall={isWindowSmall}
+                        setIsFormatted={setIsFormatted}
+                    />
                     <UpdatePopup
                         selectedRows={otherProps.selectedRows}
                         columns={otherProps.columns}
@@ -77,6 +84,10 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                         isReadOnly={otherProps.isReadOnly}
                         isWindowSmall={isWindowSmall}
                     ></UpdatePopup>
+                    <SavePopup
+                        isWindowSmall={isWindowSmall}
+                        handleSaveClick={otherProps.handleSaveClick}
+                    ></SavePopup>
                 </Box>
             </Stack>
         </Box>

@@ -3,12 +3,14 @@ import { SyntheticEvent, useEffect, useState } from 'react';
 
 export interface QueryAutocompleteInputProps {
     suggestions?: Array<string>;
+    wherePhrase: string;
     setWherePhrase?: React.Dispatch<React.SetStateAction<string>>;
     onEnter?: () => void;
 }
 
 const QueryAutocompleteInput: React.FC<QueryAutocompleteInputProps> = ({
     suggestions = [],
+    wherePhrase,
     setWherePhrase,
     onEnter,
 }) => {
@@ -20,6 +22,10 @@ const QueryAutocompleteInput: React.FC<QueryAutocompleteInputProps> = ({
             setWherePhrase(value);
         }
     }, [value, setWherePhrase]);
+
+    useEffect(() => {
+        setValue(wherePhrase);
+    }, [wherePhrase]);
 
     const filterOptions = (
         options: string[],

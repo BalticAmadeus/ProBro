@@ -1,14 +1,4 @@
-import {
-    useState,
-    useMemo,
-    useRef,
-    useEffect,
-    Fragment,
-    useLayoutEffect,
-    ChangeEvent,
-    MouseEvent,
-    KeyboardEvent,
-} from 'react';
+import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 
 import { FieldRow, CommandAction, TableDetails, ICommand } from '../model';
 import DataGrid, { SelectColumn } from 'react-data-grid';
@@ -19,18 +9,13 @@ import * as columnName from './column.json';
 import { OEDataTypePrimitive } from '@utils/oe/oeDataTypeEnum';
 import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 import { HighlightFieldsCommand } from '@src/common/commands/fieldsCommands';
+import ColumnHeaderCell from '@app/Components/Layout/Query/ColumnHeaderCell';
 
 interface FieldsExplorerEvent {
     id: string;
     command: 'data';
     data: TableDetails;
 }
-
-const filterCSS: React.CSSProperties = {
-    inlineSize: '100%',
-    padding: '4px',
-    fontSize: '14px',
-};
 
 type Comparator = (a: FieldRow, b: FieldRow) => number;
 function getComparator(sortColumn: string): Comparator {
@@ -128,116 +113,19 @@ function Fields() {
     }, [filteredRows, sortColumns]);
 
     columnName.columns.forEach((column) => {
-        column['headerRenderer'] = function ({
-            column,
-            sortDirection,
-            priority,
-            onSort,
-            isCellSelected,
-        }) {
-            function handleKeyDown(event: KeyboardEvent<HTMLSpanElement>) {
-                if (event.key === ' ' || event.key === 'Enter') {
-                    event.preventDefault();
-                    onSort(event.ctrlKey || event.metaKey);
-                }
-            }
-
-            function handleClick(event: MouseEvent<HTMLSpanElement>) {
-                onSort(event.ctrlKey || event.metaKey);
-            }
-
-            function handleInputKeyDown(event: ChangeEvent<HTMLInputElement>) {
-                const tempFilters = filters;
-                if (event.target.value === '') {
-                    delete tempFilters.columns[column.key];
-                } else {
-                    tempFilters.columns[column.key] = event.target.value;
-                }
-                updateFilters(tempFilters);
-
-                if (Object.keys(filters.columns).length === 0) {
-                    setFilteredRows(rows);
-                } else {
-                    setFilteredRows(
-                        rows.filter((row) => {
-                            for (const [key] of Object.entries(
-                                filters.columns
-                            )) {
-                                if (
-                                    !row[key]
-                                        .toString()
-                                        .toLowerCase()
-                                        .includes(
-                                            filters.columns[key].toLowerCase()
-                                        )
-                                ) {
-                                    return false;
-                                }
-                            }
-                            return true;
-                        })
-                    );
-                }
-            }
-
+        column['headerRenderer'] = function (props) {
             return (
-                <Fragment>
-                    <div
-                        className={filters.enabled ? 'filter-cell' : undefined}
-                    >
-                        <span
-                            tabIndex={-1}
-                            style={{
-                                cursor: 'pointer',
-                                display: 'flex',
-                            }}
-                            className='rdg-header-sort-cell'
-                            onClick={handleClick}
-                            onKeyDown={handleKeyDown}
-                        >
-                            <span
-                                className='rdg-header-sort-name'
-                                style={{
-                                    flexGrow: '1',
-                                    overflow: 'clip',
-                                    textOverflow: 'ellipsis',
-                                }}
-                            >
-                                {column.name}
-                            </span>
-                            <span>
-                                <svg
-                                    viewBox='0 0 12 8'
-                                    width='12'
-                                    height='8'
-                                    className='rdg-sort-arrow'
-                                    style={{
-                                        fill: 'currentcolor',
-                                    }}
-                                >
-                                    {sortDirection === 'ASC' && (
-                                        <path d='M0 8 6 0 12 8'></path>
-                                    )}
-                                    {sortDirection === 'DESC' && (
-                                        <path d='M0 0 6 8 12 0'></path>
-                                    )}
-                                </svg>
-                                {priority}
-                            </span>
-                        </span>
-                    </div>
-                    {filters.enabled && (
-                        <div className={'filter-cell'}>
-                            <input
-                                className='textInput'
-                                autoFocus={isCellSelected}
-                                style={filterCSS}
-                                defaultValue={filters.columns[column.key]}
-                                onChange={handleInputKeyDown}
-                            />
-                        </div>
-                    )}
-                </Fragment>
+                <ColumnHeaderCell
+                    column={props.column}
+                    sortDirection={props.sortDirection}
+                    priority={props.priority}
+                    onSort={props.onSort}
+                    isCellSelected={props.isCellSelected}
+                    setCellSelected={props.setCellSelected}
+                    filters={filters}
+                    setFilters={setFilters}
+                    configuration={configuration} 
+                    />
             );
         };
     });
@@ -269,7 +157,7 @@ function Fields() {
                             enabled: true,
                         });
 
-                        if (message.data.selectedColumns === undefined) {
+                        if (message.data.selectedColumns.length === 0 && message.data.selectedColumns === undefined) {
                             setSelectedRows(
                                 (): ReadonlySet<number> =>
                                     new Set(

@@ -4,18 +4,14 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 export function readFile(fileName: string): string {
-    while (fileName.charAt(0) === '/') {
-        fileName = fileName.substring(1);
-    }
-
     const allFileContents = fs.readFileSync(fileName, 'utf-8');
     return allFileContents;
 }
 
-export function getOEVersion(fileContent: string){
+export function getOEVersion(fileContent: string) {
     const data = JSON.parse(fileContent);
-    const  {oeversion} = data;
-    
+    const { oeversion } = data;
+
     return oeversion;
 }
 
