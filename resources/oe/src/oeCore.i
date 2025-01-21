@@ -63,6 +63,8 @@ FUNCTION CREATE_DEBUG RETURNS Progress.Json.ObjectModel.JsonObject (tmpDate AS D
     jsonDebug:Add(SUBSTITUTE("start&1", cProcedure), tmpDate).
     jsonDebug:Add(SUBSTITUTE("end&1", cProcedure), NOW).
     jsonDebug:Add(SUBSTITUTE("time&1", cProcedure), NOW - tmpDate).
+    jsonDebug:Add(SUBSTITUTE("cpstream&1", cProcedure), SESSION:CPSTREAM).
+	jsonDebug:Add(SUBSTITUTE("cpinternal&1", cProcedure), SESSION:CPINTERNAL).
 
     RETURN jsonDebug.
 END FUNCTION.
