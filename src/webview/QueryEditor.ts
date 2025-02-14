@@ -29,7 +29,7 @@ export class QueryEditor {
     private readonly configuration = vscode.workspace.getConfiguration(
         Constants.globalExtensionKey
     );
-    private readOnly = false;
+    private readOnly = this.configuration.readOnlyMode;
     private logger = new Logger(
         this.configuration.get('logging.node') ?? false
     );

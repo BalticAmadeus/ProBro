@@ -127,6 +127,11 @@
                         "Small"
                     ],
                     "description": "Set the grid text size."
+                },
+                "pro-bro.readOnlyMode": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Connect to all databases in read-only mode"
                 }
             }
         },

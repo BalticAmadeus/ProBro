@@ -1,4 +1,5 @@
 import { IConfig } from '../model';
+import * as vscode from 'vscode';
 
 export class PfParser {
     public parse(pfFile: string): IConfig {
@@ -36,6 +37,15 @@ export class PfParser {
             '-crTXDisplay',
             '-Sn',
         ];
+        console.warn('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ');
+        const vsConfiguration = vscode.workspace.getConfiguration('pro-bro');
+        if (vsConfiguration) {
+            console.log('QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ ' + pfFile);
+            if (vsConfiguration.readOnlyMode) {
+                console.log('AAAAAAAAAAAAAAAAAAAAAAAAAreadOnlyMode ' + pfFile);
+                config.isReadOnly = true;
+            }
+        }
 
         pfFile
             .split('\n')

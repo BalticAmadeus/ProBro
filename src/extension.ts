@@ -197,27 +197,35 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     vscode.workspace.onDidChangeConfiguration((event) => {
+        console.warn('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO');
         if (
             event.affectsConfiguration(
                 `${Constants.globalExtensionKey}.importConnections`
+            ) ||
+            event.affectsConfiguration(
+                `${Constants.globalExtensionKey}.readOnlyMode`
             )
         ) {
+            console.warn('YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY');
             importConnections = vscode.workspace
                 .getConfiguration(Constants.globalExtensionKey)
                 .get('importConnections');
             if (importConnections) {
+                console.warn('UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU');
                 vscode.workspace
                     .findFiles('**/openedge-project.json')
                     .then((list) => {
                         list.forEach((uri) => createJsonDatabases(uri));
                     });
             } else {
+                console.warn('IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII');
                 clearDatabaseConfigState();
             }
         }
     });
 
     function createJsonDatabases(uri: vscode.Uri) {
+        console.warn('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV');
         allFileContent = readFile(uri.fsPath);
 
         const configs = parseOEFile(allFileContent, uri.fsPath);

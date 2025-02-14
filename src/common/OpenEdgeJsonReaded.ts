@@ -25,6 +25,7 @@ export function parseOEFile(fileContent: string, filePath: string) {
 
     const directoryPath = path.dirname(filePath);
 
+    console.warn('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB');
     dbConnections.forEach((connection: { name: string; connect: string }) => {
         const { name, connect } = connection;
 
