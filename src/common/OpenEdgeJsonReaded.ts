@@ -9,14 +9,16 @@ export function readFile(fileName: string): string {
 }
 
 export function getOEVersion(fileContent: string) {
-    const data = JSON.parse(fileContent);
+    const jsonminify = require('jsonminify');
+    const data = JSON.parse(jsonminify(fileContent));
     const { oeversion } = data;
 
     return oeversion;
 }
 
 export function parseOEFile(fileContent: string, filePath: string) {
-    const data = JSON.parse(fileContent);
+    const jsonminify = require('jsonminify');
+    const data = JSON.parse(jsonminify(fileContent));
     const { name, dbConnections } = data;
     const configList: IConfig[] = [];
 
