@@ -9,7 +9,7 @@
         "DB",
         "Explorer"
     ],
-    "version": "1.9.0",
+    "version": "1.9.1-dev",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -428,6 +428,7 @@
         "faker": "^5.5.3",
         "fs": "^0.0.1-security",
         "html-webpack-plugin": "^5.5.3",
+        "iconv-lite": "^0.6.3",
         "path": "^0.12.7",
         "raw-loader": "^4.0.2",
         "react": "^18.1.0",
