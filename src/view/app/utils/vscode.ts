@@ -1,5 +1,5 @@
-import { ICommand } from '@app/model';
-import { ISettings } from '@src/common/IExtensionSettings';
+import { ISettings } from '../../../common/IExtensionSettings';
+import { ICommand } from '../model';
 
 /**
  * Active interface for vscode api variable
@@ -10,8 +10,8 @@ export interface VSCode {
     setState(state: any): void;
 }
 
-let vsCodeAPI: VSCode = undefined;
-let configuration: ISettings = undefined;
+let vsCodeAPI: VSCode;
+let configuration: ISettings;
 
 /**
  * method that returns the vsCodeAPI
