@@ -229,7 +229,9 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
         processBooleanFields(message.data.columns, message.data.rawData);
 
         if (message.data.rawData === undefined) {
-            logger.log('message.data.rawData in query.tsx handleData() is undefined');
+            logger.log(
+                'message.data.rawData in query.tsx handleData() is undefined'
+            );
             return;
         }
         setRawRows([...rawRows, ...message.data.rawData]);

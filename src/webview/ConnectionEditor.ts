@@ -10,7 +10,7 @@ export class ConnectionEditor {
     private readonly panel: vscode.WebviewPanel | undefined;
     private readonly extensionPath: string;
     private disposables: vscode.Disposable[] = [];
-    private isTestedSuccesfully = false;
+    private isTestedSuccessfully = false;
     private readonly id?: string;
     private readonly configuration = vscode.workspace.getConfiguration(
         Constants.globalExtensionKey
@@ -76,7 +76,7 @@ export class ConnectionEditor {
                 }>(`${Constants.globalExtensionKey}.dbconfig`);
                 switch (command.action) {
                     case CommandAction.Save:
-                        if (!this.isTestedSuccesfully) {
+                        if (!this.isTestedSuccessfully) {
                             vscode.window.showInformationMessage(
                                 'Connection should be tested before saving.'
                             );
@@ -90,7 +90,7 @@ export class ConnectionEditor {
                                 connections
                             );
                             vscode.window.showInformationMessage(
-                                'Connection saved succesfully.'
+                                'Connection saved successfully.'
                             );
                             this.panel?.dispose();
                             vscode.commands.executeCommand(
@@ -115,7 +115,7 @@ export class ConnectionEditor {
                                         vscode.window.showInformationMessage(
                                             'Connection OK'
                                         );
-                                        this.isTestedSuccesfully = true;
+                                        this.isTestedSuccessfully = true;
                                     }
                                 });
                         }

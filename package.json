@@ -131,7 +131,7 @@
                 "pro-bro.readOnlyMode": {
                     "type": "boolean",
                     "default": false,
-                    "markdownDescription": "Connect to all databases in read-only mode"
+                    "markdownDescription": "Connect to all databases in read-only mode (requires restart)"
                 }
             }
         },

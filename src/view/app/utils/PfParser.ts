@@ -1,7 +1,9 @@
 import { IConfig } from '../model';
-import * as vscode from 'vscode';
+import { getVSCodeConfiguration } from './vscode';
 
 export class PfParser {
+    private readonly configuration = getVSCodeConfiguration();
+
     public parse(pfFile: string): IConfig {
         const config: IConfig = {
             id: 'connection',
@@ -38,10 +40,9 @@ export class PfParser {
             '-Sn',
         ];
         console.warn('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ');
-        const vsConfiguration = vscode.workspace.getConfiguration('pro-bro');
-        if (vsConfiguration) {
+        if (this.configuration) {
             console.log('QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ ' + pfFile);
-            if (vsConfiguration.readOnlyMode) {
+            if (this.configuration.readOnlyMode) {
                 console.log('AAAAAAAAAAAAAAAAAAAAAAAAAreadOnlyMode ' + pfFile);
                 config.isReadOnly = true;
             }
