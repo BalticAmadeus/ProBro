@@ -124,8 +124,8 @@ function Fields() {
                     setCellSelected={props.setCellSelected}
                     filters={filters}
                     setFilters={setFilters}
-                    configuration={configuration} 
-                    />
+                    configuration={configuration}
+                />
             );
         };
     });
@@ -157,7 +157,10 @@ function Fields() {
                             enabled: true,
                         });
 
-                        if (message.data.selectedColumns.length === 0 && message.data.selectedColumns === undefined) {
+                        if (
+                            message.data.selectedColumns.length === 0 &&
+                            message.data.selectedColumns === undefined
+                        ) {
                             setSelectedRows(
                                 (): ReadonlySet<number> =>
                                     new Set(
