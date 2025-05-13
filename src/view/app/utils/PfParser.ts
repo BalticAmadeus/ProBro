@@ -39,11 +39,8 @@ export class PfParser {
             '-crTXDisplay',
             '-Sn',
         ];
-        console.warn('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ');
         if (this.configuration) {
-            console.log('QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ ' + pfFile);
             if (this.configuration.readOnlyMode) {
-                console.log('AAAAAAAAAAAAAAAAAAAAAAAAAreadOnlyMode ' + pfFile);
                 config.isReadOnly = true;
             }
         }

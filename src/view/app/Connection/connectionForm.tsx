@@ -64,6 +64,7 @@ function ConnectionForm({
             type: vsState.config.type,
             isReadOnly: params.includes('-RO') || vsConfiguration.readOnlyMode,
         };
+        console.warn('onSaveClick config', config);
         const command: ICommand = {
             id: id,
             action: CommandAction.Save,
