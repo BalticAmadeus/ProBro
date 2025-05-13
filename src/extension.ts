@@ -38,53 +38,58 @@ export async function activate(context: vscode.ExtensionContext) {
     let allFileContent = '';
 
     vscode.workspace.onDidChangeConfiguration((event) => {
-        const affected = event.affectsConfiguration(
-            `${Constants.globalExtensionKey}.possiblePortsList`
-        );
-        if (!affected) {
-            return;
-        }
+        if (
+            event.affectsConfiguration(
+                `${Constants.globalExtensionKey}.possiblePortsList`
+            )
+        ) {
+            const settingsPorts: number[] =
+                vscode.workspace
+                    .getConfiguration(Constants.globalExtensionKey)
+                    .get('possiblePortsList') ?? [];
+            if (settingsPorts.length === 0) {
+                context.globalState.update(
+                    `${Constants.globalExtensionKey}.portList`,
+                    undefined
+                );
+                return;
+            }
+            let newGlobalStatePortList: IPort[] = [];
+            const globalStatePorts = context.globalState.get<{
+                [id: string]: IPort;
+            }>(`${Constants.globalExtensionKey}.portList`);
+            if (globalStatePorts) {
+                newGlobalStatePortList = Object.values(globalStatePorts).filter(
+                    (gPort) => {
+                        const portIndex: number = settingsPorts.indexOf(
+                            gPort.port
+                        );
+                        if (portIndex < 0) {
+                            return false;
+                        } else {
+                            settingsPorts.splice(portIndex, 1);
+                            return true;
+                        }
+                    }
+                );
+            }
 
-        const settingsPorts: number[] =
-            vscode.workspace
-                .getConfiguration(Constants.globalExtensionKey)
-                .get('possiblePortsList') ?? [];
-        if (settingsPorts.length === 0) {
+            newGlobalStatePortList = [
+                ...newGlobalStatePortList,
+                ...settingsPorts.map((sPort: number): IPort => {
+                    return {
+                        port: sPort,
+                        isInUse: false,
+                        timestamp: undefined,
+                    };
+                }),
+            ];
+
             context.globalState.update(
                 `${Constants.globalExtensionKey}.portList`,
-                undefined
-            );
-            return;
-        }
-        let newGlobalStatePortList: IPort[] = [];
-        const globalStatePorts = context.globalState.get<{
-            [id: string]: IPort;
-        }>(`${Constants.globalExtensionKey}.portList`);
-        if (globalStatePorts) {
-            newGlobalStatePortList = Object.values(globalStatePorts).filter(
-                (gPort) => {
-                    const portIndex: number = settingsPorts.indexOf(gPort.port);
-                    if (portIndex < 0) {
-                        return false;
-                    } else {
-                        settingsPorts.splice(portIndex, 1);
-                        return true;
-                    }
-                }
+                newGlobalStatePortList
             );
         }
-
-        newGlobalStatePortList = [
-            ...newGlobalStatePortList,
-            ...settingsPorts.map((sPort: number): IPort => {
-                return { port: sPort, isInUse: false, timestamp: undefined };
-            }),
-        ];
-
-        context.globalState.update(
-            `${Constants.globalExtensionKey}.portList`,
-            newGlobalStatePortList
-        );
     });
 
     const updatePortList = () => {
@@ -218,6 +223,7 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     function createJsonDatabases(uri: vscode.Uri) {
+        console.warn('VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV');
         allFileContent = readFile(uri.fsPath);
 
         const configs = parseOEFile(allFileContent, uri.fsPath);

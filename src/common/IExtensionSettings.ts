@@ -8,6 +8,7 @@ export interface ISettings {
     filterAsYouType: boolean;
     useDeleteTriggers: boolean;
     gridTextSize: string;
+    readOnlyMode: boolean;
 }
 
 export interface ILogging {

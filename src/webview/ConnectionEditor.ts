@@ -10,7 +10,7 @@ export class ConnectionEditor {
     private readonly panel: vscode.WebviewPanel | undefined;
     private readonly extensionPath: string;
     private disposables: vscode.Disposable[] = [];
-    private isTestedSuccesfully = false;
+    private isTestedSuccessfully = false;
     private readonly id?: string;
     private readonly configuration = vscode.workspace.getConfiguration(
         Constants.globalExtensionKey
@@ -71,71 +71,19 @@ export class ConnectionEditor {
         this.panel.webview.onDidReceiveMessage(
             (command: ICommand) => {
                 this.logger.log('command:', command);
-                let connections = this.context.globalState.get<{
-                    [id: string]: IConfig;
-                }>(`${Constants.globalExtensionKey}.dbconfig`);
+                const connections =
+                    this.context.globalState.get<{ [id: string]: IConfig }>(
+                        `${Constants.globalExtensionKey}.dbconfig`
+                    ) ?? {};
                 switch (command.action) {
                     case CommandAction.Save:
-                        if (!this.isTestedSuccesfully) {
-                            vscode.window.showInformationMessage(
-                                'Connection should be tested before saving.'
-                            );
-                            return;
-                        } else if (!connections) {
-                            connections = {};
-                        } else if (command.content) {
-                            connections[command.content.id] = command.content;
-                            this.context.globalState.update(
-                                `${Constants.globalExtensionKey}.dbconfig`,
-                                connections
-                            );
-                            vscode.window.showInformationMessage(
-                                'Connection saved succesfully.'
-                            );
-                            this.panel?.dispose();
-                            vscode.commands.executeCommand(
-                                `${Constants.globalExtensionKey}.refreshList`
-                            );
-                        }
+                        this.handleSaveAction(command, connections);
                         return;
                     case CommandAction.Test:
-                        if (command.content) {
-                            ProcessorFactory.getProcessorInstance()
-                                .getDBVersion(command.content)
-                                .then((oe) => {
-                                    if (oe.error) {
-                                        vscode.window.showErrorMessage(
-                                            `Error connecting DB: ${oe.description} (${oe.error})`
-                                        );
-                                    } else {
-                                        this.logger.log(
-                                            'Requested version of DB',
-                                            oe.dbversion
-                                        );
-                                        vscode.window.showInformationMessage(
-                                            'Connection OK'
-                                        );
-                                        this.isTestedSuccesfully = true;
-                                    }
-                                });
-                        }
+                        this.handleTestAction(command);
                         return;
                     case CommandAction.Group:
-                        if (connections) {
-                            const uniqueGroups = new Set<string>(); // Specify that the Set will contain strings
-
-                            for (const id of Object.keys(connections)) {
-                                const group =
-                                    connections[id].group.toUpperCase();
-                                uniqueGroups.add(group);
-                            }
-
-                            const groupNames: string[] =
-                                Array.from(uniqueGroups);
-
-                            this.groupList(groupNames);
-                        }
-
+                        this.handleGroupAction(command, connections);
                         return;
                 }
             },
@@ -150,6 +98,71 @@ export class ConnectionEditor {
             null,
             context.subscriptions
         );
+    }
+
+    private handleSaveAction(
+        command: ICommand,
+        connections: { [id: string]: IConfig }
+    ) {
+        if (!this.isTestedSuccessfully) {
+            vscode.window.showInformationMessage(
+                'Connection should be tested before saving.'
+            );
+            return;
+        } else if (command.content) {
+            console.warn('command.content', command.content);
+            connections[command.content.id] = command.content;
+            this.context.globalState.update(
+                `${Constants.globalExtensionKey}.dbconfig`,
+                connections
+            );
+            vscode.window.showInformationMessage(
+                'Connection saved successfully.'
+            );
+            this.panel?.dispose();
+            vscode.commands.executeCommand(
+                `${Constants.globalExtensionKey}.refreshList`
+            );
+        }
+    }
+
+    private handleTestAction(command: ICommand) {
+        if (!command.content) {
+            return;
+        }
+        ProcessorFactory.getProcessorInstance()
+            .getDBVersion(command.content)
+            .then((oe) => {
+                if (oe.error) {
+                    vscode.window.showErrorMessage(
+                        `Error connecting DB: ${oe.description} (${oe.error})`
+                    );
+                } else {
+                    this.logger.log('Requested version of DB', oe.dbversion);
+                    vscode.window.showInformationMessage('Connection OK');
+                    this.isTestedSuccessfully = true;
+                }
+            });
+    }
+
+    private handleGroupAction(
+        command: ICommand,
+        connections: { [id: string]: IConfig }
+    ) {
+        if (!connections) {
+            return;
+        }
+
+        const uniqueGroups = new Set<string>(); // Specify that the Set will contain strings
+
+        for (const id of Object.keys(connections)) {
+            const group = connections[id].group.toUpperCase();
+            uniqueGroups.add(group);
+        }
+
+        const groupNames: string[] = Array.from(uniqueGroups);
+
+        this.groupList(groupNames);
     }
 
     private groupList(groupNames: string[]) {

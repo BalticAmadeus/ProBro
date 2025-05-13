@@ -1,6 +1,9 @@
 import { IConfig } from '../model';
+import { getVSCodeConfiguration } from './vscode';
 
 export class PfParser {
+    private readonly configuration = getVSCodeConfiguration();
+
     public parse(pfFile: string): IConfig {
         const config: IConfig = {
             id: 'connection',
@@ -36,6 +39,11 @@ export class PfParser {
             '-crTXDisplay',
             '-Sn',
         ];
+        if (this.configuration) {
+            if (this.configuration.readOnlyMode) {
+                config.isReadOnly = true;
+            }
+        }
 
         pfFile
             .split('\n')

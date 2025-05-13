@@ -6,7 +6,7 @@ import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import { PfParser } from '../utils/PfParser';
 import { Logger } from '../../../common/Logger';
 import { ISettings } from '../../../common/IExtensionSettings';
-import { getVSCodeAPI } from '@utils/vscode';
+import { getVSCodeAPI, getVSCodeConfiguration } from '@utils/vscode';
 
 interface IConfigProps {
     initialData: IConfig;
@@ -17,7 +17,12 @@ interface IConfigState {
     config: IConfig;
 }
 
-function ConnectionForm({ initialData, configuration, ...props}: IConfigProps) {
+function ConnectionForm({
+    initialData,
+    configuration,
+    ...props
+}: IConfigProps) {
+    const vsConfiguration = getVSCodeConfiguration();
     const vscode = getVSCodeAPI();
     const oldState = vscode.getState();
     const initState = oldState ? oldState : { config: initialData };
@@ -57,8 +62,9 @@ function ConnectionForm({ initialData, configuration, ...props}: IConfigProps) {
             params: params,
             connectionId: vsState.config.connectionId,
             type: vsState.config.type,
-            isReadOnly: params.includes('-RO'),
+            isReadOnly: params.includes('-RO') || vsConfiguration.readOnlyMode,
         };
+        console.warn('onSaveClick config', config);
         const command: ICommand = {
             id: id,
             action: CommandAction.Save,
@@ -109,7 +115,7 @@ function ConnectionForm({ initialData, configuration, ...props}: IConfigProps) {
             params: params,
             connectionId: vsState.config.connectionId,
             type: vsState.config.type,
-            isReadOnly: params.includes('-RO'),
+            isReadOnly: params.includes('-RO') || vsConfiguration.readOnlyMode,
         };
         const command: ICommand = {
             id: id,
