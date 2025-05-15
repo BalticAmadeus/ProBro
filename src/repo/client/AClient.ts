@@ -33,7 +33,8 @@ export class AClient {
 
             this.client.on('data', (chunk) => {
                 console.log('V2: Data received from the server');
-                const a = decode(chunk, 'windows-1252').replace(/[\x00]+$/, '');
+                // eslint-disable-next-line no-control-regex
+                const a = decode(chunk, 'windows-1252').replace(/\x00+$/, '');
 
                 this.data += a;
                 if (this.data.endsWith('\n')) {
