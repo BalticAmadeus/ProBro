@@ -184,6 +184,7 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
     };
 
     const handleData = (message: any) => {
+        console.log('MY LOG' + message.data.columns);
         if (message.data.error) {
             setErrorObject({
                 error: message.data.error,
