@@ -1,5 +1,6 @@
 import * as Net from 'net';
 import { ConnectionParams } from '../../view/app/model';
+import { decode } from 'iconv-lite';
 
 export class AClient {
     protected connectionParams: ConnectionParams;
@@ -32,7 +33,9 @@ export class AClient {
 
             this.client.on('data', (chunk) => {
                 console.log('V2: Data received from the server');
-                this.data += chunk.toString();
+                const a = decode(chunk, 'windows-1252').replace(/\x00+$/, '');
+
+                this.data += a;
                 if (this.data.endsWith('\n')) {
                     this.dataFinish(this.data);
                     console.log('V2: Data finish');
