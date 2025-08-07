@@ -2,7 +2,8 @@ import { PfParser } from '../view/app/utils/PfParser';
 import { IConfig } from '../view/app/model';
 import * as path from 'path';
 import * as fs from 'fs';
-import jsonminify = require('jsonminify');
+import stripjsoncomments from 'strip-json-comments';
+
 
 export function readFile(fileName: string): string {
     const allFileContents = fs.readFileSync(fileName, 'utf-8');
@@ -10,15 +11,17 @@ export function readFile(fileName: string): string {
 }
 
 export function getOEVersion(fileContent: string) {
-    const data = JSON.parse(jsonminify(fileContent));
+    const data = JSON.parse(stripjsoncomments(fileContent));
+    console.log(data);
     const { oeversion } = data;
 
     return oeversion;
 }
 
 export function parseOEFile(fileContent: string, filePath: string) {
-    const data = JSON.parse(jsonminify(fileContent));
+    const data = JSON.parse(stripjsoncomments(fileContent));
     const { name, dbConnections } = data;
+    console.log(data);
     const configList: IConfig[] = [];
 
     const groupName = name;
