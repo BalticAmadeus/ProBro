@@ -12,7 +12,6 @@ export function readFile(fileName: string): string {
 
 export function getOEVersion(fileContent: string) {
     const data = JSON.parse(stripjsoncomments(fileContent));
-    console.log(data);
     const { oeversion } = data;
 
     return oeversion;
@@ -21,7 +20,6 @@ export function getOEVersion(fileContent: string) {
 export function parseOEFile(fileContent: string, filePath: string) {
     const data = JSON.parse(stripjsoncomments(fileContent));
     const { name, dbConnections } = data;
-    console.log(data);
     const configList: IConfig[] = [];
 
     const groupName = name;
