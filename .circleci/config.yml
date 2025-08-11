@@ -3,15 +3,15 @@ version: 2.1
 jobs:
     test-and-compile-front-end:
         docker:
-            - image: cimg/node:18.0
+            - image: cimg/node:20.0
         steps:
             - checkout
             - run:
                   name: Install Dependencies
                   command: npm install
             - run:
-                name: Lint Codebase
-                command: npx eslint src/ --max-warnings=-1
+                  name: Lint Codebase
+                  command: npx eslint src/ --max-warnings=-1
             - run:
                   name: Compile Extension
                   command: npm run compile:extension
