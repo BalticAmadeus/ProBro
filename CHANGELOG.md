@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.9.1 (2025-08-11)
+
+### Changed
+
+- Fixed the issue with comments in JSON file
+
 ## 1.9.0 (2025-01-10)
 
 ### Changed
