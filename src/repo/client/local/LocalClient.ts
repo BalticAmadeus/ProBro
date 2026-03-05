@@ -13,7 +13,7 @@ export class LocalClient extends AClient implements IClient {
 
     private static readonly host = 'localhost';
     private readonly configuration = vscode.workspace.getConfiguration(
-        Constants.globalExtensionKey
+        Constants.globalExtensionKey,
     );
     private logentrytypes: string =
         this.configuration.get('logging.openEdge') ?? 'not found';
@@ -29,7 +29,7 @@ export class LocalClient extends AClient implements IClient {
     public static async getInstance(): Promise<IClient> {
         if (LocalClient.localClient === undefined) {
             LocalClient.localClient = new LocalClient(
-                new ConnectionParams(this.host, await this.getPort())
+                new ConnectionParams(this.host, await this.getPort()),
             );
 
             await LocalClient.localClient.init();
@@ -49,7 +49,7 @@ export class LocalClient extends AClient implements IClient {
         let port: number | undefined;
 
         await vscode.commands.executeCommand(
-            `${Constants.globalExtensionKey}.releasePort`
+            `${Constants.globalExtensionKey}.releasePort`,
         );
         await vscode.commands
             .executeCommand(`${Constants.globalExtensionKey}.getPort`)
@@ -58,9 +58,7 @@ export class LocalClient extends AClient implements IClient {
             });
 
         if (!port) {
-            return new Promise(() => {
-                throw new Error('No port provided. Unable to start connection');
-            });
+            port = 23456;
         }
         return port;
     }
@@ -69,13 +67,13 @@ export class LocalClient extends AClient implements IClient {
         Constants.context.extensionPath,
         'resources',
         'oe',
-        'connectionPf.pf'
+        'connectionPf.pf',
     );
 
     private readonly linuxProPath = `"${path.join(
         Constants.dlc,
         'bin',
-        '_progres'
+        '_progres',
     )}"`;
 
     protected readonly linuxConnectionString = [
@@ -85,14 +83,14 @@ export class LocalClient extends AClient implements IClient {
             'resources',
             'oe',
             'src',
-            'oeSocket.p'
+            'oeSocket.p',
         )}"`,
         '-clientlog',
         `"${path.join(
             Constants.context.extensionPath,
             'resources',
             'oe',
-            'oeSocket.pro'
+            'oeSocket.pro',
         )}"`,
         '-pf',
         `"${this.pfFilePath}"`,
@@ -101,7 +99,7 @@ export class LocalClient extends AClient implements IClient {
     private readonly windowsProPath = path.join(
         Constants.dlc,
         'bin',
-        '_progres'
+        '_progres',
     );
 
     protected readonly windowsConnectionString = [
@@ -111,14 +109,14 @@ export class LocalClient extends AClient implements IClient {
             'resources',
             'oe',
             'src',
-            'oeSocket.p'
+            'oeSocket.p',
         ),
         '-clientlog',
         path.join(
             Constants.context.extensionPath,
             'resources',
             'oe',
-            'oeSocket.pro'
+            'oeSocket.pro',
         ),
         '-pf',
         this.pfFilePath,
@@ -147,14 +145,14 @@ export class LocalClient extends AClient implements IClient {
                 case 'linux':
                     this.proc = cp.spawn(
                         this.linuxProPath,
-                        this.linuxConnectionString
+                        this.linuxConnectionString,
                     );
                     break;
                 case 'win32':
                     this.proc = cp.spawn(
                         this.windowsProPath,
                         this.windowsConnectionString,
-                        this.windowsOptions
+                        this.windowsOptions,
                     );
                     break;
                 default:
@@ -168,7 +166,7 @@ export class LocalClient extends AClient implements IClient {
                 if (
                     dataString.startsWith(
                         'SERVER STARTED AT ' +
-                            this.connectionParams.port.toString()
+                            this.connectionParams.port.toString(),
                     )
                 ) {
                     this.procFinish(dataString);
