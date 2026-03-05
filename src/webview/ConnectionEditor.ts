@@ -13,20 +13,20 @@ export class ConnectionEditor {
     private isTestedSuccesfully = false;
     private readonly id?: string;
     private readonly configuration = vscode.workspace.getConfiguration(
-        Constants.globalExtensionKey
+        Constants.globalExtensionKey,
     );
     private logger = new Logger(
-        this.configuration.get('logging.node') ?? false
+        this.configuration.get('logging.node') ?? false,
     );
 
     constructor(
         private context: vscode.ExtensionContext,
         action: string,
-        id?: string
+        id?: string,
     ) {
         this.extensionPath = context.asAbsolutePath('');
         this.context.globalState.get<{ [id: string]: IConfig }>(
-            `${Constants.globalExtensionKey}.dbconfig`
+            `${Constants.globalExtensionKey}.dbconfig`,
         );
         if (id) {
             this.id = id;
@@ -41,10 +41,10 @@ export class ConnectionEditor {
                 retainContextWhenHidden: true,
                 localResourceRoots: [
                     vscode.Uri.file(
-                        path.join(context.asAbsolutePath(''), 'out')
+                        path.join(context.asAbsolutePath(''), 'out'),
                     ),
                 ],
-            }
+            },
         );
 
         this.panel.iconPath = {
@@ -53,16 +53,16 @@ export class ConnectionEditor {
                     this.extensionPath,
                     'resources',
                     'icon',
-                    'connection-icon-dark.svg'
-                )
+                    'connection-icon-dark.svg',
+                ),
             ),
             light: vscode.Uri.file(
                 path.join(
                     this.extensionPath,
                     'resources',
                     'icon',
-                    'connection-icon-light.svg'
-                )
+                    'connection-icon-light.svg',
+                ),
             ),
         };
 
@@ -78,23 +78,24 @@ export class ConnectionEditor {
                     case CommandAction.Save:
                         if (!this.isTestedSuccesfully) {
                             vscode.window.showInformationMessage(
-                                'Connection should be tested before saving.'
+                                'Connection should be tested before saving.',
                             );
                             return;
                         } else if (!connections) {
                             connections = {};
-                        } else if (command.content) {
+                        }
+                        if (command.content) {
                             connections[command.content.id] = command.content;
                             this.context.globalState.update(
                                 `${Constants.globalExtensionKey}.dbconfig`,
-                                connections
+                                connections,
                             );
                             vscode.window.showInformationMessage(
-                                'Connection saved succesfully.'
+                                'Connection saved succesfully.',
                             );
                             this.panel?.dispose();
                             vscode.commands.executeCommand(
-                                `${Constants.globalExtensionKey}.refreshList`
+                                `${Constants.globalExtensionKey}.refreshList`,
                             );
                         }
                         return;
@@ -105,15 +106,15 @@ export class ConnectionEditor {
                                 .then((oe) => {
                                     if (oe.error) {
                                         vscode.window.showErrorMessage(
-                                            `Error connecting DB: ${oe.description} (${oe.error})`
+                                            `Error connecting DB: ${oe.description} (${oe.error})`,
                                         );
                                     } else {
                                         this.logger.log(
                                             'Requested version of DB',
-                                            oe.dbversion
+                                            oe.dbversion,
                                         );
                                         vscode.window.showInformationMessage(
-                                            'Connection OK'
+                                            'Connection OK',
                                         );
                                         this.isTestedSuccesfully = true;
                                     }
@@ -140,7 +141,7 @@ export class ConnectionEditor {
                 }
             },
             undefined,
-            context.subscriptions
+            context.subscriptions,
         );
 
         this.panel.onDidDispose(
@@ -148,7 +149,7 @@ export class ConnectionEditor {
                 // When the panel is closed, cancel any future updates to the webview content
             },
             null,
-            context.subscriptions
+            context.subscriptions,
         );
     }
 
@@ -166,10 +167,10 @@ export class ConnectionEditor {
             path.join(
                 vscode.Uri.file(
                     this.context.asAbsolutePath(
-                        path.join('out/view/app', 'connection.js')
-                    )
-                ).fsPath
-            )
+                        path.join('out/view/app', 'connection.js'),
+                    ),
+                ).fsPath,
+            ),
         );
 
         const reactAppUri =

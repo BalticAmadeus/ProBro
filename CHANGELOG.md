@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.9.3 (2026-03-05)
+
+- Fixed the issue with connection form.
+- Fixed some issues with extension setup.
+
 ## 1.9.1 (2025-08-11)
 
 ### Changed
