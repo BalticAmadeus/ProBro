@@ -5,6 +5,7 @@ import { PanelViewProvider } from './PanelViewProvider';
 import { Logger } from '../common/Logger';
 import { updateSelectedColumnsCache } from '../repo/utils/cache';
 import { HighlightFieldsCommand } from '../common/commands/fieldsCommands';
+import { Telemetry } from '../telemetry/Telemetry';
 
 export class FieldsViewProvider extends PanelViewProvider {
     private queryEditors: QueryEditor[] = [];
@@ -51,6 +52,7 @@ export class FieldsViewProvider extends PanelViewProvider {
 
         this._view?.webview.onDidReceiveMessage((command: ICommand) => {
             this.logger.log('Command:', command);
+            Telemetry.sendActionTelemetry(`FieldsViewProvider.${CommandAction[command.action]}`, { action: CommandAction[command.action] });
             switch (command.action) {
                 case CommandAction.UpdateColumns:
                     if (command.columns?.length === 0) {
