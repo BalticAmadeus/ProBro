@@ -380,7 +380,6 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run inject-telemetry-key && npm run esbuild-base -- --minify",
-        "package": "npx vsce package && npm run reset-telemetry-key",
         "inject-telemetry-key": "replace-in-file \"__TELEMETRY_KEY__\"  \"InstrumentationKey=5ee68587-b91d-41b6-ba02-4c65e5348310;IngestionEndpoint=https://northeurope-2.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/;ApplicationId=b19474b9-14c6-4c39-b5ba-0c843036cbb0\" ./src/telemetry/Telemetry.ts",
         "reset-telemetry-key": "replace-in-file \"InstrumentationKey=5ee68587-b91d-41b6-ba02-4c65e5348310;IngestionEndpoint=https://northeurope-2.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/;ApplicationId=b19474b9-14c6-4c39-b5ba-0c843036cbb0\" \"__TELEMETRY_KEY__\" ./src/telemetry/Telemetry.ts",
         "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
@@ -395,7 +394,7 @@
         "watch:views": "webpack --watch --mode development",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
         "jestTest": "jest",
-        "vsce": "vsce package",
+        "vsce": "vsce package && npm run reset-telemetry-key",
         "lint": "eslint \"src/**/*.{ts,tsx}\"",
         "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix"
     },
@@ -404,6 +403,7 @@
         "@babel/preset-env": "^7.20.2",
         "@babel/preset-typescript": "^7.21.0",
         "@stylistic/eslint-plugin-js": "^2.11.0",
+        "@microsoft/applicationinsights-common": "^3.4.1",
         "@types/glob": "^7.2.0",
         "@types/mocha": "^9.1.1",
         "@types/node": "14.x",
