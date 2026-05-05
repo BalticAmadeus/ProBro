@@ -5,8 +5,6 @@ export class Telemetry {
     private static instance: TelemetryReporter;
     private static readonly TELEMETRY_KEY = '__TELEMETRY_KEY__';
 
-    private constructor() {}
-
     private static getInstance(): TelemetryReporter {
         if (!Telemetry.instance) {
             Telemetry.instance = new TelemetryReporter(this.TELEMETRY_KEY);
