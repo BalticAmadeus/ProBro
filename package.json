@@ -140,6 +140,41 @@
                 }
             }
         },
+        "walkthroughs": [
+            {
+                "id": "pro-bro",
+                "title": "ProBro",
+                "description": "An extension for OpenEdge database browsing.",
+                "steps": [
+                    {
+                        "id": "telemetryNotice",
+                        "title": "Telemetry notice for ProBro",
+                        "description": "How and What data is collected by this extension\n [Learn More](https://code.visualstudio.com/docs/editor/telemetry#:~:text=Visual%20Studio%20Code%20collects%20telemetry%20data%2C%20which%20is,slow%20start-up%20times%2C%20and%20to%20prioritize%20new%20features.)",
+                        "media": {
+                            "markdown": "resources/markdown/telemetry_notice.md"
+                        }
+                    },
+                    {
+                        "id": "DisableGlobalTelemetry",
+                        "title": "How to disable all Telemetry",
+                        "description": "Disabling all telemetry that VSCode sends.\n[Global Telemetry Setting](command:toSide:workbench.action.openSettings?%22@tag:telemetry%22)",
+                        "media": {
+                            "image": "resources/images/DisableGlobalTelemetry.png",
+                            "altText": "Settings for disabling all telemetry sent by VSCode can be found in settings with @tag:telemetry tag"
+                        }
+                    },
+                    {
+                        "id": "DisableProBroTelemetry",
+                        "title": "How to disable only ProBro Telemetry",
+                        "description": "If global setting for telemetry is \"off\" then this setting is ignored and no telemetry is sent.\n[ProBro Telemetry Setting](command:toSide:workbench.action.openSettings?%22Telemetry.probroTelemetry%22)",
+                        "media": {
+                            "image": "resources/images/DisableProBroTelemetry.png",
+                            "altText": "Settings for disabling telemetry sent by ProBro can be found in settings with @tag:telemetry tag"
+                        }
+                    }
+                ]
+            }
+        ],
         "viewsContainers": {
             "activitybar": [
                 {
