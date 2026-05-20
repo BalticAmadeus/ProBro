@@ -1,0 +1,17 @@
+{
+  "name": "probro-mcp-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MCP server exposing ProBro OpenEdge CRUD services",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test:smoke": "node scripts/smoke-test.cjs",
+    "test:integration": "node scripts/integration-test.cjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.23.8"
+  }
+}

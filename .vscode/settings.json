@@ -30,5 +30,17 @@
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "workbench.colorCustomizations": {}
+    "workbench.colorCustomizations": {},
+    "abl.configuration": {
+        "runtimes": [
+            {
+            "name": "OpenEdge128",
+            "path": "C:\\Progress\\OpenEdge"
+            }
+        ],
+        "defaultRuntime": "OpenEdge128"
+    },
+    "terminal.integrated.env.windows": {
+        "DLC": "C:\\Progress\\OpenEdge"
+    }
 }
