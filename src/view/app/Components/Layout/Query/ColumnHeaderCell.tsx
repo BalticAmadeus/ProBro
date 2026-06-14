@@ -8,7 +8,7 @@ interface ColumnHeaderCellProps {
     priority: number;
     onSort: (multiColumnSort: boolean) => void;
     isCellSelected: boolean;
-    setCellSelected: () => void;
+    setCellSelected?: () => void;
     filters: any;
     setFilters: (filters: any) => void;
     configuration: any;
@@ -55,8 +55,8 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
     const testKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter') {
             event.preventDefault();
-            reloadData(configuration.initialBatchSizeLoad);
-            setCellSelected();
+            reloadData && reloadData(configuration.initialBatchSizeLoad);
+            setCellSelected && setCellSelected();
         }
     };
 
@@ -112,14 +112,14 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
                 onKeyDown={testKeyDown}
                 fullWidth={true}
                 autoFocus={isCellSelected}
-                onFocus={() => setCellSelected()}
+                onFocus={() => setCellSelected && setCellSelected()}
                 InputProps={{ disableUnderline: true }}
                 sx={{
                     '& .MuiInputBase-input': {
                         fontSize: '0.8rem',
                         padding: '4px',
-                        backgroundColor: 'var(--vscode-input-background)',
-                        color: 'var(--vscode-input-foreground)',
+                        backgroundColor: 'var(--vscode-input-background, #3c3c3c)',
+                        color: 'var(--vscode-input-foreground, #cccccc)',
                     },
                 }}
             />
