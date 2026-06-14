@@ -50,6 +50,7 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
         timerRef.current = setTimeout(() => {
             reloadData && reloadData(configuration.initialBatchSizeLoad);
         }, 500);
+        setCellSelected && setCellSelected();
     };
 
     const testKeyDown = (event: React.KeyboardEvent) => {
@@ -112,7 +113,6 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
                 onKeyDown={testKeyDown}
                 fullWidth={true}
                 autoFocus={isCellSelected}
-                onFocus={() => setCellSelected && setCellSelected()}
                 InputProps={{ disableUnderline: true }}
                 sx={{
                     '& .MuiInputBase-input': {
