@@ -8,7 +8,7 @@ interface ColumnHeaderCellProps {
     priority: number;
     onSort: (multiColumnSort: boolean) => void;
     isCellSelected: boolean;
-    setCellSelected: () => void;
+    setCellSelected?: () => void;
     filters: any;
     setFilters: (filters: any) => void;
     configuration: any;
@@ -42,26 +42,35 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
         }
     };
 
-    let timer;
+    const timerRef = useRef<any>(null);
     const handleKeyInputTimeout = () => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            reloadData(configuration.initialBatchSizeLoad);
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+        }
+        timerRef.current = setTimeout(() => {
+            reloadData && reloadData(configuration.initialBatchSizeLoad);
         }, 500);
-        setCellSelected();
+        setCellSelected && setCellSelected();
     };
 
     const testKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter') {
             event.preventDefault();
-            reloadData(configuration.initialBatchSizeLoad);
-            setCellSelected();
+            reloadData && reloadData(configuration.initialBatchSizeLoad);
+            setCellSelected && setCellSelected();
         }
     };
 
-    const handleInputKeyDown = (event) => {
-        const tempFilters = filters;
-        tempFilters.columns[column.key] = event.target.value;
+    const handleInputKeyDown = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const value = event.target.value;
+        
+        const tempFilters = {
+            ...filters,
+            columns: {
+                ...(filters?.columns || {}),
+                [column.key]: value,
+            },
+        };
         setFilters(tempFilters);
         if (configuration.filterAsYouType === true) {
             handleKeyInputTimeout();
@@ -99,7 +108,7 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
             <TextField
                 variant='standard'
                 size='small'
-                defaultValue={filters.columns[column.key]}
+                value={filters?.columns?.[column.key] ?? ''}
                 onChange={handleInputKeyDown}
                 onKeyDown={testKeyDown}
                 fullWidth={true}
@@ -109,8 +118,8 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
                     '& .MuiInputBase-input': {
                         fontSize: '0.8rem',
                         padding: '4px',
-                        backgroundColor: 'var(--vscode-input-background)',
-                        color: 'var(--vscode-input-foreground)',
+                        backgroundColor: 'var(--vscode-input-background, #3c3c3c)',
+                        color: 'var(--vscode-input-foreground, #cccccc)',
                     },
                 }}
             />
