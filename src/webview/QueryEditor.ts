@@ -19,12 +19,14 @@ import { Constants } from '../common/Constants';
 import { queryEditorCache } from './queryEditor/queryEditorCache';
 import { FavoritesProvider } from '../treeview/FavoritesProvider';
 import { CustomViewNode } from '../treeview/CustomViewNode';
+import { ConfigStore } from './queryEditor/queryEditorEvents';
 
 export class QueryEditor {
     public readonly panel: vscode.WebviewPanel | undefined;
     private readonly extensionPath: string;
     private disposables: vscode.Disposable[] = [];
     public tableName: string;
+    private config: IConfig | undefined;
     private fieldsProvider: FieldsViewProvider;
     private readonly configuration = vscode.workspace.getConfiguration(
         Constants.globalExtensionKey
@@ -49,17 +51,17 @@ export class QueryEditor {
 
         let config: IConfig | undefined;
         switch (this.tableNode.source) {
-        case TableNodeSourceEnum.Tables:
-            config = this.tableListProvider.config;
-            break;
-        case TableNodeSourceEnum.Favorites:
-            config = this.favoritesProvider.config;
-            break;
-        case TableNodeSourceEnum.Custom:
-            config = this.customViewProvider.config;
-            break;
-        default:
-            return;
+            case TableNodeSourceEnum.Tables:
+                config = this.tableListProvider.config;
+                break;
+            case TableNodeSourceEnum.Favorites:
+                config = this.favoritesProvider.config;
+                break;
+            case TableNodeSourceEnum.Custom:
+                config = this.customViewProvider.config;
+                break;
+            default:
+                return;
         }
 
         if (tableNode instanceof CustomViewNode) {
@@ -67,12 +69,15 @@ export class QueryEditor {
         }
 
         if (config) {
-            this.readOnly = config?.isReadOnly;
+            this.config = config;
+            this.refreshConfig();
         }
+
+        const latestConfig = this.config ?? config;
 
         this.panel = vscode.window.createWebviewPanel(
             'queryOETable', // Identifies the type of the webview. Used internally
-            `${config?.label}.${this.tableNode.tableName}`, // Title of the panel displayed to the user
+            `${latestConfig?.label}.${this.tableNode.tableName}`, // Title of the panel displayed to the user
             vscode.ViewColumn.One, // Editor column to show the new webview panel in.
             {
                 enableScripts: true,
@@ -115,15 +120,23 @@ export class QueryEditor {
             (command: ICommand) => {
                 this.logger.log('command:', command);
                 switch (command.action) {
-                case CommandAction.Query:
-                    if (config) {
+                    case CommandAction.Query: {
+                        const latestConfig = this.refreshConfig();
+                        if (!latestConfig) {
+                            break;
+                        }
+
+                        const queryParams = this.customViewData
+                            ? command.params
+                                ? this.getParams(command.params)
+                                : command.params
+                            : command.params;
+
                         ProcessorFactory.getProcessorInstance()
                             .getTableData(
-                                config,
+                                latestConfig,
                                 this.tableNode.tableName,
-                                this.customViewData
-                                    ? this.getParams(command.params!)
-                                    : command.params
+                                queryParams
                             )
                             .then((oe) => {
                                 if (this.customViewData) {
@@ -138,14 +151,12 @@ export class QueryEditor {
                                     );
                                     this.panel?.webview.postMessage(obj);
                                 }
- 
+
                                 if (this.panel) {
                                     const obj = {
                                         id: command.id,
                                         command: 'data',
-                                        columns:
-                                                tableNode.cache
-                                                    ?.selectedColumns,
+                                        columns: tableNode.cache?.selectedColumns,
                                         data: oe,
                                     };
                                     this.logger.log('data:', obj);
@@ -153,13 +164,17 @@ export class QueryEditor {
                                     this.panel?.webview.postMessage(obj);
                                 }
                             });
+                        break;
                     }
-                    break;
-                case CommandAction.CRUD:
-                    if (config) {
+                    case CommandAction.CRUD: {
+                        const latestConfig = this.refreshConfig();
+                        if (!latestConfig) {
+                            break;
+                        }
+
                         ProcessorFactory.getProcessorInstance()
                             .getTableData(
-                                config,
+                                latestConfig,
                                 this.tableNode.tableName,
                                 command.params
                             )
@@ -174,13 +189,17 @@ export class QueryEditor {
                                     this.panel?.webview.postMessage(obj);
                                 }
                             });
+                        break;
                     }
-                    break;
-                case CommandAction.Submit:
-                    if (config) {
+                    case CommandAction.Submit: {
+                        const latestConfig = this.refreshConfig();
+                        if (!latestConfig) {
+                            break;
+                        }
+
                         ProcessorFactory.getProcessorInstance()
                             .submitTableData(
-                                config,
+                                latestConfig,
                                 this.tableNode.tableName,
                                 command.params
                             )
@@ -194,7 +213,7 @@ export class QueryEditor {
                                     this.logger.log('data:', obj);
                                     if (
                                         obj.data.description !== null &&
-                                            obj.data.description !== undefined
+                                        obj.data.description !== undefined
                                     ) {
                                         if (obj.data.description === '') {
                                             vscode.window.showErrorMessage(
@@ -203,7 +222,7 @@ export class QueryEditor {
                                         } else {
                                             vscode.window.showErrorMessage(
                                                 'Database Error: ' +
-                                                        obj.data.description
+                                                    obj.data.description
                                             );
                                         }
                                     } else {
@@ -214,40 +233,38 @@ export class QueryEditor {
                                     this.panel?.webview.postMessage(obj);
                                 }
                             });
-                    }
-                    break;
-                case CommandAction.Export:
-                    if (!config) {
                         break;
                     }
-                    ProcessorFactory.getProcessorInstance()
-                        .getTableData(
-                            config,
-                            this.tableNode.tableName,
-                            command.params
-                        )
-                        .then((oe) => {
-                            if (!this.panel) {
-                                return;
-                            }
-                            if (!config) {
-                                throw new Error(
-                                    'Configuration became undefined unexpectedly.'
-                                );
-                            }
-                            let exportData = oe;
-                            if (command.params?.exportType === 'dumpFile') {
-                                const dumpFileFormatter =
+                    case CommandAction.Export: {
+                        const latestConfig = this.refreshConfig();
+                        if (!latestConfig) {
+                            break;
+                        }
+
+                        ProcessorFactory.getProcessorInstance()
+                            .getTableData(
+                                latestConfig,
+                                this.tableNode.tableName,
+                                command.params
+                            )
+                            .then((oe) => {
+                                if (!this.panel || !command.params) {
+                                    return;
+                                }
+
+                                let exportData = oe;
+                                if (command.params.exportType === 'dumpFile') {
+                                    const dumpFileFormatter =
                                         new DumpFileFormatter();
-                                dumpFileFormatter.formatDumpFile(
-                                    oe,
-                                    this.tableNode.tableName,
-                                    config.label
-                                );
-                                exportData =
+                                    dumpFileFormatter.formatDumpFile(
+                                        oe,
+                                        this.tableNode.tableName,
+                                        latestConfig.label
+                                    );
+                                    exportData =
                                         dumpFileFormatter.getDumpFile();
-                            }
-                            if (command.params !== undefined) {
+                                }
+
                                 const obj = {
                                     id: command.id,
                                     command: 'export',
@@ -258,34 +275,29 @@ export class QueryEditor {
 
                                 this.logger.log('data:', obj);
                                 this.panel?.webview.postMessage(obj);
-                            }
-                        });
-                    break;
-                case CommandAction.SaveCustomQuery:
-                    vscode.commands
-                        .executeCommand(
-                            `${Constants.globalExtensionKey}.saveCustomView`,
-                            new CustomViewNode(
-                                Constants.context,
-                                this.tableNode,
-                                command.customView?.name || '',
-                                command.customView
+                            });
+                        break;
+                    }
+                    case CommandAction.SaveCustomQuery:
+                        vscode.commands
+                            .executeCommand(
+                                `${Constants.globalExtensionKey}.saveCustomView`,
+                                new CustomViewNode(
+                                    Constants.context,
+                                    this.tableNode,
+                                    command.customView?.name || '',
+                                    command.customView
+                                )
                             )
-                        )
-                        .then(
-                            () => {
-                                console.log(
-                                    'Command executed successfully'
-                                );
-                            },
-                            (error) => {
-                                console.error(
-                                    'Error executing command:',
-                                    error
-                                );
-                            }
-                        );
-                    break;
+                            .then(
+                                () => {
+                                    console.log('Command executed successfully');
+                                },
+                                (error) => {
+                                    console.error('Error executing command:', error);
+                                }
+                            );
+                        break;
                 }
             },
             undefined,
@@ -308,7 +320,7 @@ export class QueryEditor {
     }
 
     public setParams = (node: CustomViewNode): void => {
-        this.customViewData = node.customViewParams;        
+        this.customViewData = node.customViewParams;
     };
 
     public resetParams = (): void => {
@@ -324,8 +336,6 @@ export class QueryEditor {
             useDeleteTriggers: true,
         };
     };
-
-
     public getParams = (params: ITableData): ITableData => {
         if (!this.customViewData) {
             return params;
@@ -343,6 +353,23 @@ export class QueryEditor {
         this.logger.log('refetch:', obj);
         this.panel?.webview.postMessage(obj);
     };
+
+    public refreshConfig(): IConfig | undefined {
+        const latestConfig =
+            ConfigStore.getConfigById(this.context, this.tableNode.dbId) ??
+            this.config;
+
+        if (latestConfig) {
+            this.config = latestConfig;
+            this.readOnly = latestConfig.isReadOnly;
+
+            if (this.panel) {
+                this.panel.title = `${latestConfig.label}.${this.tableNode.tableName}`;
+            }
+        }
+
+        return this.config;
+    }
 
     public updateFields() {
         const obj = {

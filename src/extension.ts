@@ -171,8 +171,8 @@ export async function activate(context: vscode.ExtensionContext) {
         )
             ? oeRuntimes.find((runtime) => runtime.name === oejRuntimeName)
             : oeRuntimes.find(
-                  (runtime) => runtime.name === defaultRuntimeName,
-              ) || oeRuntimes[0];
+                (runtime) => runtime.name === defaultRuntimeName,
+            ) || oeRuntimes[0];
     } else {
         vscode.window.showWarningMessage(
             'No OpenEdge runtime configured on this machine.',
@@ -341,6 +341,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const cachedQueryEditor = queryEditorCache.getQueryEditor(key);
 
         if (cachedQueryEditor) {
+            cachedQueryEditor.refreshConfig();
             if (reloadFull) {
                 cachedQueryEditor.resetParams();
             }

@@ -5,6 +5,7 @@ import { Constants } from '../common/Constants';
 import { Logger } from '../common/Logger';
 import { v4 as uuid } from 'uuid';
 import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
+import { ConfigStore } from './queryEditor/queryEditorEvents';
 
 export class ConnectionEditor {
     private readonly panel: vscode.WebviewPanel | undefined;
@@ -69,7 +70,7 @@ export class ConnectionEditor {
         this.panel.webview.html = this.getWebviewContent();
 
         this.panel.webview.onDidReceiveMessage(
-            (command: ICommand) => {
+            async (command: ICommand) => {
                 this.logger.log('command:', command);
                 let connections = this.context.globalState.get<{
                     [id: string]: IConfig;
@@ -86,8 +87,8 @@ export class ConnectionEditor {
                         }
                         if (command.content) {
                             connections[command.content.id] = command.content;
-                            this.context.globalState.update(
-                                `${Constants.globalExtensionKey}.dbconfig`,
+                            await ConfigStore.setGlobalConfigs(
+                                this.context,
                                 connections,
                             );
                             vscode.window.showInformationMessage(

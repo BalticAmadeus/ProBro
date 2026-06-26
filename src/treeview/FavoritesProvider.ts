@@ -6,6 +6,7 @@ import { IConfig } from '../view/app/model';
 import { Constants } from '../common/Constants';
 
 export class FavoritesProvider extends TablesListProvider {
+    public config: IConfig | undefined;
     public _onDidChangeTreeData: vscode.EventEmitter<
         TableNode | undefined | void
     > = new vscode.EventEmitter<TableNode | undefined | void>();

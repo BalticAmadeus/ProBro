@@ -8,6 +8,7 @@ import { Constants } from '../common/Constants';
 
 export class CustomViewProvider extends TablesListProvider {
     public override node: CustomViewNode | undefined;
+    public config: IConfig | undefined;
 
     public _onDidChangeTreeData: vscode.EventEmitter<
         TableNode | undefined | void
@@ -42,8 +43,8 @@ export class CustomViewProvider extends TablesListProvider {
     public async getChildren(
         element?: CustomViewNode
     ): Promise<CustomViewNode[]> {
-        if (!element) return this.getCustomViews();
-        else return [];
+        if (!element) {return this.getCustomViews();}
+        else {return [];}
     }
 
     saveCustomView(node: CustomViewNode): void {
