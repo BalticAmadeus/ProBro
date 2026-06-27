@@ -8,7 +8,6 @@ import { Constants } from '../common/Constants';
 
 export class CustomViewProvider extends TablesListProvider {
     public override node: CustomViewNode | undefined;
-    public config: IConfig | undefined;
 
     public _onDidChangeTreeData: vscode.EventEmitter<
         TableNode | undefined | void

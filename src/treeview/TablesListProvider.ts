@@ -58,6 +58,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 
                     const defaultDeselections = ['RECID', 'ROWID'];
 
+                    // If there is no previously selected columns, select all by default, except RECID, ROWID
                     const newFields = fieldNames
                         .filter(
                             (fieldName) => !cachedColumns.includes(fieldName)
@@ -70,6 +71,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
                     if (!previouslySelectedColumns) {
                         oeTableDetails.selectedColumns = newFields;
                     } else {
+                        // Selected columns are previously selected ones plus the new columns
                         oeTableDetails.selectedColumns = [
                             ...previouslySelectedColumns,
                             ...newFields,
