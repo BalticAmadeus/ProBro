@@ -49,6 +49,7 @@ export interface ICommand {
     content?: IConfig;
     params?: ITableData;
     columns?: string[];
+    customView?: ICustomView;
 }
 
 export interface IQueryParams {
@@ -67,6 +68,7 @@ export enum CommandAction {
     RefreshTableData,
     Group,
     FieldsHighlightColumn,
+    SaveCustomQuery,
 }
 
 export interface FieldRow {
@@ -156,4 +158,13 @@ export interface IPort {
     port: number;
     isInUse: boolean;
     timestamp: number | undefined;
+}
+
+export interface ICustomView {
+    name: string;
+    wherePhrase: string;
+    sortColumns: SortColumn[];
+    filters: any;
+    useWriteTriggers: boolean;
+    useDeleteTriggers: boolean;
 }

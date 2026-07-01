@@ -12,4 +12,5 @@ export const ProBroButton = styled(Button)({
         backgroundColor: 'inherit',
         opacity: 0.5,
     },
+    minWidth: '40px',
 });

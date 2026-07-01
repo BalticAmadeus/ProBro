@@ -17,6 +17,25 @@ export class PfParser {
             type: 0,
             isReadOnly: false,
         };
+        const flagOnlyParams = [
+            '-RO',
+            '-ssl',
+            '-brl',
+            '-directio',
+            '-r',
+            '-F',
+            '-i',
+            '-ipver',
+            '-is',
+            '-nohostverify',
+            '-nosessionreuse',
+            '-Passphrase',
+            '-requireusername',
+            '-tstamp',
+            '-1',
+            '-crTXDisplay',
+            '-Sn',
+        ];
 
         pfFile
             .split('\n')
@@ -26,7 +45,9 @@ export class PfParser {
                 );
             })
             .forEach((param) => {
-                param.match(/(-[A-Za-z0-9]+)/g)?.forEach((key) => {
+                param = ' ' + param;
+                param.match(/(\s-[A-Za-z0-9]+)/g)?.forEach((key) => {
+                    key = key.trim();
                     let regexStr;
                     if (new RegExp(`(${key}\\s)('|")`).test(param)) {
                         regexStr = `(${key}\\s)('|")([^'^"]*)('|")`;
@@ -55,7 +76,7 @@ export class PfParser {
                         case '-S':
                             config.port = keyVal[0].substring(key.length + 1);
                             break;
-                        case '-RO':
+                        case '-RO': {
                             const ROFlag = keyVal[0].split(/\s+/)[0];
                             config.isReadOnly = true;
                             if (config.params) {
@@ -63,11 +84,16 @@ export class PfParser {
                             }
                             config.params += ROFlag;
                             break;
+                        }
                         default:
                             if (config.params) {
                                 config.params += ' ';
                             }
-                            config.params += keyVal[0];
+                            if (flagOnlyParams.includes(key)) {
+                                config.params += key;
+                            } else {
+                                config.params += keyVal[0];
+                            }
                             break;
                     }
                 });

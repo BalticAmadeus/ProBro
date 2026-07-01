@@ -5,6 +5,7 @@ import { INode } from './INode';
 export enum TableNodeSourceEnum {
     Tables = 'tables',
     Favorites = 'favorites',
+    Custom = 'custom',
 }
 
 export class TableNode implements INode {

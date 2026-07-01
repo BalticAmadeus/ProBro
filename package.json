@@ -7,9 +7,10 @@
         "Progress",
         "DataBase",
         "DB",
-        "Explorer"
+        "Explorer",
+        "ABL"
     ],
-    "version": "1.8.0",
+    "version": "1.9.3",
     "repository": {
         "type": "git",
         "url": "https://github.com/BalticAmadeus/ProBro"
@@ -188,6 +189,12 @@
                     "name": "Table favorites",
                     "contextualTitle": "Table favorites",
                     "title": "Table favorites"
+                },
+                {
+                    "id": "pro-bro-custom-views",
+                    "name": "Custom table views",
+                    "contextualTitle": "Custom table views",
+                    "title": "Custom table views"
                 }
             ]
         },
@@ -251,6 +258,10 @@
                 "title": "DblClickFavoriteQuery"
             },
             {
+                "command": "pro-bro.dblClickCustomViewQuery",
+                "title": "DblClickCustomViewQuery"
+            },
+            {
                 "command": "pro-bro.addFavourite",
                 "title": "pro-bro: addFavourite",
                 "icon": "$(star-empty)"
@@ -264,6 +275,16 @@
                 "command": "pro-bro.queryFavorite",
                 "title": "pro-bro: Query Favorite",
                 "icon": "$(play)"
+            },
+            {
+                "command": "pro-bro.queryCustomView",
+                "title": "pro-bro: Query Custom View",
+                "icon": "$(play)"
+            },
+            {
+                "command": "pro-bro.removeCustomView",
+                "title": "pro-bro: Remove Custom View",
+                "icon": "$(trash)"
             }
         ],
         "menus": {
@@ -334,6 +355,16 @@
                     "command": "pro-bro.queryFavorite",
                     "when": "view == pro-bro-favorites",
                     "group": "inline"
+                },
+                {
+                    "command": "pro-bro.queryCustomView",
+                    "when": "view == pro-bro-custom-views",
+                    "group": "inline"
+                },
+                {
+                    "command": "pro-bro.removeCustomView",
+                    "when": "view == pro-bro-custom-views",
+                    "group": "inline"
                 }
             ]
         }
@@ -360,6 +391,7 @@
         "@babel/core": "^7.21.0",
         "@babel/preset-env": "^7.20.2",
         "@babel/preset-typescript": "^7.21.0",
+        "@stylistic/eslint-plugin-js": "^2.11.0",
         "@types/glob": "^7.2.0",
         "@types/mocha": "^9.1.1",
         "@types/node": "14.x",
@@ -390,6 +422,7 @@
         "@emotion/styled": "^11.10.0",
         "@mui/icons-material": "^5.10.2",
         "@mui/material": "^5.10.2",
+        "@types/jsonminify": "^0.4.3",
         "@types/uuid": "^9.0.1",
         "bootstrap": "^5.2.0",
         "esbuild": "^0.17.5",
@@ -405,6 +438,7 @@
         "react-markdown": "^8.0.7",
         "react-table": "^7.8.0",
         "reactjs-popup": "^2.0.5",
+        "strip-json-comments": "^5.0.2",
         "uuid": "^9.0.0"
     }
 }

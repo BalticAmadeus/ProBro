@@ -1,5 +1,29 @@
 # Change Log
 
+## 1.9.3 (2026-03-05)
+
+- Fixed the issue with connection form.
+- Fixed some issues with extension setup.
+
+## 1.9.1 (2025-08-11)
+
+### Changed
+
+- Fixed the issue with comments in JSON file
+
+## 1.9.0 (2025-01-10)
+
+### Changed
+
+- Extension startup issue.
+- DB connections with "-".
+- Minor UI/UX improvements.
+- Fixed various small bugs.
+
+### Added
+
+- User defined views.
+
 ## 1.8.0 (2024-11-08)
 
 ### Changed
