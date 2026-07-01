@@ -19,7 +19,7 @@ import { Constants } from '../common/Constants';
 import { queryEditorCache } from './queryEditor/queryEditorCache';
 import { FavoritesProvider } from '../treeview/FavoritesProvider';
 import { CustomViewNode } from '../treeview/CustomViewNode';
-import { ConfigStore } from './queryEditor/queryEditorEvents';
+import { ConfigStore } from './dbConfigStore';
 
 export class QueryEditor {
     public readonly panel: vscode.WebviewPanel | undefined;

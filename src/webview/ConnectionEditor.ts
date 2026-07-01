@@ -5,7 +5,7 @@ import { Constants } from '../common/Constants';
 import { Logger } from '../common/Logger';
 import { v4 as uuid } from 'uuid';
 import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
-import { ConfigStore } from './queryEditor/queryEditorEvents';
+import { ConfigStore } from './dbConfigStore';
 
 export class ConnectionEditor {
     private readonly panel: vscode.WebviewPanel | undefined;

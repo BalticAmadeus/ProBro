@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { IConfig } from '../../view/app/model';
-import { Constants } from '../../common/Constants';
+import { IConfig } from '../view/app/model';
+import { Constants } from '../common/Constants';
 
 const configStateKey = `${Constants.globalExtensionKey}.dbconfig`;
 
