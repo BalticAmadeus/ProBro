@@ -42,8 +42,8 @@ export class CustomViewProvider extends TablesListProvider {
     public async getChildren(
         element?: CustomViewNode
     ): Promise<CustomViewNode[]> {
-        if (!element) return this.getCustomViews();
-        else return [];
+        if (!element) {return this.getCustomViews();}
+        else {return [];}
     }
 
     saveCustomView(node: CustomViewNode): void {
@@ -159,6 +159,7 @@ export class CustomViewProvider extends TablesListProvider {
     public refresh(configs: IConfig[] | undefined): void {
         if (configs !== undefined) {
             this.configs = configs;
+            this.config  = configs?.filter((config) => this.tableNodes.map((node) => node.dbId).includes(config.id))[0];
         }
         this._onDidChangeTreeData.fire();
     }

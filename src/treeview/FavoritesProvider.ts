@@ -149,6 +149,7 @@ export class FavoritesProvider extends TablesListProvider {
     public refresh(configs: IConfig[] | undefined): void {
         if (configs !== undefined) {
             this.configs = configs;
+            this.config  = configs?.filter((config) => this.tableNodes.map((node) => node.dbId).includes(config.id))[0];
         }
         this._onDidChangeTreeData.fire();
     }

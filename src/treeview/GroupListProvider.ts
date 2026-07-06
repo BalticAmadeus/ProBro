@@ -10,32 +10,33 @@ import { FavoritesProvider } from './FavoritesProvider';
 import { CustomViewProvider } from './CustomViewProvider';
 
 export class GroupListProvider
-    implements vscode.TreeDataProvider<INode>, IRefreshCallback
+implements vscode.TreeDataProvider<INode>, IRefreshCallback
 {
     private _onDidChangeTreeData: vscode.EventEmitter<
         INode | undefined | void
     > = new vscode.EventEmitter<INode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<INode | undefined | void> =
         this._onDidChangeTreeData.event;
+    private tablesProvider: TablesListProvider | undefined;
+    private favoritesProvider: FavoritesProvider | undefined;
+    private customViewsProvider: CustomViewProvider | undefined;
 
     constructor(
         private context: vscode.ExtensionContext,
-        private tables: vscode.TreeView<INode>
-    ) {}
+        private tables: TablesListProvider,
+        private favorites: FavoritesProvider,
+        private customViews: CustomViewProvider
+    ) {
+        this.tablesProvider = tables;
+        this.favoritesProvider = favorites;
+        this.customViewsProvider = customViews;
+    }
 
     onDidChangeSelection(
-        e: vscode.TreeViewSelectionChangeEvent<INode>,
-        tablesListProvider: vscode.TreeDataProvider<INode>,
-        favoritesProvider: vscode.TreeDataProvider<INode>,
-        customViewsProvider: vscode.TreeDataProvider<INode>
+        e: vscode.TreeViewSelectionChangeEvent<INode>
     ): any {
         if (e.selection.length) {
-            if (
-                e.selection[0] instanceof DbConnectionNode &&
-                tablesListProvider instanceof TablesListProvider &&
-                favoritesProvider instanceof FavoritesProvider &&
-                customViewsProvider instanceof CustomViewProvider
-            ) {
+            if (e.selection[0] instanceof DbConnectionNode) {
                 const nodes = e.selection as DbConnectionNode[];
                 const configs: IConfig[] = [];
 
@@ -44,15 +45,15 @@ export class GroupListProvider
                 });
 
                 console.log('GroupList', configs);
-                tablesListProvider.refresh(configs);
-                favoritesProvider.refresh(configs);
-                customViewsProvider.refresh(configs);
+                this.tablesProvider?.refresh(configs);
+                this.favoritesProvider?.refresh(configs);
+                this.customViewsProvider?.refresh(configs);
                 return;
             }
         }
-        (tablesListProvider as TablesListProvider).refresh(undefined);
-        (favoritesProvider as FavoritesProvider).refresh(undefined);
-        (customViewsProvider as CustomViewProvider).refresh(undefined);
+        this.tablesProvider?.refresh(undefined);
+        this.favoritesProvider?.refresh(undefined);
+        this.customViewsProvider?.refresh(undefined);
     }
 
     refresh(): void {
@@ -70,6 +71,16 @@ export class GroupListProvider
             return this.getGroupNodes();
         }
         return element.getChildren();
+    }
+
+    updateProviders( configs: IConfig[] | undefined): void {
+        const tablesProviderConfigs: IConfig[] | undefined = configs?.filter((config) => this.tablesProvider?.tableNodes.map((node) => node.dbId).includes(config.id));
+        const favoritesProviderConfigs: IConfig[] | undefined = configs?.filter((config) => this.favoritesProvider?.tableNodes.map((node) => node.dbId).includes(config.id));
+        const customViewsProviderConfigs: IConfig[] | undefined = configs?.filter((config) => this.customViewsProvider?.tableNodes.map((node) => node.dbId).includes(config.id));
+
+        this.tablesProvider?.refresh(tablesProviderConfigs);
+        this.favoritesProvider?.refresh(favoritesProviderConfigs);
+        this.customViewsProvider?.refresh(customViewsProviderConfigs);
     }
 
     private async getGroupNodes(): Promise<groupNode.GroupNode[]> {
@@ -112,6 +123,10 @@ export class GroupListProvider
                 }
             }
         }
+
+        this.updateProviders([...Object.values(connections || {}), 
+            ...Object.values(workspaceConnections || {})]);
+
         return groupNodes;
     }
 }

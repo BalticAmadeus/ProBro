@@ -157,6 +157,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 
     public refresh(configs: IConfig[] | undefined): void {
         this.configs = configs;
+        this.config  = configs?.filter((config) => this.tableNodes.map((node) => node.dbId).includes(config.id))[0];
         this._onDidChangeTreeData.fire();
     }
 
@@ -173,6 +174,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
 
     public getChildren(element?: INode): Thenable<INode[]> | INode[] {
         if (!element) {
+            console.log('Load up the tree!');
             return this.getFilteredTables();
         }
         return element.getChildren();

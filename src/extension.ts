@@ -171,8 +171,8 @@ export async function activate(context: vscode.ExtensionContext) {
         )
             ? oeRuntimes.find((runtime) => runtime.name === oejRuntimeName)
             : oeRuntimes.find(
-                  (runtime) => runtime.name === defaultRuntimeName,
-              ) || oeRuntimes[0];
+                (runtime) => runtime.name === defaultRuntimeName,
+            ) || oeRuntimes[0];
     } else {
         vscode.window.showWarningMessage(
             'No OpenEdge runtime configured on this machine.',
@@ -311,7 +311,12 @@ export async function activate(context: vscode.ExtensionContext) {
     fieldsProvider.tableListProvider = tablesListProvider;
     indexesProvider.tableListProvider = tablesListProvider;
 
-    const groupListProvider = new GroupListProvider(context, tables);
+    const groupListProvider = new GroupListProvider(
+        context,
+        tablesListProvider,
+        favoritesProvider,
+        customViewsProvider
+    );
     const groups = vscode.window.createTreeView(
         `${Constants.globalExtensionKey}-databases`,
         { treeDataProvider: groupListProvider, canSelectMany: true },
@@ -324,12 +329,7 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
     groups.onDidChangeSelection((e) =>
-        groupListProvider.onDidChangeSelection(
-            e,
-            tablesListProvider,
-            favoritesProvider,
-            customViewsProvider,
-        ),
+        groupListProvider.onDidChangeSelection(e),
     );
 
     /**
