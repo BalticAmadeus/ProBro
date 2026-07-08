@@ -76,6 +76,29 @@ function Fields() {
         setFilters(filters);
     };
 
+    // Apply filters to rows when filters or rows change
+    useEffect(() => {
+        if (!filters || !filters.enabled) {
+            setFilteredRows(rows);
+            return;
+        }
+        const cols = filters.columns || {};
+        const filtered = rows.filter((row) => {
+            return Object.keys(cols).every((key) => {
+                const filterValue = (cols as any)[key];
+                if (filterValue === undefined || filterValue === null || filterValue === '') {
+                    return true;
+                }
+                const cellValue = (row as any)[key];
+                if (cellValue === undefined || cellValue === null) {return false;}
+                const cellStr = String(cellValue).toLowerCase();
+                const filterStr = String(filterValue).toLowerCase().trim();
+                return cellStr.startsWith(filterStr);
+            });
+        });
+        setFilteredRows(filtered);
+    }, [rows, filters]);
+
     const windowRezise = () => {
         setWindowHeight(window.innerHeight);
     };
@@ -123,9 +146,9 @@ function Fields() {
                     isCellSelected={props.isCellSelected}
                     setCellSelected={props.setCellSelected}
                     filters={filters}
-                    setFilters={setFilters}
+                    setFilters={updateFilters}
                     configuration={configuration} 
-                    />
+                />
             );
         };
     });
@@ -157,7 +180,7 @@ function Fields() {
                             enabled: true,
                         });
 
-                        if (message.data.selectedColumns.length === 0 && message.data.selectedColumns === undefined) {
+                        if (message.data.selectedColumns === undefined || message.data.selectedColumns.length === 0) {
                             setSelectedRows(
                                 (): ReadonlySet<number> =>
                                     new Set(
