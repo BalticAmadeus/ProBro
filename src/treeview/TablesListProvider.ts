@@ -11,21 +11,23 @@ import {
     updateAllColumnsCache,
 } from '../repo/utils/cache';
 import { Constants } from '../common/Constants';
+import { GroupListProvider } from './GroupListProvider';
 
 export class TablesListProvider implements vscode.TreeDataProvider<INode> {
-    public config: IConfig | undefined;
-    public configs: IConfig[] | undefined;
-    public node: TableNode | undefined;
-    public tableNodes: tableNode.TableNode[] = [];
-    public filters: string[] | undefined = ['UserTable'];
-    public tableClicked: TableCount = { tableName: undefined, count: 0 };
+    public  node: TableNode | undefined;
+    public  tableNodes: tableNode.TableNode[] = [];
+    public  filters: string[] | undefined = ['UserTable'];
+    public  tableClicked: TableCount = { tableName: undefined, count: 0 };
+    public  groupList: GroupListProvider | undefined;
 
     constructor(
         public fieldsProvider: PanelViewProvider,
         public indexesProvider: PanelViewProvider,
-        public context: vscode.ExtensionContext
+        public context: vscode.ExtensionContext,
+        public groupListProvider: GroupListProvider
     ) {
         this.context = context;
+        this.groupList = groupListProvider;
     }
 
     public displayData(node: TableNode, useCache = true) {
@@ -44,7 +46,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
             });
         } else {
             return ProcessorFactory.getProcessorInstance()
-                .getTableDetails(this.config, node.tableName)
+                .getTableDetails(this.getLatestConfig(node.dbId), node.tableName)
                 .then((oeTableDetails) => {
                     const previouslySelectedColumns = getSelectedColumnsCache(
                         this.node
@@ -110,20 +112,11 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     }
 
     onDidChangeSelection(e: vscode.TreeViewSelectionChangeEvent<INode>): void {
-        if (e.selection.length && this.configs) {
+        if (e.selection.length) {
             if (e.selection[0] instanceof TableNode) {
                 this.node = e.selection[0];
-                this.selectDbConfig(this.node);
                 this.displayData(this.node, false);
             }
-        }
-    }
-
-    public selectDbConfig(node: TableNode) {
-        if (this.configs) {
-            this.config = this.configs.find(
-                (config) => config.name === node.connectionName
-            );
         }
     }
 
@@ -155,9 +148,7 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
         }, 500);
     }
 
-    public refresh(configs: IConfig[] | undefined): void {
-        this.configs = configs;
-        this.config  = configs?.filter((config) => this.tableNodes.map((node) => node.dbId).includes(config.id))[0];
+    public refresh(): void {
         this._onDidChangeTreeData.fire();
     }
 
@@ -180,59 +171,56 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
         return element.getChildren();
     }
 
-    private async getGroupNodes(): Promise<void> {
+    private async getGroupNode(): Promise<void> {
         this.tableNodes = [];
-        if (this.configs) {
-            for (const config of this.configs) {
-                await ProcessorFactory.getProcessorInstance()
-                    .getTablesList(config)
-                    .then((oeTables) => {
-                        if (oeTables instanceof Error) {
-                            return;
-                        }
+        const configsToLoad = this.groupList?.getSelectedConfigs() ?? [];
 
-                        if (oeTables.error) {
-                            vscode.window.showErrorMessage(
-                                `Error connecting DB: ${oeTables.description} (${oeTables.error})`
-                            );
-                            return;
-                        }
+        for (const config of configsToLoad) {
+            await ProcessorFactory.getProcessorInstance()
+                .getTablesList(config)
+                .then((oeTables) => {
+                    if (oeTables instanceof Error) {
+                        return;
+                    }
 
-                        if (config) {
-                            console.log(
-                                `Requested tables list of DB: ${config.name}`
-                            );
-                            const connectionLabel = config.label;
-                            const connectionName = config.name;
-                            oeTables.tables.forEach(
-                                (table: {
-                                    name: string;
-                                    tableType: string;
-                                }) => {
-                                    this.tableNodes?.push(
-                                        new tableNode.TableNode(
-                                            Constants.context,
-                                            config.id,
-                                            table.name,
-                                            table.tableType,
-                                            connectionName,
-                                            connectionLabel,
-                                            TableNodeSourceEnum.Tables
-                                        )
-                                    );
-                                }
+                    if (oeTables.error) {
+                        vscode.window.showErrorMessage(
+                            `Error connecting DB: ${oeTables.description} (${oeTables.error})`
+                        );
+                        return;
+                    }
+
+                    console.log(`Requested tables list of DB: ${config.name}`);
+                    const connectionLabel = config.label;
+                    const connectionName = config.name;
+                    oeTables.tables.forEach(
+                        (table: { name: string; tableType: string }) => {
+                            this.tableNodes?.push(
+                                new tableNode.TableNode(
+                                    Constants.context,
+                                    config.id,
+                                    table.name,
+                                    table.tableType,
+                                    connectionName,
+                                    connectionLabel,
+                                    TableNodeSourceEnum.Tables
+                                )
                             );
                         }
-                    });
-            }
+                    );
+                });
         }
     }
 
     public async getFilteredTables(): Promise<tableNode.TableNode[]> {
-        await this.getGroupNodes();
+        await this.getGroupNode();
 
         return this.tableNodes.filter((table) => {
             return this.filters?.includes(table.tableType);
         });
+    }
+
+    public getLatestConfig(groupId: string): IConfig | undefined {
+        return this.groupList?.getConfigByGroup(groupId);
     }
 }

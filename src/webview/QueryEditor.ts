@@ -336,11 +336,11 @@ export class QueryEditor {
     public fetchConfig = (tableNodeSource: string): IConfig | undefined => {
         switch (tableNodeSource) {
             case TableNodeSourceEnum.Tables:
-                return this.tableListProvider.config;
+                return this.tableListProvider.getLatestConfig(this.tableNode.dbId);
             case TableNodeSourceEnum.Favorites:
-                return this.favoritesProvider.config;
+                return this.favoritesProvider.getLatestConfig(this.tableNode.dbId);
             case TableNodeSourceEnum.Custom:
-                return this.customViewProvider.config;
+                return this.customViewProvider.getLatestConfig(this.tableNode.dbId);
             default:
                 return undefined;
         }

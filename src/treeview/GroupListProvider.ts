@@ -3,11 +3,11 @@ import { Constants } from '../common/Constants';
 import { INode } from './INode';
 import * as groupNode from './GroupNode';
 import { IConfig } from '../view/app/model';
-import { TablesListProvider } from './TablesListProvider';
-import { DbConnectionNode } from './DbConnectionNode';
 import { IRefreshCallback } from './IRefreshCallback';
+import { TablesListProvider } from './TablesListProvider';
 import { FavoritesProvider } from './FavoritesProvider';
 import { CustomViewProvider } from './CustomViewProvider';
+import { DbConnectionNode } from './DbConnectionNode';
 
 export class GroupListProvider
 implements vscode.TreeDataProvider<INode>, IRefreshCallback
@@ -20,40 +20,63 @@ implements vscode.TreeDataProvider<INode>, IRefreshCallback
     private tablesProvider: TablesListProvider | undefined;
     private favoritesProvider: FavoritesProvider | undefined;
     private customViewsProvider: CustomViewProvider | undefined;
-
+    private selectedConfigs: IConfig[] = [];
+    
     constructor(
-        private context: vscode.ExtensionContext,
-        private tables: TablesListProvider,
-        private favorites: FavoritesProvider,
-        private customViews: CustomViewProvider
+        private context: vscode.ExtensionContext
     ) {
-        this.tablesProvider = tables;
-        this.favoritesProvider = favorites;
-        this.customViewsProvider = customViews;
     }
 
-    onDidChangeSelection(
+    public setProviders(
+        tablesProvider: TablesListProvider,
+        favoritesProvider: FavoritesProvider,
+        customViewsProvider: CustomViewProvider
+    ): void {
+        this.tablesProvider = tablesProvider;
+        this.favoritesProvider = favoritesProvider;
+        this.customViewsProvider = customViewsProvider;
+    }
+
+    public async onDidChangeSelection(
         e: vscode.TreeViewSelectionChangeEvent<INode>
-    ): any {
-        if (e.selection.length) {
-            if (e.selection[0] instanceof DbConnectionNode) {
-                const nodes = e.selection as DbConnectionNode[];
-                const configs: IConfig[] = [];
+    ): Promise<void> {
+        if (!e.selection.length) {
+            this.selectedConfigs = [];
+            return;
+        }
 
-                nodes.forEach((node) => {
-                    configs.push(node.config);
+        const configs: IConfig[] = [];
+
+        for (const selected of e.selection) {
+            if (selected instanceof DbConnectionNode) {
+                configs.push(selected.config);
+                continue;
+            }
+
+            if (selected instanceof groupNode.GroupNode) {
+                const children = await selected.getChildren();
+                children.forEach((child) => {
+                    if (child instanceof DbConnectionNode) {
+                        configs.push(child.config);
+                    }
                 });
-
-                console.log('GroupList', configs);
-                this.tablesProvider?.refresh(configs);
-                this.favoritesProvider?.refresh(configs);
-                this.customViewsProvider?.refresh(configs);
-                return;
             }
         }
-        this.tablesProvider?.refresh(undefined);
-        this.favoritesProvider?.refresh(undefined);
-        this.customViewsProvider?.refresh(undefined);
+
+        if (!configs.length) {
+            this.selectedConfigs = [];
+            return;
+        }
+
+        this.selectedConfigs = configs;
+
+        this.tablesProvider?.refresh();
+        this.favoritesProvider?.refresh();
+        this.customViewsProvider?.refresh();
+    }
+
+    public getSelectedConfigs(): IConfig[] {
+        return this.selectedConfigs;
     }
 
     refresh(): void {
@@ -71,16 +94,6 @@ implements vscode.TreeDataProvider<INode>, IRefreshCallback
             return this.getGroupNodes();
         }
         return element.getChildren();
-    }
-
-    updateProviders( configs: IConfig[] | undefined): void {
-        const tablesProviderConfigs: IConfig[] | undefined = configs?.filter((config) => this.tablesProvider?.tableNodes.map((node) => node.dbId).includes(config.id));
-        const favoritesProviderConfigs: IConfig[] | undefined = configs?.filter((config) => this.favoritesProvider?.tableNodes.map((node) => node.dbId).includes(config.id));
-        const customViewsProviderConfigs: IConfig[] | undefined = configs?.filter((config) => this.customViewsProvider?.tableNodes.map((node) => node.dbId).includes(config.id));
-
-        this.tablesProvider?.refresh(tablesProviderConfigs);
-        this.favoritesProvider?.refresh(favoritesProviderConfigs);
-        this.customViewsProvider?.refresh(customViewsProviderConfigs);
     }
 
     private async getGroupNodes(): Promise<groupNode.GroupNode[]> {
@@ -124,9 +137,35 @@ implements vscode.TreeDataProvider<INode>, IRefreshCallback
             }
         }
 
-        this.updateProviders([...Object.values(connections || {}), 
-            ...Object.values(workspaceConnections || {})]);
-
         return groupNodes;
+    }
+
+    public getConfigByGroup(group: string): IConfig | undefined {
+        const connections = this.context.globalState.get<{
+            [key: string]: IConfig;
+        }>(`${Constants.globalExtensionKey}.dbconfig`);
+
+        if (connections) {
+            // return config if available
+            const config = Object.values(connections).find((config) => config.id.toUpperCase() === group.toUpperCase());
+            if (config) {
+                return config;
+            }
+        }
+
+        const workspaceConnections = this.context.workspaceState.get<{
+            [key: string]: IConfig;
+        }>(`${Constants.globalExtensionKey}.dbconfig`);
+
+        if (workspaceConnections) {
+            // return config if available
+            const config = Object.values(workspaceConnections).find((config) => config.id.toUpperCase() === group.toUpperCase());
+            if (config) {
+                return config;
+            }
+        }
+
+        console.warn(`No configuration found for group: ${group}`);
+        return undefined;
     }
 }

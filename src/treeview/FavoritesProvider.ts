@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import { TableNode, TableNodeSourceEnum } from './TableNode';
 import { TablesListProvider } from './TablesListProvider';
+import { GroupListProvider } from './GroupListProvider';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
-import { IConfig } from '../view/app/model';
 import { Constants } from '../common/Constants';
 
 export class FavoritesProvider extends TablesListProvider {
@@ -11,14 +11,14 @@ export class FavoritesProvider extends TablesListProvider {
     > = new vscode.EventEmitter<TableNode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<TableNode | undefined | void> =
         this._onDidChangeTreeData.event;
-    public configs: IConfig[] | undefined;
 
     constructor(
         fieldsProvider: PanelViewProvider,
         indexesProvider: PanelViewProvider,
-        context: vscode.ExtensionContext
+        context: vscode.ExtensionContext,
+        groupListProvider: GroupListProvider
     ) {
-        super(fieldsProvider, indexesProvider, context);
+        super(fieldsProvider, indexesProvider, context, groupListProvider);
     }
 
     /**
@@ -53,9 +53,9 @@ export class FavoritesProvider extends TablesListProvider {
             }[]
         >('favorites', []);
 
-        const filteredFavorites = favoritesData.filter((favorite) =>
-            this.configs?.some((config) => config.id === favorite.dbId)
-        );
+        const filteredFavorites = favoritesData.filter((favorite) => {
+            return this.getLatestConfig(favorite.dbId) !== undefined;
+        });
 
         const favorites = filteredFavorites.map(
             (data) =>
@@ -146,11 +146,7 @@ export class FavoritesProvider extends TablesListProvider {
         }
     }
 
-    public refresh(configs: IConfig[] | undefined): void {
-        if (configs !== undefined) {
-            this.configs = configs;
-            this.config  = configs?.filter((config) => this.tableNodes.map((node) => node.dbId).includes(config.id))[0];
-        }
+    public refresh(): void {
         this._onDidChangeTreeData.fire();
     }
 }
