@@ -292,6 +292,7 @@ export async function activate(context: vscode.ExtensionContext) {
         context,
         groupListProvider
     );
+    
     groupListProvider.setProviders(
         tablesListProvider,
         favoritesProvider,
