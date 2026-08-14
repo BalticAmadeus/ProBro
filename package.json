@@ -128,9 +128,53 @@
                         "Small"
                     ],
                     "description": "Set the grid text size."
+                },
+                "Telemetry.probroTelemetry": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable telemetry",
+                    "tags": [
+                        "usesOnlineServices",
+                        "telemetry"
+                    ]
                 }
             }
         },
+        "walkthroughs": [
+            {
+                "id": "pro-bro",
+                "title": "ProBro",
+                "description": "An extension for OpenEdge database browsing.",
+                "steps": [
+                    {
+                        "id": "telemetryNotice",
+                        "title": "Telemetry notice for ProBro",
+                        "description": "How and What data is collected by this extension\n [Learn More](https://code.visualstudio.com/docs/editor/telemetry#:~:text=Visual%20Studio%20Code%20collects%20telemetry%20data%2C%20which%20is,slow%20start-up%20times%2C%20and%20to%20prioritize%20new%20features.)",
+                        "media": {
+                            "markdown": "resources/markdown/telemetry_notice.md"
+                        }
+                    },
+                    {
+                        "id": "DisableGlobalTelemetry",
+                        "title": "How to disable all Telemetry",
+                        "description": "Disabling all telemetry that VSCode sends.\n[Global Telemetry Setting](command:toSide:workbench.action.openSettings?%22@tag:telemetry%22)",
+                        "media": {
+                            "image": "resources/images/DisableGlobalTelemetry.png",
+                            "altText": "Settings for disabling all telemetry sent by VSCode can be found in settings with @tag:telemetry tag"
+                        }
+                    },
+                    {
+                        "id": "DisableProBroTelemetry",
+                        "title": "How to disable only ProBro Telemetry",
+                        "description": "If global setting for telemetry is \"off\" then this setting is ignored and no telemetry is sent.\n[ProBro Telemetry Setting](command:toSide:workbench.action.openSettings?%22Telemetry.probroTelemetry%22)",
+                        "media": {
+                            "image": "resources/images/DisableProBroTelemetry.png",
+                            "altText": "Settings for disabling telemetry sent by ProBro can be found in settings with @tag:telemetry tag"
+                        }
+                    }
+                ]
+            }
+        ],
         "viewsContainers": {
             "activitybar": [
                 {
@@ -370,7 +414,9 @@
         }
     },
     "scripts": {
-        "vscode:prepublish": "npm run esbuild-base -- --minify",
+        "vscode:prepublish": "npm run inject-telemetry-key && npm run esbuild-base -- --minify",
+        "inject-telemetry-key": "replace-in-file \"__TELEMETRY_KEY__\"  \"InstrumentationKey=5ee68587-b91d-41b6-ba02-4c65e5348310;IngestionEndpoint=https://northeurope-2.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/;ApplicationId=b19474b9-14c6-4c39-b5ba-0c843036cbb0\" ./src/telemetry/Telemetry.ts",
+        "reset-telemetry-key": "replace-in-file \"InstrumentationKey=5ee68587-b91d-41b6-ba02-4c65e5348310;IngestionEndpoint=https://northeurope-2.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/;ApplicationId=b19474b9-14c6-4c39-b5ba-0c843036cbb0\" \"__TELEMETRY_KEY__\" ./src/telemetry/Telemetry.ts",
         "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
         "esbuild": "npm run esbuild-base -- --sourcemap",
         "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
@@ -383,7 +429,7 @@
         "watch:views": "webpack --watch --mode development",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
         "jestTest": "jest",
-        "vsce": "vsce package",
+        "vsce": "vsce package && npm run reset-telemetry-key",
         "lint": "eslint \"src/**/*.{ts,tsx}\"",
         "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix"
     },
@@ -392,6 +438,7 @@
         "@babel/preset-env": "^7.20.2",
         "@babel/preset-typescript": "^7.21.0",
         "@stylistic/eslint-plugin-js": "^2.11.0",
+        "@microsoft/applicationinsights-common": "^3.4.1",
         "@types/glob": "^7.2.0",
         "@types/mocha": "^9.1.1",
         "@types/node": "14.x",
@@ -410,6 +457,7 @@
         "jest": "^29.4.3",
         "mocha": "^9.2.2",
         "npm-run-all": "^4.1.5",
+        "replace-in-file": "^8.4.0",
         "resolve-ts-aliases": "^1.0.1",
         "style-loader": "^3.3.1",
         "ts-loader": "^9.3.0",
@@ -424,6 +472,7 @@
         "@mui/material": "^5.10.2",
         "@types/jsonminify": "^0.4.3",
         "@types/uuid": "^9.0.1",
+        "@vscode/extension-telemetry": "^1.5.1",
         "bootstrap": "^5.2.0",
         "esbuild": "^0.17.5",
         "export-from-json": "^1.6.0",
