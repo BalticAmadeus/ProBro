@@ -3,56 +3,80 @@ import { Constants } from '../common/Constants';
 import { INode } from './INode';
 import * as groupNode from './GroupNode';
 import { IConfig } from '../view/app/model';
-import { TablesListProvider } from './TablesListProvider';
-import { DbConnectionNode } from './DbConnectionNode';
 import { IRefreshCallback } from './IRefreshCallback';
+import { TablesListProvider } from './TablesListProvider';
 import { FavoritesProvider } from './FavoritesProvider';
 import { CustomViewProvider } from './CustomViewProvider';
+import { DbConnectionNode } from './DbConnectionNode';
 
 export class GroupListProvider
-    implements vscode.TreeDataProvider<INode>, IRefreshCallback
+implements vscode.TreeDataProvider<INode>, IRefreshCallback
 {
     private _onDidChangeTreeData: vscode.EventEmitter<
         INode | undefined | void
     > = new vscode.EventEmitter<INode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<INode | undefined | void> =
         this._onDidChangeTreeData.event;
-
+    private tablesProvider: TablesListProvider | undefined;
+    private favoritesProvider: FavoritesProvider | undefined;
+    private customViewsProvider: CustomViewProvider | undefined;
+    private selectedConfigs: IConfig[] = [];
+    
     constructor(
-        private context: vscode.ExtensionContext,
-        private tables: vscode.TreeView<INode>
-    ) {}
+        private context: vscode.ExtensionContext
+    ) {
+    }
 
-    onDidChangeSelection(
-        e: vscode.TreeViewSelectionChangeEvent<INode>,
-        tablesListProvider: vscode.TreeDataProvider<INode>,
-        favoritesProvider: vscode.TreeDataProvider<INode>,
-        customViewsProvider: vscode.TreeDataProvider<INode>
-    ): any {
-        if (e.selection.length) {
-            if (
-                e.selection[0] instanceof DbConnectionNode &&
-                tablesListProvider instanceof TablesListProvider &&
-                favoritesProvider instanceof FavoritesProvider &&
-                customViewsProvider instanceof CustomViewProvider
-            ) {
-                const nodes = e.selection as DbConnectionNode[];
-                const configs: IConfig[] = [];
+    public setProviders(
+        tablesProvider: TablesListProvider,
+        favoritesProvider: FavoritesProvider,
+        customViewsProvider: CustomViewProvider
+    ): void {
+        this.tablesProvider = tablesProvider;
+        this.favoritesProvider = favoritesProvider;
+        this.customViewsProvider = customViewsProvider;
+    }
 
-                nodes.forEach((node) => {
-                    configs.push(node.config);
+    public async onDidChangeSelection(
+        e: vscode.TreeViewSelectionChangeEvent<INode>
+    ): Promise<void> {
+        if (!e.selection.length) {
+            this.selectedConfigs = [];
+            return;
+        }
+
+        const configs: IConfig[] = [];
+
+        for (const selected of e.selection) {
+            if (selected instanceof DbConnectionNode) {
+                configs.push(selected.config);
+                continue;
+            }
+
+            if (selected instanceof groupNode.GroupNode) {
+                const children = await selected.getChildren();
+                children.forEach((child) => {
+                    if (child instanceof DbConnectionNode) {
+                        configs.push(child.config);
+                    }
                 });
-
-                console.log('GroupList', configs);
-                tablesListProvider.refresh(configs);
-                favoritesProvider.refresh(configs);
-                customViewsProvider.refresh(configs);
-                return;
             }
         }
-        (tablesListProvider as TablesListProvider).refresh(undefined);
-        (favoritesProvider as FavoritesProvider).refresh(undefined);
-        (customViewsProvider as CustomViewProvider).refresh(undefined);
+
+        if (!configs.length) {
+            this.selectedConfigs = [];
+            return;
+        }
+
+        this.selectedConfigs = configs;
+
+        this.tablesProvider?.refresh();
+        this.favoritesProvider?.refresh();
+        this.customViewsProvider?.refresh();
+    }
+
+    public getSelectedConfigs(): IConfig[] {
+        return this.selectedConfigs;
     }
 
     refresh(): void {
@@ -112,6 +136,36 @@ export class GroupListProvider
                 }
             }
         }
+
         return groupNodes;
+    }
+
+    public getConfigByGroup(group: string): IConfig | undefined {
+        const connections = this.context.globalState.get<{
+            [key: string]: IConfig;
+        }>(`${Constants.globalExtensionKey}.dbconfig`);
+
+        if (connections) {
+            // return config if available
+            const config = Object.values(connections).find((config) => config.id.toUpperCase() === group.toUpperCase());
+            if (config) {
+                return config;
+            }
+        }
+
+        const workspaceConnections = this.context.workspaceState.get<{
+            [key: string]: IConfig;
+        }>(`${Constants.globalExtensionKey}.dbconfig`);
+
+        if (workspaceConnections) {
+            // return config if available
+            const config = Object.values(workspaceConnections).find((config) => config.id.toUpperCase() === group.toUpperCase());
+            if (config) {
+                return config;
+            }
+        }
+
+        console.warn(`No configuration found for group: ${group}`);
+        return undefined;
     }
 }
