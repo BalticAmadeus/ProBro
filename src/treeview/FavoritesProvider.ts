@@ -54,7 +54,10 @@ export class FavoritesProvider extends TablesListProvider {
         >('favorites', []);
 
         const filteredFavorites = favoritesData.filter((favorite) => {
-            return this.getLatestConfig(favorite.dbId) !== undefined;
+            return (
+                this.getLatestConfig(favorite.dbId) !== undefined &&
+                this.isDbIdSelected(favorite.dbId)
+            );
         });
 
         const favorites = filteredFavorites.map(

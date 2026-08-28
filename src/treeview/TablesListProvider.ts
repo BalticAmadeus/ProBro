@@ -223,4 +223,8 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
     public getLatestConfig(groupId: string): IConfig | undefined {
         return this.groupList?.getConfigByGroup(groupId);
     }
+
+    protected isDbIdSelected(dbId: string): boolean {
+        return this.groupList?.getSelectedConfigs().some((config) => config.id === dbId) ?? false;
+    }
 }

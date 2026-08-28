@@ -398,8 +398,9 @@ export async function activate(context: vscode.ExtensionContext) {
                 nodeList = tablesListProvider.tableNodes;
         }
 
+        const targetFullName = node.getFullName(true);
         const newNode = nodeList.find(
-            (correctNode) => node.tableName === correctNode.tableName,
+            (correctNode) => correctNode.getFullName(true) === targetFullName,
         );
 
         if (newNode) {

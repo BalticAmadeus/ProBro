@@ -102,7 +102,10 @@ export class CustomViewProvider extends TablesListProvider {
             }[]
         >('custom-views', []);
         const filteredCustomViews = customViewData.filter((customView) => {
-            return this.getLatestConfig(customView.dbId) !== undefined;
+            return (
+                this.getLatestConfig(customView.dbId) !== undefined &&
+                this.isDbIdSelected(customView.dbId)
+            );
         });
 
         const customViews = filteredCustomViews.map(
