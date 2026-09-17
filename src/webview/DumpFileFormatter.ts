@@ -1,9 +1,29 @@
 import { IExportDumpData, IOePsc } from '../db/Oe';
 
 export class DumpFileFormatter {
-    protected dumpData = '';
-    protected trailerInfo = '';
-    protected dumpFile = '';
+    private _dumpData = '';
+    protected get dumpData() {
+        return this._dumpData;
+    }
+    protected set dumpData(value: string) {
+        this._dumpData = value;
+    }
+
+    private _trailerInfo = '';
+    protected get trailerInfo() {
+        return this._trailerInfo;
+    }
+    protected set trailerInfo(value: string) {
+        this._trailerInfo = value;
+    }
+
+    private _dumpFile = '';
+    protected get dumpFile() {
+        return this._dumpFile;
+    }
+    protected set dumpFile(value: string) {
+        this._dumpFile = value;
+    }
 
     public formatDumpFile(
         data: IExportDumpData,
