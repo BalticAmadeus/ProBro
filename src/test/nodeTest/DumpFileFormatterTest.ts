@@ -2,10 +2,10 @@ import { IExportDumpData } from '../../db/Oe';
 import { DumpFileFormatter } from '../../webview/DumpFileFormatter';
 
 export class DumpFileFormatterTest extends DumpFileFormatter {
-    public dumpData: string = super.dumpData;
-    public trailerInfo: string = super.trailerInfo;
-    public dumpFile: string = super.dumpFile;
-  
+    public declare dumpData: string;
+    public declare trailerInfo: string;
+    public declare dumpFile: string;
+
     public combineDumpFile() {
         return super.combineDumpFile();
     }
