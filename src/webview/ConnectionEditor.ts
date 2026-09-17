@@ -5,6 +5,7 @@ import { Constants } from '../common/Constants';
 import { Logger } from '../common/Logger';
 import { v4 as uuid } from 'uuid';
 import { ProcessorFactory } from '../repo/processor/ProcessorFactory';
+import { Telemetry } from '../telemetry/Telemetry';
 
 export class ConnectionEditor {
     private readonly panel: vscode.WebviewPanel | undefined;
@@ -74,6 +75,7 @@ export class ConnectionEditor {
                 let connections = this.context.globalState.get<{
                     [id: string]: IConfig;
                 }>(`${Constants.globalExtensionKey}.dbconfig`);
+                Telemetry.sendActionTelemetry(`ConnectionEditor.${CommandAction[command.action]}`, { action: CommandAction[command.action] });
                 switch (command.action) {
                     case CommandAction.Save:
                         if (!this.isTestedSuccesfully) {

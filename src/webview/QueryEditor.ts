@@ -19,6 +19,7 @@ import { Constants } from '../common/Constants';
 import { queryEditorCache } from './queryEditor/queryEditorCache';
 import { FavoritesProvider } from '../treeview/FavoritesProvider';
 import { CustomViewNode } from '../treeview/CustomViewNode';
+import { Telemetry } from '../telemetry/Telemetry';
 
 export class QueryEditor {
     public readonly panel: vscode.WebviewPanel | undefined;
@@ -113,6 +114,7 @@ export class QueryEditor {
 
         this.panel.webview.onDidReceiveMessage(
             (command: ICommand) => {
+                Telemetry.sendActionTelemetry(`QueryEditor.${CommandAction[command.action]}`, { action: CommandAction[command.action] });
                 this.logger.log('command:', command);
                 switch (command.action) {
                 case CommandAction.Query:
