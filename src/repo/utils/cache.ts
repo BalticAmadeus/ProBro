@@ -19,7 +19,7 @@ export const getSelectedColumnsCache = (
     }
     return (
         Constants.context.globalState.get<string[]>(
-            `${CacheKeyNames.SelectedColumns}.${node.getFullName()}`
+            `${CacheKeyNames.SelectedColumns}.${node.getFullName(true)}`
         ) ?? []
     );
 };
@@ -37,7 +37,7 @@ export const updateSelectedColumnsCache = (
         return [];
     }
     Constants.context.globalState.update(
-        `${CacheKeyNames.SelectedColumns}.${node.getFullName()}`,
+        `${CacheKeyNames.SelectedColumns}.${node.getFullName(true)}`,
         newValueArr
     );
 };
@@ -53,7 +53,7 @@ export const getAllColumnsCache = (node: TableNode | undefined): string[] => {
     }
     return (
         Constants.context.globalState.get<string[]>(
-            `${CacheKeyNames.AllColumns}.${node.getFullName()}`
+            `${CacheKeyNames.AllColumns}.${node.getFullName(true)}`
         ) ?? []
     );
 };
@@ -71,7 +71,7 @@ export const updateAllColumnsCache = (
         return [];
     }
     Constants.context.globalState.update(
-        `${CacheKeyNames.AllColumns}.${node.getFullName()}`,
+        `${CacheKeyNames.AllColumns}.${node.getFullName(true)}`,
         newValueArr
     );
 };

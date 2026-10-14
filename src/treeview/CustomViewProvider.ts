@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 import { TablesListProvider } from './TablesListProvider';
 import { TableNode, TableNodeSourceEnum } from './TableNode';
-import { IConfig, ICustomView } from '../view/app/model';
+import { ICustomView } from '../view/app/model';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
 import { CustomViewNode } from './CustomViewNode';
 import { Constants } from '../common/Constants';
+import { GroupListProvider } from './GroupListProvider';
 
 export class CustomViewProvider extends TablesListProvider {
     public override node: CustomViewNode | undefined;
@@ -14,13 +15,13 @@ export class CustomViewProvider extends TablesListProvider {
     > = new vscode.EventEmitter<TableNode | undefined | void>();
     readonly onDidChangeTreeData: vscode.Event<TableNode | undefined | void> =
         this._onDidChangeTreeData.event;
-    public configs: IConfig[] | undefined;
     constructor(
         fieldProvider: PanelViewProvider,
         indexesProvider: PanelViewProvider,
-        context: vscode.ExtensionContext
+        context: vscode.ExtensionContext,
+        groupListProvider: GroupListProvider
     ) {
-        super(fieldProvider, indexesProvider, context);
+        super(fieldProvider, indexesProvider, context, groupListProvider);
     }
 
     /**
@@ -42,8 +43,8 @@ export class CustomViewProvider extends TablesListProvider {
     public async getChildren(
         element?: CustomViewNode
     ): Promise<CustomViewNode[]> {
-        if (!element) return this.getCustomViews();
-        else return [];
+        if (!element) {return this.getCustomViews();}
+        else {return [];}
     }
 
     saveCustomView(node: CustomViewNode): void {
@@ -100,9 +101,12 @@ export class CustomViewProvider extends TablesListProvider {
                 customViewParams: ICustomView;
             }[]
         >('custom-views', []);
-        const filteredCustomViews = customViewData.filter((customView) =>
-            this.configs?.some((config) => config.id === customView.dbId)
-        );
+        const filteredCustomViews = customViewData.filter((customView) => {
+            return (
+                this.getLatestConfig(customView.dbId) !== undefined &&
+                this.isDbIdSelected(customView.dbId)
+            );
+        });
 
         const customViews = filteredCustomViews.map(
             (data) =>
@@ -156,10 +160,7 @@ export class CustomViewProvider extends TablesListProvider {
         );
     }
 
-    public refresh(configs: IConfig[] | undefined): void {
-        if (configs !== undefined) {
-            this.configs = configs;
-        }
+    public refresh(): void {
         this._onDidChangeTreeData.fire();
     }
 }
