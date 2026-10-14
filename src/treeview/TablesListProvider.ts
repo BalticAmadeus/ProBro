@@ -163,6 +163,11 @@ export class TablesListProvider implements vscode.TreeDataProvider<INode> {
         return element.getTreeItem();
     }
 
+    public getParent(): INode | undefined {
+        // flat list, needed for TreeView.reveal
+        return undefined;
+    }
+
     public getChildren(element?: INode): Thenable<INode[]> | INode[] {
         if (!element) {
             console.log('Load up the tree!');

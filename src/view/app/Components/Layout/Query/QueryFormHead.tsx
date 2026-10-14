@@ -2,6 +2,7 @@ import ExportPopup from '@Query/Export';
 import { ExportPopupProps } from '@Query/Export/export';
 import { ProBroButton } from '@assets/button';
 import PlayArrowTwoToneIcon from '@mui/icons-material/PlayArrowTwoTone';
+import FilterAltOffTwoToneIcon from '@mui/icons-material/FilterAltOffTwoTone';
 import { MouseEventHandler, useEffect } from 'react';
 import UpdatePopup from '@Query/Update';
 import { UpdatePopupProps } from '@Query/Update/update';
@@ -21,6 +22,7 @@ interface QueryFormHeadProps
     isWindowSmall: boolean;
     onLoad?: () => void;
     onButtonClick?: MouseEventHandler<HTMLButtonElement>;
+    onClearFiltersClick?: MouseEventHandler<HTMLButtonElement>;
     formatButtonOnClick: MouseEventHandler<HTMLButtonElement>;
     isFormatted: boolean;
     setIsFormatted: (value: boolean) => void;
@@ -34,6 +36,7 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
     isWindowSmall,
     onLoad,
     onButtonClick,
+    onClearFiltersClick,
     setIsFormatted,
     ...otherProps
 }) => {
@@ -59,6 +62,13 @@ const QueryFormHead: React.FC<QueryFormHeadProps> = ({
                         onClick={onButtonClick}
                     >
                         {isWindowSmall ? '' : 'Query'}
+                    </ProBroButton>
+                    <ProBroButton
+                        startIcon={<FilterAltOffTwoToneIcon />}
+                        onClick={onClearFiltersClick}
+                        title='Clear all filters'
+                    >
+                        {isWindowSmall ? '' : 'Clear filters'}
                     </ProBroButton>
                     <ExportPopup
                         wherePhrase={otherProps.wherePhrase}

@@ -1,5 +1,5 @@
 import { Box, TextField, Typography } from '@mui/material';
-import { Fragment, useRef } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import SortArrowIcon from '../Common/SortArrorIcon';
 
 interface ColumnHeaderCellProps {
@@ -29,6 +29,22 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
 }) => {
 
     const cellRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    // Move focus into the filter input when the header cell gets selected (e.g. via Tab),
+    // and restore it after a re-render. Never steal focus from anything outside the grid
+    // (other webview, WHERE input, toolbar buttons).
+    useEffect(() => {
+        if (!isCellSelected || !document.hasFocus()) {
+            return;
+        }
+        const active = document.activeElement;
+        const grid = cellRef.current?.closest('[role="grid"]');
+        const focusFree = !active || active === document.body;
+        if (focusFree || (grid && grid.contains(active))) {
+            inputRef.current?.focus();
+        }
+    }, [isCellSelected]);
 
     const handleClick = (event: React.MouseEvent) => {
         onSort(event.ctrlKey || event.metaKey);
@@ -112,7 +128,7 @@ const ColumnHeaderCell: React.FC<ColumnHeaderCellProps> = ({
                 onChange={handleInputKeyDown}
                 onKeyDown={testKeyDown}
                 fullWidth={true}
-                autoFocus={isCellSelected}
+                inputRef={inputRef}
                 InputProps={{ disableUnderline: true }}
                 sx={{
                     '& .MuiInputBase-input': {

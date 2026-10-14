@@ -1,4 +1,4 @@
-import { UIEvent, useEffect, useState } from 'react';
+import { UIEvent } from 'react';
 import DataGrid, {
     SortColumn,
     CopyEvent,
@@ -24,7 +24,7 @@ interface QueryFormTableProps {
     setRowHeight: () => number;
     configuration: any;
     rows: any[];
-    reloadData: (loaded: number) => void;
+    reloadData: (loaded: number, filters?: IFilters) => void;
     setFilters: (data: IFilters) => void;
 }
 
@@ -48,22 +48,6 @@ const QueryFormTable: React.FC<QueryFormTableProps> = ({
     setFilters,
 }) => {
 
-    const [selectedColumn, setSelectedColumn] = useState<string | null>(null);
-
-    const handleOutsideClick = (event: MouseEvent) => {
-        const grid = queryGridRef.current?.element?.contains(event.target as Node);
-        if (!grid) {
-            setSelectedColumn(null);
-        }
-    };
-
-    useEffect(() => {
-        document.addEventListener('mousedown', handleOutsideClick);
-        return () => {
-            document.removeEventListener('mousedown', handleOutsideClick);
-        };
-    }, []);
-
     const adjustedColumns = selected.map((column, index) => {
         if (index === 0) {
             return column;
@@ -79,8 +63,7 @@ const QueryFormTable: React.FC<QueryFormTableProps> = ({
                         priority={props.priority}
                         onSort={props.onSort}
                         filters={filters}
-                        isCellSelected={selectedColumn === props.column.key}
-                        setCellSelected={() => setSelectedColumn(props.column.key)}
+                        isCellSelected={props.isCellSelected}
                         setFilters={setFilters}
                         configuration={configuration}
                         reloadData={reloadData}

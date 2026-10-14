@@ -8,6 +8,7 @@ import { FieldsViewProvider } from './webview/FieldsViewProvider';
 import { IndexesViewProvider } from './webview/IndexesViewProvider';
 import { GroupListProvider } from './treeview/GroupListProvider';
 import { TableNode, TableNodeSourceEnum } from './treeview/TableNode';
+import { INode } from './treeview/INode';
 import { TablesListProvider } from './treeview/TablesListProvider';
 import { DbConnectionUpdater } from './treeview/DbConnectionUpdater';
 import { IPort, IConfig } from './view/app/model';
@@ -332,6 +333,34 @@ export async function activate(context: vscode.ExtensionContext) {
         groupListProvider.onDidChangeSelection(e),
     );
 
+    /**
+     * Selects and focuses the table in its tree view (Tables, Favorites or Custom views)
+     */
+    const revealTableNode = async (node: TableNode): Promise<void> => {
+        let view: vscode.TreeView<INode>;
+        let nodeList: TableNode[];
+        switch (node.source) {
+            case TableNodeSourceEnum.Favorites:
+                view = favorites;
+                nodeList = await favoritesProvider.getChildren(undefined);
+                break;
+            case TableNodeSourceEnum.Custom:
+                view = customViews;
+                nodeList = await customViewsProvider.getChildren(undefined);
+                break;
+            default:
+                view = tables;
+                nodeList = tablesListProvider.tableNodes;
+        }
+        const target = node.getFullName(true);
+        const treeNode = nodeList.find((n) => n.getFullName(true) === target) ?? node;
+        try {
+            await view.reveal(treeNode, { select: true, focus: true });
+        } catch (error) {
+            console.log('Could not reveal table in tree view', error);
+        }
+    };
+
     const connectionUpdater = new DbConnectionUpdater();
     connectionUpdater.updateConnectionStatusesWithRefreshCallback(
         context,
@@ -428,6 +457,17 @@ export async function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.clearFieldsFilters`,
+            () => {
+                fieldsProvider._view?.webview.postMessage({
+                    command: 'clearFilters',
+                });
+            },
+        ),
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.saveCustomView`,
             (node: CustomViewNode) => {
                 customViewsProvider.saveCustomView(node);
@@ -491,7 +531,8 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.query`,
             (node: TableNode) => {
-                loadQueryEditor(node, true);
+                revealTableNode(node);
+                queryEditorDblClick(node, true);
             },
         ),
     );
@@ -500,7 +541,8 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.queryFavorite`,
             (node: TableNode) => {
-                loadQueryEditor(node, true);
+                revealTableNode(node);
+                queryEditorDblClick(node, true);
             },
         ),
     );
