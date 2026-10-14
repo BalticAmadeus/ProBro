@@ -324,11 +324,11 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
         );
     };
 
-    function reloadData(loaded: number) {
+    function reloadData(loaded: number, overrideFilters?: IFilters) {
         setLoaded(0);
         setRawRows([]);
         setFormattedRows([]);
-        makeQuery(0, loaded, '', sortColumns, filters, 0, 0);
+        makeQuery(0, loaded, '', sortColumns, overrideFilters ?? filtersRef.current, 0, 0);
     }
 
     function handleSaveClick(name: string) {
@@ -523,6 +523,12 @@ function QueryForm({ tableData, tableName, isReadOnly }: IConfigProps) {
                 onButtonClick={(event) => {
                     event.preventDefault();
                     prepareQuery();
+                }}
+                onClearFiltersClick={(event) => {
+                    event.preventDefault();
+                    const cleared = { ...filters, columns: {} };
+                    setFilters(cleared);
+                    reloadData(configuration.initialBatchSizeLoad, cleared);
                 }}
                 onLoad={prepareQuery}
                 sortColumns={sortColumns}

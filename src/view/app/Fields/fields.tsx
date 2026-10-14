@@ -13,7 +13,7 @@ import ColumnHeaderCell from '@app/Components/Layout/Query/ColumnHeaderCell';
 
 interface FieldsExplorerEvent {
     id: string;
-    command: 'data';
+    command: 'data' | 'clearFilters';
     data: TableDetails;
 }
 
@@ -160,6 +160,9 @@ function Fields() {
                 const message = event.data;
                 logger.log('fields explorer data', message);
                 switch (message.command) {
+                    case 'clearFilters':
+                        updateFilters({ columns: {}, enabled: true });
+                        break;
                     case 'data':
                         message.data.fields.forEach((field) => {
                             if (

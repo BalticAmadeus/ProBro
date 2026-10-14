@@ -428,6 +428,17 @@ export async function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand(
+            `${Constants.globalExtensionKey}.clearFieldsFilters`,
+            () => {
+                fieldsProvider._view?.webview.postMessage({
+                    command: 'clearFilters',
+                });
+            },
+        ),
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.saveCustomView`,
             (node: CustomViewNode) => {
                 customViewsProvider.saveCustomView(node);
@@ -491,7 +502,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.query`,
             (node: TableNode) => {
-                loadQueryEditor(node, true);
+                queryEditorDblClick(node, true);
             },
         ),
     );
@@ -500,7 +511,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.queryFavorite`,
             (node: TableNode) => {
-                loadQueryEditor(node, true);
+                queryEditorDblClick(node, true);
             },
         ),
     );
