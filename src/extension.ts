@@ -478,6 +478,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.refreshList`,
             () => {
+                groupListProvider.refreshDependentViews();
                 connectionUpdater.updateConnectionStatusesWithRefreshCallback(
                     context,
                     groupListProvider,

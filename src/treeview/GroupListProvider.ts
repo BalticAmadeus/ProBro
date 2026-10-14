@@ -20,7 +20,7 @@ implements vscode.TreeDataProvider<INode>, IRefreshCallback
     private tablesProvider: TablesListProvider | undefined;
     private favoritesProvider: FavoritesProvider | undefined;
     private customViewsProvider: CustomViewProvider | undefined;
-    private selectedConfigs: IConfig[] = [];
+    private selectedIds: string[] = [];
     
     constructor(
         private context: vscode.ExtensionContext
@@ -41,15 +41,16 @@ implements vscode.TreeDataProvider<INode>, IRefreshCallback
         e: vscode.TreeViewSelectionChangeEvent<INode>
     ): Promise<void> {
         if (!e.selection.length) {
-            this.selectedConfigs = [];
+            this.selectedIds = [];
+            this.refreshDependentViews();
             return;
         }
 
-        const configs: IConfig[] = [];
+        const ids: string[] = [];
 
         for (const selected of e.selection) {
             if (selected instanceof DbConnectionNode) {
-                configs.push(selected.config);
+                ids.push(selected.config.id);
                 continue;
             }
 
@@ -57,26 +58,33 @@ implements vscode.TreeDataProvider<INode>, IRefreshCallback
                 const children = await selected.getChildren();
                 children.forEach((child) => {
                     if (child instanceof DbConnectionNode) {
-                        configs.push(child.config);
+                        ids.push(child.config.id);
                     }
                 });
             }
         }
 
-        if (!configs.length) {
-            this.selectedConfigs = [];
-            return;
-        }
+        this.selectedIds = ids;
+        this.refreshDependentViews();
+    }
 
-        this.selectedConfigs = configs;
+    /**
+     * Resolves the selected connection ids against live stored configs,
+     * so edits to connection parameters are always picked up.
+     */
+    public getSelectedConfigs(): IConfig[] {
+        return this.selectedIds
+            .map((id) => this.getConfigByGroup(id))
+            .filter((config): config is IConfig => config !== undefined);
+    }
 
+    /**
+     * Refreshes the views that depend on the selected connections.
+     */
+    public refreshDependentViews(): void {
         this.tablesProvider?.refresh();
         this.favoritesProvider?.refresh();
         this.customViewsProvider?.refresh();
-    }
-
-    public getSelectedConfigs(): IConfig[] {
-        return this.selectedConfigs;
     }
 
     refresh(): void {

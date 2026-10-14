@@ -85,6 +85,13 @@ export class ConnectionEditor {
                             connections = {};
                         }
                         if (command.content) {
+                            const previous = connections[command.content.id];
+                            if (
+                                previous &&
+                                previous.name !== command.content.name
+                            ) {
+                                this.removeSavedTablesOf(command.content.id);
+                            }
                             connections[command.content.id] = command.content;
                             this.context.globalState.update(
                                 `${Constants.globalExtensionKey}.dbconfig`,
@@ -151,6 +158,26 @@ export class ConnectionEditor {
             null,
             context.subscriptions,
         );
+    }
+
+    /**
+     * Drops favorites and custom views of a connection whose target database
+     * changed, since their tables may not exist in the new database.
+     */
+    private removeSavedTablesOf(dbId: string) {
+        for (const key of ['favorites', 'custom-views']) {
+            const saved = this.context.globalState.get<{ dbId: string }[]>(
+                key,
+                [],
+            );
+            const kept = saved.filter((item) => item.dbId !== dbId);
+            if (kept.length !== saved.length) {
+                this.context.globalState.update(key, kept);
+                vscode.window.showInformationMessage(
+                    `Database changed: removed ${saved.length - kept.length} saved item(s) from ${key}.`,
+                );
+            }
+        }
     }
 
     private groupList(groupNames: string[]) {
