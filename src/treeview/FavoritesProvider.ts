@@ -4,6 +4,19 @@ import { TablesListProvider } from './TablesListProvider';
 import { GroupListProvider } from './GroupListProvider';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
 import { Constants } from '../common/Constants';
+import {
+    SavedTable,
+    savedItemMatchesConnection,
+    updateSavedItems,
+} from '../common/SavedItems';
+
+function isSameTable(fav: SavedTable, node: TableNode): boolean {
+    return (
+        fav.tableName === node.tableName &&
+        fav.dbId === node.dbId &&
+        fav.connectionName === node.connectionName
+    );
+}
 
 export class FavoritesProvider extends TablesListProvider {
     public _onDidChangeTreeData: vscode.EventEmitter<
@@ -43,19 +56,14 @@ export class FavoritesProvider extends TablesListProvider {
      * @returns A promise that resolves to an array of TableNode objects representing the favorites.
      */
     private async getFavorites(): Promise<TableNode[]> {
-        const favoritesData = this.context.globalState.get<
-            {
-                dbId: string;
-                tableName: string;
-                tableType: string;
-                connectionName: string;
-                connectionLabel: string;
-            }[]
-        >('favorites', []);
+        const favoritesData = this.context.workspaceState.get<SavedTable[]>(
+            'favorites',
+            [],
+        );
 
         const filteredFavorites = favoritesData.filter((favorite) => {
             return (
-                this.getLatestConfig(favorite.dbId) !== undefined &&
+                savedItemMatchesConnection(favorite, this.getLatestConfig(favorite.dbId)) &&
                 this.isDbIdSelected(favorite.dbId)
             );
         });
@@ -80,65 +88,49 @@ export class FavoritesProvider extends TablesListProvider {
      * Adds a table to the list of favorites.
      * @param node The table node to add to favorites.
      */
-    public addTableToFavorites(node: TableNode): void {
-        const favorites = this.context.globalState.get<
-            {
-                dbId: string;
-                tableName: string;
-                tableType: string;
-                connectionName: string;
-                connectionLabel: string;
-            }[]
-        >('favorites', []);
-
-        const isAlreadyFavorite = favorites.some(
-            (fav) => fav.tableName === node.tableName && fav.dbId === node.dbId
+    public async addTableToFavorites(node: TableNode): Promise<void> {
+        const added = await updateSavedItems<SavedTable>(
+            this.context.workspaceState,
+            'favorites',
+            (favorites) =>
+                favorites.some((fav) => isSameTable(fav, node))
+                    ? undefined
+                    : [
+                        ...favorites,
+                        {
+                            dbId: node.dbId,
+                            tableName: node.tableName,
+                            tableType: node.tableType,
+                            connectionName: node.connectionName,
+                            connectionLabel: node.connectionLabel,
+                        },
+                    ],
         );
-
-        if (isAlreadyFavorite) {
-            return;
+        if (added) {
+            vscode.window.showInformationMessage(
+                `Added ${node.tableName} to favorites.`
+            );
         }
-        favorites.push({
-            dbId: node.dbId,
-            tableName: node.tableName,
-            tableType: node.tableType,
-            connectionName: node.connectionName,
-            connectionLabel: node.connectionLabel,
-        });
-
-        this.context.globalState.update('favorites', favorites);
-        vscode.window.showInformationMessage(
-            `Added ${node.tableName} to favorites.`
-        );
     }
 
     /**
      * Removes a table from the list of favorites.
      * @param node The table node to remove from favorites.
      */
-    public removeTableFromFavorites(node: TableNode): void {
-        const favorites = this.context.globalState.get<
-            {
-                dbId: string;
-                tableName: string;
-                tableType: string;
-                connectionName: string;
-                connectionLabel: string;
-            }[]
-        >('favorites', []);
-
-        if (favorites.length === 0) {
-            return;
+    public async removeTableFromFavorites(node: TableNode): Promise<void> {
+        const removed = await updateSavedItems<SavedTable>(
+            this.context.workspaceState,
+            'favorites',
+            (favorites) =>
+                favorites.length === 0
+                    ? undefined
+                    : favorites.filter((fav) => !isSameTable(fav, node)),
+        );
+        if (removed) {
+            vscode.window.showInformationMessage(
+                `Removed ${node.tableName} from favorites.`
+            );
         }
-
-        const filteredFavorites = favorites.filter(
-            (fav) =>
-                !(fav.tableName === node.tableName && fav.dbId === node.dbId)
-        );
-        this.context.globalState.update('favorites', filteredFavorites);
-        vscode.window.showInformationMessage(
-            `Removed ${node.tableName} from favorites.`
-        );
     }
 
     public async getChildren(element?: TableNode): Promise<TableNode[]> {

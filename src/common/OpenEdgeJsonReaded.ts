@@ -3,27 +3,40 @@ import { IConfig } from '../view/app/model';
 import * as path from 'path';
 import * as fs from 'fs';
 import stripjsoncomments from 'strip-json-comments';
+import {
+    createImportedConnectionId,
+    getImportedConnectionIdentityKey,
+    importedConnectionDescription,
+} from './ImportedProjectConnections';
 
+export interface ParseOEFileOptions {
+    groupName?: string;
+    idPrefix?: string;
+}
 
 export function readFile(fileName: string): string {
-    const allFileContents = fs.readFileSync(fileName, 'utf-8');
-    return allFileContents;
+    return fs.readFileSync(fileName, 'utf-8');
 }
 
 export function getOEVersion(fileContent: string) {
-    const data = JSON.parse(stripjsoncomments(fileContent));
-    const { oeversion } = data;
-
-    return oeversion;
+    return JSON.parse(stripjsoncomments(fileContent)).oeversion;
 }
 
-export function parseOEFile(fileContent: string, filePath: string) {
+export function parseOEFile(
+    fileContent: string,
+    filePath: string,
+    options: ParseOEFileOptions = {},
+) {
     const data = JSON.parse(stripjsoncomments(fileContent));
-    const { name, dbConnections } = data;
+    const { name, dbConnections = [] } = data;
+    if (!Array.isArray(dbConnections)) {
+        throw new Error('The dbConnections property must be an array.');
+    }
     const configList: IConfig[] = [];
 
-    const groupName = name;
-    let num = 0;
+    const groupName = options.groupName ?? name;
+    const idPrefix = options.idPrefix ?? 'local';
+    const connectionIdentityCounts = new Map<string, number>();
 
     const directoryPath = path.dirname(filePath);
 
@@ -33,8 +46,6 @@ export function parseOEFile(fileContent: string, filePath: string) {
         const pfParser = new PfParser();
         const pfConfig = pfParser.parse(connect);
 
-        num++;
-
         if (pfConfig.isReadOnly && !path.isAbsolute(pfConfig.name)) {
             pfConfig.name = path.join(directoryPath, pfConfig.name);
             if (pfConfig.name.startsWith('\\')) {
@@ -43,10 +54,10 @@ export function parseOEFile(fileContent: string, filePath: string) {
         }
 
         const config: IConfig = {
-            id: 'local' + num,
+            id: '',
             label: name,
             name: pfConfig.name,
-            description: 'from openedge-project.json',
+            description: importedConnectionDescription,
             host: pfConfig.host,
             port: pfConfig.port,
             user: pfConfig.user,
@@ -57,6 +68,11 @@ export function parseOEFile(fileContent: string, filePath: string) {
             type: 0,
             isReadOnly: pfConfig.isReadOnly,
         };
+
+        const identityKey = getImportedConnectionIdentityKey(config);
+        const occurrence = (connectionIdentityCounts.get(identityKey) ?? 0) + 1;
+        connectionIdentityCounts.set(identityKey, occurrence);
+        config.id = createImportedConnectionId(idPrefix, config, occurrence);
 
         configList.push(config);
     });

@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { QuickPickItem } from 'vscode';
 import { ConnectionEditor } from './webview/ConnectionEditor';
 import { Constants } from './common/Constants';
@@ -16,6 +17,14 @@ import {
     getOEVersion,
     parseOEFile,
 } from './common/OpenEdgeJsonReaded';
+import {
+    ImportedConnectionSources,
+    getProjectConnectionIdPrefix,
+    loadImportedProjects,
+    migrateSavedItems,
+    reconcileImportedProjectConnections,
+} from './common/ImportedProjectConnections';
+import { withSavedItemsLock } from './common/SavedItems';
 
 import { VersionChecker } from './view/app/Welcome/VersionChecker';
 import { WelcomePageProvider } from './webview/WelcomePageProvider';
@@ -47,8 +56,6 @@ export async function activate(context: vscode.ExtensionContext) {
             '23459': { port: 23459, isInUse: false, timestamp: undefined },
         });
     }
-
-    let allFileContent = '';
 
     vscode.workspace.onDidChangeConfiguration((event) => {
         const affected = event.affectsConfiguration(
@@ -159,9 +166,15 @@ export async function activate(context: vscode.ExtensionContext) {
         });
 
     function getOEJRuntime(uri: vscode.Uri) {
-        allFileContent = readFile(uri.fsPath);
-        const oeRuntime = getOEVersion(allFileContent);
-        return oeRuntime;
+        try {
+            return getOEVersion(readFile(uri.fsPath));
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            vscode.window.showErrorMessage(
+                `Unable to read OpenEdge runtime from ${uri.fsPath}: ${message}`,
+            );
+            return null;
+        }
     }
 
     let defaultRuntime;
@@ -191,23 +204,14 @@ export async function activate(context: vscode.ExtensionContext) {
         .getConfiguration(Constants.globalExtensionKey)
         .get('importConnections');
 
-    if (importConnections) {
-        vscode.workspace.findFiles('**/openedge-project.json').then((list) => {
-            list.forEach((uri) => createJsonDatabases(uri));
-        });
-    } else {
-        clearDatabaseConfigState();
-    }
+    await syncImportedConnections(false);
 
     const fileWatcher: vscode.FileSystemWatcher =
         vscode.workspace.createFileSystemWatcher('**/openedge-project.json');
-    fileWatcher.onDidChange((uri) => {
-        if (importConnections) {
-            createJsonDatabases(uri);
-        } else {
-            clearDatabaseConfigState();
-        }
-    });
+    context.subscriptions.push(fileWatcher);
+    fileWatcher.onDidChange(() => void syncImportedConnections());
+    fileWatcher.onDidCreate(() => void syncImportedConnections());
+    fileWatcher.onDidDelete(() => void syncImportedConnections());
 
     vscode.workspace.onDidChangeConfiguration((event) => {
         if (
@@ -218,54 +222,70 @@ export async function activate(context: vscode.ExtensionContext) {
             importConnections = vscode.workspace
                 .getConfiguration(Constants.globalExtensionKey)
                 .get('importConnections');
-            if (importConnections) {
-                vscode.workspace
-                    .findFiles('**/openedge-project.json')
-                    .then((list) => {
-                        list.forEach((uri) => createJsonDatabases(uri));
-                    });
-            } else {
-                clearDatabaseConfigState();
-            }
+            void syncImportedConnections();
         }
     });
 
-    function createJsonDatabases(uri: vscode.Uri) {
-        allFileContent = readFile(uri.fsPath);
+    /**
+     * Replaces the imported connections with the ones from the openedge-project.json
+     * files (or removes them when importing is disabled) and migrates saved items.
+     */
+    function syncImportedConnections(refresh = true): Promise<void> {
+        const dbConfigKey = `${Constants.globalExtensionKey}.dbconfig`;
+        const sourcesKey = `${Constants.globalExtensionKey}.importedConnectionSources`;
 
-        const configs = parseOEFile(allFileContent, uri.fsPath);
+        return withSavedItemsLock(async () => {
+            try {
+                const importedSources =
+                    context.workspaceState.get<ImportedConnectionSources>(sourcesKey);
+                const connections = context.workspaceState.get<{
+                    [id: string]: IConfig;
+                }>(dbConfigKey, {});
+                const files = importConnections
+                    ? await vscode.workspace.findFiles('**/openedge-project.json')
+                    : [];
+                const projects = loadImportedProjects(
+                    files.map((uri) => ({
+                        source: uri.toString(),
+                        workspaceFolderName:
+                            vscode.workspace.getWorkspaceFolder(uri)?.name ??
+                            path.basename(path.dirname(uri.fsPath)),
+                        load: () => parseOEFile(readFile(uri.fsPath), uri.fsPath, {
+                            idPrefix: getProjectConnectionIdPrefix(uri.toString()),
+                        }),
+                    })),
+                    connections,
+                    importedSources,
+                    (source, error) => {
+                        const message = error instanceof Error ? error.message : String(error);
+                        vscode.window.showErrorMessage(
+                            `Unable to import connections from ${source}: ${message}`,
+                        );
+                    },
+                );
 
-        let connections = context.workspaceState.get<{ [id: string]: IConfig }>(
-            `${Constants.globalExtensionKey}.dbconfig`,
-        );
-        connections = {};
-
-        configs.forEach((config) => {
-            if (!connections) {
-                connections = {};
+                await migrateSavedItems(
+                    context.globalState, context.workspaceState, projects, importedSources,
+                );
+                const state = reconcileImportedProjectConnections(
+                    connections, importedSources, projects,
+                );
+                await Promise.all([
+                    context.workspaceState.update(dbConfigKey, state.connections),
+                    context.workspaceState.update(sourcesKey, state.sources),
+                ]);
+                if (refresh) {
+                    await vscode.commands.executeCommand(
+                        `${Constants.globalExtensionKey}.refreshList`,
+                    );
+                }
+            } catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
+                vscode.window.showErrorMessage(
+                    `Unable to update imported OpenEdge project connections: ${message}`,
+                );
             }
-            connections[config.id] = config;
-            context.workspaceState.update(
-                `${Constants.globalExtensionKey}.dbconfig`,
-                connections,
-            );
-            vscode.window.showInformationMessage(
-                'Connection saved succesfully.',
-            );
-            vscode.commands.executeCommand(
-                `${Constants.globalExtensionKey}.refreshList`,
-            );
         });
-    }
-
-    function clearDatabaseConfigState() {
-        context.workspaceState.update(
-            `${Constants.globalExtensionKey}.dbconfig`,
-            {},
-        );
-        vscode.commands.executeCommand(
-            `${Constants.globalExtensionKey}.refreshList`,
-        );
     }
 
     const groupListProvider = new GroupListProvider(
@@ -429,8 +449,8 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.saveCustomView`,
-            (node: CustomViewNode) => {
-                customViewsProvider.saveCustomView(node);
+            async (node: CustomViewNode) => {
+                await customViewsProvider.saveCustomView(node);
                 customViewsProvider.refresh();
             },
         ),
@@ -439,8 +459,8 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.removeCustomView`,
-            (node: CustomViewNode) => {
-                customViewsProvider.removeCustomViews(node);
+            async (node: CustomViewNode) => {
+                await customViewsProvider.removeCustomViews(node);
                 customViewsProvider.refresh();
             },
         ),
@@ -449,8 +469,8 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.addFavourite`,
-            (node: TableNode) => {
-                favoritesProvider.addTableToFavorites(node);
+            async (node: TableNode) => {
+                await favoritesProvider.addTableToFavorites(node);
                 favoritesProvider.refresh();
             },
         ),
@@ -459,8 +479,8 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.removeFavourite`,
-            (node: TableNode) => {
-                favoritesProvider.removeTableFromFavorites(node);
+            async (node: TableNode) => {
+                await favoritesProvider.removeTableFromFavorites(node);
                 favoritesProvider.refresh();
             },
         ),
@@ -731,7 +751,6 @@ export async function activate(context: vscode.ExtensionContext) {
                 ) {
                     portList[id].isInUse = false;
                     portList[id].timestamp = undefined;
-                    createJsonDatabases;
                     context.globalState.update(
                         `${Constants.globalExtensionKey}.portList`,
                         portList,
