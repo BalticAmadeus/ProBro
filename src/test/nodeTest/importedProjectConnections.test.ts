@@ -7,6 +7,7 @@ jest.mock('strip-json-comments', () => ({
 import { IConfig } from '../../view/app/model';
 import {
     ImportedProject,
+    ImportedConnectionSources,
     getProjectConnectionIdPrefix,
     importedConnectionDescription,
     loadImportedProjects,
@@ -146,25 +147,54 @@ describe('imported project connections', () => {
         );
     });
 
-    test('retains prior connections for a broken file while importing other files', () => {
+    test('removes connections for a broken file while importing other files', () => {
         const old = createConfig('old', 'Old');
         const updated = createConfig('updated', 'Updated');
+        const manual = { ...createConfig('manual', 'Manual'), description: 'manual' };
         const errors: string[] = [];
         const projects = loadImportedProjects([
             { source: 'broken', workspaceFolderName: 'broken', load: () => { throw new Error('invalid'); } },
             { source: 'good', workspaceFolderName: 'good', load: () => [updated] },
-        ], { old }, { broken: ['old'] }, (source) => errors.push(source));
+        ], { old, manual }, { broken: ['old'] }, (source) => errors.push(source));
         assert.deepStrictEqual(errors, ['broken']);
-        assert.deepStrictEqual(projects.map((project) => project.configs), [[old], [updated]]);
+        assert.deepStrictEqual(projects.map((project) => project.configs), [[], [updated]]);
+        const state = reconcileImportedProjectConnections(
+            { old, manual }, { broken: ['old'] }, projects,
+        );
+        assert.deepStrictEqual(state.connections, {
+            manual,
+            updated: { ...updated, conStatus: undefined },
+        });
+        assert.deepStrictEqual(state.sources, { broken: ['old'], good: ['updated'] });
     });
 
-    test('retains legacy imports for a broken single project before source metadata exists', () => {
+    test('removes legacy imports for a broken single project before source metadata exists', () => {
         const old = createConfig('local1', 'Project');
         const manual = { ...createConfig('manual', 'Manual'), description: 'manual' };
         const projects = loadImportedProjects([
             { source: 'broken', workspaceFolderName: 'broken', load: () => { throw new Error('invalid'); } },
         ], { local1: old, manual }, undefined, () => undefined);
-        assert.deepStrictEqual(projects[0].configs, [old]);
+        const state = reconcileImportedProjectConnections({ local1: old, manual }, undefined, projects);
+        assert.deepStrictEqual(state.connections, { manual });
+        assert.deepStrictEqual(state.sources, { broken: ['local1'] });
+    });
+
+    test('removes imported connections when a project file has invalid JSON or dbConnections', () => {
+        const old = createConfig('old', 'Project');
+        for (const content of ['{"name":', '{"name":"Project","dbConnections":{}}']) {
+            const errors: unknown[] = [];
+            const projects = loadImportedProjects([
+                {
+                    source: 'broken',
+                    workspaceFolderName: 'broken',
+                    load: () => parseOEFile(content, 'C:\\workspace\\openedge-project.json'),
+                },
+            ], { old }, { broken: ['old'] }, (_source, error) => errors.push(error));
+            const state = reconcileImportedProjectConnections({ old }, { broken: ['old'] }, projects);
+            assert.strictEqual(errors.length, 1);
+            assert.ok(errors[0] instanceof Error);
+            assert.deepStrictEqual(state.connections, {});
+        }
     });
 
     test('drops legacy imports of an unreadable file when several files exist', () => {
@@ -216,6 +246,70 @@ const favorite = {
 const view = { ...favorite, name: 'Customers', customViewParams: { filters: ['active'] } };
 
 describe('saved items migration', () => {
+    test('retains saved items across repeated failures and restores them after recovery', async () => {
+        const old = createConfig('old', 'Old');
+        const good = createConfig('good', 'Good');
+        const saved = { ...favorite, dbId: 'old', connectionName: 'old', connectionLabel: 'old' };
+        const savedView = { ...view, ...saved };
+        const workspace = new FakeState({
+            'pro-bro.dbconfig': { old, good },
+            favorites: [saved],
+            'custom-views': [savedView],
+        });
+        let sources: ImportedConnectionSources = { broken: ['old'], good: ['good'] };
+        const global = new FakeState();
+        const inputs = [
+            { source: 'broken', workspaceFolderName: 'broken', load: () => { throw new Error('invalid'); } },
+            { source: 'good', workspaceFolderName: 'good', load: () => [good] },
+        ];
+
+        for (let attempt = 0; attempt < 2; attempt++) {
+            const connections = workspace.get<Record<string, IConfig>>('pro-bro.dbconfig', {});
+            const projects = loadImportedProjects(inputs, connections, sources, () => undefined);
+            await migrateSavedItems(global, workspace, projects, sources);
+            const state = reconcileImportedProjectConnections(connections, sources, projects);
+            await workspace.update('pro-bro.dbconfig', state.connections);
+            sources = state.sources;
+            assert.deepStrictEqual(Object.keys(state.connections), ['good']);
+            assert.deepStrictEqual(workspace.data.favorites, [saved]);
+            assert.deepStrictEqual(workspace.data['custom-views'], [savedView]);
+        }
+
+        const connections = workspace.get<Record<string, IConfig>>('pro-bro.dbconfig', {});
+        const projects = [project('broken', [old]), project('good', [good])];
+        await migrateSavedItems(global, workspace, projects, sources);
+        const state = reconcileImportedProjectConnections(connections, sources, projects);
+        assert.deepStrictEqual(Object.keys(state.connections), ['old', 'good']);
+        assert.deepStrictEqual(workspace.data.favorites, [saved]);
+        assert.deepStrictEqual(workspace.data['custom-views'], [savedView]);
+    });
+
+    test('preserves legacy saved items until an unreadable single project recovers', async () => {
+        const old = createConfig('local1', 'P');
+        const workspace = new FakeState({
+            'pro-bro.dbconfig': { local1: old },
+            favorites: [favorite],
+            'custom-views': [view],
+        });
+        const global = new FakeState();
+        const broken = loadImportedProjects([
+            { source: 'one', workspaceFolderName: 'one', load: () => { throw new Error('invalid'); } },
+        ], { local1: old }, undefined, () => undefined);
+        await migrateSavedItems(global, workspace, broken, undefined);
+        const state = reconcileImportedProjectConnections({ local1: old }, undefined, broken);
+        await workspace.update('pro-bro.dbconfig', state.connections);
+        assert.deepStrictEqual(workspace.data.favorites, [favorite]);
+        assert.deepStrictEqual(workspace.data['custom-views'], [view]);
+
+        await migrateSavedItems(global, workspace, [project('one', [createConfig('new', 'P')])], state.sources);
+        assert.deepStrictEqual(workspace.data.favorites, [
+            { ...favorite, dbId: 'new', connectionName: 'new', connectionLabel: 'new' },
+        ]);
+        assert.deepStrictEqual(workspace.data['custom-views'], [
+            { ...view, dbId: 'new', connectionName: 'new', connectionLabel: 'new' },
+        ]);
+    });
+
     test('maps legacy positions in a single project, including identical connections', async () => {
         const second = { ...favorite, dbId: 'local2', tableName: 'Order' };
         const global = new FakeState({ favorites: [favorite, second], 'custom-views': [view] });

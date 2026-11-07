@@ -8,6 +8,8 @@ export interface ImportedProject {
     source: string;
     workspaceFolderName: string;
     configs: IConfig[];
+    // Keep ownership metadata for saved items while the source cannot be read.
+    failedConnectionIds?: string[];
 }
 
 export interface ImportedConnectionSources {
@@ -60,7 +62,8 @@ export function reconcileImportedProjectConnections(
                 ? projectName
                 : `${projectName} (${project.workspaceFolderName})`;
 
-        sources[project.source] = project.configs.map((config) => config.id);
+        sources[project.source] = project.failedConnectionIds ??
+            project.configs.map((config) => config.id);
         for (const config of project.configs) {
             connections[config.id] = {
                 ...config,
@@ -84,7 +87,6 @@ export function loadImportedProjects(
             return { source, workspaceFolderName, configs: load() };
         } catch (error) {
             reportError(source, error);
-            // Keep the previously imported connections of a file that cannot be read.
             const previousIds = previousSources?.[source] ??
                 (!previousSources && inputs.length === 1
                     ? Object.keys(previousConnections).filter((id) =>
@@ -93,9 +95,8 @@ export function loadImportedProjects(
             return {
                 source,
                 workspaceFolderName,
-                configs: previousIds
-                    .filter((id) => previousConnections[id])
-                    .map((id) => previousConnections[id]),
+                configs: [],
+                failedConnectionIds: previousIds,
             };
         }
     });
@@ -155,6 +156,12 @@ export async function migrateSavedItems(
             .map(([id]) => id),
     ]);
     const newConnections = projects.flatMap((project) => project.configs);
+    const failedIds = new Set(
+        projects.flatMap((project) => project.failedConnectionIds ?? []),
+    );
+    const hasFailedProject = projects.some(
+        (project) => project.failedConnectionIds !== undefined,
+    );
 
     function singleProjectTarget(dbId: string): IConfig | undefined {
         if (projects.length !== 1) {
@@ -190,7 +197,9 @@ export async function migrateSavedItems(
             const isImported = !isManual &&
                 (importedIds.has(item.dbId) || /^local[1-9]\d*$/.test(item.dbId));
             let config = newConnections.find((connection) => connection.id === item.dbId);
-            if (!config && isImported && projects.length > 0) {
+            const awaitingFailedProject = failedIds.has(item.dbId) ||
+                (hasFailedProject && /^local[1-9]\d*$/.test(item.dbId));
+            if (!config && isImported && projects.length > 0 && !awaitingFailedProject) {
                 config = singleProjectTarget(item.dbId);
                 if (!config) {
                     continue;
