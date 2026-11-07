@@ -1,11 +1,24 @@
 import * as vscode from 'vscode';
 import { TablesListProvider } from './TablesListProvider';
 import { TableNode, TableNodeSourceEnum } from './TableNode';
-import { ICustomView } from '../view/app/model';
 import { PanelViewProvider } from '../webview/PanelViewProvider';
 import { CustomViewNode } from './CustomViewNode';
 import { Constants } from '../common/Constants';
 import { GroupListProvider } from './GroupListProvider';
+import {
+    SavedCustomView,
+    savedItemMatchesConnection,
+    updateSavedItems,
+} from '../common/SavedItems';
+
+function isSameView(view: SavedCustomView, node: CustomViewNode): boolean {
+    return (
+        view.name === node.name &&
+        view.dbId === node.dbId &&
+        view.tableName === node.tableName &&
+        view.connectionName === node.connectionName
+    );
+}
 
 export class CustomViewProvider extends TablesListProvider {
     public override node: CustomViewNode | undefined;
@@ -47,63 +60,49 @@ export class CustomViewProvider extends TablesListProvider {
         else {return [];}
     }
 
-    saveCustomView(node: CustomViewNode): void {
-        const customViewData = this.context.globalState.get<
-            {
-                dbId: string;
-                tableName: string;
-                tableType: string;
-                connectionName: string;
-                connectionLabel: string;
-                name: string;
-                customViewParams: ICustomView | undefined;
-            }[]
-        >('custom-views', []);
-
-        const matchingCustomView = customViewData.find(
-            (customView) =>
-                customView.dbId === node.dbId &&
-                customView.name === node.name &&
-                customView.tableName === node.tableName
+    async saveCustomView(node: CustomViewNode): Promise<void> {
+        let duplicate = false;
+        const saved = await updateSavedItems<SavedCustomView>(
+            this.context.workspaceState,
+            'custom-views',
+            (customViews) => {
+                duplicate = customViews.some((view) => isSameView(view, node));
+                return duplicate
+                    ? undefined
+                    : [
+                        ...customViews,
+                        {
+                            dbId: node.dbId,
+                            tableName: node.tableName,
+                            tableType: node.tableType,
+                            connectionName: node.connectionName,
+                            connectionLabel: node.connectionLabel,
+                            name: node.name,
+                            customViewParams: node.customViewParams,
+                        },
+                    ];
+            },
         );
 
-        if (matchingCustomView) {
+        if (duplicate) {
             vscode.window.showErrorMessage(
                 `Could not save "${node.name}" for table "${node.tableName}". Change the preference name.`
             );
-            return;
+        } else if (saved) {
+            vscode.window.showInformationMessage(
+                `Custom view ${node.name} was added.`
+            );
         }
-
-        customViewData.push({
-            dbId: node.dbId,
-            tableName: node.tableName,
-            tableType: node.tableType,
-            connectionName: node.connectionName,
-            connectionLabel: node.connectionLabel,
-            name: node.name,
-            customViewParams: node.customViewParams,
-        });
-        this.context.globalState.update('custom-views', customViewData);
-        vscode.window.showInformationMessage(
-            `Custom view ${node.name} was added.`
-        );
     }
 
     private async getCustomViews(): Promise<CustomViewNode[]> {
-        const customViewData = this.context.globalState.get<
-            {
-                dbId: string;
-                tableName: string;
-                tableType: string;
-                connectionName: string;
-                connectionLabel: string;
-                name: string;
-                customViewParams: ICustomView;
-            }[]
-        >('custom-views', []);
+        const customViewData = this.context.workspaceState.get<SavedCustomView[]>(
+            'custom-views',
+            [],
+        );
         const filteredCustomViews = customViewData.filter((customView) => {
             return (
-                this.getLatestConfig(customView.dbId) !== undefined &&
+                savedItemMatchesConnection(customView, this.getLatestConfig(customView.dbId)) &&
                 this.isDbIdSelected(customView.dbId)
             );
         });
@@ -128,36 +127,20 @@ export class CustomViewProvider extends TablesListProvider {
         return customViews;
     }
 
-    public removeCustomViews(node: CustomViewNode): void {
-        const customViewData = this.context.globalState.get<
-            {
-                dbId: string;
-                tableName: string;
-                tableType: string;
-                connectionName: string;
-                connectionLabel: string;
-                name: string;
-                customViewParams: ICustomView;
-            }[]
-        >('custom-views', []);
-
-        if (customViewData.length === 0) {
-            return;
+    public async removeCustomViews(node: CustomViewNode): Promise<void> {
+        const removed = await updateSavedItems<SavedCustomView>(
+            this.context.workspaceState,
+            'custom-views',
+            (customViews) =>
+                customViews.length === 0
+                    ? undefined
+                    : customViews.filter((view) => !isSameView(view, node)),
+        );
+        if (removed) {
+            vscode.window.showInformationMessage(
+                `Removed ${node.name} from custom view.`
+            );
         }
-
-        const filteredCustomViews = customViewData.filter(
-            (customView) =>
-                !(
-                    customView.name === node.name &&
-                    customView.dbId === node.dbId &&
-                    customView.tableName === node.tableName
-                )
-        );
-
-        this.context.globalState.update('custom-views', filteredCustomViews);
-        vscode.window.showInformationMessage(
-            `Removed ${node.name} from custom view.`
-        );
     }
 
     public refresh(): void {

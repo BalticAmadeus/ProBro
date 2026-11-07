@@ -25,6 +25,23 @@ The icon indicates current status of the connection. Every db connection on the 
 
 Connections defined in **_openedge-project.json_** are automatically imported in the extension under seperate connections group. **_dbConnections_** Key must be defined for the connections to be imported.
 
+If a project file cannot be read or parsed, ProBro reports an error and removes
+that file's imported connections until it can be read again. Connections from
+other projects and manual connections remain available. Favorites and custom
+views for the affected connections are retained while the file is unreadable.
+
+Favorites and custom views are stored per workspace. When upgrading a workspace
+with one OpenEdge project, ProBro maps legacy imported connections by their
+position in that project's connection list. Keep the connection order unchanged
+until the upgrade has completed. With multiple projects, saved items of legacy
+imported connections cannot be attributed to a project and are removed. Saved
+items for manual connections are workspace-specific; if a connection is
+changed to a different database, items from the previous database are hidden
+in other workspaces. The original global saved data is left intact. When an
+imported connection changes in a workspace with one project, saved items are
+remapped to the connection that matches it by its settings or, failing that, by
+its database name; otherwise they are removed.
+
 ### **2.2 Creating new connection through the extension**
 
 For creating and editing db connections is used same structure. For editing new tab with selected database information will be displayed.

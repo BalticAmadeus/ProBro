@@ -1,5 +1,6 @@
 import path = require('path');
 import * as vscode from 'vscode';
+import { withSavedItemsLock } from '../common/SavedItems';
 import { ICommand, CommandAction, IConfig } from '../view/app/model';
 import { Constants } from '../common/Constants';
 import { Logger } from '../common/Logger';
@@ -69,9 +70,9 @@ export class ConnectionEditor {
         this.panel.webview.html = this.getWebviewContent();
 
         this.panel.webview.onDidReceiveMessage(
-            (command: ICommand) => {
+            async (command: ICommand) => {
                 this.logger.log('command:', command);
-                let connections = this.context.globalState.get<{
+                const connections = this.context.globalState.get<{
                     [id: string]: IConfig;
                 }>(`${Constants.globalExtensionKey}.dbconfig`);
                 switch (command.action) {
@@ -81,22 +82,23 @@ export class ConnectionEditor {
                                 'Connection should be tested before saving.',
                             );
                             return;
-                        } else if (!connections) {
-                            connections = {};
                         }
                         if (command.content) {
-                            const previous = connections[command.content.id];
-                            if (
-                                previous &&
-                                previous.name !== command.content.name
-                            ) {
-                                this.removeSavedTablesOf(command.content.id);
-                            }
-                            connections[command.content.id] = command.content;
-                            this.context.globalState.update(
-                                `${Constants.globalExtensionKey}.dbconfig`,
-                                connections,
-                            );
+                            const content = command.content;
+                            const key = `${Constants.globalExtensionKey}.dbconfig`;
+                            await withSavedItemsLock(async () => {
+                                const saved = this.context.globalState.get<{
+                                    [id: string]: IConfig;
+                                }>(key, {});
+                                const previous = saved[content.id];
+                                if (previous && previous.name !== content.name) {
+                                    await this.removeSavedTablesOf(content.id);
+                                }
+                                await this.context.globalState.update(key, {
+                                    ...saved,
+                                    [content.id]: content,
+                                });
+                            });
                             vscode.window.showInformationMessage(
                                 'Connection saved succesfully.',
                             );
@@ -164,15 +166,15 @@ export class ConnectionEditor {
      * Drops favorites and custom views of a connection whose target database
      * changed, since their tables may not exist in the new database.
      */
-    private removeSavedTablesOf(dbId: string) {
+    private async removeSavedTablesOf(dbId: string): Promise<void> {
         for (const key of ['favorites', 'custom-views']) {
-            const saved = this.context.globalState.get<{ dbId: string }[]>(
+            const saved = this.context.workspaceState.get<{ dbId: string }[]>(
                 key,
                 [],
             );
             const kept = saved.filter((item) => item.dbId !== dbId);
             if (kept.length !== saved.length) {
-                this.context.globalState.update(key, kept);
+                await this.context.workspaceState.update(key, kept);
                 vscode.window.showInformationMessage(
                     `Database changed: removed ${saved.length - kept.length} saved item(s) from ${key}.`,
                 );

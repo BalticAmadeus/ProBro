@@ -8,6 +8,7 @@ import { Constants } from '../common/Constants';
 import { v4 as uuid } from 'uuid';
 import { DbConnectionUpdater } from './DbConnectionUpdater';
 import { IRefreshCallback } from './IRefreshCallback';
+import { withSavedItemsLock } from '../common/SavedItems';
 
 export class DbConnectionNode implements INode {
     public readonly id: string;
@@ -62,14 +63,15 @@ export class DbConnectionNode implements INode {
     public async deleteConnection(context: vscode.ExtensionContext) {
     //TODO fix and move to someplace else
 
-        let connections = context.globalState.get<{ [id: string]: IConfig }>(
-            'pro-bro.dbconfig'
-        );
-        if (!connections) {
-            connections = {};
-        }
-        delete connections[this.config.id];
-        this.context.globalState.update('pro-bro.dbconfig', connections);
+        await withSavedItemsLock(async () => {
+            const connections = {
+                ...context.globalState.get<{ [id: string]: IConfig }>(
+                    'pro-bro.dbconfig', {},
+                ),
+            };
+            delete connections[this.config.id];
+            await this.context.globalState.update('pro-bro.dbconfig', connections);
+        });
         vscode.commands.executeCommand('pro-bro.refreshList');
     }
 
