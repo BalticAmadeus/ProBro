@@ -17,7 +17,7 @@ This open source project is in active development. Our goal is to simplify the a
   - Edit Connections
   - Connection status indicator
   - Shortcuts to OE tools
-  - Possibility to import from `openedge-project.json`
+  - Import connections from every `openedge-project.json` in multi-root and nested workspace folders
   - Data Administration, Data Dictionary or Procedure Editor tools open with connection to selected database
   - Support for multiple OE versions
 
