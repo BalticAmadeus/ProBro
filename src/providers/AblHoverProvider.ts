@@ -31,7 +31,6 @@ export class AblHoverProvider implements HoverProvider {
                 .toLowerCase()
                 .indexOf(tableNode.tableName.toLowerCase());
             if (index >= 0) {
-                this.tableListProvider.selectDbConfig(tableNode);
                 this.tableListProvider.node = tableNode;
                 str.value =
                     '[Run Query for ' +

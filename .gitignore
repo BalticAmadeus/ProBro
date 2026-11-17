@@ -11,3 +11,5 @@ docker/.builder/**
 connectionPF.pf
 resources/oe/results.xml
 target/**
+pnpm-lock.yaml
+pnpm-workspace.yaml

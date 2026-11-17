@@ -269,22 +269,33 @@ export async function activate(context: vscode.ExtensionContext) {
         );
     }
 
+    const groupListProvider = new GroupListProvider(context);
+
     const tablesListProvider = new TablesListProvider(
         fieldsProvider,
         indexesProvider,
         context,
+        groupListProvider,
     );
 
     const favoritesProvider = new FavoritesProvider(
         fieldsProvider,
         indexesProvider,
         context,
+        groupListProvider,
     );
 
     const customViewsProvider = new CustomViewProvider(
         fieldsProvider,
         indexesProvider,
         context,
+        groupListProvider,
+    );
+
+    groupListProvider.setProviders(
+        tablesListProvider,
+        favoritesProvider,
+        customViewsProvider,
     );
 
     const customViews = vscode.window.createTreeView(
@@ -312,25 +323,18 @@ export async function activate(context: vscode.ExtensionContext) {
     fieldsProvider.tableListProvider = tablesListProvider;
     indexesProvider.tableListProvider = tablesListProvider;
 
-    const groupListProvider = new GroupListProvider(context, tables);
     const groups = vscode.window.createTreeView(
         `${Constants.globalExtensionKey}-databases`,
         { treeDataProvider: groupListProvider, canSelectMany: true },
+    );
+    groups.onDidChangeSelection((e) =>
+        groupListProvider.onDidChangeSelection(e),
     );
 
     const connectionUpdater = new DbConnectionUpdater();
     connectionUpdater.updateConnectionStatusesWithRefreshCallback(
         context,
         groupListProvider,
-    );
-
-    groups.onDidChangeSelection((e) =>
-        groupListProvider.onDidChangeSelection(
-            e,
-            tablesListProvider,
-            favoritesProvider,
-            customViewsProvider,
-        ),
     );
 
     /**
@@ -393,8 +397,9 @@ export async function activate(context: vscode.ExtensionContext) {
                 nodeList = tablesListProvider.tableNodes;
         }
 
+        const targetFullName = node.getFullName(true);
         const newNode = nodeList.find(
-            (correctNode) => node.tableName === correctNode.tableName,
+            (correctNode) => correctNode.getFullName(true) === targetFullName,
         );
 
         if (newNode) {
@@ -406,15 +411,12 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!cachedQueryEditor) {
             switch (node.source) {
                 case TableNodeSourceEnum.Tables:
-                    tablesListProvider.selectDbConfig(node);
                     tablesListProvider.displayData(node, false);
                     break;
                 case TableNodeSourceEnum.Favorites:
-                    favoritesProvider.selectDbConfig(node);
                     favoritesProvider.displayData(node, false);
                     break;
                 case TableNodeSourceEnum.Custom:
-                    customViewsProvider.selectDbConfig(node);
                     customViewsProvider.displayData(node, false);
                     break;
             }
@@ -429,7 +431,7 @@ export async function activate(context: vscode.ExtensionContext) {
             (node: CustomViewNode) => {
                 Telemetry.sendActionTelemetry('Command.saveCustomView');
                 customViewsProvider.saveCustomView(node);
-                customViewsProvider.refresh(undefined);
+                customViewsProvider.refresh();
             },
         ),
     );
@@ -440,7 +442,7 @@ export async function activate(context: vscode.ExtensionContext) {
             (node: CustomViewNode) => {
                 Telemetry.sendActionTelemetry('Command.removeCustomView');
                 customViewsProvider.removeCustomViews(node);
-                customViewsProvider.refresh(undefined);
+                customViewsProvider.refresh();
             },
         ),
     );
@@ -451,7 +453,7 @@ export async function activate(context: vscode.ExtensionContext) {
             (node: TableNode) => {
                 Telemetry.sendActionTelemetry('Command.addFavourite');
                 favoritesProvider.addTableToFavorites(node);
-                favoritesProvider.refresh(undefined);
+                favoritesProvider.refresh();
             },
         ),
     );
@@ -462,7 +464,7 @@ export async function activate(context: vscode.ExtensionContext) {
             (node: TableNode) => {
                 Telemetry.sendActionTelemetry('Command.removeFavourite');
                 favoritesProvider.removeTableFromFavorites(node);
-                favoritesProvider.refresh(undefined);
+                favoritesProvider.refresh();
             },
         ),
     );
@@ -481,6 +483,7 @@ export async function activate(context: vscode.ExtensionContext) {
             `${Constants.globalExtensionKey}.refreshList`,
             () => {
                 Telemetry.sendActionTelemetry('Command.refreshList');
+                groupListProvider.refreshDependentViews();
                 connectionUpdater.updateConnectionStatusesWithRefreshCallback(
                     context,
                     groupListProvider,
@@ -494,7 +497,6 @@ export async function activate(context: vscode.ExtensionContext) {
             `${Constants.globalExtensionKey}.query`,
             (node: TableNode) => {
                 Telemetry.sendActionTelemetry('Command.query');
-                tablesListProvider.selectDbConfig(node);
                 loadQueryEditor(node, true);
             },
         ),
@@ -505,7 +507,6 @@ export async function activate(context: vscode.ExtensionContext) {
             `${Constants.globalExtensionKey}.queryFavorite`,
             (node: TableNode) => {
                 Telemetry.sendActionTelemetry('Command.queryFavorite');
-                favoritesProvider.selectDbConfig(node);
                 loadQueryEditor(node, true);
             },
         ),
@@ -516,7 +517,6 @@ export async function activate(context: vscode.ExtensionContext) {
             `${Constants.globalExtensionKey}.queryCustomView`,
             (node: CustomViewNode) => {
                 Telemetry.sendActionTelemetry('Command.queryCustomView');
-                customViewsProvider.selectDbConfig(node);
                 loadQueryEditor(node);
                 loadCustomView(node);
             },

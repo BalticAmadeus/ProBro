@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.4 (2026-07-08)
+
+- Fixed fields explorer filter.
+
 ## 1.9.3 (2026-03-05)
 
 - Fixed the issue with connection form.
