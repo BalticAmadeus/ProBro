@@ -19,6 +19,7 @@ import { Constants } from '../common/Constants';
 import { queryEditorCache } from './queryEditor/queryEditorCache';
 import { FavoritesProvider } from '../treeview/FavoritesProvider';
 import { CustomViewNode } from '../treeview/CustomViewNode';
+import { Telemetry } from '../telemetry/Telemetry';
 
 export class QueryEditor {
     public readonly panel: vscode.WebviewPanel | undefined;
@@ -27,11 +28,11 @@ export class QueryEditor {
     public tableName: string;
     private fieldsProvider: FieldsViewProvider;
     private readonly configuration = vscode.workspace.getConfiguration(
-        Constants.globalExtensionKey
+        Constants.globalExtensionKey,
     );
     private readOnly = false;
     private logger = new Logger(
-        this.configuration.get('logging.node') ?? false
+        this.configuration.get('logging.node') ?? false,
     );
     private customViewData: ICustomView | undefined;
 
@@ -41,14 +42,16 @@ export class QueryEditor {
         private tableListProvider: TablesListProvider,
         private favoritesProvider: FavoritesProvider,
         private customViewProvider: CustomViewProvider,
-        private fieldProvider: FieldsViewProvider
+        private fieldProvider: FieldsViewProvider,
     ) {
         this.extensionPath = context.asAbsolutePath('');
         this.tableName = tableNode.tableName;
         this.fieldsProvider = fieldProvider;
 
-        const config: IConfig | undefined = this.fetchConfig(this.tableNode.source);
- 
+        const config: IConfig | undefined = this.fetchConfig(
+            this.tableNode.source,
+        );
+
         if (tableNode instanceof CustomViewNode) {
             this.customViewData = tableNode.customViewParams;
         }
@@ -66,10 +69,10 @@ export class QueryEditor {
                 retainContextWhenHidden: true,
                 localResourceRoots: [
                     vscode.Uri.file(
-                        path.join(context.asAbsolutePath(''), 'out')
+                        path.join(context.asAbsolutePath(''), 'out'),
                     ),
                 ],
-            }
+            },
         );
 
         this.panel.iconPath = {
@@ -78,16 +81,16 @@ export class QueryEditor {
                     this.extensionPath,
                     'resources',
                     'icon',
-                    'query-icon-dark.svg'
-                )
+                    'query-icon-dark.svg',
+                ),
             ),
             light: vscode.Uri.file(
                 path.join(
                     this.extensionPath,
                     'resources',
                     'icon',
-                    'query-icon-light.svg'
-                )
+                    'query-icon-light.svg',
+                ),
             ),
         };
 
@@ -100,8 +103,14 @@ export class QueryEditor {
 
         this.panel.webview.onDidReceiveMessage(
             (command: ICommand) => {
+                Telemetry.sendActionTelemetry(
+                    `QueryEditor.${CommandAction[command.action]}`,
+                    { action: CommandAction[command.action] },
+                );
                 // config can change if user updates connection parameters
-                const config: IConfig | undefined = this.fetchConfig(this.tableNode.source);
+                const config: IConfig | undefined = this.fetchConfig(
+                    this.tableNode.source,
+                );
                 this.logger.log('command:', command);
                 switch (command.action) {
                     case CommandAction.Query:
@@ -112,7 +121,7 @@ export class QueryEditor {
                                     this.tableNode.tableName,
                                     this.customViewData
                                         ? this.getParams(command.params!)
-                                        : command.params
+                                        : command.params,
                                 )
                                 .then((oe) => {
                                     if (this.customViewData) {
@@ -123,11 +132,11 @@ export class QueryEditor {
                                         };
                                         this.logger.log(
                                             'customView params: ',
-                                            this.customViewData
+                                            this.customViewData,
                                         );
                                         this.panel?.webview.postMessage(obj);
                                     }
- 
+
                                     if (this.panel) {
                                         const obj = {
                                             id: command.id,
@@ -150,7 +159,7 @@ export class QueryEditor {
                                 .getTableData(
                                     config,
                                     this.tableNode.tableName,
-                                    command.params
+                                    command.params,
                                 )
                                 .then((oe) => {
                                     if (this.panel) {
@@ -171,7 +180,7 @@ export class QueryEditor {
                                 .submitTableData(
                                     config,
                                     this.tableNode.tableName,
-                                    command.params
+                                    command.params,
                                 )
                                 .then((oe) => {
                                     if (this.panel) {
@@ -187,17 +196,17 @@ export class QueryEditor {
                                         ) {
                                             if (obj.data.description === '') {
                                                 vscode.window.showErrorMessage(
-                                                    'Database Error: Trigger canceled action'
+                                                    'Database Error: Trigger canceled action',
                                                 );
                                             } else {
                                                 vscode.window.showErrorMessage(
                                                     'Database Error: ' +
-                                                        obj.data.description
+                                                        obj.data.description,
                                                 );
                                             }
                                         } else {
                                             vscode.window.showInformationMessage(
-                                                'Action was successful'
+                                                'Action was successful',
                                             );
                                         }
                                         this.panel?.webview.postMessage(obj);
@@ -213,7 +222,7 @@ export class QueryEditor {
                             .getTableData(
                                 config,
                                 this.tableNode.tableName,
-                                command.params
+                                command.params,
                             )
                             .then((oe) => {
                                 if (!this.panel) {
@@ -221,7 +230,7 @@ export class QueryEditor {
                                 }
                                 if (!config) {
                                     throw new Error(
-                                        'Configuration became undefined unexpectedly.'
+                                        'Configuration became undefined unexpectedly.',
                                     );
                                 }
                                 let exportData = oe;
@@ -231,7 +240,7 @@ export class QueryEditor {
                                     dumpFileFormatter.formatDumpFile(
                                         oe,
                                         this.tableNode.tableName,
-                                        config.label
+                                        config.label,
                                     );
                                     exportData =
                                         dumpFileFormatter.getDumpFile();
@@ -258,27 +267,27 @@ export class QueryEditor {
                                     Constants.context,
                                     this.tableNode,
                                     command.customView?.name || '',
-                                    command.customView
-                                )
+                                    command.customView,
+                                ),
                             )
                             .then(
                                 () => {
                                     console.log(
-                                        'Command executed successfully'
+                                        'Command executed successfully',
                                     );
                                 },
                                 (error) => {
                                     console.error(
                                         'Error executing command:',
-                                        error
+                                        error,
                                     );
-                                }
+                                },
                             );
                         break;
                 }
             },
             undefined,
-            context.subscriptions
+            context.subscriptions,
         );
 
         this.fieldsProvider.addQueryEditor(this);
@@ -286,18 +295,18 @@ export class QueryEditor {
         this.panel.onDidDispose(
             () => {
                 queryEditorCache.removeQueryEditor(
-                    this.tableNode?.getFullName(true)
+                    this.tableNode?.getFullName(true),
                 );
                 // When the panel is closed, cancel any future updates to the webview content
                 this.fieldsProvider.removeQueryEditor(this);
             },
             null,
-            context.subscriptions
+            context.subscriptions,
         );
     }
 
     public setParams = (node: CustomViewNode): void => {
-        this.customViewData = node.customViewParams;        
+        this.customViewData = node.customViewParams;
     };
 
     public resetParams = (): void => {
@@ -313,7 +322,6 @@ export class QueryEditor {
             useDeleteTriggers: true,
         };
     };
-
 
     public getParams = (params: ITableData): ITableData => {
         if (!this.customViewData) {
@@ -336,11 +344,17 @@ export class QueryEditor {
     public fetchConfig = (tableNodeSource: string): IConfig | undefined => {
         switch (tableNodeSource) {
             case TableNodeSourceEnum.Tables:
-                return this.tableListProvider.getLatestConfig(this.tableNode.dbId);
+                return this.tableListProvider.getLatestConfig(
+                    this.tableNode.dbId,
+                );
             case TableNodeSourceEnum.Favorites:
-                return this.favoritesProvider.getLatestConfig(this.tableNode.dbId);
+                return this.favoritesProvider.getLatestConfig(
+                    this.tableNode.dbId,
+                );
             case TableNodeSourceEnum.Custom:
-                return this.customViewProvider.getLatestConfig(this.tableNode.dbId);
+                return this.customViewProvider.getLatestConfig(
+                    this.tableNode.dbId,
+                );
             default:
                 return undefined;
         }
@@ -374,10 +388,10 @@ export class QueryEditor {
             path.join(
                 vscode.Uri.file(
                     this.context.asAbsolutePath(
-                        path.join('out/view/app', 'query.js')
-                    )
-                ).fsPath
-            )
+                        path.join('out/view/app', 'query.js'),
+                    ),
+                ).fsPath,
+            ),
         );
 
         const reactAppUri =

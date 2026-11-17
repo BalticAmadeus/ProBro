@@ -24,6 +24,7 @@ import { queryEditorCache } from './webview/queryEditor/queryEditorCache';
 import { FavoritesProvider } from './treeview/FavoritesProvider';
 import { CustomViewProvider } from './treeview/CustomViewProvider';
 import { CustomViewNode } from './treeview/CustomViewNode';
+import { Telemetry } from './telemetry/Telemetry';
 
 export async function activate(context: vscode.ExtensionContext) {
     let extensionPort = 23456;
@@ -171,8 +172,8 @@ export async function activate(context: vscode.ExtensionContext) {
         )
             ? oeRuntimes.find((runtime) => runtime.name === oejRuntimeName)
             : oeRuntimes.find(
-                (runtime) => runtime.name === defaultRuntimeName,
-            ) || oeRuntimes[0];
+                  (runtime) => runtime.name === defaultRuntimeName,
+              ) || oeRuntimes[0];
     } else {
         vscode.window.showWarningMessage(
             'No OpenEdge runtime configured on this machine.',
@@ -268,35 +269,33 @@ export async function activate(context: vscode.ExtensionContext) {
         );
     }
 
-    const groupListProvider = new GroupListProvider(
-        context
-    );
+    const groupListProvider = new GroupListProvider(context);
 
     const tablesListProvider = new TablesListProvider(
         fieldsProvider,
         indexesProvider,
         context,
-        groupListProvider
+        groupListProvider,
     );
 
     const favoritesProvider = new FavoritesProvider(
         fieldsProvider,
         indexesProvider,
         context,
-        groupListProvider
+        groupListProvider,
     );
 
     const customViewsProvider = new CustomViewProvider(
         fieldsProvider,
         indexesProvider,
         context,
-        groupListProvider
+        groupListProvider,
     );
-    
+
     groupListProvider.setProviders(
         tablesListProvider,
         favoritesProvider,
-        customViewsProvider
+        customViewsProvider,
     );
 
     const customViews = vscode.window.createTreeView(
@@ -430,6 +429,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.saveCustomView`,
             (node: CustomViewNode) => {
+                Telemetry.sendActionTelemetry('Command.saveCustomView');
                 customViewsProvider.saveCustomView(node);
                 customViewsProvider.refresh();
             },
@@ -440,6 +440,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.removeCustomView`,
             (node: CustomViewNode) => {
+                Telemetry.sendActionTelemetry('Command.removeCustomView');
                 customViewsProvider.removeCustomViews(node);
                 customViewsProvider.refresh();
             },
@@ -450,6 +451,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.addFavourite`,
             (node: TableNode) => {
+                Telemetry.sendActionTelemetry('Command.addFavourite');
                 favoritesProvider.addTableToFavorites(node);
                 favoritesProvider.refresh();
             },
@@ -460,6 +462,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.removeFavourite`,
             (node: TableNode) => {
+                Telemetry.sendActionTelemetry('Command.removeFavourite');
                 favoritesProvider.removeTableFromFavorites(node);
                 favoritesProvider.refresh();
             },
@@ -470,6 +473,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.addEntry`,
             () => {
+                Telemetry.sendActionTelemetry('Command.addEntry');
                 new ConnectionEditor(context, 'Add New Connection');
             },
         ),
@@ -478,6 +482,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.refreshList`,
             () => {
+                Telemetry.sendActionTelemetry('Command.refreshList');
                 groupListProvider.refreshDependentViews();
                 connectionUpdater.updateConnectionStatusesWithRefreshCallback(
                     context,
@@ -491,6 +496,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.query`,
             (node: TableNode) => {
+                Telemetry.sendActionTelemetry('Command.query');
                 loadQueryEditor(node, true);
             },
         ),
@@ -500,6 +506,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.queryFavorite`,
             (node: TableNode) => {
+                Telemetry.sendActionTelemetry('Command.queryFavorite');
                 loadQueryEditor(node, true);
             },
         ),
@@ -509,6 +516,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.queryCustomView`,
             (node: CustomViewNode) => {
+                Telemetry.sendActionTelemetry('Command.queryCustomView');
                 loadQueryEditor(node);
                 loadCustomView(node);
             },
@@ -519,6 +527,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.queryFromCode`,
             () => {
+                Telemetry.sendActionTelemetry('Command.queryFromCode');
                 if (tablesListProvider.node === undefined) {
                     return;
                 }
@@ -540,6 +549,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 );
 
                 if (confirmation === 'Yes') {
+                    Telemetry.sendActionTelemetry('Command.deleteConnection');
                     dbConnectionNode.deleteConnection(context);
                 }
             },
@@ -550,6 +560,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.refreshConnection`,
             (dbConnectionNode: DbConnectionNode) => {
+                Telemetry.sendActionTelemetry('Command.refreshConnection');
                 dbConnectionNode.refreshConnection(context);
             },
         ),
@@ -559,6 +570,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.editConnection`,
             (dbConnectionNode: DbConnectionNode) => {
+                Telemetry.sendActionTelemetry('Command.editConnection');
                 dbConnectionNode.editConnection(context);
             },
         ),
@@ -568,6 +580,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.procedureEditor`,
             (dbConnectionNode: DbConnectionNode) => {
+                Telemetry.sendActionTelemetry('Command.procedureEditor');
                 dbConnectionNode.runScript(context, 'procedureEditor');
             },
         ),
@@ -577,6 +590,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.dataAdministration`,
             (dbConnectionNode: DbConnectionNode) => {
+                Telemetry.sendActionTelemetry('Command.dataAdministration');
                 dbConnectionNode.runScript(context, 'dataAdministration');
             },
         ),
@@ -586,6 +600,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand(
             `${Constants.globalExtensionKey}.dataDictionary`,
             (dbConnectionNode: DbConnectionNode) => {
+                Telemetry.sendActionTelemetry('Command.dataDictionary');
                 dbConnectionNode.runScript(context, 'dataDictionary');
             },
         ),
@@ -638,6 +653,10 @@ export async function activate(context: vscode.ExtensionContext) {
             if (customViewsProvider.tableClicked.count === 2) {
                 queryEditorDblClick(customViewsProvider.node);
                 loadCustomView(customViewsProvider.node);
+                Telemetry.sendActionTelemetry(
+                    'TableSelected.dblClickCustomViewQuery',
+                    { action: 'TableSelected.dblClickCustomViewQuery' },
+                );
             }
         },
     );
@@ -652,6 +671,10 @@ export async function activate(context: vscode.ExtensionContext) {
             favoritesProvider.countClick();
             if (favoritesProvider.tableClicked.count === 2) {
                 queryEditorDblClick(favoritesProvider.node, true);
+                Telemetry.sendActionTelemetry(
+                    'TableSelected.dblClickFavoriteQuery',
+                    { action: 'TableSelected.dblClickFavoriteQuery' },
+                );
             }
         },
     );
@@ -665,6 +688,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
             tablesListProvider.countClick();
             if (tablesListProvider.tableClicked.count === 2) {
+                Telemetry.sendActionTelemetry('TableSelected.dblClickQuery', {
+                    action: 'TableSelected.dblClickQuery',
+                });
                 queryEditorDblClick(tablesListProvider.node, true);
             }
         },
